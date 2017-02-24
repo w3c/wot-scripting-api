@@ -100,6 +100,364 @@
   </p>
   </section>
 
+  <section id="conformance">
+  <p>
+    This document defines conformance criteria that apply to a single product: the <dfn>UA</dfn> (user agent) that implements the interfaces it contains.
+  </p>
+  <p>
+    The UA may be implemented in the browser, or in a separate runtime environment.
+  </p>
+  <p>
+    This specification can be used for implementing the WoT Scripting API in multiple language bindings. Currently ECMAScript and TypeScript definitions are described in this document. For specifying bindings in other languages, extensions of this document may be created later.
+  </p>
+  <p>
+    Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
+  </p>
+  <p>
+    Implementations that use TypeScript or ECMAScript in a <a>RunTime</a> to implement the APIs defined in this document MUST implement them in a manner consistent with the TypeScript Bindings defined in the TypeScript specification [[!TYPESCRIPT]].
+  </p>
+  <p>
+    This document serves a general description of the WoT Scripting API. Language and runtime specific issues are discussed in separate extensions of this document.
+  </p>
+  </section>
+
+  <section> <h2>Terminology and conventions</h2>
+  <p>
+    A <dfn>WoT runtime</dfn> or simply <dfn>Runtime</dfn> is defined as a software stack that manages the lifecycle of WoT application scripts (see also the [Wikipedia definition](https://en.wikipedia.org/wiki/Runtime_system)). In the case of ECMAScript and TypeScript scripts, it consists of an ECMAScript interpreter, script lifecycle management, and an operating system API that provides access to local and remote resources. A Runtime can be modeled as a virtual machine in the sense that it should be completely isolated from other execution environments on memory address space, storage address space (file system), network namespace, etc. A runtime may be for instance a Node.js environment, an embedded runtime based on a small JavaScript engine, or provided by a browser.
+  </p>
+  <p>
+    The following terms are defined in [[!WOT-PRACTICES]]:
+  </p>
+  <dl>
+    <dt><dfn data-lt="Things">Thing</dfn></dt>
+    <dd>A physical or virtual entity that represents physicality, such as a device, a group of devices, a room, or a software stack that exposes <a>WoT interface</a>s.</dd>
+
+    <dt><dfn data-lt="TD|TDs">Thing Description</dfn></dt>
+    <dd>An RDF document (currently serialized in <a>JSON-LD</a> by default) that contains semantic and functional descriptions of a Thing: semantic context, interaction resources (such as properties, actions and events), communication (protocol, data serialization, bindings), and security related data (e.g. keys, certificates, policies etc).</dd>
+
+    <dt><dfn>WoT Interface</dfn></dt>
+    <dd>Resource-oriented Web interface (often called "Web API") that allows access to <a>Things</a> exposed over a network using different <a>Protocol Bindings</a>, as defined by <a>Thing Description</a>s.</dd>
+
+    <dt><dfn>Protocol Bindings</dfn></dt>
+    <dd>Mapping WoT <a>Thing</a> interactions to specific protocol suites. Protocol bindings are being defined for HTTP, CoAP, Bluetooth Smart (BLE), MQTT, WebSockets, etc.</dd>
+
+    <dt><dfn>JSON-LD</dfn></dt>
+    <dd>A JSON document that is augmented with support for Linked Data by providing an <code>@context</code> property with a defining URI [[!JSON-LD]].</dd>
+
+  </dl>
+  <p>
+    <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn> means parsing the <a>Thing Description</a> and building a resource model with the use of <a>Protocol Bindings</a> that can be used in a script for accessing and controlling the Thing. A <a>Thing</a> when starts up, consumes its own <a>TD</a>, then it exposes its <a>WoT interface</a> as a server. Note that a script on a <a>Thing</a> may consume other <a>TD</a>s and expose a combined interface of the consumed <a>Things</a>.
+  </p>
+  <p>
+    The terms <a href="http://www.w3.org/TR/url-1/"><dfn>URL</dfn></a> and
+    <a href="https://url.spec.whatwg.org/#concept-url-path">
+    <dfn>URL path</dfn></a> are defined in [[!URL]].
+  </p>
+  <p>
+    The following terms are defined in [[!HTML5]] and are used in the context of browser implementations:
+    <a href="https://html.spec.whatwg.org/#browsing-context">
+    <dfn>browsing context</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#top-level-browsing-context">
+    <dfn>top-level browsing context</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object">
+    <dfn>global object</dfn></a>,
+
+    <a href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
+    <dfn>incumbent settings object</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#script-execution-environment">
+    <dfn>script execution environment</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#document">
+    <dfn>Document</dfn></a>,
+
+    <a href="http://www.w3.org/TR/2011/WD-html5-20110113/urls.html#document-base-url">
+    <dfn>document base URL</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#window">
+    <dfn>Window</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#windowproxy">
+    <dfn>WindowProxy</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#origin">
+    <dfn>origin</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#ascii-serialisation-of-an-origin">
+    <dfn>ASCII serialized origin</dfn></a>,
+
+    executing algorithms <a href="https://html.spec.whatwg.org/#in-parallel">
+    <dfn>in parallel</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#queue-a-task">
+    <dfn>queue a task</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#task-source">
+    <dfn>task source</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#the-iframe-element">
+    <dfn>iframe</dfn></a>,
+
+    <a href="https://html.spec.whatwg.org/#valid-mime-type">
+    <dfn>valid MIME type</dfn></a>.
+  </p>
+  <p>
+    A <a>browsing context</a> refers to the environment in which
+    <a>Document</a> objects are presented to the user. A given
+    <a>browsing context</a> has a single <code><a>WindowProxy</a></code> object,
+    but it can have many <code>Document</code> objects, with their associated
+    <code><a>Window</a></code> objects. The <a>script execution environment</a>
+    associated with the <i>browsing context</i> identifies the entity which
+    invokes this API, which can be a <i>web app</i>, a <i>web page</i>, or an
+    <a>iframe</a>.
+  </p>
+  <p>
+    The term
+    <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">
+    <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
+  </p>
+  <p>
+    <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">
+    <dfn>Promise</dfn></a>,
+    <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json-object">
+    <dfn>JSON</dfn></a>,
+    <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.stringify">
+    <dfn>JSON.stringify</dfn></a> and
+    <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.parse">
+    <dfn>JSON.parse</dfn></a>
+    are defined in [[!ECMASCRIPT]].
+  </p>
+  <p>
+    The algorithms <a href="http://www.w3.org/TR/encoding/#utf-8-encode">
+    <dfn>utf-8 encode</dfn></a>, and
+    <a href="http://www.w3.org/TR/encoding/#utf-8-decode">
+    <dfn>utf-8 decode</dfn></a> are defined in [[!ENCODING]].
+  </p>
+  <p>
+    <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
+    <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
+  </p>
+  </section>
+
+  <section id="introduction"> <h2>Introduction</h2>
+  <p>
+    As described in the [WoT Current Practices](http://w3c.github.io/wot/current-practices/wot-practices.html#vision), the Web of Things is made of <a>Thing</a>s that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD). By <a>consuming a TD</a>, a <a>Thing</a> creates a runtime resource model that allows accessing the <a>Thing</a> by an application.
+  </p>
+  </section>
+
+  <section class="informative"> <h3>Use Cases</h3>
+  <p>
+    The following scripting use cases are covered in this specification:
+    <ul>
+      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s.</li>
+      <li><a>Consume a TD</a> of a remote <a>Thing</a>.</li>
+      <li>On a consumed <a>Thing</a>,
+        <ul>
+          <li>Get a property value.</li>
+          <li>Set a property value.</li>
+          <li>Invoke an action.</li>
+          <li>Add a listener to an event.</li>
+          <li>Remove a listener from an event.</li>
+        </ul>
+      </li>
+      <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
+      <li>Programmatically create and expose a local <a>Thing</a>. This may include the following operations:
+        <ul>
+          <li>Add a property definition to the <a>Thing</a>.</li>
+          <li>Add an event definition to the <a>Thing</a>.</li>
+          <li>Add an action definition to the <a>Thing</a>.</li>
+          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
+          <li>Handle an external request to retrieve the <a>Thing Description</a>.</li>
+          <li>Handle an external request to add a listener to an event.</li>
+          <li>Handle an external request to remove a listener to an event.</li>
+          <li>Handle an external request to run an action: take the parameters from the request, execute the defined action, and return the result.</li>
+          <li>Emit an event, i.e. notify all listeners subscribed to that event.</li>
+          <li>Stop the exposed <a>Thing</a>.
+        </ul>
+      </li>
+    </ul>
+  </p>
+  </section>
+
+  <section> <h2 id="security">Security and Privacy</h2>
+  <p>
+    The trust model, attacker model, threat model and possible mitigation
+    proposals for the Wot Scripting API are presented in the [Security and Privacy document](http://w3c.github.io/wot-scripting-api/security-privacy.html). This section presents the chosen
+    security and privacy model through normative requirements to implementations.
+  </p>
+
+    <section> <h3>Chain of Trust</h3>
+    <p>
+      Things discoverable and accessible in a WoT network SHOULD be identified and authenticated.
+    </p>
+    <p>
+      The integrity of WoT communication SHOULD be ensured by implementations.
+    </p>
+    </section>
+
+    <section> <h3>Threat Model</h3>
+    <p>
+    The main threats are summarized in the [Security and Privacy document](http://w3c.github.io/web-nfc/security-privacy.html#threats-and-possible-solutions).
+    </p>
+    <p>
+      In this specification the following threats are considered of the highest priority:
+      <ul>
+        <li>
+          Unauthorized gathering of user-sensitive information.
+        </li>
+        <li>
+          Vulnerability of the underlying protocols.
+        </li>
+        <li>
+          Protect the integrity of <a>Thing</a>s and <a>Thing Description</a>s.
+        </li>
+      </ul>
+    </p>
+    </section>
+
+    <section> <h3>Security Mechanisms</h3>
+      <section> <h4>Identification, Authentication, Authorization</h4>
+      </section>
+
+      <section> <h4>Transport-level security</h4>
+      </section>
+
+      <section> <h4>Application-level security</h4>
+      </section>
+    </section>
+
+    <section class="informative"> <h3>Security policies</h3>
+      <p>
+        This section summarizes the security policies which are specified as
+        normative requirements in the respective algorithms of this
+        specification.
+      </p>
+    </section>
+  </section>
+
+  <section> <h2>WoT Data Representation</h2>
+  <p>
+  </p>
+  </section>
+
+  <section> <h2>The WoT API</h2>
+  <p>
+    The API object provides access obtain <a>Thing</a>s by discovery or creation. A <a>Thing</a> is represented either as a <a>ConsumedThing</a> or <a>ExposedThing</a>.
+  </p>
+  <p>
+    The <dfn>WoT object</dfn> exposes only functions and has no internal state.
+  </p>
+  <p class="issue">
+     Because of this, implementations MAY use a global object, or provide a constructor, or provide the API object, or by other means (e.g. by `require()`). Since the common denominator across various <a>Runtime</a> types would be to use a constructor, this would be recommended. As a consequence, the <a>ConsumedThing</a> and <a>ExposedThing</a> objects could also be constructed, complete with an asynchronous fetch functionality.
+  </p>
+  <p class="note">
+    The WebIDL interfaces presented in this initial version of the document are based on the [[!WOT-PRACTICES]]. It is expected to be updated soon.
+  </p>
+  <pre class="idl">
+    interface WoT {
+      Promise&lt;void&gt; discover(ThingFilter filter, ThingDiscoveryCallback onfound);
+
+      Promise&lt;ConsumedThing&gt; consumeDescription(object thingDescription);
+      Promise&lt;ConsumedThing&gt; consumeDescriptionUri(DOMString thingDescriptionURI);
+
+      Promise&lt;ExposedThing&gt; createThing(DOMString name);
+      Promise&lt;ExposedThing&gt; createFromDescription(object thingDescription);
+      Promise&lt;ExposedThing&gt; createFromDescriptionUri(DOMString thingDescriptionURI);
+    };
+
+    interface Thing {
+      readonly attribute DOMString name;
+      readonly attribute object description;
+    };
+
+    callback ThingDiscoveryCallback = void (ConsumedThing thing);
+  </pre>
+  </section>
+
+  <section> <h2>The Thing Client API</h2>
+  <pre class="idl">
+    interface ConsumedThing: Thing {
+      Promise&lt;any&gt; invokeAction(DOMString actionName, any parameter);
+      Promise&lt;any&gt; setProperty(DOMString propertyName, any newValue);
+      Promise&lt;any&gt; getProperty(DOMString propertyName);
+      ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
+      ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
+      ConsumedThing removeAllListeners(DOMString eventName);
+    };
+
+    callback ThingEventListener = void (ConsumedThing thing);
+  </pre>
+  </section>
+
+  <section> <h2>The Thing Server API</h2>
+  <pre class="idl">
+    interface ExposedThing: Thing {
+      ExposedThing addProperty(ThingProperty property);
+      ExposedThing addAction(ThingAction action);
+      ExposedThing addEvent(ThingEvent event);
+      Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
+      ExposedThing onInvokeAction(DOMString actionName, ThingActionHandler callback);
+      ExposedThing onUpdateProperty(DOMString propertyName, ThingPropertyChangeListener callback);
+    };
+
+    ExposedThing implements ConsumedThing;
+
+    dictionary SemanticType {
+      DOMString name;
+      DOMString context;
+    };
+
+    dictionary ThingAction {
+      DOMString name;
+      object inputType;
+      object outputType;
+      SemanticType[] semanticTypes;
+    };
+
+    dictionary ThingProperty {
+      DOMString name;
+      object contentType;
+      SemanticType[] semanticTypes;
+      any value;
+    };
+
+    dictionary ThingEvent {
+      DOMString name;
+      object payloadType;
+      SemanticType[] semanticTypes;
+    };
+
+    callback ThingActionHandler = void (ThingAction action);
+
+    callback ThingPropertyChangeListener = void(ThingProperty property);
+  </pre>
+  </section>
+
+  <section class="appendix" id="Changes"><h2>Changes</h2>
+  <p>
+    The following is a list of major changes to the document. For a complete list of changes, see the [github change log](https://github.com/w3c/wot-scripting-api/commits/master). You can also view the [recently closed bugs](https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed).
+  </p>
+  </section>
+
+  <section> <h3 class="appendix" id="openissues">Open issues</h3>
+  <p>
+    The following problems are being discussed and need most attention:
+    <ul>
+      <li> Issue [1](https://github.com/w3c/wot-scripting-api/issues) </li>
+      <li> Issue [2](ghttps://github.com/w3c/wot-scripting-api/issues) </li>
+    </ul>
+  </p>
+  </section>
+
+  <section> <h2>Acknowledgements</h2>
+    <p>
+      The editors would like to thank Dave Raggett, Matthias Kovatsch, and Michael Koster for their
+      comments and guidance to this document.
+    </p>
+  </section>
+
   </body>
 </html>
 
