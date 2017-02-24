@@ -2,37 +2,104 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Spec proposal</title>
+    <title>Web of Things Scripting API</title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove"></script>
     <script class='remove'>
       // See https://github.com/w3c/respec/wiki/ for how to configure ReSpec
       var respecConfig = {
-        specStatus: "CG-DRAFT",
+        specStatus: "ED",
         shortName: "wot-scripting-api",
-        editors: [{
-          name: "ashimura"
-        }]
+        copyrightStart:       2017,
+        noLegacyStyle:        true,
+        publishDate:          "",
+        previousPublishDate:  "",
+        previousMaturity:     "",
+        edDraftURI:           "https://w3c.github.io/wot-scripting-api/",
+        crEnd:                "",
+        inlineCSS:            true,
+        noIDLIn:              true,
+        format:               'markdown',
+        editors: [
+          { name: "Johannes Hund", company: "Siemens" },
+          { name: "Zoltan Kis", company: "Intel" },
+          { name: "Kazuaki Nimura", company: "Fujitsu" },
+        ],
+        wg:           "Web of Things Working Group",
+        wgURI:        "https://www.w3.org/WoT/WG/",
+        wgPublicList: "member-wot-wg@w3.org",
+        issueBase: "https://www.github.com/w3c/wot-scripting-api/issues/",
+        githubAPI: "https://api.github.com/repos/w3c/wot-scripting-api",
+        otherLinks: [
+          {
+            key: "Repository",
+            data: [{
+                  value: "We are on Github.",
+                  href: "https://github.com/w3c/wot-scripting-api"
+              }, {
+                  value: "File a bug.",
+                  href: "https://github.com/w3c/wot-scripting-api/issues"
+              }, {
+                  value: "Commit history.",
+                  href: "https://github.com/w3c/wot-scripting-api/commits/"
+              }, {
+                  value: "Use cases",
+                  href: "https://github.com/w3c/wot-scripting-api/use-cases.html"
+              }, {
+                  value: "Security and Privacy",
+                  href: "https://github.com/w3c/wot-scripting-api/security-privacy.html"
+              }, {
+                  value: "Rationale",
+                  href: "https://github.com/w3c/wot-scripting-api/rationale.md"
+              }
+            ]
+          },
+          {
+            key: "Contributors",
+            data: [
+                {
+                  value: "In the github repository",
+                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
+                }
+            ]
+          },
+        ],
+        localBiblio: {
+          "WOT-PRACTICES": {
+            href:"http://w3c.github.io/wot/current-practices/wot-practices.html",
+            title: "Web of Things Current Practices",
+            publisher: "W3C",
+            date: "6 February 2017"
+          },
+          "TYPESCRIPT": {
+            href:"https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md",
+            title: "TypeScript Language Specification",
+            publisher: "Microsoft",
+            date: "1 October 2012"
+          },
+          "WEBAPPSEC": {
+            href:"https://w3c.github.io/webappsec/specs/powerfulfeatures",
+            title: "Secure Contexts",
+            publisher: "W3C",
+            date: "17 July 2015"
+          },
+        },
       };
     </script>
   </head>
   <body>
-    <section id="abstract">
-      <p>
-        This specification does neat stuff.
-      </p>
-    </section>
-    <section id="sotd">
-      <p>
-        This is an unofficial proposal.
-      </p>
-    </section>
 
-    <section id="introduction">
-      <h2>Introduction</h2>
-      <p>
-        See <a href="https://github.com/w3c/respec/wiki/User's-Guide">ReSpec's user guide</a>
-        for how toget started!
-      </p>
-    </section>
+  <section id="abstract">
+    <p>
+      This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<dfn>WoT</dfn>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware through a Physical API.
+    </p>
+  </section>
+
+  <section id="sotd">
+  <p>
+    Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the [repository](https://github.com/w3c/wot-scripting-api) and take part in the discussions.
+  </p>
+  </section>
+
   </body>
 </html>
+
