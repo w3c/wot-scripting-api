@@ -1,5 +1,5 @@
+# Specification 'Web of Things (WoT) Scripting API'
 
-# Specification 'wot-scripting-api'
+Each commit here will sync it to the master, which will expose the content to http://w3c.github.io/wot-scipting-api/.
 
-This is the repository for wot-scripting-api. You're welcome to contribute! Let's make the Web rock our socks
-off!
+To make contributions, please provide pull-requests to the html file, see [github help](https://help.github.com/articles/using-pull-requests/).
