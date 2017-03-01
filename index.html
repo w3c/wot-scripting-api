@@ -251,7 +251,8 @@
   <p>
     The following scripting use cases are covered in this specification:
     <ul>
-      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s.</li>
+      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s for client-side access</li>
+      <li>Discover <a>Thing</a>s by semantic filters for client-side access</li>
       <li><a>Consume a TD</a> of a remote <a>Thing</a>.</li>
       <li>On a consumed <a>Thing</a>,
         <ul>
@@ -262,14 +263,19 @@
           <li>Remove a listener from an event.</li>
         </ul>
       </li>
+      <li>Retrieve a thing that is exposed by the local runtime</li>
       <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
       <li>Programmatically create and expose a local <a>Thing</a>. This may include the following operations:
         <ul>
           <li>Add a property definition to the <a>Thing</a>.</li>
           <li>Add an event definition to the <a>Thing</a>.</li>
           <li>Add an action definition to the <a>Thing</a>.</li>
+          <li>Attach semantic information to an Action</li>
+          <li>Attach semantic information to a Property</li>
+          <li>Attach semantic information to an Event</li>
           <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
-          <li>Handle an external request to retrieve the <a>Thing Description</a>.</li>
+          <li>Modify the handling of an external request to retrieve the <a>Thing Description</a>.</li>
+          <li>React on a property change</li>
           <li>Handle an external request to add a listener to an event.</li>
           <li>Handle an external request to remove a listener to an event.</li>
           <li>Handle an external request to run an action: take the parameters from the request, execute the defined action, and return the result.</li>
