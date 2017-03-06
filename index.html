@@ -251,7 +251,8 @@
   <p>
     The following scripting use cases are covered in this specification:
     <ul>
-      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s.</li>
+      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s for client-side access</li>
+      <li>Discover <a>Thing</a>s by semantic filters for client-side access</li>
       <li><a>Consume a TD</a> of a remote <a>Thing</a>.</li>
       <li>On a consumed <a>Thing</a>,
         <ul>
@@ -262,6 +263,7 @@
           <li>Remove a listener from an event.</li>
         </ul>
       </li>
+      <li>Retrieve a thing that is exposed by the local runtime</li>
       <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
       <li>Programmatically create and expose a local <a>Thing</a>. This may include the following operations:
         <ul>
@@ -272,6 +274,11 @@
           <li>Add a property definition to the <a>Thing</a>.</li>
           <li>Add an event definition to the <a>Thing</a>.</li>
           <li>Add an action definition to the <a>Thing</a>.</li>
+          <li>Register an action triggered by external retrieve requests on the <a>Thing Description</a>.</li>
+          <li>Register an action triggered on a property change.</li>
+          <li>Attach semantic information to an action</li>
+          <li>Attach semantic information to a property</li>
+          <li>Attach semantic information to an event</li>
           <li>Handle an external request to retrieve the <a>Thing Description</a>.</li>
           <li>Handle an external request to add a listener to an event.</li>
           <li>Handle an external request to remove a listener to an event.</li>
@@ -358,15 +365,15 @@
     The WebIDL interfaces presented in this initial version of the document are based on the [[!WOT-PRACTICES]]. It is expected to be updated soon.
   </p>
   <pre class="idl">
-    namespace WoT {
+    interface WoT {
       Promise&lt;void&gt; discover(ThingFilter filter, ThingDiscoveryCallback onfound);
 
-      Promise&lt;ConsumedThing&gt; retrieve(USVString url or Dictionary thingDescription);
+      Promise&lt;ConsumedThing&gt; retrieve((USVString or Dictionary) thingReference);
 
       Promise&lt;ExposedThing&gt; createThing(ThingInit init);
     };
 
-    interface ThingInit {
+    dictionary ThingInit {
       DOMString name;
       USVString url;
       object description;
