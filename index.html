@@ -265,16 +265,18 @@
       <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
       <li>Programmatically create and expose a local <a>Thing</a>. This may include the following operations:
         <ul>
+          <li>Register the Thing.</li>
+          <li>Unregister the Thing.</li>
+          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
+          <li>Stop the exposed <a>Thing</a>.
           <li>Add a property definition to the <a>Thing</a>.</li>
           <li>Add an event definition to the <a>Thing</a>.</li>
           <li>Add an action definition to the <a>Thing</a>.</li>
-          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
           <li>Handle an external request to retrieve the <a>Thing Description</a>.</li>
           <li>Handle an external request to add a listener to an event.</li>
           <li>Handle an external request to remove a listener to an event.</li>
           <li>Handle an external request to run an action: take the parameters from the request, execute the defined action, and return the result.</li>
           <li>Emit an event, i.e. notify all listeners subscribed to that event.</li>
-          <li>Stop the exposed <a>Thing</a>.
         </ul>
       </li>
     </ul>
@@ -356,20 +358,18 @@
     The WebIDL interfaces presented in this initial version of the document are based on the [[!WOT-PRACTICES]]. It is expected to be updated soon.
   </p>
   <pre class="idl">
-    interface WoT {
+    namespace WoT {
       Promise&lt;void&gt; discover(ThingFilter filter, ThingDiscoveryCallback onfound);
 
-      Promise&lt;ConsumedThing&gt; consumeDescription(object thingDescription);
-      Promise&lt;ConsumedThing&gt; consumeDescriptionUri(DOMString thingDescriptionURI);
+      Promise&lt;ConsumedThing&gt; retrieve(USVString url or Dictionary thingDescription);
 
-      Promise&lt;ExposedThing&gt; createThing(DOMString name);
-      Promise&lt;ExposedThing&gt; createFromDescription(object thingDescription);
-      Promise&lt;ExposedThing&gt; createFromDescriptionUri(DOMString thingDescriptionURI);
+      Promise&lt;ExposedThing&gt; createThing(ThingInit init);
     };
 
-    interface Thing {
-      readonly attribute DOMString name;
-      readonly attribute object description;
+    interface ThingInit {
+      DOMString name;
+      USVString url;
+      object description;
     };
 
     callback ThingDiscoveryCallback = void (ConsumedThing thing);
@@ -378,10 +378,15 @@
 
   <section> <h2>The Thing Client API</h2>
   <pre class="idl">
-    interface ConsumedThing: Thing {
+    interface ConsumedThing {
+      readonly attribute DOMString name;
+      readonly attribute USVString url;
+      readonly attribute object description;
+
       Promise&lt;any&gt; invokeAction(DOMString actionName, any parameter);
       Promise&lt;any&gt; setProperty(DOMString propertyName, any newValue);
       Promise&lt;any&gt; getProperty(DOMString propertyName);
+
       ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeAllListeners(DOMString eventName);
@@ -393,13 +398,21 @@
 
   <section> <h2>The Thing Server API</h2>
   <pre class="idl">
-    interface ExposedThing: Thing {
+    interface ExposedThing {
       ExposedThing addProperty(ThingProperty property);
       ExposedThing addAction(ThingAction action);
       ExposedThing addEvent(ThingEvent event);
-      Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
+
       ExposedThing onInvokeAction(DOMString actionName, ThingActionHandler callback);
       ExposedThing onUpdateProperty(DOMString propertyName, ThingPropertyChangeListener callback);
+
+      Promise&lt;void&gt; register();
+      Promise&lt;void&gt; unregister();
+
+      Promise&lt;void&gt; start();
+      Promise&lt;void&gt; stop();
+
+      Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
     };
 
     ExposedThing implements ConsumedThing;
