@@ -259,8 +259,20 @@
           <li>Get a property value.</li>
           <li>Set a property value.</li>
           <li>Invoke an action.</li>
-          <li>Add a listener to an event.</li>
-          <li>Remove a listener from an event.</li>
+          <li>
+            Observe events.
+            <ul>
+              <li>Add a listener to an event.</li>
+              <li>Remove a listener from an event.</li>
+            </ul>
+            Default events are the following:
+            <ul>
+              <li>A property has changed.</li>
+              <li>An action has been invoked.</li>
+              <li>Other Things have added an event listener.</li>
+              <li><a>Thing Description</a> has changed, i.e. properties, events or actions have been defined, removed, or the definition has changed.</li>
+            </ul>
+          </li>
         </ul>
       </li>
       <li>Retrieve a thing that is exposed by the local runtime</li>
@@ -274,14 +286,12 @@
           <li>Add a property definition to the <a>Thing</a>.</li>
           <li>Add an event definition to the <a>Thing</a>.</li>
           <li>Add an action definition to the <a>Thing</a>.</li>
-          <li>Register an action triggered by external retrieve requests on the <a>Thing Description</a>.</li>
-          <li>Register an action triggered on a property change.</li>
           <li>Attach semantic information to an action</li>
           <li>Attach semantic information to a property</li>
           <li>Attach semantic information to an event</li>
-          <li>Handle an external request to retrieve the <a>Thing Description</a>.</li>
-          <li>Handle an external request to add a listener to an event.</li>
-          <li>Handle an external request to remove a listener to an event.</li>
+          <li>Register a handler for external requests to retrieve the <a>Thing Description</a>.</li>
+          <li>Register a handler for external requests to add a listener to an event.</li>
+          <li>Handle an external request to remove an event listener.</li>
           <li>Handle an external request to run an action: take the parameters from the request, execute the defined action, and return the result.</li>
           <li>Emit an event, i.e. notify all listeners subscribed to that event.</li>
         </ul>
