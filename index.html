@@ -251,36 +251,54 @@
   <p>
     The following scripting use cases are covered in this specification:
     <ul>
-      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s for client-side access</li>
-      <li>Discover <a>Thing</a>s by semantic filters for client-side access</li>
-      <li><a>Consume a TD</a> of a remote <a>Thing</a>.</li>
+      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s</li>
+      <li>Discover <a>Thing</a>s by semantic filters</li>
+      <li><a>Fetch and consume a TD</a> of a remote <a>Thing</a>.</li>
       <li>On a consumed <a>Thing</a>,
         <ul>
-          <li>Get a property value.</li>
-          <li>Set a property value.</li>
+          <li>Get the value of a property or set of properties.</li>
+          <li>Set the value of a property or a set of properties.</li>
           <li>Invoke an action.</li>
-          <li>Add a listener to an event.</li>
-          <li>Remove a listener from an event.</li>
+          <li>
+            Observe events.
+            <ul>
+              <li>Add a listener to an event.</li>
+              <li>Remove a listener from an event.</li>
+            </ul>
+            Default events are the following:
+            <ul>
+              <li>A property has changed.</li>
+              <li>An action has been invoked.</li>
+              <li>Other Things have added an event listener.</li>
+              <li><a>Thing Description</a> has changed, i.e. properties, events or actions have been defined, removed, or the definition has changed.</li>
+            </ul>
+          </li>
         </ul>
       </li>
       <li>Retrieve a thing that is exposed by the local runtime</li>
       <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
-      <li>Programmatically create and expose a local <a>Thing</a>. This may include the following operations:
+      <li>Programmatically create and expose a local <a>Thing</a>. This may include the following use cases:
         <ul>
+          <li>Register the Thing.</li>
+          <li>Unregister the Thing.</li>
+          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
+          <li>Stop the exposed <a>Thing</a>.
           <li>Add a property definition to the <a>Thing</a>.</li>
           <li>Add an event definition to the <a>Thing</a>.</li>
           <li>Add an action definition to the <a>Thing</a>.</li>
-          <li>Attach semantic information to an Action</li>
-          <li>Attach semantic information to a Property</li>
-          <li>Attach semantic information to an Event</li>
-          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
-          <li>Modify the handling of an external request to retrieve the <a>Thing Description</a>.</li>
-          <li>React on a property change</li>
-          <li>Handle an external request to add a listener to an event.</li>
-          <li>Handle an external request to remove a listener to an event.</li>
-          <li>Handle an external request to run an action: take the parameters from the request, execute the defined action, and return the result.</li>
+          <li>Attach semantic information to an action</li>
+          <li>Attach semantic information to a property</li>
+          <li>Attach semantic information to an event</li>
           <li>Emit an event, i.e. notify all listeners subscribed to that event.</li>
-          <li>Stop the exposed <a>Thing</a>.
+          <li>Register handlers for external requests:
+            <ul>
+              <li>to fetch the <a>Thing Description</a>;</li>
+              <li>to run an action: take the parameters from the request, execute the defined action, and return the result;</li>
+              <li>to add a listener to an event;</li>
+              <li>to remove an event listener.</li>
+            </ul>
+          </li>
+          <li>Register handler for semantic translation of property values.</li>
         </ul>
       </li>
     </ul>
@@ -365,17 +383,15 @@
     interface WoT {
       Promise&lt;void&gt; discover(ThingFilter filter, ThingDiscoveryCallback onfound);
 
-      Promise&lt;ConsumedThing&gt; consumeDescription(object thingDescription);
-      Promise&lt;ConsumedThing&gt; consumeDescriptionUri(DOMString thingDescriptionURI);
+      Promise&lt;ConsumedThing&gt; retrieve((USVString or Dictionary) thingReference);
 
-      Promise&lt;ExposedThing&gt; createThing(DOMString name);
-      Promise&lt;ExposedThing&gt; createFromDescription(object thingDescription);
-      Promise&lt;ExposedThing&gt; createFromDescriptionUri(DOMString thingDescriptionURI);
+      Promise&lt;ExposedThing&gt; createThing(ThingInit init);
     };
 
-    interface Thing {
-      readonly attribute DOMString name;
-      readonly attribute object description;
+    dictionary ThingInit {
+      DOMString name;
+      USVString url;
+      object description;
     };
 
     callback ThingDiscoveryCallback = void (ConsumedThing thing);
@@ -384,10 +400,15 @@
 
   <section> <h2>The Thing Client API</h2>
   <pre class="idl">
-    interface ConsumedThing: Thing {
-      Promise&lt;any&gt; invokeAction(DOMString actionName, any parameter);
-      Promise&lt;any&gt; setProperty(DOMString propertyName, any newValue);
-      Promise&lt;any&gt; getProperty(DOMString propertyName);
+    interface ConsumedThing {
+      readonly attribute DOMString name;
+      readonly attribute USVString url;
+      readonly attribute object description;
+
+      Promise&lt;void&gt; invokeAction(ThingAction action);
+      Promise&lt;void&gt; setProperty(ThingProperty property);
+      Promise&lt;void&gt; getProperty(ThingProperty property);
+
       ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeAllListeners(DOMString eventName);
@@ -399,16 +420,37 @@
 
   <section> <h2>The Thing Server API</h2>
   <pre class="idl">
-    interface ExposedThing: Thing {
+    interface ExposedThing {
       ExposedThing addProperty(ThingProperty property);
       ExposedThing addAction(ThingAction action);
       ExposedThing addEvent(ThingEvent event);
+
+      Promise&lt;void&gt; register();
+      Promise&lt;void&gt; unregister();
+
+      Promise&lt;void&gt; start();
+      Promise&lt;void&gt; stop();
+
       Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
-      ExposedThing onInvokeAction(DOMString actionName, ThingActionHandler callback);
-      ExposedThing onUpdateProperty(DOMString propertyName, ThingPropertyChangeListener callback);
+
+      // define request handlers
+      ExposedThing onPropertyRetrieve(PropertyRetrieveHandler handler);
+      ExposedThing onPropertyUpdate(PropertyHandler handler);
+
+      ExposedThing onActionInvocation(ActionHandler handler);
+
+      ExposedThing onObserve(DOMString event, ObserveHandler handler);
+      ExposedThing onUnobserve(DOMString event, UnobserveHandler handler);
+
+      any onSemanticTranslate(Property property, SemanticType type);
     };
 
     ExposedThing implements ConsumedThing;
+
+    callback PropertyRetrieveHandler = void (ThingProperty property, USVString url);
+    callback PropertyUpdateHandler = void (ThingProperty property, USVString url);
+    callback ActionHandler = void (ThingAction action, USVString url);
+    callback ObserveHandler = void (DOMString eventName, USVString url);
 
     dictionary SemanticType {
       DOMString name;
@@ -420,6 +462,9 @@
       object inputType;
       object outputType;
       SemanticType[] semanticTypes;
+      Function action;
+      sequence&lt;any&gt; parameters;
+      any returnValue;
     };
 
     dictionary ThingProperty {
@@ -434,10 +479,6 @@
       object payloadType;
       SemanticType[] semanticTypes;
     };
-
-    callback ThingActionHandler = void (ThingAction action);
-
-    callback ThingPropertyChangeListener = void(ThingProperty property);
   </pre>
   </section>
 
