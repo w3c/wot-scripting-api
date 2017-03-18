@@ -14,6 +14,7 @@ ExposedThing controls building block of WoT and manages life cycle of WoT Server
 
 Given a script that has ExposedThing command tied with device access function, ExposedThing generate a TD and expose the server API.
 
+![Fig.1](/images/Fig1.png)
 <img src=/images/Fig1.png width=600 alt="Fig.1" >
 
 The followings shows the sequence of this figure.  
