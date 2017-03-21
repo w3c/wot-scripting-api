@@ -14,7 +14,8 @@ ExposedThing controls building block of WoT and manages life cycle of WoT Server
 
 Given a script that has ExposedThing command tied with device access function, ExposedThing generate a TD and expose the server API.
 
-<img src=/images/Fig1.png width=600 alt="Fig.1" />
+<img src=/images/Fig1.png width=600 alt="Fig.1" >
+
 
 The followings shows the sequence of this figure.  
 (1) In the development phase of WoT Server, Write a script uses ExposedThing with callback function that can accessing a thing.<br>
@@ -49,6 +50,12 @@ A script that has delete thing can close WoTAPI and the callback function. (TBD)
 A script that comes with SemanticType generates a TD with semantic expression. It can be searched by accessing TD repository.
 
 <img src=/images/Fig5.png width=600 alt="Fig.5" >
+
+#### (h) Runtime provisioning: Set permission to WoTAPI
+
+Generate a security token using e.g. IETF ACE and set permission to WoTAPI. Check the security token when WoTAPI is called.
+
+<img src=/images/Fig17.png width=600 alt="Fig.17" >
 
 ### 1-1-1\. Using Expose Thing
 
