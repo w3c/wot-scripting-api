@@ -513,43 +513,42 @@ pre.editor-colors .fold-marker:after {
 </style>
   </head>
   <body class='markdown-preview' data-use-github-style><h1 id="rationale-for-scripting-api-design">Rationale for Scripting API design</h1>
-<p>This document attempts to explain how Scripting API works and why various decision were made the way they were.</p>
+<p>This document attempts to explain how <a href="https://w3c.github.io/wot-scripting-api/index.html">W3C WoT(Web of Things) Scripting API</a> works and why various decision were made the way they were.</p>
 <h2 id="1-how-scripting-api-works-">1. How Scripting API works?</h2>
 <p>Scripting API is a building block to provide means for discovery, provisioning and control of thing that realizing <a href="https://w3c.github.io/wot/architecture/wot-architecture.html">WoT Architecture</a>. Scripting API consists of mainly two types of functions i.e. Expose Thing and Consumed Thing that are incorporated in WoT Server, WoT Client, or WoT Servient. The following sections attempt to explain how those work.</p>
 <h3 id="1-1-exposedthing-in-wot-server">1-1. ExposedThing in WoT Server</h3>
 <p>ExposedThing controls building block of WoT and manages life cycle of WoT Server API.</p>
-<h4 id="-a-provisioning-development-and-setup">(a) Provisioning: Development and Setup</h4>
-<p>Given a script that has ExposedThing command tied with device access function, ExposedThing generate a TD and expose the server API.</p>
+<h4 id="-a-provisioning-development-and-setup">(A) Provisioning: Development and Setup</h4>
+<p>Given a script that has ExposedThing command tied with device access function, ExposedThing generate a <a href="https://w3c.github.io/wot-thing-description/">WoT Thing Description
+(TD)</a> and expose the server API.</p>
 <p><img src="images/Fig1.png" width="600" alt="Fig.1"></p>
 <p>The followings shows the sequence of this figure.<br>(1) In the development phase of WoT Server, Write a script uses ExposedThing with callback function that can accessing a thing.<br>
 (2) In the setup phase, run the script and make each object.<br>
 (3) When exposing WoTAPI, as an option, it would generate the TD and register to TD repository.<br>
 (4) Invoking expose command, expose WoTAPI based on the object made by parsing the script.</p>
-<h4 id="-b-runtime-control-of-thing">(b) Runtime: Control of thing</h4>
+<h4 id="-b-runtime-control-of-thing">(B) Runtime: Control of thing</h4>
 <p>At the runtime, when a WoTAPI is called,the callback is executed to control the Thing.</p>
 <p><img src="images/Fig2.png" width="600" alt="Fig.2"></p>
-<h4 id="-c-runtime-provisioning-add-thing">(c) Runtime provisioning: add thing</h4>
+<h4 id="-c-runtime-provisioning-add-thing">(C) Runtime provisioning: add thing</h4>
 <p>Given another script that has ExposedThing command tied with device access function, ExposedThing generate a TD and expose the server API.</p>
 <p><img src="images/Fig3.png" width="600" alt="Fig.3"></p>
-<h4 id="-d-runtime-unregister-thing">(d) Runtime: unregister thing</h4>
-<p>A script that has an Unregister thing can unregister a TD. (TBD)</p>
-<h4 id="-e-runtime-provisioning-delete-thing">(e) Runtime provisioning: delete thing</h4>
-<p>A script that has delete thing can close WoTAPI and the callback function. (TBD)</p>
+<h4 id="-d-runtime-unregister-thing">(D) Runtime: unregister thing</h4>
+<p>A script that has an unregister thing can unregister the exposed thing, the callback function, and the TD.</p>
 <p><img src="images/Fig4.png" width="600" alt="Fig.4"></p>
-<h4 id="-f-expose-thing-with-semantics">(f) Expose thing with semantics</h4>
+<h4 id="-e-expose-thing-with-semantics">(E) Expose thing with semantics</h4>
 <p>A script that comes with SemanticType generates a TD with semantic expression. It can be searched by accessing TD repository.</p>
 <p><img src="images/Fig5.png" width="600" alt="Fig.5"></p>
-<h4 id="-h-runtime-provisioning-set-permission-to-wotapi">(h) Runtime provisioning: Set permission to WoTAPI</h4>
+<h4 id="-f-runtime-provisioning-set-permission-to-wotapi">(F) Runtime provisioning: Set permission to WoTAPI</h4>
 <p>Generate a security token using e.g. IETF ACE and set permission to WoTAPI. Check the security token when WoTAPI is called.</p>
 <p><img src="images/Fig17.png" width="600" alt="Fig.17"></p>
 <h3 id="1-1-1-using-expose-thing">1-1-1. Using Expose Thing</h3>
 <p>ExposedThing can be used in any layers i.e. Client, Cloud/Server, Gateway/Edge, and Device.</p>
 <p><img src="images/Fig6.png" width="600" alt="Fig.6"></p>
 <p>ExposedThing in various layers and combinations.</p>
-<p><img src="images/Fig7.png" width="600" alt="Fig.7"></p>
+<p><img src="images/Fig7.png" width="700" alt="Fig.7"></p>
 <h3 id="1-2-consumedthing-in-wot-client">1-2. ConsumedThing in WoT Client</h3>
 <p>ConsumedThing controls building blocks of WoT and manages life cycle of WoT Client API.</p>
-<h4 id="-a-runtime-provisioning">(a) Runtime provisioning</h4>
+<h4 id="-a-runtime-provisioning">(A) Runtime provisioning</h4>
 <p>Search a device initiates a discovery and set up a ConsumedThing API to use.</p>
 <p><img src="images/Fig8.png" width="600" alt="Fig.8"></p>
 <p>The followings shows the sequence of this figure.<br>(a) Search a device from an application using discovery API.<br>
@@ -558,20 +557,20 @@ pre.editor-colors .fold-marker:after {
 (iii) ConsumedThing parses the TD.<br>
 (iv) ConsumedThing exposes client API.<br>
 (a&#39;) Application receive the search result.</p>
-<h4 id="-b-runtime-control-of-thing-with-abstracted-manner">(b) Runtime: Control of thing with abstracted manner</h4>
+<h4 id="-b-runtime-control-of-thing-with-abstracted-manner">(B) Runtime: Control of thing with abstracted manner</h4>
 <p>Application access the device with method call. ConsumedThing interprit the access as WoTAPI call.</p>
 <p><img src="images/Fig9.png" width="600" alt="Fig.9"></p>
-<h4 id="-c-runtime-provisioning-search-and-use-another-thing">(c) Runtime provisioning: search and use another thing</h4>
+<h4 id="-c-runtime-provisioning-search-and-use-another-thing">(C) Runtime provisioning: search and use another thing</h4>
 <p>Search another device initiates a discovery and set up the Thing API to use. The sequence is the same with (a).</p>
 <p><img src="images/Fig10.png" width="600" alt="Fig.10"></p>
 <h3 id="1-2-1-using-consumed-thing">1-2-1. Using Consumed Thing</h3>
 <p>ConsumedThing can be used in any layers.</p>
-<p><img src="images/Fig11.png" width="600" alt="Fig.11"></p>
+<p><img src="images/Fig11.png" width="700" alt="Fig.11"></p>
 <p>ConsumedThing in various layers and combinations.</p>
 <p><img src="images/Fig12.png" width="600" alt="Fig.12"></p>
 <h3 id="1-2-2-example-wot-server-and-wot-client">1-2-2. Example: WoT Server and WoT Client</h3>
 <p>A use case that uses a WoT Server and a WoT Client is shown here i.e. An electronic appliance with WoT server is controlled by a remote controller with WoT client.</p>
-<p><img src="images/Fig13.png" width="800" alt="Fig.13"></p>
+<p><img src="images/Fig13.png" width="700" alt="Fig.13"></p>
 <p>The followings shows the sequence of this Figure.<br>(1) Script has ExposedThing call with callback function that has access method to a LED lamp.<br>
 (2) Run an script that has scripting API call.<br>
 (3) ExposeThing generate a TD.<br>
@@ -585,9 +584,9 @@ pre.editor-colors .fold-marker:after {
 (a&#39;) Application receive result of the discovery.<br>
 (b) Application for example issue a command for turn on the LED lamp. ConsumedThing interprit the command to WoTAPI command then access WoT server that manage the LED lamp. ExposedThing in the WoT server call callback function to turn on the LED lamp.</p>
 <h3 id="1-3-consumedthing-and-exposedthing-in-wot-servient">1-3. ConsumedThing and ExposedThing in WoT Servient</h3>
-<p>WoT servient consists of three part i.e. Server, Client, and Legacy communication. Application layer can have multiple scripts.</p>
+<p>WoT servient consists of three part i.e. Server, Client, and Legacy communication. It deals ConsumedThing and ExposedThing methods described above. Application layer may have multiple scripts.</p>
 <h3 id="1-3-1-provisioning-control-of-thing">1-3-1. Provisioning / Control of thing</h3>
-<p>The followings shows the sequence of how WoT servient works.</p>
+<p>The followings shows the sequence of how WoT servient works for the provisioning and control of thing.</p>
 <p>(1) A script that has ExposedThing call with callback to control a LED lamp.<br>
 (2) The script generates ExposedThing object.<br>
 (3) ExposedThing generates a TD.<br>
@@ -598,8 +597,19 @@ pre.editor-colors .fold-marker:after {
 (iii) ConsumedThing parses the TD.<br>
 (iv) ConsumedThing expose Client API.<br>
 (b) WoTAPI of Server receives a command for turn on. Then callback function registerd to ExposedThing is called. If the LED lamp is connected to Client, Protocol Binding interprit the command in the callback to appropriate WoTAPI command. If the LED lamp is connected to Legacy Communication, the callback function issues the legacy communication command to control the LED lamp.</p>
-<p><img src="images/Fig14.png" width="800" alt="Fig.14"></p>
-<h3 id="1-3-2-example-voting">1-3-2. Example: Voting</h3>
+<p><img src="images/Fig14.png" width="700" alt="Fig.14"></p>
+<h3 id="1-3-2-event-handling">1-3-2. Event handling</h3>
+<p>The followings shows the sequence of how WoT servient works for the events handling.
+(c) A WoT Servient that is connected to another WoT Servient , WoT Server, or a Legacy device receive an event from them.
+(d) A callback function described in script handles the event. For example:</p>
+<ul>
+<li>(e) Access to underneath device: Issue action or property call described in TD#1 to the underneath device through ClientAPI.</li>
+<li>(f) Proxy event: Transfer and issue same event to ExposedThing/WoTAPI. TD#1 and TD#2 have same definitions about the event.</li>
+<li>(g) Generate another event: Transform the event and issue as another event through ExposedThing/WoTAPI. TD#1 has definition of the event defined by the device and TD#2 has definition of new event that is transformed from the original event.</li>
+<li>(h) Make linked data: Save the event/events and allow to access by a property call through WoTAPI. TD#2 has a property definition that returns the event/events data based on an URI call.</li>
+</ul>
+<p><img src="images/Fig18.png" width="700" alt="Fig.18"></p>
+<h3 id="1-3-3-example-voting">1-3-3. Example: Voting</h3>
 <p>A use case that uses WoT Servients and a WoT Client is shown here. WoT servient #3 maybe on the cloud provide devices shadow and consolidate devices and expose a service. A script for Thing to Thing (T2T) service provides two functions:  </p>
 <ul>
 <li>Using heat sensor, automatically turn on air conditioner if getting cold.</li>
@@ -612,7 +622,7 @@ pre.editor-colors .fold-marker:after {
 <li>Thing to thing service to WoT Servient #3</li>
 <li>Voting script to WoT Client</li>
 </ul>
-<p><img src="images/Fig15.png" width="800" alt="Fig.15"></p>
+<p><img src="images/Fig15.png" width="700" alt="Fig.15"></p>
 <p>The followings shows the sequence of the fugure.</p>
 <p>(1)</p>
 <ul>
@@ -671,7 +681,7 @@ Control route 1: T2T control</p>
 WoT Server are used in devices.
 WoT Servient are used in gateways / edges and on the Cloud service.
 WoT Client are used in clients.</p>
-<p><img src="images/Fig16.png" width="800" alt="Fig.16"></p>
+<p><img src="images/Fig16.png" width="700" alt="Fig.16"></p>
 <h2 id="2-rationale-of-the-design">2. Rationale of the design</h2>
 <h3 id="2-1-why-constructor-is-used-instead-of-factory-">2-1. Why Constructor is used instead of Factory?</h3>
 <p>It would be simpler to expose the WoT object with a constructor. Also, for ExposedThing and ConsumedThing we could provide constructors instead of factories. That would be more aligned with ECMAScript best practices (e.g. an ExposedThing object could be created for testing purposes, shaped locally, then exposed).</p></body>
