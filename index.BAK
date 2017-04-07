@@ -50,9 +50,7 @@
               }, {
                   value: "Rationale",
                   href: "https://w3c.github.io/wot-scripting-api/rationale"
-              }, {
-                  value: "Primer",
-                  href: "https://w3c.github.io/wot-scripting-api/primer"              }
+              }
             ]
           },
           {
