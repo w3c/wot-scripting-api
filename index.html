@@ -147,7 +147,7 @@
     <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn> means parsing the <a>Thing Description</a> and building a resource model with the use of <a>Protocol Bindings</a> that can be used in a script for accessing and controlling the Thing. A <a>Thing</a> when starts up, consumes its own <a>TD</a>, then it exposes its <a>WoT interface</a> as a server. Note that a script on a <a>Thing</a> may consume other <a>TD</a>s and expose a combined interface of the consumed <a>Things</a>.
   </p>
   <p>
-    A <dfn>WoT Runtime</dfn> or <dfn>WR</dfn> is defined as a software stack that manages the lifecycle of WoT application scripts, implements a script interpreter, an event loop, a security enforcement point for access management and uses an operating system API that provides access to local and remote resources. A <a>WR</a> should be isolated from other execution environments on memory address space, storage address space (file system), network namespace, etc. For instance, a <a>WR</a> may be implemented in a Node.js environment, or in an embedded runtime based on a small JavaScript engine, or in a browser.
+    A <dfn>WoT Runtime</dfn> or <dfn>WR</dfn> is defined as a software stack that manages the lifecycle of WoT application scripts, implements a script interpreter, an event loop, a security enforcement point for access management and uses an operating system API that provides access to local and remote resources. A <a>WR</a> should be isolated from other execution environments on memory address space, storage address space (file system), network namespace, etc.
   </p>
   <p class="note">
     In this version of the specification, a <a>WR</a> MAY run either an idle event loop, or a script that has been deployed to it by a method that is out of scope of this document. However, new <a>Things</a> can be added<a> and <a>Things</a> running in the <a>WR</a> can be updated by using the methods of this API from a script run in another <a>WR</a>.
@@ -333,7 +333,7 @@
     interface WoT {
       Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
       Promise&lt;ConsumedThing&gt; retrieve(USVString url);
-      Promise&lt;ExposedThing&gt; createThing(ThingInit init);
+      Promise&lt;ExposedThing&gt; create(ThingInit init, optional USVString target);
     };
 
     dictionary ThingInit {
@@ -342,10 +342,11 @@
       Dictionary description;
     };
 
-    dictionary ThingFilter: ThingInit {
-      boolean local;
-    };
+    enum DiscoveryType { "any", "local", "directory", "broadcast" };
 
+    dictionary ThingFilter: ThingInit {
+      DiscoveryType type = "any";
+    };
   </pre>
 
   <p>
@@ -381,20 +382,36 @@
       ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeAllListeners(DOMString eventName);
+
+      Promise&lt;ExposedThing&gt; acquire();
     };
 
     callback ThingEventListener = void (ConsumedThing thing);
+
+    enum ConsumedThingEvents {
+        "propertychanged",
+        "propertyremoved",
+        "propertyadded",
+        "actionchanged"
+    };
   </pre>
   </section>
 
   <section> <h2>The Thing Server API</h2>
   <pre class="idl">
     interface ExposedThing {
-      ExposedThing addProperty(ThingProperty property);
-      ExposedThing addAction(ThingAction action);
-      ExposedThing addEvent(ThingEvent event);
 
-      Promise&lt;void&gt; register();
+      // define TD modifiers
+      ExposedThing addProperty(ThingProperty property);
+      ExposedThing removeProperty(ThingProperty property);
+
+      ExposedThing addAction(ThingAction action);
+      ExposedThing removeAction(ThingAction action);
+
+      ExposedThing addEvent(ThingEvent event);
+      ExposedThing removeEvent(ThingEvent event);
+
+      Promise&lt;void&gt; register(optional USVString directory);
       Promise&lt;void&gt; unregister();
 
       Promise&lt;void&gt; start();
@@ -402,24 +419,25 @@
 
       Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
 
-      // define request handlers
-      ExposedThing onPropertyRetrieve(PropertyRetrieveHandler handler);
-      ExposedThing onPropertyUpdate(PropertyHandler handler);
+      // define request handlers (one per request type, so no events here)
+      ExposedThing onRetrieveProperty(PropertyHandler handler);
+      ExposedThing onAddProperty(PropertyHandler handler);
+      ExposedThing onRemoveProperty(PropertyHandler handler);
 
-      ExposedThing onActionInvocation(ActionHandler handler);
+      ExposedThing onInvokeAction(ActionHandler handler);
 
-      ExposedThing onObserve(DOMString event, ObserveHandler handler);
-      ExposedThing onUnobserve(DOMString event, UnobserveHandler handler);
+      ExposedThing onAddEventHandler(DOMString event, ObserveHandler handler);
+      ExposedThing onRemoveEventHandler(DOMString event, ObserveHandler handler);
 
-      any onSemanticTranslate(Property property, SemanticType type);
+      ExposedThing onAddSemanticTranslator(SemanticTranslator handler);
     };
 
     ExposedThing implements ConsumedThing;
 
-    callback PropertyRetrieveHandler = void (ThingProperty property, USVString url);
-    callback PropertyUpdateHandler = void (ThingProperty property, USVString url);
-    callback ActionHandler = void (ThingAction action, USVString url);
-    callback ObserveHandler = void (DOMString eventName, USVString url);
+    callback PropertyHandler = void (ThingProperty property, USVString from);
+    callback ActionHandler = void (ThingAction action, USVString from);
+    callback EventHandler = void (DOMString eventName, USVString from);
+    callback SemanticTranslator = any (Property property, SemanticType type);
 
     dictionary SemanticType {
       DOMString name;
