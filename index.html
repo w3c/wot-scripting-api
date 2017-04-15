@@ -147,11 +147,10 @@
     <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn> means parsing the <a>Thing Description</a> and building a resource model with the use of <a>Protocol Bindings</a> that can be used in a script for accessing and controlling the Thing. A <a>Thing</a> when starts up, consumes its own <a>TD</a>, then it exposes its <a>WoT interface</a> as a server. Note that a script on a <a>Thing</a> may consume other <a>TD</a>s and expose a combined interface of the consumed <a>Things</a>.
   </p>
   <p>
-    A <dfn>WoT Runtime</dfn> or <dfn>WR</dfn> is defined as a software stack that manages the lifecycle of WoT application scripts, implements a script interpreter, an event loop, a security enforcement point for access management and uses an operating system API that provides access to local and remote resources. A <a>WR</a> should be isolated from other execution environments on memory address space, storage address space (file system), network namespace, etc.
+    A <dfn>WoT Runtime</dfn> or <dfn>WR</dfn> is defined as a script execution environment that manages the lifecycle of WoT application scripts, implements a script interpreter, an event loop, a security enforcement point for access management and uses an operating system API that provides access to local and remote resources. A <a>WR</a> should be isolated from other execution environments on memory address space, storage address space (file system), network namespace, etc.
   </p>
   <p class="note">
-    In this version of the specification, a <a>WR</a> MAY run either an idle event loop, or a script that has been deployed to it by a method that is out of scope of this document. However, new <a>Things</a> can be added<a> and <a>Things</a> running in the <a>WR</a> can be updated by using the methods of this API from a script run in another <a>WR</a>.
-  </p>
+    In this version of the specification, a <a>WR</a> is assumed to run a single script that uses this API to define one or more <a>Things</a> that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
   <p>
      A <a>Thing</a> is represented either as a <a>ConsumedThing</a> (for <a>Things</a> obtained by discovery or retrieve operations) or <a>ExposedThing</a> (for <a>Thing</a>s created with this API inside the <a>WR</a>). All <a>ExposedThing</a>s contained in a <a>WR</a> are serving external requests through the same event loop, and are said to be <dfn>local Things</dfn> to each other. All other <a>Thing</a>s that run in a different <a>WR</a>, even if on the same physical hardware, are said to be <dfn>remote Things</dfn> to each other. Note that there may also be local  <a>ConsumedThing</a> objects as well.
   </p>
@@ -162,7 +161,7 @@
   </p>
   <p>
     The following terms are defined in [[!HTML5]] and are used in the context of browser implementations:
-    <a href="https://html.spec.whatwg.org/#browsing-context">
+    <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
     <dfn>browsing context</dfn></a>,
 
     <a href="https://html.spec.whatwg.org/#top-level-browsing-context">
@@ -173,9 +172,6 @@
 
     <a href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
     <dfn>incumbent settings object</dfn></a>,
-
-    <a href="https://html.spec.whatwg.org/#script-execution-environment">
-    <dfn>script execution environment</dfn></a>,
 
     <a href="https://html.spec.whatwg.org/#document">
     <dfn>Document</dfn></a>,
@@ -215,7 +211,7 @@
     <a>Document</a> objects are presented to the user. A given
     <a>browsing context</a> has a single <code><a>WindowProxy</a></code> object,
     but it can have many <code>Document</code> objects, with their associated
-    <code><a>Window</a></code> objects. The <a>script execution environment</a>
+    <code><a>Window</a></code> objects. The <a>script execution context</a>
     associated with the <i>browsing context</i> identifies the entity which
     invokes this API, which can be a <i>web app</i>, a <i>web page</i>, or an
     <a>iframe</a>.
@@ -226,6 +222,8 @@
     <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
   </p>
   <p>
+    <a href="https://tc39.github.io/ecma262/#sec-execution-contexts">
+    <dfn>script execution context</dfn></a>,
     <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">
     <dfn>Promise</dfn></a>,
     <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json-object">
@@ -286,10 +284,7 @@
       <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
       <li>Programmatically create and expose a local <a>Thing</a>. This may include the following use cases:
         <ul>
-          <li>Register the Thing.</li>
-          <li>Unregister the Thing.</li>
-          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
-          <li>Stop the exposed <a>Thing</a>.
+          <li>Create a local <a>Thing</a>.</li>
           <li>Add a property definition to the <a>Thing</a>.</li>
           <li>Add an event definition to the <a>Thing</a>.</li>
           <li>Add an action definition to the <a>Thing</a>.</li>
@@ -306,6 +301,10 @@
             </ul>
           </li>
           <li>Register handler for semantic translation of property values.</li>
+          <li>Register the Thing.</li>
+          <li>Unregister the Thing.</li>
+          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
+          <li>Stop the exposed <a>Thing</a>.
         </ul>
       </li>
     </ul>
@@ -333,7 +332,7 @@
     interface WoT {
       Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
       Promise&lt;ConsumedThing&gt; retrieve(USVString url);
-      Promise&lt;ExposedThing&gt; create(ThingInit init, optional USVString target);
+      Promise&lt;ExposedThing&gt; createLocalThing(ThingInit init);
     };
 
     dictionary ThingInit {
@@ -382,8 +381,6 @@
       ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
       ConsumedThing removeAllListeners(DOMString eventName);
-
-      Promise&lt;ExposedThing&gt; acquire();
     };
 
     callback ThingEventListener = void (ConsumedThing thing);
