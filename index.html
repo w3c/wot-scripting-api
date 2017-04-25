@@ -324,7 +324,7 @@
     The <dfn>WoT object</dfn> exposes only functions and has no internal state.
   </p>
   <p class="note">
-     Browser implementations SHOULD use a namespace object such as `wot`, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) mechanism.
+     Browser implementations SHOULD use a namespace object such as `wot`, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
   </p>
   <pre class="idl">
     // [SecureContext]
@@ -341,7 +341,8 @@
       Dictionary description;
     };
 
-    enum DiscoveryType { "any", "local", "directory", "broadcast" };
+    // TBD: if extensible by applications
+    enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast" };
 
     dictionary ThingFilter: ThingInit {
       DiscoveryType type = "any";
@@ -367,46 +368,21 @@
   </p>
   </section>
 
-  <section> <h2>The Thing Client API</h2>
-  <pre class="idl">
-    interface ConsumedThing {
-      readonly attribute DOMString name;
-      readonly attribute USVString url;
-      readonly attribute Dictionary description;
-
-      Promise&lt;void&gt; invokeAction(ThingAction action);
-      Promise&lt;void&gt; setProperty(ThingProperty property);
-      Promise&lt;void&gt; getProperty(ThingProperty property);
-
-      ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
-      ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
-      ConsumedThing removeAllListeners(DOMString eventName);
-    };
-
-    callback ThingEventListener = void (ConsumedThing thing);
-
-    enum ConsumedThingEvents {
-        "propertychanged",
-        "propertyremoved",
-        "propertyadded",
-        "actionchanged"
-    };
-  </pre>
-  </section>
-
   <section> <h2>The Thing Server API</h2>
   <pre class="idl">
     interface ExposedThing {
 
       // define TD modifiers
-      ExposedThing addProperty(ThingProperty property);
-      ExposedThing removeProperty(ThingProperty property);
+      ExposedThing addProperty(ThingPropertyInit property);
+      ExposedThing removeProperty(DOMString name);
 
-      ExposedThing addAction(ThingAction action);
-      ExposedThing removeAction(ThingAction action);
+      ExposedThing addAction(ThingActionInit action);
+      ExposedThing removeAction(DOMString name);
 
-      ExposedThing addEvent(ThingEvent event);
-      ExposedThing removeEvent(ThingEvent event);
+      ExposedThing addEvent(ThingEventInit event);
+      ExposedThing removeEvent(DOMString name);
+
+      ExposedThing addSemanticTranslator(SemanticTranslator handler);
 
       Promise&lt;void&gt; register(optional USVString directory);
       Promise&lt;void&gt; unregister();
@@ -417,52 +393,111 @@
       Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
 
       // define request handlers (one per request type, so no events here)
-      ExposedThing onRetrieveProperty(PropertyHandler handler);
-      ExposedThing onAddProperty(PropertyHandler handler);
-      ExposedThing onRemoveProperty(PropertyHandler handler);
+      // TBD: ExposedThing onAddProperty(PropertyRequestHandler handler);
+      // TBD: ExposedThing onRemoveProperty(PropertyRequestHandler handler);
+      ExposedThing onRetrieveProperty(PropertyRequestHandler handler);
+      ExposedThing onUpdateProperty(PropertyRequestHandler handler);
 
-      ExposedThing onInvokeAction(ActionHandler handler);
+      ExposedThing onInvokeAction(ActionRequestHandler handler);
 
-      ExposedThing onAddEventHandler(DOMString event, ObserveHandler handler);
-      ExposedThing onRemoveEventHandler(DOMString event, ObserveHandler handler);
-
-      ExposedThing onAddSemanticTranslator(SemanticTranslator handler);
+      ExposedThing onAddEventListener(DOMString event, USVString from);
+      ExposedThing onRemoveEventListener(DOMString event, USVString from);
     };
 
     ExposedThing implements ConsumedThing;
 
-    callback PropertyHandler = void (ThingProperty property, USVString from);
-    callback ActionHandler = void (ThingAction action, USVString from);
-    callback EventHandler = void (DOMString eventName, USVString from);
-    callback SemanticTranslator = any (Property property, SemanticType type);
+    callback PropertyRequestHandler = void (ThingPropertyInit property, USVString from);
+    callback ActionRequestHandler = void (ThingActionInit action, USVString from);
+    callback EventRequestHandler = void (ThingEventInit event, USVString from);
+    callback SemanticTranslator = any (DOMString propertyName, SemanticType type);
 
     dictionary SemanticType {
       DOMString name;
       DOMString context;
     };
 
-    dictionary ThingAction {
+    dictionary ThingPropertyInit {
       DOMString name;
-      object inputType;
-      object outputType;
+      boolean configurable = true;
+      boolean enumerable = true;
+      boolean writable = true;
       SemanticType[] semanticTypes;
-      Function action;
-      sequence&lt;any&gt; parameters;
-      any returnValue;
-    };
-
-    dictionary ThingProperty {
-      DOMString name;
-      object contentType;
-      SemanticType[] semanticTypes;
+      Dictionary typeDescription;
       any value;
     };
 
-    dictionary ThingEvent {
+    dictionary ThingEventInit {
       DOMString name;
-      object payloadType;
       SemanticType[] semanticTypes;
+      Dictionary typeDescription;
+      // TBD: value for event data not needed here
     };
+
+    dictionary ThingActionInit {
+      DOMString name;
+      Dictionary returnTypeDescription;  // TBD
+      sequence&lt;Dictionary&gt; inputTypeDescriptions;  // TBD
+      SemanticType[] semanticTypes;
+      Function action;
+      // TBD: actual parameters and return value not needed here
+    };
+  </pre>
+  </section>
+
+  <section> <h2>The Thing Client API</h2>
+  <pre class="idl">
+    interface ConsumedThing {
+      readonly attribute DOMString name;
+      readonly attribute USVString url;
+      readonly attribute Dictionary description;
+
+      Promise&lt;any&gt; invokeAction(DOMString name, sequence&lt;any&gt; parameters);
+      Promise&lt;void&gt; setProperty(DOMString name, any value);
+      Promise&lt;any&gt; getProperty(DOMString name);
+
+      ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
+      ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
+      ConsumedThing removeAllListeners(DOMString eventName);
+    };
+
+    callback ThingEventListener = void (Event event);
+
+    [Constructor(PropertyChangeEventInit init)]
+    interface PropertyChangeEvent: Event {
+        // TBD if Node or DOM style
+    };
+
+    [Constructor(ActionInvocationEventInit init)]
+    interface ActionInvocationEvent: Event {
+        // TBD if Node or DOM style
+    };
+
+    [Constructor(ThingDescriptionChangeEventInit init)]
+    interface ThingDescriptionChangeEvent: Event {
+        // TBD if Node or DOM style
+    };
+
+    dictionary PropertyChangeEventInit {
+        DOMString name;
+        any value;
+        any oldValue;
+    };
+
+    dictionary ActionInvocationEventInit {
+        DOMString actionName;
+        any returnValue;
+    };
+
+    dictionary ThingDescriptionChangeEventInit {
+        TDChangeType type;
+        TDChangeMethod method;
+        DOMString name;
+        (ThingPropertyInit or ThingActionInit or ThingEventInit) description;
+    };
+
+    enum TDChangeMethod { "add", "remove", "change" };
+    enum TDChangeType { "property", "action", "event" };
+
   </pre>
   </section>
 

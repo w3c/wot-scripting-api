@@ -13,7 +13,8 @@ As discussed in [issue 3](https://github.com/w3c/wot-scripting-api/issues/3), an
 
 
 Resolutions:
-- The WoT API uses a namespace object `wot` in the browser, or provided by `require()` in standalone runtimes.
+- The browser implementations of the WoT Scripting API uses a namespace object `wot` in the browser.
+- Non-browser implementations that use various runtimes may use either a namespace object `wot`, or an API object provided by the `require()` or `import()` or similar mechanisms.
 - The `ConsumedThing` and `ExposedThing` objects are created by factory methods.
 
 ## Discovery API
