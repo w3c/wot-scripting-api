@@ -395,21 +395,40 @@
       // define request handlers (one per request type, so no events here)
       // TBD: ExposedThing onAddProperty(PropertyRequestHandler handler);
       // TBD: ExposedThing onRemoveProperty(PropertyRequestHandler handler);
+
       ExposedThing onRetrieveProperty(PropertyRequestHandler handler);
       ExposedThing onUpdateProperty(PropertyRequestHandler handler);
 
       ExposedThing onInvokeAction(ActionRequestHandler handler);
 
-      ExposedThing onAddEventListener(DOMString event, USVString from);
-      ExposedThing onRemoveEventListener(DOMString event, USVString from);
+      ExposedThing onObserve(ObserveRequestHandler handler);
     };
 
     ExposedThing implements ConsumedThing;
 
-    callback PropertyRequestHandler = void (ThingPropertyInit property, USVString from);
-    callback ActionRequestHandler = void (ThingActionInit action, USVString from);
-    callback EventRequestHandler = void (ThingEventInit event, USVString from);
+    callback PropertyRequestHandler = void (PropertyRequest request);
+    callback ActionRequestHandler = void (ActionRequest request);
+    callback ObserveRequestHandler = void (ObserveRequest request);
     callback SemanticTranslator = any (DOMString propertyName, SemanticType type);
+
+    dictionary PropertyRequest {
+        USVString from;
+        ThingPropertyInit property;
+    };
+
+    dictionary ActionRequest {
+        USVString from;
+        ThingActionInit action;
+    };
+
+    dictionary ObserveRequest {
+        USVString from;
+        ObserveType type;
+        boolean subscribe;
+        DOMString name;
+    };
+
+    enum ObserveType { "property", "action", "event", "td" };
 
     dictionary SemanticType {
       DOMString name;
