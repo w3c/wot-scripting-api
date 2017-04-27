@@ -28,3 +28,11 @@ Based on [issue 16](https://github.com/w3c/wot-scripting-api/issues/16) there is
 Resolutions:
 - Use [Observables](https://github.com/tc39/proposal-observable) for controlling the discovery process (subscribe, unsubscribe).
 - Use a single filter definition that also contains a property for discovery type, defaulting to `"any"`. It is simpler and more intuitive to use than having a separate parameter for discovery type. Some of the discovery types, such as registry/directory based discovery also require another parameter for the address of the directory. This can be provided as a required property in the discovery filter, described in the discovery algorithm.
+
+## Server API (`ExposedThing`)
+Scripts that define Exposed Things should ensure the following:
+1. define properties, actions and events according to the Thing Description.
+2. define request handler functions to implement the serving end for the Client API.
+
+## Client API (`ConsumedThing`)
+Scripts that use the Client API are basically sending requests to servers in order to retrieve or update properties, invoke actions, and observe properties, actions and events. When the `ConsumedThing` is fetched, its Thing Description is also fetched, then client scripts can track changes by subscribing to events that signal TD changes.

@@ -131,7 +131,7 @@
     <dt><dfn data-lt="Things">Thing</dfn></dt>
     <dd>A physical or virtual entity that represents physicality, such as a device, a group of devices, a room, or a software stack that exposes <a>WoT interface</a>s.</dd>
 
-    <dt><dfn data-lt="TD|TDs">Thing Description</dfn></dt>
+    <dt><dfn data-lt="TD|TDs|Thing Descriptions">Thing Description</dfn></dt>
     <dd>An RDF document (currently serialized in <a>JSON-LD</a> by default) that contains semantic and functional descriptions of a Thing: semantic context, interaction resources (such as properties, actions and events), communication (protocol, data serialization, bindings), and security related data (e.g. keys, certificates, policies etc).</dd>
 
     <dt><dfn>WoT Interface</dfn></dt>
@@ -249,6 +249,8 @@
   <section id="introduction"> <h2>Introduction</h2>
   <p>
     As described in the [WoT Current Practices](http://w3c.github.io/wot/current-practices/wot-practices.html#vision), the Web of Things is made of <a>Thing</a>s that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD). By <a>consuming a TD</a>, a <a>Thing</a> creates a runtime resource model that allows accessing the <a>Thing</a> by an application.
+
+    The overall WoT concepts are described in the [WoT Architecture](https://w3c.github.io/wot-architecture/) document.
   </p>
   </section>
 
@@ -256,8 +258,13 @@
   <p>
     The following scripting use cases are covered in this specification:
     <ul>
+      <li>Discover all <a>Things</a> in the WoT network by sending a broadcast request.</li>
+      <li>Discover <a>Things</a> running in the local <a>WoT Runtime</a>.</li>
+      <li>Discover nearby <a>Things</a>, for instance by NFC or Bluetooth.</li>
+      <li>Discover <a>Things</a> by sending a discovery request to a given registry.</li>
       <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s</li>
-      <li>Discover <a>Thing</a>s by semantic filters</li>
+      <li>Discover <a>Thing</a>s by semantic filters.</li>
+      <li>Stop or suppress an ongoing discovery process.</li>
       <li>Fetch and <a>consume a TD</a> of a remote <a>Thing</a>.</li>
       <li>On a consumed <a>Thing</a>,
         <ul>
@@ -269,18 +276,18 @@
             <ul>
               <li>Add a listener to an event.</li>
               <li>Remove a listener from an event.</li>
+              <li>Remove all listeners.</li>
             </ul>
             Default events are the following:
             <ul>
               <li>A property has changed.</li>
               <li>An action has been invoked.</li>
-              <li>Other Things have added an event listener.</li>
               <li><a>Thing Description</a> has changed, i.e. properties, events or actions have been defined, removed, or the definition has changed.</li>
             </ul>
           </li>
         </ul>
       </li>
-      <li>Retrieve a thing that is exposed by the local runtime</li>
+      <li>Retrieve a thing.</li>
       <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
       <li>Programmatically create and expose a local <a>Thing</a>. This may include the following use cases:
         <ul>
@@ -294,29 +301,40 @@
           <li>Emit an event, i.e. notify all listeners subscribed to that event.</li>
           <li>Register handlers for external requests:
             <ul>
-              <li>to fetch the <a>Thing Description</a>;</li>
+              <li>to retrieve a property value;</li>
+              <li>to update a property value;</li>
               <li>to run an action: take the parameters from the request, execute the defined action, and return the result;</li>
               <li>to add a listener to an event;</li>
               <li>to remove an event listener.</li>
+              <li>to fetch the <a>Thing Description</a>;</li>
             </ul>
           </li>
-          <li>Register handler for semantic translation of property values.</li>
-          <li>Register the Thing.</li>
-          <li>Unregister the Thing.</li>
-          <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
-          <li>Stop the exposed <a>Thing</a>.
         </ul>
       </li>
+      <li>Register the Thing.</li>
+      <li>Unregister the Thing.</li>
+      <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
+      <li>Stop the exposed <a>Thing</a>.</li>
+    </ul>
+  </p>
+  <p>
+    The following use cases are being considered for next versions:
+    <ul>
+      <li>Add, remove and update the definition of a property on a Thing that runs in the same the WoT Runtime.</li>
+      <li>Add, remove and update the definition of an action on a Thing that runs in the same the WoT Runtime.</li>
+      <li>Add, remove and update the definition of an event on a Thing that runs in the same the WoT Runtime.</li>
     </ul>
   </p>
   </section>
 
   <section> <h2>WoT Data Representation</h2>
   <p>
+    WoT provides a unified representation for data exchange between <a>Things</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
+    <a>Thing Descriptions</a> are represented as dictionary objects in this API.
   </p>
   </section>
 
-  <section> <h2>The WoT API</h2>
+  <section> <h2>The WoT Scripting API</h2>
   <p>
     The API object represents an implementation of the <a>WoT Runtime</a> and provides functionality to obtain <a>Thing</a>s by discovery or creation.
   </p>
@@ -342,7 +360,7 @@
     };
 
     // TBD: if extensible by applications
-    enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast" };
+    enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
 
     dictionary ThingFilter: ThingInit {
       DiscoveryType type = "any";
@@ -382,8 +400,6 @@
       ExposedThing addEvent(ThingEventInit event);
       ExposedThing removeEvent(DOMString name);
 
-      ExposedThing addSemanticTranslator(SemanticTranslator handler);
-
       Promise&lt;void&gt; register(optional USVString directory);
       Promise&lt;void&gt; unregister();
 
@@ -393,8 +409,6 @@
       Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
 
       // define request handlers (one per request type, so no events here)
-      // TBD: ExposedThing onAddProperty(PropertyRequestHandler handler);
-      // TBD: ExposedThing onRemoveProperty(PropertyRequestHandler handler);
 
       ExposedThing onRetrieveProperty(PropertyRequestHandler handler);
       ExposedThing onUpdateProperty(PropertyRequestHandler handler);
@@ -409,11 +423,11 @@
     callback PropertyRequestHandler = void (PropertyRequest request);
     callback ActionRequestHandler = void (ActionRequest request);
     callback ObserveRequestHandler = void (ObserveRequest request);
-    callback SemanticTranslator = any (DOMString propertyName, SemanticType type);
 
     dictionary PropertyRequest {
         USVString from;
         ThingPropertyInit property;
+        Dictionary options;
     };
 
     dictionary ActionRequest {
@@ -430,7 +444,7 @@
 
     enum ObserveType { "property", "action", "event", "td" };
 
-    dictionary SemanticType {
+    dictionary SemanticType {  // TBD what is the use case?
       DOMString name;
       DOMString context;
     };
