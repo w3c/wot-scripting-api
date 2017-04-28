@@ -36,3 +36,7 @@ Scripts that define Exposed Things should ensure the following:
 
 ## Client API (`ConsumedThing`)
 Scripts that use the Client API are basically sending requests to servers in order to retrieve or update properties, invoke actions, and observe properties, actions and events. When the `ConsumedThing` is fetched, its Thing Description is also fetched, then client scripts can track changes by subscribing to events that signal TD changes.
+
+For browser compatibility of the Client API, events are used with the DOM convention: an Event (or Event sub-class) object is passed as an argument to the event listener, which contains a property with the event payload data, instead the Node.js convention where payload is directly passed to the event listener as arguments.
+
+There is no Client API for creating Things. ExposedThings can be created only locally through the Server API. However, a WoT Runtime may have a special management Thing exposed that would accept actions for installing, uninstalling, running and stopping scripts in that WoT Runtime. These scripts may create local ExposedThings, so the use case of remote Thing creation can be implemented.

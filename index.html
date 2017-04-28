@@ -359,13 +359,10 @@
       Dictionary description;
     };
 
-    // TBD: if extensible by applications
-    // conclusion: align to https://www.w3.org/WoT/IG/wiki/Tech_Landscape_Evaluation#Evaluation
-    // but allow vendor-specific
     enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
 
     dictionary ThingFilter: ThingInit {
-      DiscoveryType | string type = "any";
+      (DiscoveryType or DOMString) type = "any";
     };
   </pre>
 
@@ -422,9 +419,9 @@
 
     ExposedThing implements ConsumedThing;
 
-    callback PropertyRequestHandler = void (PropertyRequest request);
+    callback PropertyRequestHandler = any (PropertyRequest request);
     callback ActionRequestHandler = any (ActionRequest request);
-    callback ObserveRequestHandler = void (ObserveRequest request);
+    callback ObserveRequestHandler = any (ObserveRequest request);
 
     dictionary PropertyRequest {
         USVString from;
@@ -435,7 +432,7 @@
     dictionary ActionRequest {
         USVString from;
         ThingActionInit action;
-        any parameter;
+        any inputData;
     };
 
     dictionary ObserveRequest {
@@ -447,7 +444,7 @@
 
     enum ObserveType { "property", "action", "event", "td" };
 
-    dictionary SemanticType {  // TBD what is the use case?
+    dictionary SemanticType {
       DOMString name;
       DOMString context;
     };
@@ -458,27 +455,22 @@
       boolean enumerable = true;
       boolean writable = true;
       SemanticType[] semanticTypes;
-      Dictionary typeDescription;
+      Dictionary dataDescription;
       any value;
     };
 
     dictionary ThingEventInit {
       DOMString name;
       SemanticType[] semanticTypes;
-      Dictionary typeDescription;
-      // TBD: value for event data not needed here
-      // JH: since its the event-source  not the event itself, we don't need value here
+      Dictionary outputDataDescription;
     };
 
     dictionary ThingActionInit {
       DOMString name;
-      Dictionary returnTypeDescription;  // TBD -> JH OK
-      Dictionary inputTypeDescriptions;  // TBD -> JH 
-      //JH: IMO single Dictionary. in the end, its the payload of the request. if its a sequence, the sequence should be described by the schema
+      Dictionary inputDataDescription;
+      Dictionary outputDataDescription;
       SemanticType[] semanticTypes;
       Function action;
-      // TBD: actual parameters and return value not needed here
-      // JH: since its the outline resp. signature of the action, not the invocation, we don't need value here
     };
   </pre>
   </section>
@@ -503,17 +495,17 @@
 
     [Constructor(PropertyChangeEventInit init)]
     interface PropertyChangeEvent: Event {
-        // TBD if Node or DOM style
+        readonly attribute PropertyChangeEventInit data;
     };
 
     [Constructor(ActionInvocationEventInit init)]
     interface ActionInvocationEvent: Event {
-        // TBD if Node or DOM style
+        readonly attribute ActionInvocationEventInit data;
     };
 
     [Constructor(ThingDescriptionChangeEventInit init)]
     interface ThingDescriptionChangeEvent: Event {
-        // TBD if Node or DOM style
+        readonly attribute ThingDescriptionChangeEventInit data;
     };
 
     dictionary PropertyChangeEventInit {
@@ -531,11 +523,12 @@
         TDChangeType type;
         TDChangeMethod method;
         DOMString name;
-        (ThingPropertyInit or ThingActionInit or ThingEventInit) description;
+        TDChangeData data;
     };
 
     enum TDChangeMethod { "add", "remove", "change" };
     enum TDChangeType { "property", "action", "event" };
+    typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
 
   </pre>
   </section>
