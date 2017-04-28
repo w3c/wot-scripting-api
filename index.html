@@ -360,10 +360,12 @@
     };
 
     // TBD: if extensible by applications
+    // conclusion: align to https://www.w3.org/WoT/IG/wiki/Tech_Landscape_Evaluation#Evaluation
+    // but allow vendor-specific
     enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
 
     dictionary ThingFilter: ThingInit {
-      DiscoveryType type = "any";
+      DiscoveryType | string type = "any";
     };
   </pre>
 
@@ -421,7 +423,7 @@
     ExposedThing implements ConsumedThing;
 
     callback PropertyRequestHandler = void (PropertyRequest request);
-    callback ActionRequestHandler = void (ActionRequest request);
+    callback ActionRequestHandler = any (ActionRequest request);
     callback ObserveRequestHandler = void (ObserveRequest request);
 
     dictionary PropertyRequest {
@@ -433,6 +435,7 @@
     dictionary ActionRequest {
         USVString from;
         ThingActionInit action;
+        any parameter;
     };
 
     dictionary ObserveRequest {
@@ -464,15 +467,18 @@
       SemanticType[] semanticTypes;
       Dictionary typeDescription;
       // TBD: value for event data not needed here
+      // JH: since its the event-source  not the event itself, we don't need value here
     };
 
     dictionary ThingActionInit {
       DOMString name;
-      Dictionary returnTypeDescription;  // TBD
-      sequence&lt;Dictionary&gt; inputTypeDescriptions;  // TBD
+      Dictionary returnTypeDescription;  // TBD -> JH OK
+      Dictionary inputTypeDescriptions;  // TBD -> JH 
+      //JH: IMO single Dictionary. in the end, its the payload of the request. if its a sequence, the sequence should be described by the schema
       SemanticType[] semanticTypes;
       Function action;
       // TBD: actual parameters and return value not needed here
+      // JH: since its the outline resp. signature of the action, not the invocation, we don't need value here
     };
   </pre>
   </section>
