@@ -1,0 +1,32 @@
+{
+  "name": "@types/wot",
+  "version": "0.0.1",
+  "description": "Typescript definitions for the WoT scripting API",
+  "main": "wot.d.ts",
+  "types": "wot.d.ts",
+  "typings": "wot.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/w3c/wot-scripting-api.git"
+  },
+  "keywords": [
+    "web",
+    "WoT",
+    "IoT",
+    "scripting",
+    "typescript",
+    "types"
+  ],
+  "author": "Johannes Hund <johannes.hund@siemens.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/w3c/wot-scripting-api/issues"
+  },
+  "homepage": "https://github.com/w3c/wot-scripting-api#readme",
+  "dependencies": {
+    "rxjs": "^5.3.1"
+  }
+}
