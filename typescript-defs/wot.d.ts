@@ -83,7 +83,7 @@ interface ActionInvocationEvent extends Event {
 interface ThingDescriptionChangeEvent extends Event {
     readonly data : {
         name : string;
-        data: any; // : ThingPropertyInit | ThingActionInit | ThingEventInit 
+        data: ThingPropertyInit | ThingActionInit | ThingEventInit;
         type: TDChangeType;
         method: TDChangeMethod;
     }

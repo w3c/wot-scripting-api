@@ -21,7 +21,7 @@
     "types"
   ],
   "author": "Johannes Hund <johannes.hund@siemens.com>",
-  "license": "MIT",
+  "license": "W3C",
   "bugs": {
     "url": "https://github.com/w3c/wot-scripting-api/issues"
   },
