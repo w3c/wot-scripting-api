@@ -1,5 +1,5 @@
 {
-  "name": "@types/wot",
+  "name": "wot-types-draft",
   "version": "0.0.1",
   "description": "Typescript definitions for the WoT scripting API",
   "main": "wot.d.ts",
