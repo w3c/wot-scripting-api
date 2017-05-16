@@ -7,19 +7,19 @@ export default wot;
 
 declare let wot: WoTFactory;
 
-interface WoTFactory {
+export interface WoTFactory {
     discover(filter?: Object): Observable<ConsumedThing>;
     retrieve(url: string): Promise<ConsumedThing>;
     createLocalThing(init: ThingInit): Promise<ConsumedThing>;
 }
 
-interface ThingInit {
+export interface ThingInit {
     name?: string;
     url?: string;
     description?: object;
 }
 
-declare enum DiscoveryType {
+export declare enum DiscoveryType {
     "any",
     "local",
     "nearby",
@@ -28,11 +28,11 @@ declare enum DiscoveryType {
     "other"
 }
 
-interface ThingFilter extends ThingInit {
+export interface ThingFilter extends ThingInit {
     type: string | DiscoveryType
 }
 
-interface ConsumedThing {
+export interface ConsumedThing {
     /** name of the Thing */
     readonly name: string
 
@@ -65,7 +65,7 @@ interface ConsumedThing {
     getDescription(): Object
 }
 
-interface PropertyChangeEvent extends Event {
+export interface PropertyChangeEvent extends Event {
     readonly data : {
         name : string;
         value : any;
@@ -73,14 +73,14 @@ interface PropertyChangeEvent extends Event {
     }
 }
 
-interface ActionInvocationEvent extends Event {
+export interface ActionInvocationEvent extends Event {
     readonly data : {
         name : string;
         returnValue: any;
     }
 }
 
-interface ThingDescriptionChangeEvent extends Event {
+export interface ThingDescriptionChangeEvent extends Event {
     readonly data : {
         name : string;
         data: ThingPropertyInit | ThingActionInit | ThingEventInit;
@@ -89,19 +89,19 @@ interface ThingDescriptionChangeEvent extends Event {
     }
 }
 
-declare enum TDChangeMethod {
+export declare enum TDChangeMethod {
     "add",
     "remove",
     "change"
 }
 
-declare enum TDChangeType {
+export declare enum TDChangeType {
     "property",
     "action",
     "event"
 }
 
-interface ExposedThing {
+export interface ExposedThing {
     addProperty(property : ThingPropertyInit): ExposedThing
     removeProperty(propertyName: string): ExposedThing
 
@@ -120,44 +120,44 @@ interface ExposedThing {
     emitEvent(eventName : string, payload : any) : Promise<void>
 
     // define request handlers (one per request type, so no events here)
-     onRetrieveProperty(handler : (PropertyRequest) => any) : ExposedThing
-     onUpdateProperty(handler : (PropertyRequest) => any) : ExposedThing
-     onInvokeAction(handler : (ActionRequest) => any) : ExposedThing
-     onObserve(handler : (ObserveRequest) => any) : ExposedThing
+     onRetrieveProperty(handler : (req: PropertyRequest) => any) : ExposedThing
+     onUpdateProperty(handler : (req : PropertyRequest) => any) : ExposedThing
+     onInvokeAction(handler : (req : ActionRequest) => any) : ExposedThing
+     onObserve(handler : (req : ObserveRequest) => any) : ExposedThing
 }
 
-interface Request {
+export interface Request {
     from : string
     options? : object
 }
 
-interface PropertyRequest extends Request {
+export interface PropertyRequest extends Request {
     property : ThingPropertyInit
 }
 
-interface ActionRequest extends Request {
+export interface ActionRequest extends Request {
     action : ThingActionInit
 }
 
-interface ObserveRequest extends Request {
+export interface ObserveRequest extends Request {
     type : ObserveType
     name? : string
     subscribe? : boolean
 }
 
-declare enum ObserveType {
+export declare enum ObserveType {
     "property",
     "action",
     "event",
     "td"
 }
 
-interface SemanticType {
+export interface SemanticType {
     name : string
     context : string
 }
 
-interface ThingPropertyInit {
+export interface ThingPropertyInit {
     name : string
     configurable : boolean 
     enumerable : boolean
@@ -167,15 +167,15 @@ interface ThingPropertyInit {
     value?: any
 }
 
-interface ThingActionInit {
+export interface ThingActionInit {
     name : string
     inputDataDescription : object
     outputDataDescription : object
     semanticTypes : SemanticType[]
-    action: (any) => any
+    action: (param : any) => any
 }
 
-interface ThingEventInit {
+export interface ThingEventInit {
     name : string
     outputDataDescription : object
     semanticTypes : SemanticType[]

@@ -1,6 +1,6 @@
 {
   "name": "wot-types-draft",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Typescript definitions for the WoT scripting API",
   "main": "wot.d.ts",
   "types": "wot.d.ts",
