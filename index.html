@@ -454,14 +454,14 @@
       boolean configurable = true;
       boolean enumerable = true;
       boolean writable = true;
-      SemanticType[] semanticTypes;
+      sequence&lt;SemanticType&gt; semanticTypes;
       Dictionary dataDescription;
       any value;
     };
 
     dictionary ThingEventInit {
       DOMString name;
-      SemanticType[] semanticTypes;
+      sequence&lt;SemanticType&gt; semanticTypes;
       Dictionary outputDataDescription;
     };
 
@@ -469,7 +469,7 @@
       DOMString name;
       Dictionary inputDataDescription;
       Dictionary outputDataDescription;
-      SemanticType[] semanticTypes;
+      sequence&lt;SemanticType&gt; semanticTypes;
       Function action;
     };
   </pre>
