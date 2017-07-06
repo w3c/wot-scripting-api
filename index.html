@@ -369,8 +369,8 @@
   <p>
     The <code>discover()</code> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.
   </p>
-  <pre class="example">
-    let subscription = wot.discover().subscribe(
+  <pre class="example" title="Discover Things via registry">
+    let subscription = wot.discover({ type: "registry", url: "http://wot.registry.org" }).subscribe(
       thing => { console.log("Found Thing " + thing.url); },
       error => { console.log("Discovery finished because an error: " + error.message); },
       () => { console.log("Discovery finished successfully");}
@@ -383,6 +383,27 @@
   <p class="note">
     Note that canceling a discovery (through unsubscribe) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
   </p>
+  <pre class="example" title="Discover Things exposed by local hardware">
+    let subscription = wot.discover({ type: "local" }).subscribe(
+      thing => { console.log("Found local Thing " + thing.url); },
+      error => { console.log("Discovery finished because an error: " + error.message); },
+      () => { console.log("Discovery finished successfully");}
+    );
+  </pre>
+  <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
+    let subscription = wot.discover({ type: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
+      thing => { console.log("Found nearby Thing " + thing.url); },
+      error => { console.log("Discovery finished because an error: " + error.message); },
+      () => { console.log("Discovery finished successfully");}
+    );
+  </pre>
+  <pre class="example" title="Discover Things exposed in a proprietary way">
+    let subscription = wot.discover({ type: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
+      thing => { console.log("Found Thing " + thing.url); },
+      error => { console.log("Discovery finished because an error: " + error.message); },
+      () => { console.log("Discovery finished successfully");}
+    );
+  </pre>
   </section>
 
   <section> <h2>The Thing Server API</h2>
@@ -473,6 +494,82 @@
       Function action;
     };
   </pre>
+  <pre class="example highlight" title="Create a new blank exposed Thing">
+    WoT.createLocalThing(thingDescription)
+      .then(function(thing) {
+        // manually add properties, actions, and events
+        thing.addProperty({
+          name: "temperature",
+          value: "0",
+          writable: false
+          // use default values for the rest
+        }).addEvent({
+          name: "onchange",
+          outputDataDescription: {
+            type: "float32"
+          }
+        }).addAction({
+          name: "reset",
+          action: () => { this.temperature = 0; }
+        })
+        // add server functionality
+        .onRetrieveProperty( request => {
+          console.log("Handling read request");
+          return this.temperature;
+        }).onObserve( request => {
+          console.log("Handling observe request");
+          // add listener identified by request.from
+        }).onInvokeAction( request => {
+          console.log("Handling action request");
+        }).start();
+      });
+  </pre>
+  <pre class="example highlight" title="Create a new exposed Thing from a TD URI">
+    let thingDescription = {
+      name: "mySensor",
+      uri: "http://myregistry.org/mySensor/description"
+    };
+
+    WoT.createLocalThing(thingDescription)
+      .then(function(thing) {
+        // properties, actions and events are added based on the TD
+        console.log("created " + thing.name });
+        // now add the requests handlers
+        thing.onRetrieveProperty(function(request) {
+            console.log("Sending property '" + request.property + "' to " + request.from);
+        }).onUpdateProperty(function(request) {
+            console.log("Updating property '" + request.property + "' by " + request.from);
+        }).onObserve(function(request) {
+            console.log("Adding listener " + request.from);
+            console.log("Observing " + request.type + " " + request.name +
+                (request.subscribe? " recursively" : ""));
+        }).start().then(function() {
+           console.log("Thing started serving requests");
+        });
+      })
+  </pre>
+  <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
+    let thingDescription = {
+      name: "mySensor",
+      description: {
+        "@context": [
+          "http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
+          "http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
+        ],
+        "@type": [ "Thing" ],
+        "interaction": [
+          // ...
+        ]
+        // ...
+      }
+    };
+
+    WoT.createLocalThing(thingDescription)
+      .then(function(thing) {
+        // properties, actions and events are added based on the TD
+        // ...
+      });
+  </pre>
   </section>
 
   <section> <h2>The Thing Client API</h2>
@@ -529,7 +626,20 @@
     enum TDChangeMethod { "add", "remove", "change" };
     enum TDChangeType { "property", "action", "event" };
     typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
-
+  </pre>
+  <pre class="example" title="Consume a Things via retrieve">
+    wot.retrieve("http://myregistry.org/mySensor").then(
+      error => { console.log("Discovery finished because an error: " + error.message); }
+      thing => {
+        console.log("Thing " + thing.name + " has been consumed.");
+        console.log("{ " + JSON.serialize(thing) + " }");
+        thing.addListener("onchange", function(event) {
+            if (event instanceof PropertyChangeEvent) {
+                console.log("Property " + event.name + " has changed to " + event.value);
+            }
+        }).invokeAction("startMeasurement", ["Celsius"]);
+      },
+    );
   </pre>
   </section>
 
