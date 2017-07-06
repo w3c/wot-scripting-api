@@ -1,0 +1,35 @@
+@startuml
+participant ExposedThing1
+participant TD_repo1
+participant ConsumedThing2
+participant Discover2
+participant ExposedThing2
+participant TD_repo2
+participant ConsumedThing3
+participant Discover3
+
+== TD synchronization==
+ExposedThing1 -> ExposedThing1: TD change
+ExposedThing1 -> TD_repo1: register TD
+Discover2 -> TD_repo1: get TD by WoT.discover
+Discover2 <-- TD_repo1: TD
+
+create ExposedThing2
+Discover2 -> ExposedThing2: expose
+create ConsumedThing2
+Discover2 -> ConsumedThing2: callback
+
+ExposedThing2 -> TD_repo2: register TD
+Discover3 -> TD_repo2: get TD by WoT.discover
+Discover3 <-- TD_repo2: TD
+create ConsumedThing3
+ConsumedThing3 <-- Discover3: callback
+
+== device access ==
+ConsumedThing3 -> ExposedThing2: turn on
+ExposedThing2 -> ConsumedThing2: turn on
+ConsumedThing2 -> ExposedThing1: turn on
+ConsumedThing2 <-- ExposedThing1: ok
+ExposedThing2 <-- ConsumedThing2: ok
+ConsumedThing3 <-- ExposedThing2: ok
+@enduml
