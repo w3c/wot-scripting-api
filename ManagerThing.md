@@ -1,6 +1,6 @@
 # WoT ManagerThing
 
-The purpose of this document is to explain ManagerThing.
+The purpose of this document is to explain ManagerThing that can deal remote Thing lifecycle management by co-working with ScriptingAPI.
 
 ### 1. ManagerThing
 
@@ -14,27 +14,17 @@ A Client that supports Scripting API(ConsumedThing) obtains the TD and knows wha
 ### 2. Management commands
 ManagerThing provides the following managemet commands.<br>
 
-#### 2.1 Mandatory commands:<br>
 The following commands deals life cycle of script.
-* install: install a script and return a handle (e.g. UUID).<br>
+* install: install a script and return a handle (e.g. URI, UUID).<br>
 * run: run a script by a handle.<br>
 * stop: stop a running script by a handle.<br>
 * uninstall: uninstall a script specified by a handle and discard the handle.<br>
 
-#### 2.2 Optional commands:
-* mark: mark a script by a handle to run at (re)boot with specified sequence number.<br>
-* unmark: unmark a script by a handle.<br>
-* restartServient: reboot a servient.<br>
-* bootSequence: ?<br>
-* setInterval: ?<br>
-* kill: ?<br>
-* serializedScript ?<br>
-* scriptPackage: ?<br>
-* error handling? <br>
+The script may include Scripting API commands.<br>
 
 ### 3. Thing Description for ManagerThing
 
-A sample TD for ManagerThing that declares the mandatory commands is as follows:
+A sample TD for ManagerThing is as follows:
 
 ```rb
 {
@@ -95,14 +85,9 @@ typedef ScriptID USVString;  // e.g. UUID
 interface ScriptManagerThing {
   // main actions
   any run(USVString script);  // run a serialized script and return the result or error
-  ScriptID? install(USVString script, optional unsigned long bootSequence);  // save[+mark+run]
+  ScriptID? install(USVString script, optional unsigned long bootSequence);  // save
   bool uninstall(ScriptID handle);  // uninstall a script by handle (stop, unmark, delete)
-
-  // fine-grained actions
-  bool start(ScriptID handle);  // start a saved script by handle
   bool stop(ScriptID handle);  // stop a running script by handle
-  bool mark(ScriptId handle, unsigned long bootSequence);  // run at next boot
-  bool unmark(ScriptId handle);
 };
 ```
 
@@ -129,8 +114,12 @@ The external client manages a servient remotely using Scripting API(ConsumedThin
 
 <img src=/images/ManagerThing_Fig2.png width=600 alt="Fig.3">
 
-The script of left hand side shows the part of ManagerThing program to manage servient and the APIs are exposed.<br>
-The script of right hand side shows a sript for ConsumedThing to manage the servient remotely.<br>
+The script of left hand side (Script#1) shows the part of ManagerThing program to manage servient and the APIs are exposed.<br>
+
+The script of the middle (Script#2) shows a script from a Script repository.<br>
+- For example, a script in Script repository may include e.g. Create a new exposed Thing from a Thing Description.
+
+The script of right hand side (Script#3) shows a sript for ConsumedThing to manage the servient remotely.<br>
 - For example, when client invoke "install" and "run" commands, servient gets script and save, then execute the script.
 
 The following diagram depicts how ManagerThing works based on the usage of a script installation.

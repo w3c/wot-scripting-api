@@ -1,6 +1,6 @@
 # WoT reverse proxy
 
-This document explains about reverse proxy for shadow things and how it realized using ScriptingAPI.
+This document explains about reverse proxy that provides a mean for realizing proxy or agent of things that depicted in [Web of Things (WoT) Architecture](https://w3c.github.io/wot-architecture/) or [Primer for Scripting API](https://w3c.github.io/wot-scripting-api/primer) and how it realized using ScriptingAPI.
 
 ## 1. Reverse proxy
 
