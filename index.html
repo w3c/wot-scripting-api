@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Web of Things (WoT) Scripting API</title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove"></script>
     <script class='remove'>
@@ -151,7 +151,8 @@
   </p>
   <p class="note">
     In this version of the specification, a <a>WR</a> is assumed to run a single script that uses this API to define one or more <a>Things</a> that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
-  <p>
+  </p>
+    <p>
      A <a>Thing</a> is represented either as a <a>ConsumedThing</a> (for <a>Things</a> obtained by discovery or retrieve operations) or <a>ExposedThing</a> (for <a>Thing</a>s created with this API inside the <a>WR</a>). All <a>ExposedThing</a>s contained in a <a>WR</a> are serving external requests through the same event loop, and are said to be <dfn>local Things</dfn> to each other. All other <a>Thing</a>s that run in a different <a>WR</a>, even if on the same physical hardware, are said to be <dfn>remote Things</dfn> to each other. Note that there may also be local  <a>ConsumedThing</a> objects as well.
   </p>
   <p>
@@ -257,6 +258,7 @@
   <section class="informative"> <h3>Use Cases</h3>
   <p>
     The following scripting use cases are covered in this specification:
+  </p>
     <ul>
       <li>Discover all <a>Things</a> in the WoT network by sending a broadcast request.</li>
       <li>Discover <a>Things</a> running in the local <a>WoT Runtime</a>.</li>
@@ -316,15 +318,14 @@
       <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
       <li>Stop the exposed <a>Thing</a>.</li>
     </ul>
-  </p>
   <p>
     The following use cases are being considered for next versions:
+  </p>
     <ul>
       <li>Add, remove and update the definition of a property on a Thing that runs in the same the WoT Runtime.</li>
       <li>Add, remove and update the definition of an action on a Thing that runs in the same the WoT Runtime.</li>
       <li>Add, remove and update the definition of an event on a Thing that runs in the same the WoT Runtime.</li>
     </ul>
-  </p>
   </section>
 
   <section> <h2>WoT Data Representation</h2>
@@ -665,6 +666,7 @@
     </p>
     <p>
       In this specification the following threats are considered of the highest priority:
+    </p>
       <ul>
         <li>
           Unauthorized gathering of user-sensitive information.
@@ -676,7 +678,6 @@
           Protect the integrity of <a>Thing</a>s and <a>Thing Description</a>s.
         </li>
       </ul>
-    </p>
     </section>
 
     <section> <h3>Security Mechanisms</h3>
@@ -708,11 +709,11 @@
   <section> <h3 class="appendix" id="openissues">Open issues</h3>
   <p>
     The following problems are being discussed and need most attention:
+  </p>
     <ul>
       <li> Issue [1](https://github.com/w3c/wot-scripting-api/issues/2) </li>
       <li> Issue [2](ghttps://github.com/w3c/wot-scripting-api/issues/17) </li>
     </ul>
-  </p>
   </section>
 
   <section> <h2>Acknowledgements</h2>
