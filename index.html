@@ -94,6 +94,7 @@
     <p>
       This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<dfn>WoT</dfn>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware through a Physical API.
     </p>
+    <p class="ednote">[DP] This is the only place where "Physical API" is mentioned.</p>
   </section>
 
   <section id="sotd">
@@ -110,7 +111,7 @@
     This specification can be used for implementing the WoT Scripting API in multiple language bindings. Currently ECMAScript and TypeScript definitions are described in this document. For specifying bindings in other languages, extensions of this document may be created later.
   </p>
   <p>
-    The UA may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes such as the [JavaScript Runtime for Zephyr OS](https://www.zephyrproject.org/community/blog/introducing-javascript-runtime-zephyr-os).
+    The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes such as the [JavaScript Runtime for Zephyr OS](https://www.zephyrproject.org/community/blog/introducing-javascript-runtime-zephyr-os).
   </p>
   <p>
     Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
@@ -368,7 +369,16 @@
   </pre>
 
   <p>
-    The <code>discover()</code> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.
+    The <code>WoT</code> interface offers three methods:
+  </p>
+    <ul>
+      <li>The <code>discover()</code> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.</li>
+      <li>The <code>retrieve()</code> method by provindung an <code>url</code> returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a <a>ConsumedThing</a>.</li>
+      <li>The <code>createLocalThing()</code> method returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.</li>
+    </ul>
+
+  <p>
+    
   </p>
   <pre class="example" title="Discover Things via registry">
     let subscription = wot.discover({ type: "registry", url: "http://wot.registry.org" }).subscribe(
