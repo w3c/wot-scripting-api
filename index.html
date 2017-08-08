@@ -338,7 +338,7 @@
 
   <section> <h2>The WoT Scripting API</h2>
   <p>
-    The API object represents an implementation of the <a>WoT Runtime</a> and provides functionality to obtain <a>Thing</a>s by discovery or creation.
+    The API object represents an implementation of the <a>WoT Runtime</a> and provides functionality to obtain <a>Thing</a>s by discovery, retrieval, or creation.
   </p>
   <p>
     The <dfn>WoT object</dfn> exposes only functions and has no internal state.
@@ -369,16 +369,16 @@
   </pre>
 
   <p>
-    The <code>WoT</code> interface offers three methods:
+    The <code><a>WoT</a></code> interface offers three methods:
   </p>
     <ul>
       <li>The <code>discover()</code> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.</li>
       <li>The <code>retrieve()</code> method by provindung an <code>url</code> returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a <a>ConsumedThing</a>.</li>
       <li>The <code>createLocalThing()</code> method returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.</li>
     </ul>
-
+  
   <p>
-    
+    Below some <code>WoT</code> interface examples are given.
   </p>
   <pre class="example" title="Discover Things via registry">
     let subscription = wot.discover({ type: "registry", url: "http://wot.registry.org" }).subscribe(
@@ -418,6 +418,8 @@
   </section>
 
   <section> <h2>The Thing Server API</h2>
+    <p>The <a>ExposedThing</a> interface allows for adding properties, actions, and events to a <a>Thing</a>. Similarly, the afore mentioned
+    interactions can be removed again or handlers can be defined for each request type. </p>
   <pre class="idl">
     interface ExposedThing {
 
@@ -505,6 +507,10 @@
       Function action;
     };
   </pre>
+    <p>
+      Below some <code><a>ExposedThing</a></code> interface examples are given.
+    </p>
+    
   <pre class="example highlight" title="Create a new blank exposed Thing">
     WoT.createLocalThing(thingDescription)
       .then(function(thing) {
@@ -584,6 +590,7 @@
   </section>
 
   <section> <h2>The Thing Client API</h2>
+    <p>The <a>ConsumedThing</a> interface is basically for sending requests to servers in order to retrieve or update properties, invoke actions, and observe properties, actions and events.</p>
   <pre class="idl">
     interface ConsumedThing {
       readonly attribute DOMString name;
@@ -638,6 +645,9 @@
     enum TDChangeType { "property", "action", "event" };
     typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
   </pre>
+    <p>
+      Below a <code><a>ConsumedThing</a></code> interface examples is given.
+    </p>
   <pre class="example" title="Consume a Things via retrieve">
     wot.retrieve("http://myregistry.org/mySensor").then(
       error => { console.log("Discovery finished because an error: " + error.message); }
