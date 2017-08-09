@@ -92,7 +92,7 @@
 
   <section id="abstract">
     <p>
-      This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<dfn>WoT</dfn>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware through a Physical API.
+      This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<code>WoT</code>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware through a Physical API.
     </p>
     <p class="ednote">[DP] This is the only place where "Physical API" is mentioned.</p>
   </section>
@@ -329,7 +329,7 @@
     </ul>
   </section>
 
-  <section> <h2>WoT Data Representation</h2>
+    <section data-dfn-for="ThingInit"> <h2>WoT Data Representation</h2>
   <p>
     WoT provides a unified representation for data exchange between <a>Things</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
     <a>Thing Descriptions</a> are represented as dictionary objects in this API.
@@ -346,7 +346,11 @@
   <p class="note">
      Browser implementations SHOULD use a namespace object such as `wot`, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
   </p>
-  <pre class="idl">
+    
+    <section data-dfn-for="WoT">
+      <h2><dfn>WoT</dfn> interface</h2>
+      <p>The <a>WoT</a> interface offers three methods for discovering, retrieving, and creating a thing.</p>
+      <pre class="idl">
     // [SecureContext]
     // [NamespaceObject]
     interface WoT {
@@ -354,29 +358,67 @@
       Promise&lt;ConsumedThing&gt; retrieve(USVString url);
       Promise&lt;ExposedThing&gt; createLocalThing(ThingInit init);
     };
-
+  </pre>
+      <ul>
+        <li>The <dfn>discover()</dfn> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.</li>
+        <li>The <dfn>retrieve()</dfn> method by provindung an <code>url</code> returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a <a>ConsumedThing</a>.</li>
+        <li>The <dfn>createLocalThing()</dfn> method returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.</li>
+        
+      </ul>
+    </section>
+  
+    <section data-dfn-for="ThingInit" >
+      <h2><dfn>ThingInit</dfn> dictionary</h2>
+      <p>The <a>ThingInit</a> dictionary is meant to initialize a local.</p>
+      <pre class="idl">
     dictionary ThingInit {
       DOMString name;
       USVString url;
       Dictionary description;
     };
-
+  </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute is about the name of the thing.</li>
+        <li>The <dfn>url</dfn> attribute is the location of the thing.</li>
+        <li>The <dfn>description</dfn> attribute describes the thing.</li>
+      </ul>
+      <!--<section>
+        <h3><dfn>name</dfn> attribute</h3>
+        <p>The <a>name</a> attribute contains the name of the thing.</p> 
+      </section>-->
+    </section>
+    
+    <section data-dfn-for="DiscoveryType">
+      <h2><dfn>DiscoveryType</dfn> enumeration</h2>
+      <p>The <a>DiscoveryType</a> enumeration provides various kinds of discovery types.</p>
+      <pre class="idl">
     enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
-
+  </pre>
+      <ul>
+        <li><dfn>any</dfn> does not provide any restriction</li>
+        <li><dfn>local</dfn> is for discovering local things</li>
+        <li><dfn>nearby</dfn> is for discovering things nearby</li>
+        <li><dfn>directory</dfn> bla</li>
+        <li><dfn>broadcast</dfn> bla</li>
+        <li><dfn>other</dfn> bla</li>
+      </ul>
+    </section>
+    
+    <section data-dfn-for="ThingFilter">
+      <h2><dfn>ThingFilter</dfn> disctionary</h2>
+      <p>The <a>ThingFilter</a> disctionary extends <a>ThingInit</a> and is meant for discovering a <a>ConsumedThing</a>.</p>
+      <pre class="idl">
     dictionary ThingFilter: ThingInit {
       (DiscoveryType or DOMString) type = "any";
     };
   </pre>
+      <ul>
+        <li><dfn>type</dfn> xyz</li>
+      </ul>
+    </section>
 
-  <p>
-    The <code><a>WoT</a></code> interface offers three methods:
-  </p>
-    <ul>
-      <li>The <code>discover()</code> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.</li>
-      <li>The <code>retrieve()</code> method by provindung an <code>url</code> returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a <a>ConsumedThing</a>.</li>
-      <li>The <code>createLocalThing()</code> method returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.</li>
-    </ul>
-  
+    <section>
+      <h2>Examples</h2>
   <p>
     Below some <code>WoT</code> interface examples are given.
   </p>
@@ -415,6 +457,8 @@
       () => { console.log("Discovery finished successfully");}
     );
   </pre>
+    </section>
+    
   </section>
 
   <section> <h2>The Thing Server API</h2>
