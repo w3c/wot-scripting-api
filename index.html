@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Web of Things (WoT) Scripting API</title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove"></script>
     <script class='remove'>
@@ -92,8 +92,9 @@
 
   <section id="abstract">
     <p>
-      This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<dfn>WoT</dfn>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware through a Physical API.
+      This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<code>WoT</code>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware through a Physical API.
     </p>
+    <p class="ednote">[DP] This is the only place where "Physical API" is mentioned.</p>
   </section>
 
   <section id="sotd">
@@ -110,7 +111,7 @@
     This specification can be used for implementing the WoT Scripting API in multiple language bindings. Currently ECMAScript and TypeScript definitions are described in this document. For specifying bindings in other languages, extensions of this document may be created later.
   </p>
   <p>
-    The UA may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes such as the [JavaScript Runtime for Zephyr OS](https://www.zephyrproject.org/community/blog/introducing-javascript-runtime-zephyr-os).
+    The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes such as the [JavaScript Runtime for Zephyr OS](https://www.zephyrproject.org/community/blog/introducing-javascript-runtime-zephyr-os).
   </p>
   <p>
     Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
@@ -132,7 +133,7 @@
     <dd>A physical or virtual entity that represents physicality, such as a device, a group of devices, a room, or a software stack that exposes <a>WoT interface</a>s.</dd>
 
     <dt><dfn data-lt="TD|TDs|Thing Descriptions">Thing Description</dfn></dt>
-    <dd>An RDF document (currently serialized in <a>JSON-LD</a> by default) that contains semantic and functional descriptions of a Thing: semantic context, interaction resources (such as properties, actions and events), communication (protocol, data serialization, bindings), and security related data (e.g. keys, certificates, policies etc).</dd>
+    <dd>Semantic metadata of a Thing as well as a functional description of its WoT Interface (it relies on the Resource Description Framework (RDF) and is currently serialized in <a>JSON-LD</a> by default): semantic context, interaction resources (such as properties, actions and events), communication (protocol, data serialization, bindings), and security related data (e.g. keys, certificates, policies etc).</dd>
 
     <dt><dfn>WoT Interface</dfn></dt>
     <dd>Resource-oriented Web interface (often called "Web API") that allows access to <a>Things</a> exposed over a network using different <a>Protocol Bindings</a>, as defined by <a>Thing Description</a>s.</dd>
@@ -151,7 +152,8 @@
   </p>
   <p class="note">
     In this version of the specification, a <a>WR</a> is assumed to run a single script that uses this API to define one or more <a>Things</a> that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
-  <p>
+  </p>
+    <p>
      A <a>Thing</a> is represented either as a <a>ConsumedThing</a> (for <a>Things</a> obtained by discovery or retrieve operations) or <a>ExposedThing</a> (for <a>Thing</a>s created with this API inside the <a>WR</a>). All <a>ExposedThing</a>s contained in a <a>WR</a> are serving external requests through the same event loop, and are said to be <dfn>local Things</dfn> to each other. All other <a>Thing</a>s that run in a different <a>WR</a>, even if on the same physical hardware, are said to be <dfn>remote Things</dfn> to each other. Note that there may also be local  <a>ConsumedThing</a> objects as well.
   </p>
   <p>
@@ -257,6 +259,7 @@
   <section class="informative"> <h3>Use Cases</h3>
   <p>
     The following scripting use cases are covered in this specification:
+  </p>
     <ul>
       <li>Discover all <a>Things</a> in the WoT network by sending a broadcast request.</li>
       <li>Discover <a>Things</a> running in the local <a>WoT Runtime</a>.</li>
@@ -316,18 +319,17 @@
       <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
       <li>Stop the exposed <a>Thing</a>.</li>
     </ul>
-  </p>
   <p>
     The following use cases are being considered for next versions:
+  </p>
     <ul>
       <li>Add, remove and update the definition of a property on a Thing that runs in the same the WoT Runtime.</li>
       <li>Add, remove and update the definition of an action on a Thing that runs in the same the WoT Runtime.</li>
       <li>Add, remove and update the definition of an event on a Thing that runs in the same the WoT Runtime.</li>
     </ul>
-  </p>
   </section>
 
-  <section> <h2>WoT Data Representation</h2>
+    <section data-dfn-for="ThingInit"> <h2>WoT Data Representation</h2>
   <p>
     WoT provides a unified representation for data exchange between <a>Things</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
     <a>Thing Descriptions</a> are represented as dictionary objects in this API.
@@ -336,7 +338,7 @@
 
   <section> <h2>The WoT Scripting API</h2>
   <p>
-    The API object represents an implementation of the <a>WoT Runtime</a> and provides functionality to obtain <a>Thing</a>s by discovery or creation.
+    The API object represents an implementation of the <a>WoT Runtime</a> and provides functionality to obtain <a>Thing</a>s by discovery, retrieval, or creation.
   </p>
   <p>
     The <dfn>WoT object</dfn> exposes only functions and has no internal state.
@@ -344,7 +346,11 @@
   <p class="note">
      Browser implementations SHOULD use a namespace object such as `wot`, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
   </p>
-  <pre class="idl">
+    
+    <section data-dfn-for="WoT">
+      <h2><dfn>WoT</dfn> interface</h2>
+      <p>The <a>WoT</a> interface offers three methods for discovering, retrieving, and creating a thing.</p>
+      <pre class="idl">
     // [SecureContext]
     // [NamespaceObject]
     interface WoT {
@@ -352,22 +358,69 @@
       Promise&lt;ConsumedThing&gt; retrieve(USVString url);
       Promise&lt;ExposedThing&gt; createLocalThing(ThingInit init);
     };
-
+  </pre>
+      <ul>
+        <li>The <dfn>discover()</dfn> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.</li>
+        <li>The <dfn>retrieve()</dfn> method by provindung an <code>url</code> returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a <a>ConsumedThing</a>.</li>
+        <li>The <dfn>createLocalThing()</dfn> method returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.</li>
+        
+      </ul>
+    </section>
+  
+    <section data-dfn-for="ThingInit" >
+      <h2><dfn>ThingInit</dfn> dictionary</h2>
+      <p>The <a>ThingInit</a> dictionary is meant to initialize a local thing.</p>
+      <pre class="idl">
     dictionary ThingInit {
       DOMString name;
       USVString url;
       Dictionary description;
     };
-
+  </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute is about the name of the thing.</li>
+        <li>The <dfn>url</dfn> attribute is the location of the thing description.</li>
+        <li>The <dfn>description</dfn> attribute describes the thing.</li>
+      </ul>
+      <!--<section>
+        <h3><dfn>name</dfn> attribute</h3>
+        <p>The <a>name</a> attribute contains the name of the thing.</p> 
+      </section>-->
+    </section>
+    
+    <section data-dfn-for="DiscoveryType">
+      <h2><dfn>DiscoveryType</dfn> enumeration</h2>
+      <p>The <a>DiscoveryType</a> enumeration provides various kinds of discovery types.</p>
+      <pre class="idl">
     enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
-
+  </pre>
+      <ul>
+        <li><dfn>any</dfn> does not provide any restriction</li>
+        <li><dfn>local</dfn> is for discovering local things</li>
+        <li><dfn>nearby</dfn> is for discovering things nearby</li>
+        <li><dfn>directory</dfn> bla</li>
+        <li><dfn>broadcast</dfn> bla</li>
+        <li><dfn>other</dfn> bla</li>
+      </ul>
+    </section>
+    
+    <section data-dfn-for="ThingFilter">
+      <h2><dfn>ThingFilter</dfn> disctionary</h2>
+      <p>The <a>ThingFilter</a> disctionary extends <a>ThingInit</a> and is meant for discovering a <a>ConsumedThing</a>.</p>
+      <pre class="idl">
     dictionary ThingFilter: ThingInit {
       (DiscoveryType or DOMString) type = "any";
     };
   </pre>
+      <ul>
+        <li><dfn>type</dfn> xyz</li>
+      </ul>
+    </section>
 
+    <section>
+      <h2>Examples</h2>
   <p>
-    The <code>discover()</code> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.
+    Below some <code>WoT</code> interface examples are given.
   </p>
   <pre class="example" title="Discover Things via registry">
     let subscription = wot.discover({ type: "registry", url: "http://wot.registry.org" }).subscribe(
@@ -404,9 +457,13 @@
       () => { console.log("Discovery finished successfully");}
     );
   </pre>
+    </section>
+    
   </section>
 
   <section> <h2>The Thing Server API</h2>
+    <p>The <a>ExposedThing</a> interface allows for adding properties, actions, and events to a <a>Thing</a>. Similarly, the afore mentioned
+    interactions can be removed again or handlers can be defined for each request type. </p>
   <pre class="idl">
     interface ExposedThing {
 
@@ -494,6 +551,10 @@
       Function action;
     };
   </pre>
+    <p>
+      Below some <code><a>ExposedThing</a></code> interface examples are given.
+    </p>
+    
   <pre class="example highlight" title="Create a new blank exposed Thing">
     WoT.createLocalThing(thingDescription)
       .then(function(thing) {
@@ -573,6 +634,7 @@
   </section>
 
   <section> <h2>The Thing Client API</h2>
+    <p>The <a>ConsumedThing</a> interface is basically for sending requests to servers in order to retrieve or update properties, invoke actions, and observe properties, actions and events.</p>
   <pre class="idl">
     interface ConsumedThing {
       readonly attribute DOMString name;
@@ -627,6 +689,9 @@
     enum TDChangeType { "property", "action", "event" };
     typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
   </pre>
+    <p>
+      Below a <code><a>ConsumedThing</a></code> interface example is given.
+    </p>
   <pre class="example" title="Consume a Things via retrieve">
     wot.retrieve("http://myregistry.org/mySensor").then(
       error => { console.log("Discovery finished because an error: " + error.message); }
@@ -644,6 +709,7 @@
   </section>
 
   <section> <h2 id="security">Security and Privacy</h2>
+  <p class="ednote">[DP] The security task force might want to check this section.</p>
   <p>
     The trust model, attacker model, threat model and possible mitigation
     proposals for the Wot Scripting API are presented in the WoT Security and Privacy document.
@@ -665,6 +731,7 @@
     </p>
     <p>
       In this specification the following threats are considered of the highest priority:
+    </p>
       <ul>
         <li>
           Unauthorized gathering of user-sensitive information.
@@ -676,7 +743,6 @@
           Protect the integrity of <a>Thing</a>s and <a>Thing Description</a>s.
         </li>
       </ul>
-    </p>
     </section>
 
     <section> <h3>Security Mechanisms</h3>
@@ -708,11 +774,11 @@
   <section> <h3 class="appendix" id="openissues">Open issues</h3>
   <p>
     The following problems are being discussed and need most attention:
+  </p>
     <ul>
       <li> Issue [1](https://github.com/w3c/wot-scripting-api/issues/2) </li>
       <li> Issue [2](ghttps://github.com/w3c/wot-scripting-api/issues/17) </li>
     </ul>
-  </p>
   </section>
 
   <section> <h2>Acknowledgements</h2>
