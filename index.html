@@ -92,9 +92,8 @@
 
   <section id="abstract">
     <p>
-      This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<code>WoT</code>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware through a Physical API.
+      This specification describes a programming interface to [the Web of Things](http://w3c.github.io/wot/current-practices/wot-practices.html) (<code>WoT</code>), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a Client API, provide resources characterized by properties, actions and events through a Server API, and access locally attached hardware.
     </p>
-    <p class="ednote">[DP] This is the only place where "Physical API" is mentioned.</p>
   </section>
 
   <section id="sotd">
@@ -133,13 +132,13 @@
       <dd>A physical or virtual entity that represents physicality, such as a device, a group of devices, a room, or a software stack that exposes <a>WoT interface</a>s.</dd>
 
       <dt><dfn data-lt="TD|TDs|Thing Descriptions">Thing Description</dfn></dt>
-      <dd>Semantic metadata of a Thing as well as a functional description of its WoT Interface (it relies on the Resource Description Framework (RDF) and is currently serialized in <a>JSON-LD</a> by default): semantic context, interaction resources (such as properties, actions and events), communication (protocol, data serialization, bindings), and security related data (e.g. keys, certificates, policies etc).</dd>
+      <dd>Structured data describing a physical device or software service (WoT Thing) that includes metadata, links to domain-specific vocabulary, a list of offered interactions, the supported protocol bindings for each interaction, and links to related Things.</dd>
 
       <dt><dfn>WoT Interface</dfn></dt>
-      <dd>Resource-oriented Web interface (often called "Web API") that allows access to <a>Things</a> exposed over a network using different <a>Protocol Bindings</a>, as defined by <a>Thing Description</a>s.</dd>
+      <dd>Resource-oriented, REST-ful Web interface that allows access to <a>Things</a> exposed over a network using different <a>Protocol Bindings</a>, as defined by <a>Thing Description</a>s.</dd>
 
       <dt><dfn>Protocol Bindings</dfn></dt>
-      <dd>Mapping WoT <a>Thing</a> interactions to specific protocol suites. Protocol bindings are being defined for HTTP, CoAP, Bluetooth Smart (BLE), MQTT, WebSockets, etc.</dd>
+      <dd>A mapping from operations on the WoT resource model to specific operations of a protocol. Protocol bindings are being defined for HTTP, CoAP, Bluetooth Smart (BLE), MQTT, WebSockets, etc.</dd>
 
       <dt><dfn>JSON-LD</dfn></dt>
       <dd>A JSON document that is augmented with support for Linked Data by providing an <code>@context</code> property with a defining URI [[!JSON-LD]].</dd>
@@ -250,9 +249,8 @@
 
   <section id="introduction"> <h2>Introduction</h2>
     <p>
-      As described in the [WoT Current Practices](http://w3c.github.io/wot/current-practices/wot-practices.html#vision), the Web of Things is made of <a>Thing</a>s that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD). By <a>consuming a TD</a>, a <a>Thing</a> creates a runtime resource model that allows accessing the <a>Thing</a> by an application.
-
       The overall WoT concepts are described in the [WoT Architecture](https://w3c.github.io/wot-architecture/) document.
+      The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD), understood by other <a>Thing</a>s. By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the properties, actions and events exposed by the server <a>Thing</a>.
     </p>
   </section>
 
@@ -336,40 +334,48 @@
     </p>
   </section>
 
-  <section> <h2>The WoT Scripting API</h2>
-    <p>
-      The API object represents an implementation of the <a>WoT Runtime</a> and provides functionality to obtain <a>Thing</a>s by discovery, retrieval, or creation.
-    </p>
-    <p>
-      The <dfn>WoT object</dfn> exposes only functions and has no internal state.
+  <section data-dfn-for="WoT">
+    <h2>The <dfn>WoT</dfn> interface</h2>
+    <p>The WoT object is the main API entry point and it is exposed by an implementation of the <a>WoT Runtime</a>. The <dfn>WoT object</dfn> has no internal state and provides methods for discovering, retrieving, and creating a thing.
     </p>
     <p class="note">
        Browser implementations SHOULD use a namespace object such as `wot`, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
     </p>
+    <pre class="idl">
+      // [SecureContext]
+      // [NamespaceObject]
+      interface WoT {
+        Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
+        Promise&lt;ConsumedThing&gt; retrieve(USVString url);
+        Promise&lt;ExposedThing&gt; createLocalThing(ThingInit init);
+      };
+    </pre>
 
-    <section data-dfn-for="WoT">
-      <h2><dfn>WoT</dfn> interface</h2>
-      <p>The <a>WoT</a> interface offers three methods for discovering, retrieving, and creating a thing.</p>
-      <pre class="idl">
-        // [SecureContext]
-        // [NamespaceObject]
-        interface WoT {
-          Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
-          Promise&lt;ConsumedThing&gt; retrieve(USVString url);
-          Promise&lt;ExposedThing&gt; createLocalThing(ThingInit init);
-        };
-      </pre>
-      <ul>
-        <li>The <dfn>discover()</dfn> method returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.</li>
-        <li>The <dfn>retrieve()</dfn> method by provindung an <code>url</code> returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a <a>ConsumedThing</a>.</li>
-        <li>
-          The <dfn>createLocalThing()</dfn> method returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.
-        </li>
-      </ul>
+    <section> <h3>The <dfn>discover()</dfn> method</h2>
+      <p>
+        Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>.
+        Returns an [Observable](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.
+      </p>
+      <section data-dfn-for="ThingFilter">
+        <h4>The <dfn>ThingFilter</dfn> dictionary</h2>
+        <p>
+          The <a>ThingFilter</a> dictionary extends <a>ThingInit</a> and represents the constraints for discovering <a>Thing</a>s, such as the discovery method to be used.
+        </p>
+        <pre class="idl">
+          dictionary ThingFilter: ThingInit {
+            (DiscoveryType or DOMString) method = "any";
+          };
+        </pre>
+        <p>
+          The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that can be extended by string values defined by solutions (with no guarantee of interoperability).
+        </p>
+        <p class="ednote">
+          The extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
+        </p>
+      </section>
 
       <section data-dfn-for="ThingInit" >
-        <h2><dfn>ThingInit</dfn> dictionary</h2>
-        <p>The <a>ThingInit</a> dictionary is meant to initialize a local thing.</p>
+        <h4>The <dfn>ThingInit</dfn> dictionary</h2>
         <pre class="idl">
           dictionary ThingInit {
             DOMString name;
@@ -377,83 +383,82 @@
             Dictionary description;
           };
         </pre>
-        <ul>
-          <li>The <dfn>name</dfn> attribute is about the name of the thing.</li>
-          <li>The <dfn>url</dfn> attribute is the location of the thing description.</li>
-          <li>The <dfn>description</dfn> attribute describes the thing.</li>
-        </ul>
+        <p>The <a>ThingInit</a> dictionary contains properties to initialize a <a>Thing</a>:
+          <ul>
+            <li>The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.</li>
+            <li>The <dfn>url</dfn> attribute represents the address of the <a>Thing</a>.</li>
+            <li>The <dfn>description</dfn> attribute represents the <a>Thing Description</a> of the <a>Thing</a>.</li>
+          </ul>
+        </p>
       </section>
 
-      <section data-dfn-for="DiscoveryType">
-        <h2><dfn>DiscoveryType</dfn> enumeration</h2>
-        <p>The <a>DiscoveryType</a> enumeration provides various kinds of discovery types.</p>
+      <section data-dfn-for="DiscoveryMethod">
+        <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h2>
         <pre class="idl">
-          enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
+          enum DiscoveryMethod { "any", "local", "nearby", "directory", "broadcast" };
         </pre>
-        <ul>
-          <li><dfn>any</dfn> does not provide any restriction</li>
-          <li><dfn>local</dfn> is for discovering local things</li>
-          <li><dfn>nearby</dfn> is for discovering things nearby</li>
-          <li><dfn>directory</dfn> bla</li>
-          <li><dfn>broadcast</dfn> bla</li>
-          <li><dfn>other</dfn> bla</li>
-        </ul>
-      </section>
-
-      <section data-dfn-for="ThingFilter">
-        <h2><dfn>ThingFilter</dfn> dictionary</h2>
-        <p>The <a>ThingFilter</a> dictionary extends <a>ThingInit</a> and is meant for discovering a <a>ConsumedThing</a>.</p>
-        <pre class="idl">
-          dictionary ThingFilter: ThingInit {
-            (DiscoveryType or DOMString) type = "any";
-          };
-        </pre>
-        <ul>
-          <li><dfn>type</dfn> xyz</li>
-        </ul>
-      </section>
-
-      <section> <h2>Examples</h2>
         <p>
-          Below some <code>WoT</code> interface examples are given.
+          The <a>DiscoveryMethod</a> enumeration represents the discovery type to be used:
+          <ul>
+            <li><dfn>any</dfn> does not provide any restriction</li>
+            <li><dfn>local</dfn> for discovering <a>Things</a> defined in the same device</li>
+            <li><dfn>nearby</dfn> for discovering <a>Things</a> nearby the device, e.g. by Bluetooth or NFC</li>
+            <li><dfn>directory</dfn> for discovery based on a service provided by a directory or repository of <a>Thing</a>s</li>
+            <li><dfn>broadcast</dfn> for an open ended discovery based on sending a request to a broadcast address.</li>
+          </ul>
         </p>
-        <pre class="example" title="Discover Things via registry">
-          let discoveryType = { type: "registry", url: "http://wot.registry.org" };
-          let subscription = wot.discover(discoveryType).subscribe(
-            thing => { console.log("Found Thing " + thing.url); },
-            error => { console.log("Discovery finished because an error: " + error.message); },
-            () => { console.log("Discovery finished successfully");}
-          );
-          setTimeout(
-            () => { subscription.unsubscribe(); console.log("Discovery timeout"); },
-            5000);
-        </pre>
-        <p class="note">
-          Note that canceling a discovery (through unsubscribe) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
-        </p>
-        <pre class="example" title="Discover Things exposed by local hardware">
-          let subscription = wot.discover({ type: "local" }).subscribe(
-            thing => { console.log("Found local Thing " + thing.url); },
-            error => { console.log("Discovery finished because an error: " + error.message); },
-            () => { console.log("Discovery finished successfully");}
-          );
-        </pre>
-        <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
-          let subscription = wot.discover({ type: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
-            thing => { console.log("Found nearby Thing " + thing.url); },
-            error => { console.log("Discovery finished because an error: " + error.message); },
-            () => { console.log("Discovery finished successfully");}
-          );
-        </pre>
-        <pre class="example" title="Discover Things exposed in a proprietary way">
-          let subscription = wot.discover({ type: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
-            thing => { console.log("Found Thing " + thing.url); },
-            error => { console.log("Discovery finished because an error: " + error.message); },
-            () => { console.log("Discovery finished successfully");}
-          );
-        </pre>
-      </section> <!-- Examples -->
-    </section> <!-- WoT object -->
+      </section>
+    </section>
+
+    <section> <h3> The <dfn>retrieve()</dfn> method</h3>
+      <p>
+        Accepts an <code>url</code> argument and returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a <a>ConsumedThing</a>.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>createLocalThing()</dfn> method</h3>
+      <p>
+        Returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.
+      </p>
+    </section>
+
+    <section> <h3>Examples on the <a>Wot interface</a></h2>
+      <pre class="example" title="Discover Things via registry">
+        let discoveryType = { type: "registry", url: "http://wot.registry.org" };
+        let subscription = wot.discover(discoveryType).subscribe(
+          thing => { console.log("Found Thing " + thing.url); },
+          error => { console.log("Discovery finished because an error: " + error.message); },
+          () => { console.log("Discovery finished successfully");}
+        );
+        setTimeout(
+          () => { subscription.unsubscribe(); console.log("Discovery timeout"); },
+          5000);
+      </pre>
+      <p class="note">
+        Note that canceling a discovery (through unsubscribe) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
+      </p>
+      <pre class="example" title="Discover Things exposed by local hardware">
+        let subscription = wot.discover({ type: "local" }).subscribe(
+          thing => { console.log("Found local Thing " + thing.url); },
+          error => { console.log("Discovery finished because an error: " + error.message); },
+          () => { console.log("Discovery finished successfully");}
+        );
+      </pre>
+      <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
+        let subscription = wot.discover({ type: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
+          thing => { console.log("Found nearby Thing " + thing.url); },
+          error => { console.log("Discovery finished because an error: " + error.message); },
+          () => { console.log("Discovery finished successfully");}
+        );
+      </pre>
+      <pre class="example" title="Discover Things exposed in a proprietary way">
+        let subscription = wot.discover({ type: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
+          thing => { console.log("Found Thing " + thing.url); },
+          error => { console.log("Discovery finished because an error: " + error.message); },
+          () => { console.log("Discovery finished successfully");}
+        );
+      </pre>
+    </section> <!-- Examples -->
   </section> <!-- WoT API -->
 
   <section> <h2>The Thing Server API</h2>
@@ -927,7 +932,7 @@
     <p class="ednote">[DP] The security task force might want to check this section.</p>
     <p>
       The trust model, attacker model, threat model and possible mitigation
-      proposals for the Wot Scripting API are presented in the WoT Security and Privacy document.
+      proposals for the WoT Scripting API are presented in the WoT Security and Privacy document.
       This section presents the chosen security and privacy model through normative requirements to implementations.
     </p>
 
