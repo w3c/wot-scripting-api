@@ -464,6 +464,10 @@
   <section> <h2>The Thing Server API</h2>
     <p>The <a>ExposedThing</a> interface allows for adding properties, actions, and events to a <a>Thing</a>. Similarly, the afore mentioned
     interactions can be removed again or handlers can be defined for each request type. </p>
+    
+    <section data-dfn-for="ExposedThing">
+      <h2><dfn>ExposedThing</dfn> interface</h2>
+    
   <pre class="idl">
     interface ExposedThing {
 
@@ -501,32 +505,124 @@
     callback ActionRequestHandler = any (ActionRequest request);
     callback ObserveRequestHandler = any (ObserveRequest request);
 
+  </pre>
+      <ul>
+        <li>The <dfn>addProperty()</dfn> method xyz.</li>
+        <li>The <dfn>removeProperty()</dfn> method xyz.</li>
+        <li>The <dfn>addAction()</dfn> method xyz.</li>
+        <li>The <dfn>removeAction()</dfn> method xyz.</li>
+        <li>The <dfn>addEvent()</dfn> method xyz.</li>
+        <li>The <dfn>removeEvent()</dfn> method xyz.</li>
+        <li>The <dfn>register()</dfn> method xyz.</li>
+        <li>The <dfn>unregister()</dfn> method xyz.</li>
+        <li>The <dfn>start()</dfn> method xyz.</li>
+        <li>The <dfn>stop()</dfn> method xyz.</li>
+        <li>The <dfn>emitEvent()</dfn> method xyz.</li>
+        <li>The <dfn>onRetrieveProperty()</dfn> method xyz.</li>
+        <li>The <dfn>onUpdateProperty()</dfn> method xyz.</li>
+        <li>The <dfn>onInvokeAction()</dfn> method xyz.</li>
+        <li>The <dfn>onObserve()</dfn> method xyz.</li>
+      </ul>
+      
+      <section data-dfn-for="PropertyRequestHandler">
+        <h2><dfn>PropertyRequestHandler</dfn> callback</h2>
+        <p class="ednote">Add adequate description.</p>
+      </section>
+      
+      <section data-dfn-for="ActionRequestHandler">
+        <h2><dfn>ActionRequestHandler</dfn> callback</h2>
+        <p class="ednote">Add adequate description.</p>
+      </section>
+      
+      <section data-dfn-for="ObserveRequestHandler">
+        <h2><dfn>ObserveRequestHandler</dfn> callback</h2>
+        <p class="ednote">Add adequate description.</p>
+      </section>
+      
+    </section>
+    
+    <section data-dfn-for="PropertyRequest">
+      <h2><dfn>PropertyRequest</dfn> dictionary</h2>
+      <pre class="idl">  
     dictionary PropertyRequest {
         USVString from;
         ThingPropertyInit property;
         Dictionary options;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>from</dfn> attribute ...</li>
+        <li>The <dfn>property</dfn> attribute ...</li>
+        <li>The <dfn>options</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    <section data-dfn-for="ActionRequest">
+      <h2><dfn>ActionRequest</dfn> dictionary</h2>
+      <pre class="idl">  
     dictionary ActionRequest {
         USVString from;
         ThingActionInit action;
         any inputData;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>from</dfn> attribute ...</li>
+        <li>The <dfn>action</dfn> attribute ...</li>
+        <li>The <dfn>inputData</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    <section data-dfn-for="ObserveRequest">
+      <h2><dfn>ObserveRequest</dfn> dictionary</h2>
+      <pre class="idl">  
     dictionary ObserveRequest {
         USVString from;
         ObserveType type;
         boolean subscribe;
         DOMString name;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>from</dfn> attribute ...</li>
+        <li>The <dfn>type</dfn> attribute ...</li>
+        <li>The <dfn>subscribe</dfn> attribute ...</li>
+        <li>The <dfn>name</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="ObserveType">
+      <h2><dfn>ObserveType</dfn> enumeration</h2>
+      <pre class="idl">  
     enum ObserveType { "property", "action", "event", "td" };
-
+      </pre>
+      <ul>
+        <li><dfn>property</dfn> ...</li>
+        <li><dfn>action</dfn> ...</li>
+        <li><dfn>event</dfn> ...</li>
+        <li><dfn>td</dfn> ...</li>
+      </ul>
+    </section>
+    
+    <section data-dfn-for="SemanticType">
+      <h2><dfn>SemanticType</dfn> dictionary</h2>
+      <pre class="idl">  
     dictionary SemanticType {
       DOMString name;
       DOMString context;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute ...</li>
+        <li>The <dfn>context</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="ThingPropertyInit">
+      <h2><dfn>ThingPropertyInit</dfn> dictionary</h2>
+      <pre class="idl">  
     dictionary ThingPropertyInit {
       DOMString name;
       boolean configurable = true;
@@ -536,13 +632,39 @@
       Dictionary dataDescription;
       any value;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute ...</li>
+        <li>The <dfn>configurable</dfn> attribute ...</li>
+        <li>The <dfn>enumerable</dfn> attribute ...</li>
+        <li>The <dfn>writable</dfn> attribute ...</li>
+        <li>The <dfn>semanticTypes</dfn> attribute ...</li>
+        <li>The <dfn>dataDescription</dfn> attribute ...</li>
+        <li>The <dfn>value</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="ThingEventInit">
+      <h2><dfn>ThingEventInit</dfn> dictionary</h2>
+      <pre class="idl">  
     dictionary ThingEventInit {
       DOMString name;
       sequence&lt;SemanticType&gt; semanticTypes;
       Dictionary outputDataDescription;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute ...</li>
+        <li>The <dfn>semanticTypes</dfn> attribute ...</li>
+        <li>The <dfn>outputDataDescription</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="ThingActionInit">
+      <h2><dfn>ThingActionInit</dfn> dictionary</h2>
+      <pre class="idl">  
     dictionary ThingActionInit {
       DOMString name;
       Dictionary inputDataDescription;
@@ -550,7 +672,18 @@
       sequence&lt;SemanticType&gt; semanticTypes;
       Function action;
     };
-  </pre>
+      </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute ...</li>
+        <li>The <dfn>inputDataDescription</dfn> attribute ...</li>
+        <li>The <dfn>outputDataDescription</dfn> attribute ...</li>
+        <li>The <dfn>semanticTypes</dfn> attribute ...</li>
+        <li>The <dfn>action</dfn> attribute ...</li>
+      </ul>
+    </section>
+      
+    <section>
+      <h2>Examples</h2> 
     <p>
       Below some <code><a>ExposedThing</a></code> interface examples are given.
     </p>
@@ -631,10 +764,16 @@
         // ...
       });
   </pre>
+    </section>
   </section>
 
   <section> <h2>The Thing Client API</h2>
     <p>The <a>ConsumedThing</a> interface is basically for sending requests to servers in order to retrieve or update properties, invoke actions, and observe properties, actions and events.</p>
+    
+    
+    <section data-dfn-for="ConsumedThing">
+      <h2><dfn>ConsumedThing</dfn> interface</h2>
+    
   <pre class="idl">
     interface ConsumedThing {
       readonly attribute DOMString name;
@@ -652,43 +791,151 @@
 
     callback ThingEventListener = void (Event event);
 
+    typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
+  </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute ...</li>
+        <li>The <dfn>url</dfn> attribute ...</li>
+        <li>The <dfn>description</dfn> attribute ...</li>
+        <li>The <dfn>invokeAction()</dfn> method ...</li>
+        <li>The <dfn>setProperty()</dfn> method ...</li>
+        <li>The <dfn>getProperty()</dfn> method ...</li>
+        <li>The <dfn>addListener()</dfn> method ...</li>
+        <li>The <dfn>removeListener()</dfn> method ...</li>
+        <li>The <dfn>removeAllListeners()</dfn> method ...</li>
+      </ul>
+      
+      <section data-dfn-for="ThingEventListener">
+        <h2><dfn>ThingEventListener</dfn> callback</h2>
+        <p class="ednote">Add adequate description.</p>
+      </section>
+      
+      <section data-dfn-for="TDChangeData">
+        <h2><dfn>TDChangeData</dfn> typedef</h2>
+        <p class="ednote">Add adequate description.</p>
+      </section>
+      
+    </section>
+    
+    
+    <section data-dfn-for="PropertyChangeEvent">
+      <h2><dfn>PropertyChangeEvent</dfn> interface</h2>
+      <pre class="idl">
     [Constructor(PropertyChangeEventInit init)]
     interface PropertyChangeEvent: Event {
         readonly attribute PropertyChangeEventInit data;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>data</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="ActionInvocationEvent">
+      <h2><dfn>ActionInvocationEvent</dfn> interface</h2>
+      <pre class="idl">
     [Constructor(ActionInvocationEventInit init)]
     interface ActionInvocationEvent: Event {
         readonly attribute ActionInvocationEventInit data;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>data</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    <section data-dfn-for="ThingDescriptionChangeEvent">
+      <h2><dfn>ThingDescriptionChangeEvent</dfn> interface</h2>
+      <pre class="idl">
     [Constructor(ThingDescriptionChangeEventInit init)]
     interface ThingDescriptionChangeEvent: Event {
         readonly attribute ThingDescriptionChangeEventInit data;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>data</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="PropertyChangeEventInit">
+      <h2><dfn>PropertyChangeEventInit</dfn> dictionary</h2>
+      <pre class="idl">
     dictionary PropertyChangeEventInit {
         DOMString name;
         any value;
         any oldValue;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>name</dfn> attribute ...</li>
+        <li>The <dfn>value</dfn> attribute ...</li>
+        <li>The <dfn>oldValue</dfn> attribute ...</li>
+      </ul>
+    </section>
+     
+    <section data-dfn-for="ActionInvocationEventInit">
+      <h2><dfn>ActionInvocationEventInit</dfn> dictionary</h2>
+      <pre class="idl">
     dictionary ActionInvocationEventInit {
         DOMString actionName;
         any returnValue;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>actionName</dfn> attribute ...</li>
+        <li>The <dfn>returnValue</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="ThingDescriptionChangeEventInit">
+      <h2><dfn>ThingDescriptionChangeEventInit</dfn> dictionary</h2>
+      <pre class="idl">
     dictionary ThingDescriptionChangeEventInit {
         TDChangeType type;
         TDChangeMethod method;
         DOMString name;
         TDChangeData data;
     };
-
+      </pre>
+      <ul>
+        <li>The <dfn>type</dfn> attribute ...</li>
+        <li>The <dfn>method</dfn> attribute ...</li>
+        <li>The <dfn>name</dfn> attribute ...</li>
+        <li>The <dfn>data</dfn> attribute ...</li>
+      </ul>
+    </section>
+    
+    
+    <section data-dfn-for="TDChangeMethod">
+      <h2><dfn>TDChangeMethod</dfn> enumeration</h2>
+      <pre class="idl">
     enum TDChangeMethod { "add", "remove", "change" };
+      </pre>
+      <ul>
+        <li><dfn>add</dfn> ...</li>
+        <li><dfn>remove</dfn> ...</li>
+        <li><dfn>change</dfn> ...</li>
+      </ul>
+    </section>
+    
+    <section data-dfn-for="TDChangeType">
+      <h2><dfn>TDChangeType</dfn> enumeration</h2>
+      <pre class="idl">
     enum TDChangeType { "property", "action", "event" };
-    typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
-  </pre>
+      </pre>
+      <ul>
+        <li><dfn>property</dfn> ...</li>
+        <li><dfn>action</dfn> ...</li>
+        <li><dfn>event</dfn> ...</li>
+      </ul>
+    </section>
+     
+     
+    <section>
+      <h2>Examples</h2>
     <p>
       Below a <code><a>ConsumedThing</a></code> interface example is given.
     </p>
@@ -706,6 +953,7 @@
       },
     );
   </pre>
+    </section>
   </section>
 
   <section> <h2 id="security">Security and Privacy</h2>
