@@ -366,139 +366,126 @@
           The <dfn>createLocalThing()</dfn> method returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.
         </li>
       </ul>
-    </section>
 
-  <section data-dfn-for="ThingInit" >
-    <h2><dfn>ThingInit</dfn> dictionary</h2>
-    <p>The <a>ThingInit</a> dictionary is meant to initialize a local thing.</p>
-    <pre class="idl">
-      dictionary ThingInit {
-        DOMString name;
-        USVString url;
-        Dictionary description;
-      };
-    </pre>
-    <ul>
-      <li>The <dfn>name</dfn> attribute is about the name of the thing.</li>
-      <li>The <dfn>url</dfn> attribute is the location of the thing description.</li>
-      <li>The <dfn>description</dfn> attribute describes the thing.</li>
-    </ul>
-  </section>
+      <section data-dfn-for="ThingInit" >
+        <h2><dfn>ThingInit</dfn> dictionary</h2>
+        <p>The <a>ThingInit</a> dictionary is meant to initialize a local thing.</p>
+        <pre class="idl">
+          dictionary ThingInit {
+            DOMString name;
+            USVString url;
+            Dictionary description;
+          };
+        </pre>
+        <ul>
+          <li>The <dfn>name</dfn> attribute is about the name of the thing.</li>
+          <li>The <dfn>url</dfn> attribute is the location of the thing description.</li>
+          <li>The <dfn>description</dfn> attribute describes the thing.</li>
+        </ul>
+      </section>
 
-  <section data-dfn-for="DiscoveryType">
-    <h2><dfn>DiscoveryType</dfn> enumeration</h2>
-    <p>The <a>DiscoveryType</a> enumeration provides various kinds of discovery types.</p>
-    <pre class="idl">
-      enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
-    </pre>
-    <ul>
-      <li><dfn>any</dfn> does not provide any restriction</li>
-      <li><dfn>local</dfn> is for discovering local things</li>
-      <li><dfn>nearby</dfn> is for discovering things nearby</li>
-      <li><dfn>directory</dfn> bla</li>
-      <li><dfn>broadcast</dfn> bla</li>
-      <li><dfn>other</dfn> bla</li>
-    </ul>
-  </section>
+      <section data-dfn-for="DiscoveryType">
+        <h2><dfn>DiscoveryType</dfn> enumeration</h2>
+        <p>The <a>DiscoveryType</a> enumeration provides various kinds of discovery types.</p>
+        <pre class="idl">
+          enum DiscoveryType { "any", "local", "nearby", "directory", "broadcast", "other" };
+        </pre>
+        <ul>
+          <li><dfn>any</dfn> does not provide any restriction</li>
+          <li><dfn>local</dfn> is for discovering local things</li>
+          <li><dfn>nearby</dfn> is for discovering things nearby</li>
+          <li><dfn>directory</dfn> bla</li>
+          <li><dfn>broadcast</dfn> bla</li>
+          <li><dfn>other</dfn> bla</li>
+        </ul>
+      </section>
 
-  <section data-dfn-for="ThingFilter">
-    <h2><dfn>ThingFilter</dfn> disctionary</h2>
-    <p>The <a>ThingFilter</a> disctionary extends <a>ThingInit</a> and is meant for discovering a <a>ConsumedThing</a>.</p>
-    <pre class="idl">
-      dictionary ThingFilter: ThingInit {
-        (DiscoveryType or DOMString) type = "any";
-      };
-    </pre>
-    <ul>
-      <li><dfn>type</dfn> xyz</li>
-    </ul>
-  </section>
+      <section data-dfn-for="ThingFilter">
+        <h2><dfn>ThingFilter</dfn> dictionary</h2>
+        <p>The <a>ThingFilter</a> dictionary extends <a>ThingInit</a> and is meant for discovering a <a>ConsumedThing</a>.</p>
+        <pre class="idl">
+          dictionary ThingFilter: ThingInit {
+            (DiscoveryType or DOMString) type = "any";
+          };
+        </pre>
+        <ul>
+          <li><dfn>type</dfn> xyz</li>
+        </ul>
+      </section>
 
-  <section> <h2>Examples</h2>
-    <p>
-      Below some <code>WoT</code> interface examples are given.
-    </p>
-    <pre class="example" title="Discover Things via registry">
-      let subscription = wot.discover({ type: "registry", url: "http://wot.registry.org" }).subscribe(
-        thing => { console.log("Found Thing " + thing.url); },
-        error => { console.log("Discovery finished because an error: " + error.message); },
-        () => { console.log("Discovery finished successfully");}
-      );
-
-      setTimeout(
-        () => { subscription.unsubscribe(); console.log("Discovery timeout"); },
-        5000);
-    </pre>
-    <p class="note">
-      Note that canceling a discovery (through unsubscribe) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
-    </p>
-    <pre class="example" title="Discover Things exposed by local hardware">
-      let subscription = wot.discover({ type: "local" }).subscribe(
-        thing => { console.log("Found local Thing " + thing.url); },
-        error => { console.log("Discovery finished because an error: " + error.message); },
-        () => { console.log("Discovery finished successfully");}
-      );
-    </pre>
-    <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
-      let subscription = wot.discover({ type: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
-        thing => { console.log("Found nearby Thing " + thing.url); },
-        error => { console.log("Discovery finished because an error: " + error.message); },
-        () => { console.log("Discovery finished successfully");}
-      );
-    </pre>
-    <pre class="example" title="Discover Things exposed in a proprietary way">
-      let subscription = wot.discover({ type: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
-        thing => { console.log("Found Thing " + thing.url); },
-        error => { console.log("Discovery finished because an error: " + error.message); },
-        () => { console.log("Discovery finished successfully");}
-      );
-    </pre>
-  </section>
+      <section> <h2>Examples</h2>
+        <p>
+          Below some <code>WoT</code> interface examples are given.
+        </p>
+        <pre class="example" title="Discover Things via registry">
+          let discoveryType = { type: "registry", url: "http://wot.registry.org" };
+          let subscription = wot.discover(discoveryType).subscribe(
+            thing => { console.log("Found Thing " + thing.url); },
+            error => { console.log("Discovery finished because an error: " + error.message); },
+            () => { console.log("Discovery finished successfully");}
+          );
+          setTimeout(
+            () => { subscription.unsubscribe(); console.log("Discovery timeout"); },
+            5000);
+        </pre>
+        <p class="note">
+          Note that canceling a discovery (through unsubscribe) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
+        </p>
+        <pre class="example" title="Discover Things exposed by local hardware">
+          let subscription = wot.discover({ type: "local" }).subscribe(
+            thing => { console.log("Found local Thing " + thing.url); },
+            error => { console.log("Discovery finished because an error: " + error.message); },
+            () => { console.log("Discovery finished successfully");}
+          );
+        </pre>
+        <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
+          let subscription = wot.discover({ type: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
+            thing => { console.log("Found nearby Thing " + thing.url); },
+            error => { console.log("Discovery finished because an error: " + error.message); },
+            () => { console.log("Discovery finished successfully");}
+          );
+        </pre>
+        <pre class="example" title="Discover Things exposed in a proprietary way">
+          let subscription = wot.discover({ type: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
+            thing => { console.log("Found Thing " + thing.url); },
+            error => { console.log("Discovery finished because an error: " + error.message); },
+            () => { console.log("Discovery finished successfully");}
+          );
+        </pre>
+      </section> <!-- Examples -->
+    </section> <!-- WoT object -->
+  </section> <!-- WoT API -->
 
   <section> <h2>The Thing Server API</h2>
     <p>
       The <a>ExposedThing</a> interface allows for adding properties, actions, and events to a <a>Thing</a>. Similarly, the afore mentioned interactions can be removed again or handlers can be defined for each request type.
     </p>
-
     <section data-dfn-for="ExposedThing">
       <h2><dfn>ExposedThing</dfn> interface</h2>
       <pre class="idl">
         interface ExposedThing {
-
           // define TD modifiers
           ExposedThing addProperty(ThingPropertyInit property);
           ExposedThing removeProperty(DOMString name);
-
           ExposedThing addAction(ThingActionInit action);
           ExposedThing removeAction(DOMString name);
-
           ExposedThing addEvent(ThingEventInit event);
           ExposedThing removeEvent(DOMString name);
-
           Promise&lt;void&gt; register(optional USVString directory);
           Promise&lt;void&gt; unregister();
-
           Promise&lt;void&gt; start();
           Promise&lt;void&gt; stop();
-
           Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
-
           // define request handlers (one per request type, so no events here)
-
           ExposedThing onRetrieveProperty(PropertyRequestHandler handler);
           ExposedThing onUpdateProperty(PropertyRequestHandler handler);
-
           ExposedThing onInvokeAction(ActionRequestHandler handler);
-
           ExposedThing onObserve(ObserveRequestHandler handler);
         };
-
         ExposedThing implements ConsumedThing;
-
         callback PropertyRequestHandler = any (PropertyRequest request);
         callback ActionRequestHandler = any (ActionRequest request);
         callback ObserveRequestHandler = any (ObserveRequest request);
-
       </pre>
       <ul>
         <li>The <dfn>addProperty()</dfn> method xyz.</li>
@@ -587,7 +574,7 @@
     <section data-dfn-for="ObserveType">
       <h2><dfn>ObserveType</dfn> enumeration</h2>
       <pre class="idl">
-    enum ObserveType { "property", "action", "event", "td" };
+        enum ObserveType { "property", "action", "event", "td" };
       </pre>
       <ul>
         <li><dfn>property</dfn> ...</li>
@@ -600,10 +587,10 @@
     <section data-dfn-for="SemanticType">
       <h2><dfn>SemanticType</dfn> dictionary</h2>
       <pre class="idl">
-    dictionary SemanticType {
-      DOMString name;
-      DOMString context;
-    };
+        dictionary SemanticType {
+          DOMString name;
+          DOMString context;
+        };
       </pre>
       <ul>
         <li>The <dfn>name</dfn> attribute ...</li>
@@ -615,15 +602,15 @@
     <section data-dfn-for="ThingPropertyInit">
       <h2><dfn>ThingPropertyInit</dfn> dictionary</h2>
       <pre class="idl">
-    dictionary ThingPropertyInit {
-      DOMString name;
-      boolean configurable = true;
-      boolean enumerable = true;
-      boolean writable = true;
-      sequence&lt;SemanticType&gt; semanticTypes;
-      Dictionary dataDescription;
-      any value;
-    };
+        dictionary ThingPropertyInit {
+          DOMString name;
+          boolean configurable = true;
+          boolean enumerable = true;
+          boolean writable = true;
+          sequence&lt;SemanticType&gt; semanticTypes;
+          Dictionary dataDescription;
+          any value;
+        };
       </pre>
       <ul>
         <li>The <dfn>name</dfn> attribute ...</li>
@@ -716,7 +703,6 @@
           name: "mySensor",
           uri: "http://myregistry.org/mySensor/description"
         };
-
         WoT.createLocalThing(thingDescription)
           .then(function(thing) {
             // properties, actions and events are added based on the TD
@@ -751,7 +737,6 @@
             // ...
           }
         };
-
         WoT.createLocalThing(thingDescription)
           .then(function(thing) {
             // properties, actions and events are added based on the TD
@@ -771,18 +756,14 @@
           readonly attribute DOMString name;
           readonly attribute USVString url;
           readonly attribute Dictionary description;
-
           Promise&lt;any&gt; invokeAction(DOMString name, sequence&lt;any&gt; parameters);
           Promise&lt;void&gt; setProperty(DOMString name, any value);
           Promise&lt;any&gt; getProperty(DOMString name);
-
           ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
           ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
           ConsumedThing removeAllListeners(DOMString eventName);
         };
-
         callback ThingEventListener = void (Event event);
-
         typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
       </pre>
       <ul>
