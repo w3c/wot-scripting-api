@@ -241,6 +241,8 @@
     <p>
       <a href="http://heycam.github.io/webidl/#idl-DOMString">
         <code><dfn>DOMString</dfn></code></a>,
+      <a href="https://heycam.github.io/webidl/#idl-USVString">
+        <code><dfn>USVString</dfn></code></a>,
       <a href="http://heycam.github.io/webidl/#idl-ArrayBuffer">
         <code><dfn>ArrayBuffer</dfn></code></a>,
       <a href="http://heycam.github.io/webidl/#common-BufferSource">
@@ -424,16 +426,25 @@
       <section data-dfn-for="DiscoveryMethod">
         <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h4>
         <pre class="idl">
-          enum DiscoveryMethod { "any", "local", "nearby", "directory", "broadcast" };
+          enum DiscoveryMethod { "any", "local", "nearby", "directory", "broadcast", "other" };
         </pre>
         <p>
           The <a>DiscoveryMethod</a> enumeration represents the discovery type to be used:
           <ul>
-            <li><dfn>any</dfn> does not provide any restriction</li>
-            <li><dfn>local</dfn> for discovering <a>Things</a> defined in the same device</li>
-            <li><dfn>nearby</dfn> for discovering <a>Things</a> nearby the device, e.g. by Bluetooth or NFC</li>
-            <li><dfn>directory</dfn> for discovery based on a service provided by a directory or repository of <a>Thing</a>s</li>
-            <li><dfn>broadcast</dfn> for an open ended discovery based on sending a request to a broadcast address.</li>
+            <li>"<dfn>any</dfn>" does not provide any restriction</li>
+            <li>"<dfn>local</dfn>" for discovering <a>Things</a> defined in the same device</li>
+            <li>
+              "<dfn>nearby</dfn>" for discovering <a>Things</a> nearby the device, e.g. by Bluetooth or NFC
+            </li>
+            <li>
+              "<dfn>directory</dfn>" for discovery based on a service provided by a directory or repository of <a>Thing</a>s
+            </li>
+            <li>
+              "<dfn>broadcast</dfn>" for an open ended discovery based on sending a request to a broadcast address
+            </li>
+            <li>
+              "<dfn>other</dfn>" for a proprietary method defined by the solution.
+            </li>
           </ul>
         </p>
       </section>
@@ -441,7 +452,7 @@
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via registry">
-        let discoveryType = { type: "registry", url: "http://wot.registry.org" };
+        let discoveryType = { method: "registry", url: "http://wot.registry.org" };
         let subscription = wot.discover(discoveryType).subscribe(
           thing => { console.log("Found Thing " + thing.url); },
           error => { console.log("Discovery finished because an error: " + error.message); },
@@ -455,21 +466,21 @@
         Note that canceling a discovery (through unsubscribe) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
       </p>
       <pre class="example" title="Discover Things exposed by local hardware">
-        let subscription = wot.discover({ type: "local" }).subscribe(
+        let subscription = wot.discover({ method: "local" }).subscribe(
           thing => { console.log("Found local Thing " + thing.url); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
-        let subscription = wot.discover({ type: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
+        let subscription = wot.discover({ method: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
           thing => { console.log("Found nearby Thing " + thing.url); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Discover Things exposed in a proprietary way">
-        let subscription = wot.discover({ type: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
+        let subscription = wot.discover({ method: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
           thing => { console.log("Found Thing " + thing.url); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
@@ -844,10 +855,10 @@
       </pre>
 
       <pre class="example highlight" title="Create a new exposed Thing from a TD URI">
-        let thingDescription = {
-          name: "mySensor",
-          uri: "http://myregistry.org/mySensor/description"
-        };
+        let thingDescription = '{
+          "name": "mySensor",
+          "url": "http://myregistry.org/mySensor/description"
+        }';
         WoT.createLocalThing(thingDescription)
           .then(function(thing) {
             // properties, actions and events are added based on the TD
@@ -868,9 +879,9 @@
       </pre>
 
       <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
-        let thingDescription = {
-          name: "mySensor",
-          description: {
+        let thingDescription = '{
+          "name": "mySensor",
+          "description": {
             "@context": [
               "http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
               "http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
@@ -880,7 +891,7 @@
               // ...
             ]
             // ...
-          }
+          }'
         };
         WoT.createLocalThing(thingDescription)
           .then(function(thing) {
