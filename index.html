@@ -66,6 +66,24 @@
           },
         ],
         localBiblio: {
+          "WOT-ARCHITECTURE" : {
+            href:"https://w3c.github.io/wot-architecture/",
+            title: "Web of Things Architecture",
+            publisher: "W3C",
+            date: "20 August 2017"
+          },
+          "WOT-TD" : {
+            href:"https://w3c.github.io/wot-thing-description/",
+            title: "WoT Thing Description ",
+            publisher: "W3C",
+            date: "20 August 2017"
+          },
+          "WOT-PROTOCOL-BINDINGS" : {
+            href:"https://w3c.github.io/wot-binding-templates/",
+            title: "Web of Things Protocol Binding Templates",
+            publisher: "W3C",
+            date: "20 August 2017"
+          },
           "WOT-PRACTICES": {
             href:"http://w3c.github.io/wot/current-practices/wot-practices.html",
             title: "Web of Things Current Practices",
@@ -107,7 +125,7 @@
       This document defines conformance criteria that apply to a single product: the <dfn>UA</dfn> (user agent) that implements the interfaces it contains.
     </p>
     <p>
-      This specification can be used for implementing the WoT Scripting API in multiple language bindings. Currently ECMAScript and TypeScript definitions are described in this document. For specifying bindings in other languages, extensions of this document may be created later.
+      This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
     </p>
     <p>
       The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes such as the [JavaScript Runtime for Zephyr OS](https://www.zephyrproject.org/community/blog/introducing-javascript-runtime-zephyr-os).
@@ -125,36 +143,48 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The following terms are defined in [[!WOT-PRACTICES]]:
+      The following terms are defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>). Other terms are defined as follows.
     </p>
     <dl>
-      <dt><dfn data-lt="Things">Thing</dfn></dt>
-      <dd>A physical or virtual entity that represents physicality, such as a device, a group of devices, a room, or a software stack that exposes <a>WoT interface</a>s.</dd>
-
-      <dt><dfn data-lt="TD|TDs|Thing Descriptions">Thing Description</dfn></dt>
-      <dd>Structured data describing a physical device or software service (WoT Thing) that includes metadata, links to domain-specific vocabulary, a list of offered interactions, the supported protocol bindings for each interaction, and links to related Things.</dd>
-
       <dt><dfn>WoT Interface</dfn></dt>
-      <dd>Resource-oriented, REST-ful Web interface that allows access to <a>Things</a> exposed over a network using different <a>Protocol Bindings</a>, as defined by <a>Thing Description</a>s.</dd>
+      <dd>
+        The network-facing interface of a <a>Thing</a> as defined by its <a>Thing Description</a>.
+      </dd>
 
       <dt><dfn>Protocol Bindings</dfn></dt>
-      <dd>A mapping from operations on the WoT resource model to specific operations of a protocol. Protocol bindings are being defined for HTTP, CoAP, Bluetooth Smart (BLE), MQTT, WebSockets, etc.</dd>
+      <dd>
+        A mapping from operations on the WoT resource model to specific operations of a protocol, defined by a <dfn>Protocol Binding Template</dfn> for a given protocol. Protocol bindings are being defined for HTTP, CoAP, Bluetooth Smart (BLE), MQTT, WebSockets, etc.
+      </dd>
+
+      <dt><dfn>WoT Runtime</dfn></dt>
+      <dd>
+        A script execution environment that manages the lifecycle of WoT application scripts, implements a script interpreter, an event loop, a security enforcement point for access management and uses lower-level APIs to provide access to local and remote resources. A <a>WoT Runtime</a> should be isolated from other execution environments on memory address space, storage address space (file system), network namespace, etc.
+      </dd>
+      <p class="note">
+        In this version of the specification, a <a>WoT Runtime</a> is assumed to run scripts that uses this API to define one or more <a>Thing</a>s that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
+      </p>
+
+      <dt><dfn data-lt="local Thing">Local Things</dfn></dt>
+      <dd>
+        All <a>Thing</a>s that are contained in a <a>WoT Runtime</a>.
+      </dd>
+
+      <dt><dfn data-lt="remote Things|remote Thing">Remote Things</dfn></dt>
+      <dd>
+        All <a>Thing</a>s that run in a different <a>WoT Runtime</a>, even if on the same physical hardware.
+      </dd>
+
+      <dt><dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn></dt>
+      <dd>
+        Parsing the <a>Thing Description</a> and building a resource model with the use of <a>Protocol Bindings</a> that can be used in a script for accessing and controlling the Thing. A <a>Thing</a> when starts up, consumes its own <a>TD</a>, then it exposes its <a>WoT interface</a> as a server. Note that a script on a <a>Thing</a> may consume other <a>TD</a>s and expose a combined interface of the consumed <a>Thing</a>s.
+      </dd>
 
       <dt><dfn>JSON-LD</dfn></dt>
-      <dd>A JSON document that is augmented with support for Linked Data by providing an <code>@context</code> property with a defining URI [[!JSON-LD]].</dd>
+      <dd>
+        A JSON document that is augmented with support for Linked Data by providing an <code>@context</code> property with a defining URI [[!JSON-LD]].
+      </dd>
+
     </dl>
-    <p>
-      <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn> means parsing the <a>Thing Description</a> and building a resource model with the use of <a>Protocol Bindings</a> that can be used in a script for accessing and controlling the Thing. A <a>Thing</a> when starts up, consumes its own <a>TD</a>, then it exposes its <a>WoT interface</a> as a server. Note that a script on a <a>Thing</a> may consume other <a>TD</a>s and expose a combined interface of the consumed <a>Things</a>.
-    </p>
-    <p>
-      A <dfn>WoT Runtime</dfn> or <dfn>WR</dfn> is defined as a script execution environment that manages the lifecycle of WoT application scripts, implements a script interpreter, an event loop, a security enforcement point for access management and uses lower-level APIs to provide access to local and remote resources. A <a>WR</a> should be isolated from other execution environments on memory address space, storage address space (file system), network namespace, etc.
-    </p>
-    <p class="note">
-      In this version of the specification, a <a>WR</a> is assumed to run a single script that uses this API to define one or more <a>Things</a> that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
-    </p>
-      <p>
-       A <a>Thing</a> is represented either as a <a>ConsumedThing</a> (for <a>Things</a> obtained by discovery or retrieve operations) or <a>ExposedThing</a> (for <a>Thing</a>s created with this API inside the <a>WR</a>). All <a>ExposedThing</a>s contained in a <a>WR</a> are serving external requests through the same event loop, and are said to be <dfn>local Things</dfn> to each other. All other <a>Thing</a>s that run in a different <a>WR</a>, even if on the same physical hardware, are said to be <dfn>remote Things</dfn> to each other. Note that there may also be local  <a>ConsumedThing</a> objects as well.
-    </p>
     <p>
       The terms <a href="http://www.w3.org/TR/url-1/"><dfn>URL</dfn></a> and
       <a href="https://url.spec.whatwg.org/#concept-url-path">
@@ -252,7 +282,13 @@
       are defined in [[!WEBIDL]].
     </p>
     <p>
-      <a href="https://github.com/tc39/proposal-observable"><code><dfn>Observable</dfn></code>s</a> are proposed to be included in ECMAScript.
+      The term <dfn>event</dfn> and the <dfn>Event></dfn> object are defined in [DOM](https://www.w3.org/TR/DOM-Level-2-Events/events.html) and [Node.js](https://nodejs.org/api/events.html).
+    </p>
+    <p class="note">
+      This specification uses the convention that an event listener will receive an [Event](https://www.w3.org/TR/DOM-Level-2-Events/ecma-script-binding.html) object. This should work both in a browser environment and in a Node.js like environment.
+    </p>
+    <p>
+      <a href="https://github.com/tc39/proposal-observable"><dfn>Observable</dfn>s</a> are proposed to be included in ECMAScript.
     </p>
     <p>
       The algorithms <a href="http://www.w3.org/TR/encoding/#utf-8-encode">
@@ -281,10 +317,10 @@
       The following scripting use cases are covered in this specification:
     </p>
     <ul>
-      <li>Discover all <a>Things</a> in the WoT network by sending a broadcast request.</li>
-      <li>Discover <a>Things</a> running in the local <a>WoT Runtime</a>.</li>
-      <li>Discover nearby <a>Things</a>, for instance by NFC or Bluetooth.</li>
-      <li>Discover <a>Things</a> by sending a discovery request to a given registry.</li>
+      <li>Discover all <a>Thing</a>s in the WoT network by sending a broadcast request.</li>
+      <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
+      <li>Discover nearby <a>Thing</a>s, for instance by NFC or Bluetooth.</li>
+      <li>Discover <a>Thing</a>s by sending a discovery request to a given registry.</li>
       <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s</li>
       <li>Discover <a>Thing</a>s by semantic filters.</li>
       <li>Stop or suppress an ongoing discovery process.</li>
@@ -362,18 +398,21 @@
       interface WoT {
         Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
         Promise&lt;ConsumedThing&gt; retrieve(USVString url);
-        Promise&lt;ExposedThing&gt; createLocalThing(ThingInit init);
+        Promise&lt;ExposedThing&gt; createExposedThing(ThingInit init);
       };
     </pre>
 
-    <section> <h3>The <dfn>createLocalThing()</dfn> method</h3>
+    <p class="ednote">
+      The algorithms for the WoT methods will be specified later.
+    </p>
+
+    <section> <h3>The <dfn>createExposedThing()</dfn> method</h3>
       <p>
         Returns a [Promise](https://heycam.github.io/webidl/#idl-promise) of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.
       </p>
       <p class="ednote">
-        The algorithms for the WoT methods will be specified later.
+        The reason <a>ExposedThing</a>s are created by a factory method instead of a constructor is that an <a>ExposedThing</a> may be created in the local <a>WoT Runtime</a> or in a remote runtime. Even though currently only local creation is supported, the method is designed with this possible future compatibility in mind.
       </p>
-
       <section data-dfn-for="ThingInit" >
         <h4>The <dfn>ThingInit</dfn> dictionary</h4>>
         <pre class="idl">
@@ -432,9 +471,9 @@
           The <a>DiscoveryMethod</a> enumeration represents the discovery type to be used:
           <ul>
             <li>"<dfn>any</dfn>" does not provide any restriction</li>
-            <li>"<dfn>local</dfn>" for discovering <a>Things</a> defined in the same device</li>
+            <li>"<dfn>local</dfn>" for discovering <a>Thing</a>s defined in the same device</li>
             <li>
-              "<dfn>nearby</dfn>" for discovering <a>Things</a> nearby the device, e.g. by Bluetooth or NFC
+              "<dfn>nearby</dfn>" for discovering <a>Thing</a>s nearby the device, e.g. by Bluetooth or NFC
             </li>
             <li>
               "<dfn>directory</dfn>" for discovery based on a service provided by a directory or repository of <a>Thing</a>s
@@ -525,10 +564,10 @@
       <section data-dfn-for="ThingDescription">
       <h3>The <dfn>ThingDescription</dfn> type</h3>
         <p>
-          WoT provides a unified representation for data exchange between <a>Things</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
+          WoT provides a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
         </p>
         <p class="note">
-          In this version of the API, <a>Thing Descriptions</a> are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
+          In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
           Parsing and composing <a>Thing Description</a>s is left for external libraries until standardized here.
         </p>
       </section>
@@ -585,12 +624,12 @@
         </section>
         <section> <h3>The <dfn>respond()</dfn> method</h3>
           <p>
-            Sends a positive response to the <a>Request</a> based on the protocol bindings and includes the data specified by the <var>data</var> argument.
+            Sends a positive response to the <a>Request</a> based on the <a>Protocol Bindings</a> and includes the data specified by the <var>data</var> argument.
           </p>
         </section>
         <section> <h3>The <dfn>respondWithError()</dfn> method</h3>
           <p>
-            Sends a negative response to the <a>Request</a> based on the protocol bindings and includes the error specified by the <var>error</var> argument.
+            Sends a negative response to the <a>Request</a> based on the <a>Protocol Bindings</a> and includes the error specified by the <var>error</var> argument.
           </p>
         </section>
       </section> <!-- Request -->
@@ -598,7 +637,7 @@
       <section data-dfn-for="RequestHandler">
         <h3>The <dfn>RequestHandler</dfn> callback</h3>
         <p>
-          Callback function for handling interaction requests. Receives an argument <var>request</var> of type <code><a>Request</a></code> and should return an object or value that is used by protocol bindings to reply to the request. The returned type is defined by the <a>Thing Description</a>.
+          Callback function for handling interaction requests. Receives an argument <var>request</var> of type <code><a>Request</a></code> and should return an object or value that is used by <a>Protocol Bindings</a> to reply to the request. The returned type is defined by the <a>Thing Description</a>.
         </p>
       </section>
 
@@ -824,7 +863,7 @@
       </p>
 
       <pre class="example highlight" title="Create a new blank exposed Thing">
-        WoT.createLocalThing(thingDescription)
+        WoT.createExposedThing(thingDescription)
           .then(function(thing) {
             // manually add properties, actions, and events
             thing.addProperty({
@@ -859,7 +898,7 @@
           "name": "mySensor",
           "url": "http://myregistry.org/mySensor/description"
         }';
-        WoT.createLocalThing(thingDescription)
+        WoT.createExposedThing(thingDescription)
           .then(function(thing) {
             // properties, actions and events are added based on the TD
             console.log("created " + thing.name });
@@ -893,7 +932,7 @@
             // ...
           }'
         };
-        WoT.createLocalThing(thingDescription)
+        WoT.createExposedThing(thingDescription)
           .then(function(thing) {
             // properties, actions and events are added based on the TD
             // ...
@@ -939,19 +978,19 @@
 
       <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
         <p>
-          Takes the action name as the <var>name</var> argument and the list of parameters, then requests from the underlying platform (protocol bindings) to invoke the action on the remote <a>Thing</a> and return the result. Returns a <a>Promise</a> that resolves with the return value or rejects with an <a>Error</a>.
+          Takes the action name as the <var>name</var> argument and the list of parameters, then requests from the underlying platform and the <a>Protocol Bindings</a> to invoke the action on the remote <a>Thing</a> and return the result. Returns a <a>Promise</a> that resolves with the return value or rejects with an <a>Error</a>.
         </p>
       </section>
 
       <section> <h3>The <dfn>setProperty()</dfn> method</h3>
         <p>
-          Takes the property name as the <var>name</var> argument and the new value as the <var>value</var> argument, then requests from the underlying platform (protocol bindings) to update the property on the remote <a>Thing</a> and return the result. Returns a <a>Promise</a> that resolves on success or rejects with an <a>Error</a>.
+          Takes the property name as the <var>name</var> argument and the new value as the <var>value</var> argument, then requests from the underlying platform and the <a>Protocol Bindings</a> to update the property on the remote <a>Thing</a> and return the result. Returns a <a>Promise</a> that resolves on success or rejects with an <a>Error</a>.
         </p>
       </section>
 
       <section> <h3>The <dfn>getProperty()</dfn> method</h3>
         <p>
-          Takes the property name as the <var>name</var> argument, then requests from the underlying platform (protocol bindings) to retrieve the property on the remote <a>Thing</a> and return the result. Returns a <a>Promise</a> that resolves with the property value or rejects with an <a>Error</a>.
+          Takes the property name as the <var>name</var> argument, then requests from the underlying platform  and the <a>Protocol Bindings</a> to retrieve the property on the remote <a>Thing</a> and return the result. Returns a <a>Promise</a> that resolves with the property value or rejects with an <a>Error</a>.
         </p>
       </section>
 
@@ -984,7 +1023,9 @@
 
       <section data-dfn-for="ThingEventListener">
         <h2>The <dfn>ThingEventListener</dfn> callback</h2>
-        <p class="ednote">Add adequate description.</p>
+        <p>
+          A function called with an <a>Event</a> object when an event is emitted.
+        </p>
       </section>
 
       <section> <h2>Events</h2>
@@ -1000,7 +1041,7 @@
                 readonly attribute any value;
             };
           </pre>
-          <p>The <var>name</var> attribute of the event is <code>"propertychange"</code>.<p>
+          <p>The <var>name</var> attribute of the event is <code>"propertychange"</code>.</p>
           <p>The <dfn>value</dfn> attribute represents the new value of the property.</p>
         </section>
 
@@ -1103,9 +1144,9 @@
                 Represents the new description of the changed element. Depending on the change type, it can be either a <a>ThingPropertyInit</a>, <a>ThingActionInit</a>, or <a>ThingEventInit</a>.
               </p>
             </section>
-          </section>
-        </section>
-
+          </section> <!-- ThingDescriptionChangeEventInit -->
+        </section> <!-- ThingDescriptionChangeEvent -->
+      </section> <!-- Events -->
     </section> <!-- ConsumedThing -->
 
     <section>
