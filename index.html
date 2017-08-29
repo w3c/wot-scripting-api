@@ -369,7 +369,7 @@
 
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
-        Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>.
+        Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, starts the widest discovery the <a>Thing Description</a> and <a>Protocol Bindings</a> allow.
         Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.
       </p>
       <section data-dfn-for="ThingFilter">
@@ -380,13 +380,24 @@
         <pre class="idl">
           dictionary ThingFilter {
             (DiscoveryType or DOMString) method = "any";
+            USVString url;
+            Dictionary description;
           };
         </pre>
         <p>
           The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that can be extended by string values defined by solutions (with no guarantee of interoperability).
         </p>
+        <p>
+          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the directory server to be used.
+        </p>
+        <p>
+          The <dfn>description</dfn> property represents additional information for the discovery method in the form of a set of key-value pairs, as defined in the <a>Thing Description</a>.
+        </p>
         <p class="ednote">
-          The extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
+          The <a>DiscoveryMethod</a> enumeration can be extended by the <a>Thing Description</a> with values that are not specified here. This extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
+        </p>
+        <p class="ednote">
+          The <a>ThingFilter</a> dictionary may be extended later with further attributes.</p>
         </p>
       </section>
 
@@ -467,21 +478,21 @@
       <pre class="example" title="Discover Things exposed by local hardware">
         let subscription = wot.discover({ method: "local" }).subscribe(
           thing => { console.log("Found local Thing " + thing.url); },
-          error => { console.log("Discovery finished because an error: " + error.message); },
+          error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
         let subscription = wot.discover({ method: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
           thing => { console.log("Found nearby Thing " + thing.url); },
-          error => { console.log("Discovery finished because an error: " + error.message); },
+          error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Discover Things exposed in a proprietary way">
         let subscription = wot.discover({ method: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
           thing => { console.log("Found Thing " + thing.url); },
-          error => { console.log("Discovery finished because an error: " + error.message); },
+          error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
