@@ -20,16 +20,25 @@
         noIDLIn:              true,
         format:               'markdown',
         editors: [
-          { name: "Zoltan Kis", company: "Intel" },
-          { name: "Kazuaki Nimura", company: "Fujitsu" },
-          { name: "Daniel Peintner", company: "Siemens" },
+          { name: "Zoltan Kis", company: "Intel", companyURL: "https://www.intel.com/" },
+          { name: "Kazuaki Nimura", company: "Fujitsu", companyURL: "https://www.fujitsu.com/" },
+          { name: "Daniel Peintner", company: "Siemens", companyURL: "https://www.siemens.com/" },
         ],
         wg:           "Web of Things Working Group",
         wgURI:        "https://www.w3.org/WoT/WG/",
-        wgPublicList: "member-wot-wg@w3.org",
+        wgPublicList: "public-wot-wg@w3.org",
         issueBase: "https://www.github.com/w3c/wot-scripting-api/issues/",
         githubAPI: "https://api.github.com/repos/w3c/wot-scripting-api",
         otherLinks: [
+          {
+            key: "Contributors",
+            data: [
+                {
+                  value: "In the Github repository",
+                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
+                }
+            ]
+          },
           {
             key: "Repository",
             data: [{
@@ -39,29 +48,11 @@
                   value: "File a bug.",
                   href: "https://github.com/w3c/wot-scripting-api/issues"
               }, {
-                  value: "Commit history.",
-                  href: "https://github.com/w3c/wot-scripting-api/commits/"
-              }, {
-                  value: "Use cases",
-                  href: "https://github.com/w3c/wot-scripting-api/use-cases.html"
-              }, {
-                  value: "Security and Privacy",
-                  href: "https://github.com/w3c/wot-scripting-api/security-privacy.html"
-              }, {
                   value: "Rationale",
                   href: "https://w3c.github.io/wot-scripting-api/rationale"
               }, {
                   value: "Primer",
                   href: "https://w3c.github.io/wot-scripting-api/primer"              }
-            ]
-          },
-          {
-            key: "Contributors",
-            data: [
-                {
-                  value: "In the github repository",
-                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
-                }
             ]
           },
         ],
