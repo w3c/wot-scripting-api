@@ -1,4 +1,4 @@
-# WoT reverse proxy
+# WoT Thing Directory (reverse proxy)
 
 This document explains about reverse proxy that provides a mean for realizing proxy or agent of things that depicted in [Web of Things (WoT) Architecture](https://w3c.github.io/wot-architecture/) or [Primer for Scripting API](https://w3c.github.io/wot-scripting-api/primer) and how it realized using ScriptingAPI.
 
@@ -10,11 +10,11 @@ The reverse proxy has two types:
 - reverse proxy without cache: When a servient (servient#1) for reverse proxy is called, it synchronously accesses to another servient (servient#2) and device underneath.
 - reverse proxy with cache: Caching the status of servient#1 and replicating on servient#2 even if servient#1 or device underneath loose the network connection.
 
-## 2. Reverse proxy using TD and ScrptingAPI
+## 2. Reverse proxy using TD and Scripting API
 
 One way to realize the reverse proxy is synchronization of [Thing Description(TD)](https://w3c.github.io/wot-thing-description/) using [Scripting API](https://w3c.github.io/wot-scripting-api/).<br>
 
-<img src=/images/ReverseProxy1.png width=300 alt="Fig.1">
+<img src=./images/ReverseProxy1.png width=300 alt="Fig.1">
 
 ### 2.1. Reverse proxy without cache
 
@@ -46,11 +46,11 @@ ething: an instance of ExposedThing in the servient<br>
 - Client gets the TD from TD repository #2 by WoT.discover, and accesses the servient#1 via servient#2.
 <br>
 
-<img src=/images/ReverseProxy2.png width=600 alt="Fig.2">
+<img src=./images/ReverseProxy2.png width=600 alt="Fig.2">
 
 
 #### Flow
-<img src=/images/ReverseProxy3.png width=800 alt="Fig.3">
+<img src=./images/ReverseProxy3.png width=800 alt="Fig.3">
 
 ##### TD synchronization
 When thing has changed e.g. network IP has changed, it is necessary to propagete to the corresponding servients.
@@ -103,11 +103,11 @@ ething: an instance of ExposedThing in the servient<br>
 - Client gets the TD from TD repo #2 by WoT.discover, accesses the servient#1 via servient#2 when servient#1 is accessible, and replicate the responses by accessing a cache in the servient#2 when servient#1 is not accessible.
 <br>
 
-<img src=/images/ReverseProxy4.png width=600 alt="Fig.4">
+<img src=./images/ReverseProxy4.png width=600 alt="Fig.4">
 
 #### Flow
 
-<img src=/images/ReverseProxy5.png width=800 alt="Fig.5">
+<img src=./images/ReverseProxy5.png width=800 alt="Fig.5">
 
 ##### TD synchronization
 TD synchronization behaves same as the previous one.

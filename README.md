@@ -6,7 +6,7 @@ See the [rationale.md](./rationale.md) for explanation on API design choices.
 
 See the [primer.md](./primer/README.md) for explaining and illustrating the usage of the API.
 
-See the [TypeScript definitions](./typescript-defs/wot.d.ts) of this API.
+See the [TypeScript definitions](./typescript-defs/wot.d.ts) for this API.
 
 See the [applications/script-manager](./applications/script-manager/README.md) on the design of a Thing for script management.
 

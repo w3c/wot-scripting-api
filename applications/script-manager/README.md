@@ -1,4 +1,4 @@
-# WoT ManagerThing
+# WoT Script Manager Thing
 
 The purpose of this document is to explain ManagerThing that can deal remote Thing lifecycle management by co-working with ScriptingAPI.
 
@@ -96,11 +96,11 @@ interface ScriptManagerThing {
 #### 5.1 Preparation for remote management
 Servient supports fixed management command that declared as TD for ManagerThing. The servient exposes API and is controlled by external client through the TD. Client has a program that issues WoT.discover() command to obtain the TD.<br>
 
-<img src=/images/ManagerThing_Fig1.png width=600 alt="Fig.1">
+<img src=./images/ManagerThing_Fig1.png width=600 alt="Fig.1">
 
 The following diagram depicts how ManagerThing preapard to use.
 
-<img src=/images/ManagerThing1.png width=600 alt="Fig.2">
+<img src=./images/ManagerThing1.png width=600 alt="Fig.2">
 
 - ManagerThing registers a TD for ManagerThing to a TD repository.
 - ConsumedThing in an external client acquires the TD by WoT. discover command.
@@ -112,7 +112,7 @@ The external client manages a servient remotely using Scripting API(ConsumedThin
 - Servient has a ManagerThing and the ManagerThing is accessed from the client remotely.
 - ManagerThing inherited the mechanism from ExposedThing and expose WoT API for ManagerThing.
 
-<img src=/images/ManagerThing_Fig2.png width=600 alt="Fig.3">
+<img src=./images/ManagerThing_Fig2.png width=600 alt="Fig.3">
 
 The script of left hand side (Script#1) shows the part of ManagerThing program to manage servient and the APIs are exposed.<br>
 
@@ -123,7 +123,7 @@ The script of right hand side (Script#3) shows a sript for ConsumedThing to mana
 - For example, when client invoke "install" and "run" commands, servient gets script and save, then execute the script.
 
 The following diagram depicts how ManagerThing works based on the usage of a script installation.
-<img src=/images/ManagerThing2.png width=600 alt="Fig.4">
+<img src=./images/ManagerThing2.png width=600 alt="Fig.4">
 
 - Install:<br>
 ConsumedThing in external client issues install command to ManagerThing by invokeAction.<br>
