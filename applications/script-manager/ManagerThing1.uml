@@ -1,0 +1,5 @@
+@startuml
+ManagerThing -> TD_repo: register TD for ManagerThing
+TD_repo <- ConsumedThing: get TD by Wot.discover
+TD_repo --> ConsumedThing: TD
+@enduml
