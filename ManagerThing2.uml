@@ -1,0 +1,20 @@
+@startuml
+participant Script_repo
+participant ManagerThing
+participant Execution_area
+participant ConsumedThing
+
+ConsumedThing -> ManagerThing: invokeAction("install",...
+ManagerThing -> Script_repo: get script
+ManagerThing <-- Script_repo: script
+Execution_area <-- ManagerThing: install script
+
+ConsumedThing -> ManagerThing: invokeAction("run",...
+ManagerThing -> Execution_area: execute script
+
+ConsumedThing -> ManagerThing: invokeAction("stop",...
+ManagerThing -> Execution_area: stop executing script
+
+ConsumedThing -> ManagerThing: invokeAction("uninstall",...
+ManagerThing -> Execution_area: uninstall script
+@enduml
