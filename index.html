@@ -101,7 +101,13 @@
 
   <section id="abstract">
     <p>
-      This specification describes a programming interface to the <a>Web of Things</a> (WoT), that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a <a>Client API</a>, provide resources characterized by properties, actions and events through a <a>Server API</a>, and access locally attached hardware. Scripting is an optional building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://w3c.github.io/wot-scripting-api/script-manager/")>script management</a>, providing a way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://w3c.github.io/wot-scripting-api/script-manager/")>Things Directory</a>.
+      The <a>Web of Things</a> (WoT) provides layered interoperability between <a>Things</a> by using the <a>WoT Interface</a>s.
+    </p>
+    <p>
+      This specification describes a convenient programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and access other <a>Thing</a>s through a <a>Client API</a>, provide resources characterized by properties, actions and events through a <a>Server API</a>, and access locally attached hardware.
+    </p>
+    <p>
+      Scripting is an optional building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://w3c.github.io/wot-scripting-api/script-manager/")>script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://w3c.github.io/wot-scripting-api/script-manager/")>Things Directory</a>.
     </p>
   </section>
 
@@ -111,153 +117,13 @@
     </p>
   </section>
 
-  <section id="conformance">
-    <p>
-      This document defines conformance criteria that apply to a single product: the <dfn>UA</dfn> (user agent) that implements the interfaces it contains.
-    </p>
-    <p>
-      This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
-    </p>
-    <p>
-      The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes.
-    </p>
-    <p>
-      Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
-    </p>
-    <p>
-      Implementations that use TypeScript or ECMAScript in a runtime to implement the APIs defined in this document MUST implement them in a manner consistent with the TypeScript Bindings defined in the TypeScript specification [[!TYPESCRIPT]].
-    </p>
-    <p>
-      This document serves a general description of the WoT Scripting API. Language and runtime specific issues are discussed in separate extensions of this document.
-    </p>
-  </section>
-
-  <section> <h2>Terminology and conventions</h2>
-    <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Things Directory</dfn> etc.
-    </p>
-    <p class="note">
-      In this version of the specification, a <a>WoT Runtime</a> is assumed to run scripts that uses this API to define one or more <a>Thing</a>s that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
-    </p>
-    <p>
-      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data by providing a <code>@context</code> property with a defining URI .
-      </dd>
-    </p>
-    <p>
-      The terms <a href="http://www.w3.org/TR/url-1/"><dfn>URL</dfn></a> and
-      <a href="https://url.spec.whatwg.org/#concept-url-path">
-      <dfn>URL path</dfn></a> are defined in [[!URL]].
-    </p>
-    <p>
-      The following terms are defined in [[!HTML5]] and are used in the context of browser implementations:
-      <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
-      <dfn>browsing context</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#top-level-browsing-context">
-      <dfn>top-level browsing context</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object">
-      <dfn>global object</dfn></a>,
-
-      <a href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
-      <dfn>incumbent settings object</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#document">
-      <dfn>Document</dfn></a>,
-
-      <a href="http://www.w3.org/TR/2011/WD-html5-20110113/urls.html#document-base-url">
-      <dfn>document base URL</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#window">
-      <dfn>Window</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#windowproxy">
-      <dfn>WindowProxy</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#origin">
-      <dfn>origin</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#ascii-serialisation-of-an-origin">
-      <dfn>ASCII serialized origin</dfn></a>,
-
-      executing algorithms <a href="https://html.spec.whatwg.org/#in-parallel">
-      <dfn>in parallel</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#queue-a-task">
-      <dfn>queue a task</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#task-source">
-      <dfn>task source</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#the-iframe-element">
-      <dfn>iframe</dfn></a>,
-
-      <a href="https://html.spec.whatwg.org/#valid-mime-type">
-      <dfn>valid MIME type</dfn></a>.
-    </p>
-    <p>
-      A <a>browsing context</a> refers to the environment in which
-      <a>Document</a> objects are presented to the user. A given
-      <a>browsing context</a> has a single <code><a>WindowProxy</a></code> object,
-      but it can have many <code><a>Document</a></code> objects, with their associated
-      <code><a>Window</a></code> objects. The <a>script execution context</a>
-      associated with the <i>browsing context</i> identifies the entity which
-      invokes this API, which can be a <i>web app</i>, a <i>web page</i>, or an
-      <a>iframe</a>.
-    </p>
-    <p>
-      The term
-      <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">
-      <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
-    </p>
-    <p>
-      <a href="https://tc39.github.io/ecma262/#sec-error-objects">
-      <dfn>Error</dfn>, <dfn>EvalError</dfn>, <dfn>RangeError</dfn>, <dfn>ReferenceError</dfn>, <dfn>SyntaxError</dfn>, <dfn>TypeError</dfn>, <dfn>URIError</dfn>
-      </a>,
-      <a href="https://tc39.github.io/ecma262/#sec-execution-contexts">
-        <dfn>script execution context</dfn></a>,
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">
-        <dfn>Promise</dfn></a>,
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json-object">
-        <dfn>JSON</dfn></a>,
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.stringify">
-        <dfn>JSON.stringify</dfn></a> and
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.parse">
-        <dfn>JSON.parse</dfn></a>
-      are defined in [[!ECMASCRIPT]].
-    </p>
-    <p>
-      <a href="http://heycam.github.io/webidl/#idl-DOMString"><dfn>DOMString</dfn></a>,
-      <a href="https://heycam.github.io/webidl/#idl-USVString"><dfn>USVString</dfn></a>,
-      <a href="http://heycam.github.io/webidl/#idl-ArrayBuffer"><dfn>ArrayBuffer</dfn></a>,
-      <a href="http://heycam.github.io/webidl/#common-BufferSource"><dfn>BufferSource</dfn></a> and
-      <a href="http://heycam.github.io/webidl/#idl-any"><dfn>any</dfn></a> are defined in [[!WEBIDL]].
-    </p>
-    <p>
-      The term <b><i>event</i></b> and the <dfn>Event</dfn> object are defined in [DOM](https://www.w3.org/TR/DOM-Level-2-Events/events.html) and [Node.js](https://nodejs.org/api/events.html).
-    </p>
-    <p class="note">
-      This specification uses the convention that an event listener will receive an [Event](https://www.w3.org/TR/DOM-Level-2-Events/ecma-script-binding.html) object. This should work both in a browser environment and in a Node.js like environment.
-    </p>
-    <p>
-      <a href="https://github.com/tc39/proposal-observable"><dfn>Observable</dfn>s</a> are proposed to be included in ECMAScript.
-    </p>
-    <p>
-      The algorithms <a href="http://www.w3.org/TR/encoding/#utf-8-encode">
-      <dfn>utf-8 encode</dfn></a>, and
-      <a href="http://www.w3.org/TR/encoding/#utf-8-decode">
-      <dfn>utf-8 decode</dfn></a> are defined in [[!ENCODING]].
-    </p>
-    <p>
-      <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
-      <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
-    </p>
-  </section>
-
   <section id="introduction"> <h2>Introduction</h2>
     <p>
       The overall WoT concepts are described in the [WoT Architecture](https://w3c.github.io/wot-architecture/) document.
-      The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD). By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the properties, actions and events exposed by the server <a>Thing</a>. Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> and instantiating a software stack needed to serve requests for accessing the exposed properties, actions and events. This specification describes how to expose and consume <a>Thing</a>s by a script. Support for scripting is optional for WoT devices.
+      The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>.
+    </p>
+    <p>
+      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the properties, actions and events exposed by the server <a>Thing</a>. Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> and instantiating a software stack needed to serve requests for accessing the exposed properties, actions and events. This specification describes how to expose and consume <a>Thing</a>s by a script. Support for scripting is optional for WoT devices.
     </p>
     <p class="note">
       Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
@@ -1135,7 +1001,150 @@
       The trust model, attacker model, threat model and possible mitigation
       proposals for WoT in general, and the Scripting API in particular are presented in the [WoT Security and Privacy](https://github.com/w3c/wot/tree/master/security-privacy) documents and the [WoT Architecture](https://w3c.github.io/wot-architecture/) documents [Security Considerations](https://w3c.github.io/wot-architecture/#security-considerations) section.
     </p>
-    <p class="ednote">The security section will be completed later.</p>
+    <p class="ednote">The security section is under development.</p>
+  </section>
+
+  <section> <h2>Terminology and conventions</h2>
+    <p>
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Things Directory</dfn> etc.
+    </p>
+    <p class="note">
+      In this version of the specification, a <a>WoT Runtime</a> is assumed to run scripts that uses this API to define one or more <a>Thing</a>s that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
+    </p>
+    <p>
+      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data by providing a <code>@context</code> property with a defining URI .
+      </dd>
+    </p>
+    <p>
+      The terms <a href="http://www.w3.org/TR/url-1/"><dfn>URL</dfn></a> and
+      <a href="https://url.spec.whatwg.org/#concept-url-path">
+      <dfn>URL path</dfn></a> are defined in [[!URL]].
+    </p>
+    <p>
+      The following terms are defined in [[!HTML5]] and are used in the context of browser implementations:
+      <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
+      <dfn>browsing context</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#top-level-browsing-context">
+      <dfn>top-level browsing context</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object">
+      <dfn>global object</dfn></a>,
+
+      <a href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
+      <dfn>incumbent settings object</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#document">
+      <dfn>Document</dfn></a>,
+
+      <a href="http://www.w3.org/TR/2011/WD-html5-20110113/urls.html#document-base-url">
+      <dfn>document base URL</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#window">
+      <dfn>Window</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#windowproxy">
+      <dfn>WindowProxy</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#origin">
+      <dfn>origin</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#ascii-serialisation-of-an-origin">
+      <dfn>ASCII serialized origin</dfn></a>,
+
+      executing algorithms <a href="https://html.spec.whatwg.org/#in-parallel">
+      <dfn>in parallel</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#queue-a-task">
+      <dfn>queue a task</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#task-source">
+      <dfn>task source</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#the-iframe-element">
+      <dfn>iframe</dfn></a>,
+
+      <a href="https://html.spec.whatwg.org/#valid-mime-type">
+      <dfn>valid MIME type</dfn></a>.
+    </p>
+    <p>
+      A <a>browsing context</a> refers to the environment in which
+      <a>Document</a> objects are presented to the user. A given
+      <a>browsing context</a> has a single <code><a>WindowProxy</a></code> object,
+      but it can have many <code><a>Document</a></code> objects, with their associated
+      <code><a>Window</a></code> objects. The <a>script execution context</a>
+      associated with the <i>browsing context</i> identifies the entity which
+      invokes this API, which can be a <i>web app</i>, a <i>web page</i>, or an
+      <a>iframe</a>.
+    </p>
+    <p>
+      The term
+      <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">
+      <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
+    </p>
+    <p>
+      <a href="https://tc39.github.io/ecma262/#sec-error-objects">
+      <dfn>Error</dfn>, <dfn>EvalError</dfn>, <dfn>RangeError</dfn>, <dfn>ReferenceError</dfn>, <dfn>SyntaxError</dfn>, <dfn>TypeError</dfn>, <dfn>URIError</dfn>
+      </a>,
+      <a href="https://tc39.github.io/ecma262/#sec-execution-contexts">
+        <dfn>script execution context</dfn></a>,
+      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">
+        <dfn>Promise</dfn></a>,
+      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json-object">
+        <dfn>JSON</dfn></a>,
+      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.stringify">
+        <dfn>JSON.stringify</dfn></a> and
+      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.parse">
+        <dfn>JSON.parse</dfn></a>
+      are defined in [[!ECMASCRIPT]].
+    </p>
+    <p>
+      <a href="http://heycam.github.io/webidl/#idl-DOMString"><dfn>DOMString</dfn></a>,
+      <a href="https://heycam.github.io/webidl/#idl-USVString"><dfn>USVString</dfn></a>,
+      <a href="http://heycam.github.io/webidl/#idl-ArrayBuffer"><dfn>ArrayBuffer</dfn></a>,
+      <a href="http://heycam.github.io/webidl/#common-BufferSource"><dfn>BufferSource</dfn></a> and
+      <a href="http://heycam.github.io/webidl/#idl-any"><dfn>any</dfn></a> are defined in [[!WEBIDL]].
+    </p>
+    <p>
+      The term <b><i>event</i></b> and the <dfn>Event</dfn> object are defined in [DOM](https://www.w3.org/TR/DOM-Level-2-Events/events.html) and [Node.js](https://nodejs.org/api/events.html).
+    </p>
+    <p class="note">
+      This specification uses the convention that an event listener will receive an [Event](https://www.w3.org/TR/DOM-Level-2-Events/ecma-script-binding.html) object. This should work both in a browser environment and in a Node.js like environment.
+    </p>
+    <p>
+      <a href="https://github.com/tc39/proposal-observable"><dfn>Observable</dfn>s</a> are proposed to be included in ECMAScript.
+    </p>
+    <p>
+      The algorithms <a href="http://www.w3.org/TR/encoding/#utf-8-encode">
+      <dfn>utf-8 encode</dfn></a>, and
+      <a href="http://www.w3.org/TR/encoding/#utf-8-decode">
+      <dfn>utf-8 decode</dfn></a> are defined in [[!ENCODING]].
+    </p>
+    <p>
+      <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
+      <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
+    </p>
+  </section>
+
+  <section id="conformance">
+    <p>
+      This document defines conformance criteria that apply to a single product: the <dfn>UA</dfn> (user agent) that implements the interfaces it contains.
+    </p>
+    <p>
+      This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
+    </p>
+    <p>
+      The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes.
+    </p>
+    <p>
+      Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
+    </p>
+    <p>
+      Implementations that use TypeScript or ECMAScript in a runtime to implement the APIs defined in this document MUST implement them in a manner consistent with the TypeScript Bindings defined in the TypeScript specification [[!TYPESCRIPT]].
+    </p>
+    <p>
+      This document serves a general description of the WoT Scripting API. Language and runtime specific issues are discussed in separate extensions of this document.
+    </p>
   </section>
 
   <section class="appendix" id="Changes"><h2>Changes</h2>
