@@ -21,8 +21,8 @@
         format:               'markdown',
         editors: [
           { name: "Zoltan Kis", company: "Intel", companyURL: "https://www.intel.com/" },
-          { name: "Kazuaki Nimura", company: "Fujitsu", companyURL: "https://www.fujitsu.com/" },
-          { name: "Daniel Peintner", company: "Siemens", companyURL: "https://www.siemens.com/" },
+          { name: "Kazuaki Nimura", company: "Fujitsu Ltd.", companyURL: "https://www.fujitsu.com/" },
+          { name: "Daniel Peintner", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
         ],
         wg:           "Web of Things Working Group",
         wgURI:        "https://www.w3.org/WoT/WG/",
@@ -47,12 +47,7 @@
               }, {
                   value: "File a bug",
                   href: "https://github.com/w3c/wot-scripting-api/issues"
-              }, {
-                  value: "Rationale",
-                  href: "https://w3c.github.io/wot-scripting-api/rationale"
-              }, {
-                  value: "Primer",
-                  href: "https://w3c.github.io/wot-scripting-api/primer"              }
+              },
             ]
           },
         ],
@@ -115,6 +110,10 @@
     <p>
       Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the [repository](https://github.com/w3c/wot-scripting-api) and take part in the discussions.
     </p>
+    <p class="ednote" title="The W3C WoT WG is asking for feedback">
+      Please contribute to this draft using the <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub Issue</a> feature of the <a href="https://github.com/w3c/wot-scripting-api/">WoT Scripting API</a> repository.
+      For feedback on security and privacy considerations, please use the <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> Issues.
+    </p>
   </section>
 
   <section id="introduction"> <h2>Introduction</h2>
@@ -130,6 +129,9 @@
     </p>
     <p class="note">
       Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
+    </p>
+    <p>
+      For an introduction on how scripts could be used in <a>Web of Things</a>, check the [Primer](https://w3c.github.io/wot-scripting-api/primer) document. For some background on API design decisions check the [Rationale](https://w3c.github.io/wot-scripting-api/rationale) document.
     </p>
   </section>
 
@@ -1020,7 +1022,7 @@
   <section> <h2 id="security">Security and Privacy</h2>
     <p>
       The trust model, attacker model, threat model and possible mitigation
-      proposals for WoT in general, and the Scripting API in particular are presented in the [WoT Security and Privacy](https://github.com/w3c/wot/tree/master/security-privacy) documents and the [WoT Architecture](https://w3c.github.io/wot-architecture/) documents [Security Considerations](https://w3c.github.io/wot-architecture/#security-considerations) section.
+      proposals for WoT in general, and the Scripting API in particular are presented in the [WoT Security and Privacy](https://github.com/w3c/wot-security/) documents and the [WoT Architecture](https://w3c.github.io/wot-architecture/) documents [Security Considerations](https://w3c.github.io/wot-architecture/#sec-security-considerations) section.
     </p>
     <p class="ednote">The security section is under development.</p>
   </section>
