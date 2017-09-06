@@ -21,8 +21,8 @@
         format:               'markdown',
         editors: [
           { name: "Zoltan Kis", company: "Intel", companyURL: "https://www.intel.com/" },
-          { name: "Kazuaki Nimura", company: "Fujitsu", companyURL: "https://www.fujitsu.com/" },
-          { name: "Daniel Peintner", company: "Siemens", companyURL: "https://www.siemens.com/" },
+          { name: "Kazuaki Nimura", company: "Fujitsu Ltd.", companyURL: "https://www.fujitsu.com/" },
+          { name: "Daniel Peintner", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
         ],
         wg:           "Web of Things Working Group",
         wgURI:        "https://www.w3.org/WoT/WG/",
@@ -34,7 +34,7 @@
             key: "Contributors",
             data: [
                 {
-                  value: "In the Github repository",
+                  value: "In the GitHub repository",
                   href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
                 }
             ]
@@ -42,17 +42,12 @@
           {
             key: "Repository",
             data: [{
-                  value: "We are on Github.",
+                  value: "We are on GitHub",
                   href: "https://github.com/w3c/wot-scripting-api"
               }, {
-                  value: "File a bug.",
+                  value: "File a bug",
                   href: "https://github.com/w3c/wot-scripting-api/issues"
-              }, {
-                  value: "Rationale",
-                  href: "https://w3c.github.io/wot-scripting-api/rationale"
-              }, {
-                  value: "Primer",
-                  href: "https://w3c.github.io/wot-scripting-api/primer"              }
+              },
             ]
           },
         ],
@@ -115,6 +110,10 @@
     <p>
       Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the [repository](https://github.com/w3c/wot-scripting-api) and take part in the discussions.
     </p>
+    <p class="ednote" title="The W3C WoT WG is asking for feedback">
+      Please contribute to this draft using the <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub Issue</a> feature of the <a href="https://github.com/w3c/wot-scripting-api/">WoT Scripting API</a> repository.
+      For feedback on security and privacy considerations, please use the <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> Issues.
+    </p>
   </section>
 
   <section id="introduction"> <h2>Introduction</h2>
@@ -130,6 +129,9 @@
     </p>
     <p class="note">
       Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
+    </p>
+    <p>
+      For an introduction on how scripts could be used in <a>Web of Things</a>, check the [Primer](https://w3c.github.io/wot-scripting-api/primer) document. For some background on API design decisions check the [Rationale](https://w3c.github.io/wot-scripting-api/rationale) document.
     </p>
   </section>
 
@@ -464,13 +466,25 @@
       <section data-dfn-for="PropertyChangeEvent">
         <h3>The <dfn>PropertyChangeEvent</dfn> interface</h3>
         <pre class="idl">
-          [Constructor(any value)]
+          [Constructor(PropertyChangeEventInit init)]
           interface PropertyChangeEvent: Event {
-              readonly attribute any value;
+            readonly attribute PropertyChangeEventInit data;
           };
         </pre>
-        <p>The <var>name</var> attribute of the event is <code>"propertychange"</code>.</p>
-        <p>The <dfn>value</dfn> attribute represents the new value of the <a>Property</a>.</p>
+        <p>
+            The <dfn>data</dfn> attribute represents the changed <a>Property</a>.
+        </p>
+        <section data-dfn-for="PropertyChangeEventInit">
+          <h2>The <dfn>PropertyChangeEventInit</dfn> dictionary</h2>
+          <pre class="idl">
+            dictionary PropertyChangeEventInit {
+                DOMString name;
+                any value;
+            };
+          </pre>
+          <p>The <dfn>name</dfn>> attribute represents the <a>Property</a> name.</p>
+          <p>The <dfn>value</dfn> attribute represents the new value of the <a>Property</a>.</p>
+        </section>
       </section>
 
       <section data-dfn-for="ActionInvocationEvent">
@@ -1005,16 +1019,10 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section> <h2 id="security">Security and Privacy Considerations</h2>
-  <p class="ednote">
-  Please see the
-  <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a>
-  repository for work in progress regarding threat models, assets, risks,
-  recommended mitigations, and best practices for security and privacy for systems
-  using the Web of Things.
-  Once complete, security and privacy considerations relevant to the Scripting API will
-  be summarized in this section.
-</p>
+  <section> <h2 id="security">Security and Privacy</h2>
+    <p class="ednote">
+     Please see the <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a> repository for work in progress regarding threat models, assets, risks, recommended mitigations, and best practices for security and privacy for systems using the Web of Things. Once complete, security and privacy considerations relevant to the Scripting API will be summarized in this section.
+    </p>
   </section>
 
   <section> <h2>Terminology and conventions</h2>
