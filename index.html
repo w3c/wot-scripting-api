@@ -34,7 +34,7 @@
             key: "Contributors",
             data: [
                 {
-                  value: "In the Github repository",
+                  value: "In the GitHub repository",
                   href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
                 }
             ]
@@ -42,10 +42,10 @@
           {
             key: "Repository",
             data: [{
-                  value: "We are on Github.",
+                  value: "We are on GitHub",
                   href: "https://github.com/w3c/wot-scripting-api"
               }, {
-                  value: "File a bug.",
+                  value: "File a bug",
                   href: "https://github.com/w3c/wot-scripting-api/issues"
               }, {
                   value: "Rationale",
@@ -464,13 +464,25 @@
       <section data-dfn-for="PropertyChangeEvent">
         <h3>The <dfn>PropertyChangeEvent</dfn> interface</h3>
         <pre class="idl">
-          [Constructor(any value)]
+          [Constructor(PropertyChangeEventInit init)]
           interface PropertyChangeEvent: Event {
-              readonly attribute any value;
+            readonly attribute PropertyChangeEventInit data;
           };
         </pre>
-        <p>The <var>name</var> attribute of the event is <code>"propertychange"</code>.</p>
-        <p>The <dfn>value</dfn> attribute represents the new value of the <a>Property</a>.</p>
+        <p>
+            The <dfn>data</dfn> attribute represents the changed <a>Property</a>.
+        </p>
+        <section data-dfn-for="PropertyChangeEventInit">
+          <h2>The <dfn>PropertyChangeEventInit</dfn> dictionary</h2>
+          <pre class="idl">
+            dictionary PropertyChangeEventInit {
+                DOMString name;
+                any value;
+            };
+          </pre>
+          <p>The <dfn>name</dfn>> attribute represents the <a>Property</a> name.</p>
+          <p>The <dfn>value</dfn> attribute represents the new value of the <a>Property</a>.</p>
+        </section>
       </section>
 
       <section data-dfn-for="ActionInvocationEvent">
