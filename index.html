@@ -104,7 +104,7 @@
       The <a>Web of Things</a> (WoT) provides layered interoperability between <a>Things</a> by using the <a>WoT Interface</a>s.
     </p>
     <p>
-      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by properties, actions and events.
+      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by properties, <a>Actions</a> and <a>Events</a>.
     </p>
     <p>
       Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://w3c.github.io/wot-scripting-api/script-manager/")>script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://w3c.github.io/wot-scripting-api/script-manager/")>Thing Directory</a>.
@@ -123,10 +123,10 @@
       The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>. Support for scripting is optional for WoT devices.
     </p>
     <p>
-      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the properties, actions and events exposed by the server <a>Thing</a>.
+      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the properties, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a>.
     </p>
     <p>
-      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> and instantiating a software stack needed to serve requests for accessing the exposed properties, actions and events. This specification describes how to expose and consume <a>Thing</a>s by a script.
+      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> and instantiating a software stack needed to serve requests for accessing the exposed properties, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
     </p>
     <p class="note">
       Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
@@ -148,21 +148,23 @@
       <li>Fetch and <a>consume a TD</a> of a remote <a>Thing</a>.</li>
       <li>On a consumed <a>Thing</a>,
         <ul>
-          <li>Get the value of a property or set of properties.</li>
-          <li>Set the value of a property or a set of properties.</li>
-          <li>Invoke an action.</li>
+          <li>Get the value of a <a>Property</a> or set of properties.</li>
+          <li>Set the value of a <a>Property</a> or a set of properties.</li>
+          <li>Invoke an <a>Action</a>.</li>
           <li>
-            Observe events.
+            Observe <a>Events</a>.
             <ul>
-              <li>Add a listener to an event.</li>
-              <li>Remove a listener from an event.</li>
+              <li>Add a listener to an <a>Event</a>.</li>
+              <li>Remove a listener from an <a>Event</a>.</li>
               <li>Remove all listeners.</li>
             </ul>
-            Default events are the following:
+            Default <a>Events</a> are the following:
             <ul>
-              <li>A property has changed.</li>
-              <li>An action has been invoked.</li>
-              <li><a>Thing Description</a> has changed, i.e. properties, events or actions have been defined, removed, or the definition has changed.</li>
+              <li>A <a>Property</a> has changed.</li>
+              <li>An <a>Action</a> has been invoked.</li>
+              <li>
+                <a>Thing Description</a> has changed, i.e. <a>Properties</a>, <a>Events</a> or <a>Actions</a> have been defined, removed, or the definition has changed.
+              </li>
             </ul>
           </li>
         </ul>
@@ -172,20 +174,24 @@
       <li>Programmatically create and expose a local <a>Thing</a>. This may include the following use cases:
         <ul>
           <li>Create a local <a>Thing</a>.</li>
-          <li>Add a property definition to the <a>Thing</a>.</li>
-          <li>Add an event definition to the <a>Thing</a>.</li>
-          <li>Add an action definition to the <a>Thing</a>.</li>
-          <li>Attach semantic information to an action</li>
-          <li>Attach semantic information to a property</li>
-          <li>Attach semantic information to an event</li>
-          <li>Emit an event, i.e. notify all listeners subscribed to that event.</li>
+          <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
+          <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
+          <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
+          <li>Attach semantic information to an <a>Action</a></li>
+          <li>Attach semantic information to a <a>Property</a></li>
+          <li>Attach semantic information to an <a>Event</a></li>
+          <li>
+            Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
+          </li>
           <li>Register handlers for external requests:
             <ul>
-              <li>to retrieve a property value;</li>
-              <li>to update a property value;</li>
-              <li>to run an action: take the parameters from the request, execute the defined action, and return the result;</li>
-              <li>to add a listener to an event;</li>
-              <li>to remove an event listener.</li>
+              <li>to retrieve a <a>Property</a> value;</li>
+              <li>to update a <a>Property</a> value;</li>
+              <li>
+                to run an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
+              </li>
+              <li>to add a listener to an <a>Event</a>;</li>
+              <li>to remove an <a>Event</a> listener.</li>
               <li>to fetch the <a>Thing Description</a>;</li>
             </ul>
           </li>
@@ -200,9 +206,15 @@
       The following use cases are being considered for next versions:
     </p>
     <ul>
-      <li>Add, remove and update the definition of a property on a Thing that runs in the same the WoT Runtime.</li>
-      <li>Add, remove and update the definition of an action on a Thing that runs in the same the WoT Runtime.</li>
-      <li>Add, remove and update the definition of an event on a Thing that runs in the same the WoT Runtime.</li>
+      <li>
+        Add, remove and update the definition of a <a>Property</a> on a Thing that runs in the same the WoT Runtime.
+      </li>
+      <li>
+        Add, remove and update the definition of an <a>Action</a> on a Thing that runs in the same the WoT Runtime.
+      </li>
+      <li>
+        Add, remove and update the definition of an <a>Event</a> on a Thing that runs in the same the WoT Runtime.
+      </li>
     </ul>
   </section>
 
@@ -362,7 +374,7 @@
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
-      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update properties, invoke actions, and observe properties, actions and events.
+      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update properties, invoke <a>Actions</a>, and observe properties, <a>Actions</a> and <a>Events</a>.
     </p>
     <pre class="idl">
       interface ConsumedThing {
@@ -394,43 +406,43 @@
 
     <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
       <p>
-        Takes the action name as the <var>name</var> argument and the list of parameters, then requests from the underlying platform and the <a>Protocol Bindings</a> to invoke the action on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the return value or rejects with an <a>Error</a>.
+        Takes the <a>Action</a> name from the <var>name</var> argument and the list of parameters, then requests from the underlying platform and the <a>Protocol Bindings</a> to invoke the <a>Action</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the return value or rejects with an <a>Error</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>setProperty()</dfn> method</h3>
       <p>
-        Takes the property name as the <var>name</var> argument and the new value as the <var>value</var> argument, then requests from the underlying platform and the <a>Protocol Bindings</a> to update the property on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves on success or rejects with an <a>Error</a>.
+        Takes the <a>Property</a> name as the <var>name</var> argument and the new value as the <var>value</var> argument, then requests from the underlying platform and the <a>Protocol Bindings</a> to update the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves on success or rejects with an <a>Error</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>getProperty()</dfn> method</h3>
       <p>
-        Takes the property name as the <var>name</var> argument, then requests from the underlying platform  and the <a>Protocol Bindings</a> to retrieve the property on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the property value or rejects with an <a>Error</a>.
+        Takes the <a>Property</a> name as the <var>name</var> argument, then requests from the underlying platform  and the <a>Protocol Bindings</a> to retrieve the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the <a>Property</a> value or rejects with an <a>Error</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>addListener()</dfn> method</h3>
       <p>
-        Adds the listener provided in the argument <var>listener</var> to the event name provided in the argument <var>eventName</var>.
+        Adds the listener provided in the argument <var>listener</var> to the <a>Event</a> name provided in the argument <var>eventName</var>.
       </p>
     </section>
 
     <section> <h3>The <dfn>removeListener()</dfn> method</h3>
       <p>
-        Removes a listener from the event identified by the provided <var>eventName</var> and <var>listener</var> argument.
+        Removes a listener from the <a>Event</a> identified by the provided <var>eventName</var> and <var>listener</var> argument.
       </p>
     </section>
 
     <section> <h3>The <dfn>removeAllListeners()</dfn> method</h3>
       <p>
-        Removes all listeners for the event provided by the <var>eventName</var> optional argument, or if that was not provided, then removes all listeners from all events.
+        Removes all listeners for the <a>Event</a> provided by the <var>eventName</var> optional argument, or if that was not provided, then removes all listeners from all <a>Events</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>observe()</dfn> method</h3>
       <p>
-        Returns an <a>Observable</a> for the property, event or action specified in the <var>name</var> argument, allowing subscribing and unsubscribing to notifications. The <var>requestType</var> specifies whether a property, an event or an action is observed.
+        Returns an <a>Observable</a> for the <a>Property</a>, <a>Event</a> or <a>Action</a> specified in the <var>name</var> argument, allowing subscribing and unsubscribing to notifications. The <var>requestType</var> specifies whether a <a>Property</a>, an <a>Event</a> or an <a>Action</a> is observed.
       </p>
       <p class="ednote">
         The <code>observe()</code> method could replace <code>addListener()</code> and <code>removeListener()</code>, though they could be kept for convenience.
@@ -440,13 +452,13 @@
     <section data-dfn-for="ThingEventListener">
       <h2>The <dfn>ThingEventListener</dfn> callback</h2>
       <p>
-        A function called with an <a>Event</a> object when an event is emitted.
+        A function called with an <a data-lt="DOM-Level-2-Events">Event</a> object when an event is emitted.
       </p>
     </section>
 
     <section> <h2>Events</h2>
       <p>
-        Clients can subscribe to the events defined in <a href="#events-supported-by-exposedthing">ExposedThing events</a>. The event types are described in this section.
+        Clients can subscribe to the <a>Events</a> defined in <a href="#events-supported-by-exposedthing">ExposedThing events</a>. The event types are described in this section.
       </p>
 
       <section data-dfn-for="PropertyChangeEvent">
@@ -458,7 +470,7 @@
           };
         </pre>
         <p>The <var>name</var> attribute of the event is <code>"propertychange"</code>.</p>
-        <p>The <dfn>value</dfn> attribute represents the new value of the property.</p>
+        <p>The <dfn>value</dfn> attribute represents the new value of the <a>Property</a>.</p>
       </section>
 
       <section data-dfn-for="ActionInvocationEvent">
@@ -470,7 +482,7 @@
           };
         </pre>
         <p>
-            The <dfn>data</dfn> attribute represents the notification data from the action invocation.
+            The <dfn>data</dfn> attribute represents the notification data from the <a>Action</a> invocation.
         </p>
         <section data-dfn-for="ActionInvocationEventInit">
           <h2>The <dfn>ActionInvocationEventInit</dfn> dictionary</h2>
@@ -484,10 +496,10 @@
             Action parameters could be also included, but it's debateble because privacy reasons.
           </p>
           <p>
-            The <dfn>actionName</dfn> attribute represents the name of the action that has been invoked.
+            The <dfn>actionName</dfn> attribute represents the name of the <a>Action</a> that has been invoked.
           </p>
           <p>
-            The <dfn>returnValue</dfn> attribute represents the return value of the action.
+            The <dfn>returnValue</dfn> attribute represents the return value of the <a>Action</a>.
           </p>
         </section>
       </section>
@@ -516,13 +528,13 @@
           </pre>
           <ul>
             <li>
-              The <dfn>type</dfn> attribute represents the change type, whether has it been applied on properties, actions or events.
+              The <dfn>type</dfn> attribute represents the change type, whether has it been applied on properties, <a>Actions</a> or <a>Events</a>.
             </li>
             <li>
              The <dfn>method</dfn> attribute tells what operation has been applied, addition, removal or change.
             </li>
             <li>
-              The <dfn>name</dfn> attribute represents the name of the property, action or event that has changed.
+              The <dfn>name</dfn> attribute represents the name of the <a>Property</a>, <a>Action</a> or event that has changed.
             </li>
             <li>
               The <dfn>description</dfn> attribute is defined for the addition and change methods, and represents the new description.
@@ -537,9 +549,9 @@
               enum TDChangeMethod { "add", "remove", "change" };
             </pre>
             <ul>
-              <li>The <dfn>add</dfn> value denotes addition of a property, action or event.</li>
-              <li>The <dfn>remove</dfn> value denotes removal of a property, action or event.</li>
-              <li>The <dfn>change</dfn> value denotes a change applied on a property, action or event.</li>
+              <li>The <dfn>add</dfn> value denotes addition of a <a>Property</a>, <a>Action</a> or event.</li>
+              <li>The <dfn>remove</dfn> value denotes removal of a <a>Property</a>, <a>Action</a> or event.</li>
+              <li>The <dfn>change</dfn> value denotes a change applied on a <a>Property</a>, <a>Action</a> or event.</li>
             </ul>
           </section>
           <section data-dfn-for="TDChangeType">
@@ -549,7 +561,7 @@
               typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
             </pre>
             <ul>
-              <li>The <dfn>property</dfn> value tells the operation was applied on a property definition.</li>
+              <li>The <dfn>property</dfn> value tells the operation was applied on a <a>Property</a> definition.</li>
               <li>The <dfn>action</dfn> value tells the operation was applied on a action definition.</li>
               <li>The <dfn>event</dfn> value tells the operation was applied on an event definition.</li>
             </ul>
@@ -589,7 +601,7 @@
   <section data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
     <p>
-      The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, actions, and events to a <a>Thing</a>.
+      The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>.
     </p>
     <pre class="idl">
       typedef USVString ThingDescription;
@@ -642,7 +654,7 @@
         };
       </pre>
       <p>
-        Represents an incoming request the <a>ExposedThing</a> is supposed to handle, for instance retrieving and updating properties, invoking actions and observing events (WoT interactions).
+        Represents an incoming request the <a>ExposedThing</a> is supposed to handle, for instance retrieving and updating properties, invoking <a>Actions</a> and observing <a>Events</a> (WoT interactions).
         <ul>
           <li>
             The <dfn>type</dfn> attribute represents the type of the request as defined in <a>RequestType</a>.
@@ -651,13 +663,13 @@
             The <dfn>from</dfn> attribute represents the address of the client device issuing the request. The type of the address (URL, UUID or other) is defined by the <a>Thing Description</a>.
           </li>
           <li>
-            The <dfn>name</dfn> attribute represents the name of the property to be retrieved or updated, or the name of the invoked action, or the event name to be observed.
+            The <dfn>name</dfn> attribute represents the name of the <a>Property</a> to be retrieved or updated, or the name of the invoked <a>Action</a>, or the event name to be observed.
           </li>
           <li>
             The <dfn>options</dfn> attribute represents the options relevant to the request (e.g. the format or measurement units for the returned value) as key-value pairs. The exact format is specified by the <a>Thing Description</a>.
           </li>
           <li>
-            The <dfn>data</dfn> attribute represents the value of the property, or the input data (arguments) of an action. It is not used for retrieve requests and event requests, only for property update and action invocation requests.
+            The <dfn>data</dfn> attribute represents the value of the <a>Property</a>, or the input data (arguments) of an <a>Action</a>. It is not used for retrieve requests and event requests, only for <a>Property</a> update and <a>Action</a> invocation requests.
           </li>
         </ul>
       </p>
@@ -667,11 +679,11 @@
           enum RequestType { "property", "action", "event", "td" };
         </pre>
         <ul>
-          <li>The value "<dfn>property</dfn>" represents requests to retrieve or update a property.</li>
-          <li>The value "<dfn>action</dfn>" represents requests to invoke an action.</li>
+          <li>The value "<dfn>property</dfn>" represents requests to retrieve or update a <a>Property</a>.</li>
+          <li>The value "<dfn>action</dfn>" represents requests to invoke an <a>Action</a>.</li>
           <li>The value "<dfn>event</dfn>" represents requests to emit an event.</li>
           <li>
-            The value "<dfn>td</dfn>" represents requests to change the <a>Thing Description</a>, i.e. to add, remove or modify properties, actions or events.
+            The value "<dfn>td</dfn>" represents requests to change the <a>Thing Description</a>, i.e. to add, remove or modify properties, <a>Actions</a> or <a>Events</a>.
             <p class="ednote">
               This functionality is here for the sake of completeness for future versions of the API. Currently there is no corresponding functionality at the <a>ConsumedThing</a> level and it is not guaranteed that a Thing Description could be remotely changed by scripting.
             </p>
@@ -699,7 +711,7 @@
 
     <section> <h3>The <dfn>addProperty()</dfn> method</h3>
       <p>
-        Adds a property defined by the argument and updates the <a>Thing Description</a>.
+        Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>.
       </p>
       <section data-dfn-for="ThingPropertyInit">
         <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
@@ -715,24 +727,24 @@
           };
         </pre>
         <p>
-          Represents the <a>Thing</a> property description.
+          Represents the <a>Thing</a> <a>Property</a> description.
           <ul>
-            <li>The <dfn>name</dfn> attribute represents the name of the property.</li>
-            <li>The <dfn>value</dfn> attribute represents the value of the property.</li>
+            <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
+            <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
-              The <dfn>configurable</dfn> attribute defines whether the property can be deleted from the object and whether its properties can be changed. The default value is <code>false</code>.
+              The <dfn>configurable</dfn> attribute defines whether the <a>Property</a> can be deleted from the object and whether its properties can be changed. The default value is <code>false</code>.
             </li>
             <li>
-              The <dfn>enumerable</dfn> attribute defines whether the property can be listed and iterated. The default value is <code>true</code>.
+              The <dfn>enumerable</dfn> attribute defines whether the <a>Property</a> can be listed and iterated. The default value is <code>true</code>.
             </li>
             <li>
-              The <dfn>writable</dfn> attribute defines whether the property can be updated. The default value is <code>true</code>.
+              The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>true</code>.
             </li>
             <li>
-              The <dfn>semanticTypes</dfn> attribute represents a list of semantic type annotations (e.g. labels, classifications etc) relevant to the property, represented as <a>SemanticType</a> dictionaries.
+              The <dfn>semanticTypes</dfn> attribute represents a list of semantic type annotations (e.g. labels, classifications etc) relevant to the <a>Property</a>, represented as <a>SemanticType</a> dictionaries.
             </li>
             <li>
-              The <dfn>description</dfn> attribute represents the property description to be added to the <a>Thing Description</a>.
+              The <dfn>description</dfn> attribute represents the <a>Property</a> description to be added to the <a>Thing Description</a>.
             </li>
           </ul>
         </p>
@@ -761,13 +773,13 @@
 
     <section> <h3>The <dfn>removeProperty()</dfn> method</h3>
       <p>
-        Removes the property specified by the <code>name</code> argument, updates the <a>Thing Description</a> and returns the object.
+        Removes the <a>Property</a> specified by the <code>name</code> argument, updates the <a>Thing Description</a> and returns the object.
       </p>
     </section>
 
     <section> <h3>The <dfn>addAction()</dfn> method</h3>
       <p>
-        Adds an action to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingActionInit</a> and updates the <a>Thing Description</a>.
+        Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingActionInit</a> and updates the <a>Thing Description</a>.
       </p>
       <section data-dfn-for="ThingActionInit">
         <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
@@ -783,12 +795,12 @@
       <p>
         The <a>ThingActionInit</a> dictionary describes the arguments and the return value.
         <ul>
-          <li>The <dfn>name</dfn> attribute provides the action name.</li>
-          <li>The <dfn>action</dfn> attribute provides a function that defines the action.</li>
+          <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
+          <li>The <dfn>action</dfn> attribute provides a function that defines the <a>Action</a>.</li>
           <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments.</li>
           <li>The <dfn>outputDataDescription</dfn> attribute provides the description of the returned data.</li>
           <li>
-              The <dfn>semanticTypes</dfn> attribute provides a list of semantic type annotations (e.g. labels, classifications etc) relevant to the action, represented as <a>SemanticType</a> dictionaries.
+              The <dfn>semanticTypes</dfn> attribute provides a list of semantic type annotations (e.g. labels, classifications etc) relevant to the <a>Action</a>, represented as <a>SemanticType</a> dictionaries.
           </li>
         </ul>
       </p>
@@ -797,7 +809,7 @@
 
     <section> <h3>The <dfn>removeAction()</dfn> method</h3>
       <p>
-        Removes the action specified by the <code>name</code> argument, updates the <a>Thing Description</a> and returns the object.
+        Removes the <a>Action</a> specified by the <code>name</code> argument, updates the <a>Thing Description</a> and returns the object.
       </p>
     </section>
 
@@ -830,19 +842,19 @@
 
     <section> <h3>The <dfn>onRetrieveProperty()</dfn> method</h3>
       <p>
-        Registers the handler function for property retrieve requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where at least <var>request.name</var> is defined and represents the name of the property to be retrieved.
+        Registers the handler function for <a>Property</a> retrieve requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where at least <var>request.name</var> is defined and represents the name of the <a>Property</a> to be retrieved.
       </p>
     </section>
 
     <section> <h3>The <dfn>onUpdateProperty()</dfn> method</h3>
       <p>
-        Defines the handler function for property update requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where <var>request.name</var> defines the name of the property to be retrieved and <var>request.data</var> defines the new value of the property.
+        Defines the handler function for <a>Property</a> update requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where <var>request.name</var> defines the name of the <a>Property</a> to be retrieved and <var>request.data</var> defines the new value of the <a>Property</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>onInvokeAction()</dfn> method</h3>
       <p>
-        Defines the handler function for action invocation requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>.  The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where <var>request.name</var> defines the name of the action to be invoked and <var>request.data</var> defines the input arguments for the action as defined by the <a>Thing Description</a>.
+        Defines the handler function for <a>Action</a> invocation requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>.  The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where <var>request.name</var> defines the name of the <a>Action</a> to be invoked and <var>request.data</var> defines the input arguments for the <a>Action</a> as defined by the <a>Thing Description</a>.
       </p>
     </section>
 
@@ -851,10 +863,10 @@
         Defines the handler function for observe requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where
         <ul>
           <li>
-            <var>request.name</var> defines the name of the property or action or event to be observed.
+            <var>request.name</var> defines the name of the <a>Property</a> or <a>Action</a> or event to be observed.
           </li>
           <li>
-            <var>request.options.observeType</var> is of type <a>RequestType</a> and defines whether a property change or action invocation or event emitting is observed, or the changes to the <a>Thing Description </a> are observed.
+            <var>request.options.observeType</var> is of type <a>RequestType</a> and defines whether a <a>Property</a> change or <a>Action</a> invocation or event emitting is observed, or the changes to the <a>Thing Description </a> are observed.
           </li>
           <li>
             <var>request.options.subscribe</var> is <code>true</code> if subscription is turned or kept being turned on, and it is <code>false</code> when subscription is turned off.
@@ -865,13 +877,13 @@
 
     <section> <h3>The <dfn>register()</dfn> method</h3>
       <p>
-        Generates the <a>Thing Description</a> given the properties, actions and events defined for this object. If a <code>directory</code> argument is given, make a request to register the <a>Thing Description</a> with the given WoT repository by invoking its <code>register</code> action.
+        Generates the <a>Thing Description</a> given the properties, <a>Actions</a> and <a>Event</a> defined for this object. If a <code>directory</code> argument is given, make a request to register the <a>Thing Description</a> with the given WoT repository by invoking its <code>register</code> <a>Action</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>unregister()</dfn> method</h3>
       <p>
-        If a <code>directory</code> argument is given, make a request to unregister the <a>Thing Description</a> with the given WoT repository by invoking its <code>unregister</code> action. Then, and in the case no arguments were provided to this function, stop the <a>Thing</a> and remove the <a>Thing Description</a>.
+        If a <code>directory</code> argument is given, make a request to unregister the <a>Thing Description</a> with the given WoT repository by invoking its <code>unregister</code> <a>Action</a>. Then, and in the case no arguments were provided to this function, stop the <a>Thing</a> and remove the <a>Thing Description</a>.
       </p>
     </section>
 
@@ -1003,10 +1015,10 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn> etc.
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
     </p>
     <p class="note">
-      In this version of the specification, a <a>WoT Runtime</a> is assumed to run scripts that uses this API to define one or more <a>Thing</a>s that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose actions permit script lifecycle management operations.
+      In this version of the specification, a <a>WoT Runtime</a> is assumed to run scripts that uses this API to define one or more <a>Thing</a>s that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose <a>Actions</a> permit script lifecycle management operations.
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data by providing a <code>@context</code> property with a defining URI .
@@ -1103,7 +1115,7 @@
       <a href="http://heycam.github.io/webidl/#idl-any"><dfn>any</dfn></a> are defined in [[!WEBIDL]].
     </p>
     <p>
-      The term <b><i>event</i></b> and the <dfn>Event</dfn> object are defined in [DOM](https://www.w3.org/TR/DOM-Level-2-Events/events.html) and [Node.js](https://nodejs.org/api/events.html).
+      The term <b><i>event</i></b> and the <b><i>Event</i></b> object are defined in [DOM](https://www.w3.org/TR/DOM-Level-2-Events/events.html) and [Node.js](https://nodejs.org/api/events.html).
     </p>
     <p class="note">
       This specification uses the convention that an event listener will receive an [Event](https://www.w3.org/TR/DOM-Level-2-Events/ecma-script-binding.html) object. This should work both in a browser environment and in a Node.js like environment.
