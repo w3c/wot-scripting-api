@@ -596,9 +596,7 @@
         Below a <code><a>ConsumedThing</a></code> interface example is given.
       </p>
       <pre class="example" title="Consume a Thing">
-        wot.consume("http://mmyservice.org/mySensor").then(
-          error => { console.log("Discovery finished because an error: " + error.message); }
-          thing => {
+        wot.consume("http://mmyservice.org/mySensor").then( thing => {
             console.log("Thing " + thing.name + " has been consumed.");
             console.log("{ " + JSON.serialize(thing) + " }");
             thing.addListener("onchange", function(event) {
@@ -607,7 +605,9 @@
                 }
             }).invokeAction("startMeasurement", ["Celsius"]);
           },
-        );
+        ).catch(error => {
+          console.log("Discovery finished because an error: " + error.message);
+        });
       </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
