@@ -102,7 +102,7 @@
       This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by properties, <a>Actions</a> and <a>Events</a>.
     </p>
     <p>
-      Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://w3c.github.io/wot-scripting-api/script-manager/">Thing Directory</a>.
+      Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
     </p>
   </section>
 
@@ -310,7 +310,7 @@
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
-        Returns a <code><a>Promise</a></code> of a locally created <a>ExposedThing</a> based on the provided initialization paramaters.
+        Returns a <code><a>Promise</a></code> of a locally created <a>ExposedThing</a> based on the provided initialization parameters.
       </p>
       <p class="ednote">
         The reason <a>ExposedThing</a>s are created by a factory method instead of a constructor is that an <a>ExposedThing</a> may be created in the local <a>WoT Runtime</a> or in a remote runtime. Even though currently only local creation is supported, the method is designed with this possible future compatibility in mind.
@@ -507,7 +507,7 @@
             };
           </pre>
           <p class="ednote">
-            Action parameters could be also included, but it's debateble because privacy reasons.
+            Action parameters could be also included, but it's debatable because privacy reasons.
           </p>
           <p>
             The <dfn>actionName</dfn> attribute represents the name of the <a>Action</a> that has been invoked.
@@ -527,7 +527,7 @@
           };
         </pre>
         <p>
-          The <dfn>data</dfn> attribute represents the changes that occured to the <a>Thing Description</a>.
+          The <dfn>data</dfn> attribute represents the changes that occurred to the <a>Thing Description</a>.
         </p>
         <section data-dfn-for="ThingDescriptionChangeEventInit">
           <h3>The <dfn>ThingDescriptionChangeEventInit</dfn> dictionary</h3>
@@ -1186,7 +1186,7 @@
 
   <section> <h2>Acknowledgements</h2>
     <p>
-      Special thanks to former editor Johannes Hund for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster and Michael McCool for their comments and guidance.
+      Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster and Michael McCool for their comments and guidance.
     </p>
   </section>
 
