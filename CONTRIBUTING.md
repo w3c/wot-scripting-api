@@ -22,3 +22,5 @@ If you added a contributor by mistake, you can remove them in a comment with:
 
 If you are making a pull request on behalf of someone else but you had no part in designing the
 feature, you can remove yourself with the above syntax.
+
+For further guidelines, refer to [https://github.com/w3c/wotwg#contributing](https://github.com/w3c/wotwg#contributing).
