@@ -1,7 +1,9 @@
 # Specification 'Web of Things (WoT) Scripting API'
 
-The main deliverable is the [WoT Scripting API Specification](./index.html).
-See the rendered version here: [http://w3c.github.io/wot-scripting-api/](http://w3c.github.io/wot-scripting-api/)
+The main deliverable is the [WoT Scripting API Specification](./index.html). The [index.html](./index.html) file contains the latest Editors Draft. See the rendered version here: [http://w3c.github.io/wot-scripting-api/](http://w3c.github.io/wot-scripting-api/).
+
+Copies of the releases for [published versions](https://www.w3.org/TR/wot-scripting-api/) are found in [releases](./releases/).
+The latest published version currently is the [First Public Working Draft](https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/).
 
 See the [rationale.md](./rationale.md) for explanation on API design choices.
 
