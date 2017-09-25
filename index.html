@@ -140,6 +140,7 @@
     <p>
       The following scripting use cases are covered in this specification:
     </p>
+    <section><h4>Discovery</h4>
     <ul>
       <li>Discover all <a>Thing</a>s in the WoT network by sending a broadcast request.</li>
       <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
@@ -151,7 +152,13 @@
       <li>
           Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
       </li>
-      <li>Fetch and <a>consume a TD</a> of a remote <a>Thing</a>.</li>
+    </ul>
+    </section>
+    <section><h4>Consuming a Thing</h4>
+    <ul>
+      <li>
+        Fetch and <a>consume a TD</a> of a <a>Thing</a>. The <a>TD</a> may be provided as a string, or as a file path, or specified by a URL. Consuming the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
+      </li>
       <li>On a consumed <a>Thing</a>,
         <ul>
           <li>Get the value of a <a>Property</a> or set of properties.</li>
@@ -175,7 +182,13 @@
           </li>
         </ul>
       </li>
-      <li>Create and expose a local or remote <a>Thing</a> based on a <a>Thing Description</a>.</li>
+    </ul>
+    </section>
+    <section><h4>Exposing a Thing</h4>
+    <ul>
+      <li>
+        Create and expose a <a>Thing</a> based on a <a>Thing Description</a> provided as a URL, or local file, or a string. Exposing the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
+      </li>
       <li>Programmatically create and expose a local or remote <a>Thing</a>. This may include the following use cases:
         <ul>
           <li>Create a local <a>Thing</a>.</li>
@@ -205,22 +218,25 @@
           </li>
         </ul>
       </li>
-      <li>Register the Thing in order to make it discoverable and consumable.</li>
-      <li>Unregister the Thing.</li>
+      <li>Mark/unmark the Thing to be discoverable.</li>
+      <li>Mark/unmark the Thing to be consumable.</li>
       <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
       <li>Stop the exposed <a>Thing</a>.</li>
     </ul>
+    </section>
+    <section><h4>Future use cases</h4>
     <p>
       The following use cases are being considered for next versions:
     </p>
     <ul>
       <li>
-        Attach an exposed <a>Thing</a> to proper protocol binding in order to access lower level functionality.
-      </li>
-      <li>
         Create, start, stop, delete scripts in local or remote runtimes in order to implement Thing lifecycle management.
       </li>
     </ul>
+    <p class="ednote">
+      Management use cases should be solved with exposing a special Thing that has an action for creating a <a>Thing</a> based on a <a>TD</a>.
+    </p>
+    </section>
   </section>
 
   <section data-dfn-for="WoT">
