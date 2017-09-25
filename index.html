@@ -140,6 +140,7 @@
     <p>
       The following scripting use cases are covered in this specification:
     </p>
+    <b>Discovery</b>
     <ul>
       <li>Discover all <a>Thing</a>s in the WoT network by sending a broadcast request.</li>
       <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
@@ -149,6 +150,9 @@
       <li>Discover <a>Thing</a>s by semantic filters.</li>
       <li>Stop or suppress an ongoing discovery process.</li>
       <li>Fetch and <a>consume a TD</a> of a remote <a>Thing</a>.</li>
+    </ul>
+	<b>TD Interfacing: Consumption</b>
+    <ul>
       <li>On a consumed <a>Thing</a>,
         <ul>
           <li>Get the value of a <a>Property</a> or set of properties.</li>
@@ -173,6 +177,9 @@
         </ul>
       </li>
       <li>Consume a thing.</li>
+    </ul>
+	<b>TD Interfacing: Creation</b>
+    <ul>
       <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
       <li>Programmatically create and expose a local <a>Thing</a>. This may include the following use cases:
         <ul>
@@ -200,6 +207,9 @@
           </li>
         </ul>
       </li>
+    </ul>
+	<b>Operation / Management / Configuration</b>
+    <ul>
       <li>Register the Thing.</li>
       <li>Unregister the Thing.</li>
       <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
