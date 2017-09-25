@@ -148,6 +148,9 @@
       <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s</li>
       <li>Discover <a>Thing</a>s by semantic filters.</li>
       <li>Stop or suppress an ongoing discovery process.</li>
+      <li>
+          Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
+      </li>
       <li>Fetch and <a>consume a TD</a> of a remote <a>Thing</a>.</li>
       <li>On a consumed <a>Thing</a>,
         <ul>
@@ -172,9 +175,8 @@
           </li>
         </ul>
       </li>
-      <li>Consume a thing.</li>
-      <li>Create and expose a local <a>Thing</a> based on a <a>Thing Description</a>.</li>
-      <li>Programmatically create and expose a local <a>Thing</a>. This may include the following use cases:
+      <li>Create and expose a local or remote <a>Thing</a> based on a <a>Thing Description</a>.</li>
+      <li>Programmatically create and expose a local or remote <a>Thing</a>. This may include the following use cases:
         <ul>
           <li>Create a local <a>Thing</a>.</li>
           <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
@@ -185,6 +187,9 @@
           <li>Attach semantic information to an <a>Event</a></li>
           <li>
             Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
+          </li>
+          <li>
+            Provide notifications for TD changes to clients subscribed to that.
           </li>
           <li>Register handlers for external requests:
             <ul>
@@ -200,7 +205,7 @@
           </li>
         </ul>
       </li>
-      <li>Register the Thing.</li>
+      <li>Register the Thing in order to make it discoverable and consumable.</li>
       <li>Unregister the Thing.</li>
       <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
       <li>Stop the exposed <a>Thing</a>.</li>
@@ -210,13 +215,10 @@
     </p>
     <ul>
       <li>
-        Add, remove and update the definition of a <a>Property</a> on a Thing that runs in the same the WoT Runtime.
+        Attach an exposed <a>Thing</a> to proper protocol binding in order to access lower level functionality.
       </li>
       <li>
-        Add, remove and update the definition of an <a>Action</a> on a Thing that runs in the same the WoT Runtime.
-      </li>
-      <li>
-        Add, remove and update the definition of an <a>Event</a> on a Thing that runs in the same the WoT Runtime.
+        Create, start, stop, delete scripts in local or remote runtimes in order to implement Thing lifecycle management.
       </li>
     </ul>
   </section>
