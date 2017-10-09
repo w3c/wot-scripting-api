@@ -272,7 +272,7 @@
         </p>
         <pre class="idl">
           dictionary ThingFilter {
-            (DiscoveryType or DOMString) method = "any";
+            (DiscoveryMethod or DOMString) method = "any";
             USVString url;
             Dictionary description;
           };
@@ -355,8 +355,8 @@
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
-        let discoveryType = { method: "directory", url: "http://directory.wotservice.org" };
-        let subscription = wot.discover(discoveryType).subscribe(
+        let discoveryFilter = { method: "directory", url: "http://directory.wotservice.org" };
+        let subscription = wot.discover(discoveryFilter).subscribe(
           thing => { console.log("Found Thing " + thing.url); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
