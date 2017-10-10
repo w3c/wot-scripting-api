@@ -751,7 +751,7 @@
         <pre class="idl">
           dictionary ThingPropertyInit {
             DOMString name;
-            boolean configurable = true;
+            boolean configurable = false;
             boolean enumerable = true;
             boolean writable = true;
             sequence&lt;SemanticType&gt; semanticTypes;
@@ -765,7 +765,7 @@
             <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
-              The <dfn>configurable</dfn> attribute defines whether the <a>Property</a> can be deleted from the object and whether its properties can be changed. The default value is <code>false</code>.
+              The <dfn>configurable</dfn> attribute defines whether the <a>Property</a> can be deleted from the object and whether its type can be changed. The default value is <code>false</code>.
             </li>
             <li>
               The <dfn>enumerable</dfn> attribute defines whether the <a>Property</a> can be listed and iterated. The default value is <code>true</code>.
