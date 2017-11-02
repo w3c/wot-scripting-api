@@ -15,7 +15,7 @@ ExposedThing controls building block of WoT and manages life cycle of WoT Server
 Given a script that has ExposedThing command tied with device access function, ExposedThing generate a [WoT Thing Description
 (TD)](https://w3c.github.io/wot-thing-description/) and expose the server API.
 
-<img src=./images/Fig1.png width=600 alt="Fig.1" >
+![Fig.1](./images/Fig1.png)
 
 
 The followings shows the sequence of this figure.
@@ -28,41 +28,41 @@ The followings shows the sequence of this figure.
 
 At the runtime, when a WoTAPI is called,the callback is executed to control the Thing.
 
-<img src=./images/Fig2.png width=600 alt="Fig.2" >
+![Fig.2](./images/Fig2.png)
 
 #### (C) Runtime provisioning: add thing
 
 Given another script that has ExposedThing command tied with device access function, ExposedThing generate a TD and expose the server API.
 
-<img src=./images/Fig3.png width=600 alt="Fig.3" >
+![Fig.3](./images/Fig3.png)
 
 #### (D) Runtime: unregister thing
 
 A script that has an unregister thing can unregister the exposed thing, the callback function, and the TD.
 
-<img src=./images/Fig4.png width=600 alt="Fig.4" >
+![Fig.4](./images/Fig4.png)
 
 #### (E) Expose thing with semantics
 
 A script that comes with SemanticType generates a TD with semantic expression. It can be searched by accessing TD repository.
 
-<img src=./images/Fig5.png width=600 alt="Fig.5" >
+![Fig.5](./images/Fig5.png)
 
 #### (F) Runtime provisioning: Set permission to WoTAPI
 
 Generate a security token using e.g. IETF ACE and set permission to WoTAPI. Check the security token when WoTAPI is called.
 
-<img src=./images/Fig17.png width=600 alt="Fig.17" >
+![Fig.17](./images/Fig17.png)
 
 ### 1-1\. Using Expose Thing
 
 ExposedThing can be used in any layers i.e. Client, Cloud/Server, Gateway/Edge, and Device.
 
-<img src=./images/Fig6.png width=600 alt="Fig.6" >
+![Fig.6](./images/Fig6.png)
 
 ExposedThing in various layers and combinations.
 
-<img src=./images/Fig7.png width=700 alt="Fig.7" >
+![Fig.7](./images/Fig7.png)
 
 ### 2\. ConsumedThing in WoT Client
 
@@ -72,7 +72,7 @@ ConsumedThing controls building blocks of WoT and manages life cycle of WoT Clie
 
 Search a device initiates a discovery and set up a ConsumedThing API to use.
 
-<img src=./images/Fig8.png width=600 alt="Fig.8" >
+![Fig.8](./images/Fig8.png)
 
 The followings shows the sequence of this figure.
 (a) Search a device from an application using discovery API.<br>
@@ -86,28 +86,28 @@ The followings shows the sequence of this figure.
 
 Application access the device with method call. ConsumedThing interprit the access as WoTAPI call.
 
-<img src=./images/Fig9.png width=600 alt="Fig.9" >
+![Fig.9](./images/Fig9.png)
 
 #### (C) Runtime provisioning: search and use another thing
 
 Search another device initiates a discovery and set up the Thing API to use. The sequence is the same with (a).
 
-<img src=./images/Fig10.png width=600 alt="Fig.10" >
+![Fig.10](./images/Fig10.png)
 
 ### 2-1\. Using Consumed Thing
 
 ConsumedThing can be used in any layers.
 
-<img src=./images/Fig11.png width=700 alt="Fig.11" >
+![Fig.11](./images/Fig11.png)
 
 ConsumedThing in various layers and combinations.
 
-<img src=./images/Fig12.png width=600 alt="Fig.12" >
+![Fig.12](./images/Fig12.png)
 
 ### 2-2\. Example: WoT Server and WoT Client
 A use case that uses a WoT Server and a WoT Client is shown here i.e. An electronic appliance with WoT server is controlled by a remote controller with WoT client.
 
-<img src=./images/Fig13.png width=700 alt="Fig.13" >
+![Fig.13](./images/Fig13.png)
 
 The followings shows the sequence of this Figure.
 (1) Script has ExposedThing call with callback function that has access method to a LED lamp.<br>
@@ -142,7 +142,7 @@ The followings shows the sequence of how WoT servient works for the provisioning
 (iv) ConsumedThing expose Client API.<br>
 (b) WoTAPI of Server receives a command for turn on. Then callback function registerd to ExposedThing is called. If the LED lamp is connected to Client, Protocol Binding interprit the command in the callback to appropriate WoTAPI command. If the LED lamp is connected to Legacy Communication, the callback function issues the legacy communication command to control the LED lamp.
 
-<img src=./images/Fig14.png width=700 alt="Fig.14" >
+![Fig.14](./images/Fig14.png)
 
 ### 3-2\. Event handling
 
@@ -154,7 +154,7 @@ The followings shows the sequence of how WoT servient works for the events handl
 - (g) Generate another event: Transform the event and issue as another event through ExposedThing/WoTAPI. TD#1 has definition of the event defined by the device and TD#2 has definition of new event that is transformed from the original event.
 - (h) Make linked data: Save the event/events and allow to access by a property call through WoTAPI. TD#2 has a property definition that returns the event/events data based on an URI call.
 
-<img src=./images/Fig18.png width=700 alt="Fig.18" >
+![Fig.18](./images/Fig18.png)
 
 ### 3-3\. Example: Voting
 A use case that uses WoT Servients and a WoT Client is shown here. WoT servient #3 maybe on the cloud provide devices shadow and consolidate devices and expose a service. A script for Thing to Thing (T2T) service provides two functions:
@@ -167,7 +167,7 @@ Four types of scripts are placed in the application layers:
 - Thing to thing service to WoT Servient #3
 - Voting script to WoT Client
 
-<img src=./images/Fig15.png width=700 alt="Fig.15" >
+![Fig.15](./images/Fig15.png)
 
 The followings shows the sequence of the fugure.
 
@@ -232,4 +232,4 @@ WoT Server are used in devices.
 WoT Servient are used in gateways / edges and on the Cloud service.
 WoT Client are used in clients.
 
-<img src=./images/Fig16.png width=700 alt="Fig.16" >
+![Fig.16](./images/Fig16.png)
