@@ -100,7 +100,7 @@
       The <a>Web of Things</a> (WoT) provides layered interoperability between <a>Things</a> by using the <a>WoT Interface</a>s.
     </p>
     <p>
-      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by properties, <a>Actions</a> and <a>Events</a>.
+      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by <a> WoT interactions</a>, i.e. <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
     </p>
     <p>
       Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
@@ -126,7 +126,7 @@
       By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the properties, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a>.
     </p>
     <p>
-      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> and instantiating a software stack needed to serve requests for accessing the exposed properties, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
+      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack needed to serve requests for accessing the exposed properties, <a>Actions</a> and <a>Events</a>. Defining a This specification describes how to expose and consume <a>Thing</a>s by a script.
     </p>
     <p class="note">
       Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
@@ -251,18 +251,86 @@
       // [NamespaceObject]
       interface WoT {
         Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
-        Promise&lt;ConsumedThing&gt; consume(USVString url);
-        Promise&lt;ExposedThing&gt; expose(ThingInit init);
+        Promise&lt;ThingDescription&gt; fetch(USVString url);
+        ConsumedThing consume(ThingDescription td);
+        ExposedThing expose(ThingTemplate init);
       };
+      typedef USVString ThingDescription;
     </pre>
 
     <p class="ednote">
       The algorithms for the WoT methods will be specified later.
     </p>
 
+    <section data-dfn-for="ThingDescription">
+    <h3>The <dfn>ThingDescription</dfn> type</h3>
+      <p>
+        WoT provides a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
+      </p>
+      <p class="note">
+        In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
+        Parsing and composing <a>Thing Description</a>s is left for external libraries until standardized here.
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingTemplate" >
+      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary ThingTemplate {
+            DOMString name;
+            sequence&lt;SemanticType&gt; semanticTypes;
+            sequence&lt;SemanticMetadata&gt; metadata;
+        };
+      </pre>
+      <p>The <a>ThingTemplate</a> dictionary contains properties to initialize a <a>Thing</a>:
+        <ul>
+          <li>The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.</li>
+          <li>The <dfn>semanticTypes</dfn> attribute represents an array of <a>SemanticType</a> objects that describe the types supported by the <a>Thing</a>.</li>
+          <li>The <dfn>metadata</dfn> nullable attribute represents the metadata fields to be added to the <a>Thing Description</a> of the <a>Thing</a>.</li>
+        </ul>
+      </p>
+    </section> <!-- ThingTemplate -->
+
+    <section data-dfn-for="SemanticType" >
+      <h3>The <dfn>SemanticType</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary SemanticType {
+            DOMString name;
+            USVString context;
+            DOMString prefix;
+        };
+      </pre>
+      <p>
+        Represents a semantic type annotation, containing a name and a context.
+        <ul>
+          <li>The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.</li>
+          <li>The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.</li>
+        </ul>
+      </p>
+      <p class="ednote">
+        Semantic type examples to be added.
+      </p>
+    </section> <!-- SemanticType -->
+
+    <section data-dfn-for="SemanticMetadata" >
+      <h3>The <dfn>SemanticMetadata</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary SemanticMetadata {
+            SemanticType type;
+            any          value;
+        };
+      </pre>
+      <p>The <a>SemanticMetadata</a> dictionary describes the semantic metadata elements attached to a <a>Thing</a>:
+        <ul>
+          <li>The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.</li>
+          <li>The <dfn>value</dfn> attribute represents the metadata value.</li>
+        </ul>
+      </p>
+    </section> <!-- SemanticMetadata -->
+
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
-        Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, starts the widest discovery the <a>Thing Description</a> and <a>Protocol Bindings</a> allow.
+        Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, starts the widest discovery the <a>Thing Description</a> and <a>Protocol Bindings</a> allow and support.
         Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.
       </p>
       <section data-dfn-for="ThingFilter">
@@ -321,37 +389,23 @@
       </section>
     </section> <!-- Discovery -->
 
+    <section> <h3> The <dfn>fetch()</dfn> method</h3>
+      <p>
+        Accepts an <code>url</code> argument and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a>.
+      </p>
+    </section>
+
     <section> <h3> The <dfn>consume()</dfn> method</h3>
       <p>
-        Accepts an <code>url</code> argument and returns a <code><a>Promise</a></code> of a <a>ConsumedThing</a>.
+        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on that description.
       </p>
     </section>
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
-        Returns a <code><a>Promise</a></code> of a locally created <a>ExposedThing</a> based on the provided initialization parameters.
+        Accepts an <code>init</code> argument of type <code><a>ThingTemplate</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters.
       </p>
-      <p class="ednote">
-        The reason <a>ExposedThing</a>s are created by a factory method instead of a constructor is that an <a>ExposedThing</a> may be created in the local <a>WoT Runtime</a> or in a remote runtime. Even though currently only local creation is supported, the method is designed with this possible future compatibility in mind.
-      </p>
-      <section data-dfn-for="ThingInit" >
-        <h4>The <dfn>ThingInit</dfn> dictionary</h4>>
-        <pre class="idl">
-          dictionary ThingInit {
-            DOMString name;
-            USVString url;
-            Dictionary description;
-          };
-        </pre>
-        <p>The <a>ThingInit</a> dictionary contains properties to initialize a <a>Thing</a>:
-          <ul>
-            <li>The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.</li>
-            <li>The <dfn>url</dfn> attribute represents the address of the <a>Thing</a>.</li>
-            <li>The <dfn>description</dfn> attribute represents the <a>Thing Description</a> of the <a>Thing</a>.</li>
-          </ul>
-        </p>
-      </section>
-    </section> <!-- createExposedThing() -->
+    </section> <!-- expose() -->
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
@@ -400,17 +454,17 @@
     <pre class="idl">
       interface ConsumedThing {
         readonly attribute DOMString name;
-        readonly attribute USVString url;
         readonly attribute ThingDescription description;
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
-        Promise&lt;void&gt; setProperty(DOMString name, any value);
-        Promise&lt;any&gt; getProperty(DOMString name);
-        ConsumedThing addListener(DOMString eventName, ThingEventListener listener);
-        ConsumedThing removeListener(DOMString eventName, ThingEventListener listener);
-        ConsumedThing removeAllListeners(optional DOMString eventName);
-        Observable observe(DOMString name, RequestType requestType);
+        Promise&lt;void&gt; writeProperty(DOMString name, any value);
+        Promise&lt;any&gt; readProperty(DOMString name);
+        Observable onEvent(DOMString name);
+        Observable onPropertyChange(DOMString name);
+        Observable onTDChange();
       };
-      callback ThingEventListener = void (Event event);
+      callback ThingEventListener = void (ThingEvent event);
+      callback PropertyChangeListener = void (PropertyChangeEvent change);
+      callback TDChangeListener = void (TDChangeEvent td);
     </pre>
     <p>
       Represents a local proxy object of the remote <a>Thing</a>.
@@ -431,53 +485,58 @@
       </p>
     </section>
 
-    <section> <h3>The <dfn>setProperty()</dfn> method</h3>
+    <section> <h3>The <dfn>writeProperty()</dfn> method</h3>
       <p>
         Takes the <a>Property</a> name as the <var>name</var> argument and the new value as the <var>value</var> argument, then requests from the underlying platform and the <a>Protocol Bindings</a> to update the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves on success or rejects with an <a>Error</a>.
       </p>
     </section>
 
-    <section> <h3>The <dfn>getProperty()</dfn> method</h3>
+    <section> <h3>The <dfn>readProperty()</dfn> method</h3>
       <p>
         Takes the <a>Property</a> name as the <var>name</var> argument, then requests from the underlying platform  and the <a>Protocol Bindings</a> to retrieve the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the <a>Property</a> value or rejects with an <a>Error</a>.
       </p>
     </section>
 
-    <section> <h3>The <dfn>addListener()</dfn> method</h3>
+    <section> <h3>The <dfn>onEvent()</dfn> method</h3>
       <p>
-        Adds the listener provided in the argument <var>listener</var> to the <a>Event</a> name provided in the argument <var>eventName</var>.
+        Returns an <a>Observable</a> for the <a>Property</a>, <a>Event</a> or <a>Action</a> specified in the <var>name</var> argument, allowing subscribing and unsubscribing to notifications. Takes an argument of type <a>ThingEventListener</a>.
       </p>
     </section>
 
-    <section> <h3>The <dfn>removeListener()</dfn> method</h3>
+    <section> <h3>The <dfn>onPropertyChange()</dfn> method</h3>
       <p>
-        Removes a listener from the <a>Event</a> identified by the provided <var>eventName</var> and <var>listener</var> argument.
+        Returns an <a>Observable</a> for the <a>Property</a> specified in the <var>name</var> argument, allowing subscribing and unsubscribing to notifications. Takes an argument of type <a>PropertyChangeListener</a>.
       </p>
     </section>
 
-    <section> <h3>The <dfn>removeAllListeners()</dfn> method</h3>
+    <section> <h3>The <dfn>onTDChange()</dfn> method</h3>
       <p>
-        Removes all listeners for the <a>Event</a> provided by the <var>eventName</var> optional argument, or if that was not provided, then removes all listeners from all <a>Events</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>observe()</dfn> method</h3>
-      <p>
-        Returns an <a>Observable</a> for the <a>Property</a>, <a>Event</a> or <a>Action</a> specified in the <var>name</var> argument, allowing subscribing and unsubscribing to notifications. The <var>requestType</var> specifies whether a <a>Property</a>, an <a>Event</a> or an <a>Action</a> is observed.
-      </p>
-      <p class="ednote">
-        The <code>observe()</code> method could replace <code>addListener()</code> and <code>removeListener()</code>, though they could be kept for convenience.
+        Returns an <a>Observable</a>, allowing subscribing and unsubscribing to notifications to the <a>Thing Description</a>. Takes no arguments.
       </p>
     </section>
 
     <section data-dfn-for="ThingEventListener">
       <h2>The <dfn>ThingEventListener</dfn> callback</h2>
       <p>
-        A function called with an <a data-lt="DOM-Level-2-Events">Event</a> object when an event is emitted.
+        A function called with an <a>ThingEvent</a> object when an event is emitted.
       </p>
     </section>
 
-    <section> <h2>Events</h2>
+    <section data-dfn-for="PropertyChangeListener">
+      <h2>The <dfn>PropertyChangeListener</dfn> callback</h2>
+      <p>
+        A function called with an <a>ThingProperty</a> object.
+      </p>
+    </section>
+
+    <section data-dfn-for="TDChangeListener">
+      <h2>The <dfn>TDChangeListener</dfn> callback</h2>
+      <p>
+        A function called with one optional argument of type <a>ThingDescription</a>.
+      </p>
+    </section>
+
+    <section> <h2> Thing Events</h2>
       <p>
         Clients can subscribe to the <a>Events</a> defined in <a href="#events-supported-by-exposedthing">ExposedThing events</a>. The event types are described in this section.
       </p>
@@ -537,21 +596,21 @@
         </section>
       </section>
 
-      <section data-dfn-for="ThingDescriptionChangeEvent">
-        <h2>The <dfn>ThingDescriptionChangeEvent</dfn> interface</h2>
+      <section data-dfn-for="TDChangeEvent">
+        <h2>The <dfn>TDChangeEvent</dfn> interface</h2>
         <pre class="idl">
-          [Constructor(ThingDescriptionChangeEventInit init)]
-          interface ThingDescriptionChangeEvent: Event {
-              readonly attribute ThingDescriptionChangeEventInit data;
+          [Constructor(TDChangeEventInit init)]
+          interface TDChangeEvent: Event {
+              readonly attribute TDChangeEventInit data;
           };
         </pre>
         <p>
           The <dfn>data</dfn> attribute represents the changes that occurred to the <a>Thing Description</a>.
         </p>
-        <section data-dfn-for="ThingDescriptionChangeEventInit">
-          <h3>The <dfn>ThingDescriptionChangeEventInit</dfn> dictionary</h3>
+        <section data-dfn-for="TDChangeEventInit">
+          <h3>The <dfn>TDChangeEventInit</dfn> dictionary</h3>
           <pre class="idl">
-            dictionary ThingDescriptionChangeEventInit {
+            dictionary TDChangeEventInit {
                 TDChangeType type;
                 TDChangeMethod method;
                 DOMString name;
@@ -605,8 +664,8 @@
               Represents the new description of the changed element. Depending on the change type, it can be either a <a>ThingPropertyInit</a>, <a>ThingActionInit</a>, or <a>ThingEventInit</a>.
             </p>
           </section>
-        </section> <!-- ThingDescriptionChangeEventInit -->
-      </section> <!-- ThingDescriptionChangeEvent -->
+        </section> <!-- TDChangeEventInit -->
+      </section> <!-- TDChangeEvent -->
     </section> <!-- Events -->
 
     <section>
@@ -618,7 +677,7 @@
         wot.consume("http://mmyservice.org/mySensor").then( thing => {
             console.log("Thing " + thing.name + " has been consumed.");
             console.log("{ " + JSON.serialize(thing) + " }");
-            thing.addListener("onchange", function(event) {
+            thing.onPropertyChange("temperature", function(event) {
                 if (event instanceof PropertyChangeEvent) {
                     console.log("Property " + event.name + " value has changed to " + event.value);
                 }
@@ -637,108 +696,50 @@
       The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>.
     </p>
     <pre class="idl">
-      typedef USVString ThingDescription;
-      callback RequestHandler = any (Request request);
       interface ExposedThing {
-        // define Thing Description modifiers
-        ExposedThing addProperty(ThingPropertyInit property);
-        ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(ThingActionInit action);
-        ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(ThingEventInit event);
-        ExposedThing removeEvent(DOMString name);
-        // define request handlers
-        ExposedThing onRetrieveProperty(RequestHandler handler);
-        ExposedThing onUpdateProperty(RequestHandler handler);
-        ExposedThing onInvokeAction(RequestHandler handler);
-        ExposedThing onObserve(RequestHandler handler);
         // define how to expose and run the Thing
-        Promise&lt;void&gt; register(optional USVString directory);
-        Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; start();
         Promise&lt;void&gt; stop();
+        Promise&lt;void&gt; register(optional USVString directory);
+        Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
+        // define Thing Description modifiers
+        void addProperty(ThingPropertyInit property);
+        void removeProperty(DOMString name);
+        void addAction(ThingActionInit action);
+        void removeAction(DOMString name);
+        void addEvent(ThingEventInit event);
+        void removeEvent(DOMString name);
       };
-      ExposedThing implements ConsumedThing;
     </pre>
 
-    <section data-dfn-for="ThingDescription">
-    <h3>The <dfn>ThingDescription</dfn> type</h3>
+    <section> <h3>The <dfn>start()</dfn> method</h3>
       <p>
-        WoT provides a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
-      </p>
-      <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
-        Parsing and composing <a>Thing Description</a>s is left for external libraries until standardized here.
+        Start serving external requests for the <a>Thing</a>.
       </p>
     </section>
 
-    <section data-dfn-for="Request">
-      <h3>The <dfn>Request</dfn> interface</h3>
-      <pre class="idl">
-        interface Request {
-            readonly attribute RequestType type;
-            readonly attribute USVString from;
-            readonly attribute DOMString name;
-            readonly attribute Dictionary options;
-            readonly attribute any data;
-            Promise respond(any response);
-            void respondWithError(Error error);
-        };
-      </pre>
+    <section> <h3>The <dfn>stop()</dfn> method</h3>
       <p>
-        Represents an incoming request the <a>ExposedThing</a> is supposed to handle, for instance retrieving and updating properties, invoking <a>Actions</a> and observing <a>Events</a> (WoT interactions).
-        <ul>
-          <li>
-            The <dfn>type</dfn> attribute represents the type of the request as defined in <a>RequestType</a>.
-          </li>
-          <li>
-            The <dfn>from</dfn> attribute represents the address of the client device issuing the request. The type of the address (URL, UUID or other) is defined by the <a>Thing Description</a>.
-          </li>
-          <li>
-            The <dfn>name</dfn> attribute represents the name of the <a>Property</a> to be retrieved or updated, or the name of the invoked <a>Action</a>, or the event name to be observed.
-          </li>
-          <li>
-            The <dfn>options</dfn> attribute represents the options relevant to the request (e.g. the format or measurement units for the returned value) as key-value pairs. The exact format is specified by the <a>Thing Description</a>.
-          </li>
-          <li>
-            The <dfn>data</dfn> attribute represents the value of the <a>Property</a>, or the input data (arguments) of an <a>Action</a>. It is not used for retrieve requests and event requests, only for <a>Property</a> update and <a>Action</a> invocation requests.
-          </li>
-        </ul>
+        Stop serving external requests for the <a>Thing</a>.
       </p>
-      <section data-dfn-for="RequestType">
-        <h2>The <dfn>RequestType</dfn> enumeration</h2>
-        <pre class="idl">
-          enum RequestType { "property", "action", "event", "td" };
-        </pre>
-        <ul>
-          <li>The value "<dfn>property</dfn>" represents requests to retrieve or update a <a>Property</a>.</li>
-          <li>The value "<dfn>action</dfn>" represents requests to invoke an <a>Action</a>.</li>
-          <li>The value "<dfn>event</dfn>" represents requests to emit an event.</li>
-          <li>
-            The value "<dfn>td</dfn>" represents requests to change the <a>Thing Description</a>, i.e. to add, remove or modify properties, <a>Actions</a> or <a>Events</a>.
-            <p class="ednote">
-              This functionality is here for the sake of completeness for future versions of the API. Currently there is no corresponding functionality at the <a>ConsumedThing</a> level and it is not guaranteed that a Thing Description could be remotely changed by scripting.
-            </p>
-          </li>
-        </ul>
-      </section>
-      <section> <h3>The <dfn>respond()</dfn> method</h3>
-        <p>
-          Sends a positive response to the <a>Request</a> based on the <a>Protocol Bindings</a> and includes the data specified by the <var>data</var> argument.
-        </p>
-      </section>
-      <section> <h3>The <dfn>respondWithError()</dfn> method</h3>
-        <p>
-          Sends a negative response to the <a>Request</a> based on the <a>Protocol Bindings</a> and includes the error specified by the <var>error</var> argument.
-        </p>
-      </section>
-    </section> <!-- Request -->
+    </section>
 
-    <section data-dfn-for="RequestHandler">
-      <h3>The <dfn>RequestHandler</dfn> callback</h3>
+    <section> <h3>The <dfn>register()</dfn> method</h3>
       <p>
-        Callback function for handling interaction requests. Receives an argument <var>request</var> of type <code><a>Request</a></code> and should return an object or value that is used by <a>Protocol Bindings</a> to reply to the request. The returned type is defined by the <a>Thing Description</a>.
+        Generates the <a>Thing Description</a> given the properties, <a>Actions</a> and <a>Event</a> defined for this object. If a <code>directory</code> argument is given, make a request to register the <a>Thing Description</a> with the given WoT repository by invoking its <code>register</code> <a>Action</a>.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>unregister()</dfn> method</h3>
+      <p>
+        If a <code>directory</code> argument is given, make a request to unregister the <a>Thing Description</a> with the given WoT repository by invoking its <code>unregister</code> <a>Action</a>. Then, and in the case no arguments were provided to this function, stop the <a>Thing</a> and remove the <a>Thing Description</a>.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
+      <p>
+        Emits an the event initialized with the event name specified by the <code>eventName</code> argument and data specified by the <code>payload</code> argument.
       </p>
     </section>
 
@@ -780,26 +781,6 @@
               The <dfn>description</dfn> attribute represents the <a>Property</a> description to be added to the <a>Thing Description</a>.
             </li>
           </ul>
-        </p>
-      </section>
-
-      <section data-dfn-for="SemanticType">
-        <h4>The <dfn>SemanticType</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary SemanticType {
-            DOMString name;
-            USVString context;
-          };
-        </pre>
-        <p>
-          Represents a semantic type annotation, containing a name and a context.
-          <ul>
-            <li>The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.</li>
-            <li>The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.</li>
-          </ul>
-        </p>
-        <p class="ednote">
-          Semantic type examples to be added.
         </p>
       </section>
     </section> <!-- addProperty() -->
@@ -873,71 +854,6 @@
       </p>
     </section>
 
-    <section> <h3>The <dfn>onRetrieveProperty()</dfn> method</h3>
-      <p>
-        Registers the handler function for <a>Property</a> retrieve requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where at least <var>request.name</var> is defined and represents the name of the <a>Property</a> to be retrieved.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>onUpdateProperty()</dfn> method</h3>
-      <p>
-        Defines the handler function for <a>Property</a> update requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where <var>request.name</var> defines the name of the <a>Property</a> to be retrieved and <var>request.data</var> defines the new value of the <a>Property</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>onInvokeAction()</dfn> method</h3>
-      <p>
-        Defines the handler function for <a>Action</a> invocation requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>.  The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where <var>request.name</var> defines the name of the <a>Action</a> to be invoked and <var>request.data</var> defines the input arguments for the <a>Action</a> as defined by the <a>Thing Description</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>onObserve()</dfn> method</h3>
-      <p>
-        Defines the handler function for observe requests received for the <a>Thing</a>, as defined by the <code>handler</code> property of type <code><a>RequestHandler</a></code>. The handler will receive an argument <var>request</var> of type <code><a>Request</a></code> where
-        <ul>
-          <li>
-            <var>request.name</var> defines the name of the <a>Property</a> or <a>Action</a> or event to be observed.
-          </li>
-          <li>
-            <var>request.options.observeType</var> is of type <a>RequestType</a> and defines whether a <a>Property</a> change or <a>Action</a> invocation or event emitting is observed, or the changes to the <a>Thing Description </a> are observed.
-          </li>
-          <li>
-            <var>request.options.subscribe</var> is <code>true</code> if subscription is turned or kept being turned on, and it is <code>false</code> when subscription is turned off.
-          </li>
-        </ul>
-      </p>
-    </section> <!-- onObserve() -->
-
-    <section> <h3>The <dfn>register()</dfn> method</h3>
-      <p>
-        Generates the <a>Thing Description</a> given the properties, <a>Actions</a> and <a>Event</a> defined for this object. If a <code>directory</code> argument is given, make a request to register the <a>Thing Description</a> with the given WoT repository by invoking its <code>register</code> <a>Action</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>unregister()</dfn> method</h3>
-      <p>
-        If a <code>directory</code> argument is given, make a request to unregister the <a>Thing Description</a> with the given WoT repository by invoking its <code>unregister</code> <a>Action</a>. Then, and in the case no arguments were provided to this function, stop the <a>Thing</a> and remove the <a>Thing Description</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>start()</dfn> method</h3>
-      <p>
-        Start serving external requests for the <a>Thing</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>stop()</dfn> method</h3>
-      <p>
-        Stop serving external requests for the <a>Thing</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
-      <p>
-        Emits an the event initialized with the event name specified by the <code>eventName</code> argument and data specified by the <code>payload</code> argument.
-      </p>
-    </section>
-
     <section data-dfn-for="ExposedThing-Events">
       <h2>Events supported by ExposedThing</h2>
       <p>
@@ -945,7 +861,7 @@
         <ul>
           <li>"<dfn>propertychange</dfn>" of type <a>PropertyChangeEvent</a></li>
           <li>"<dfn>actioninvocation</dfn>" of type <a>ActionInvocationEvent</a></li>
-          <li>"<dfn>descriptionchange</dfn>" of type <a>ThingDescriptionChangeEvent</a>.</li>
+          <li>"<dfn>descriptionchange</dfn>" of type <a>TDChangeEvent</a>.</li>
         </ul>
       </p>
       <p>
