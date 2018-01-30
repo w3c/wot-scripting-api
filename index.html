@@ -157,29 +157,16 @@
     <section><h4>Consuming a Thing</h4>
     <ul>
       <li>
-        Fetch and <a>consume a TD</a> of a <a>Thing</a>. The <a>TD</a> may be provided as a string, or as a file path, or specified by a URL. Consuming the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
+        Fetch and <a>consume a TD</a> of a <a>Thing</a>. The <a>TD</a> may be provided in a string serialized format, or specified by a URL. Consuming the <a>Thing</a> includes parsing the <a>TD</a> and attaching to the protocol bindings in order to access lower level functionality.
       </li>
       <li>On a consumed <a>Thing</a>,
         <ul>
           <li>Get the value of a <a>Property</a> or set of properties.</li>
+          <li>Observe value changes to a <a>Property</a>.</li>
           <li>Set the value of a <a>Property</a> or a set of properties.</li>
           <li>Invoke an <a>Action</a>.</li>
-          <li>
-            Observe <a>Events</a>.
-            <ul>
-              <li>Add a listener to an <a>Event</a>.</li>
-              <li>Remove a listener from an <a>Event</a>.</li>
-              <li>Remove all listeners.</li>
-            </ul>
-            Default <a>Events</a> are the following:
-            <ul>
-              <li>A <a>Property</a> has changed.</li>
-              <li>An <a>Action</a> has been invoked.</li>
-              <li>
-                <a>Thing Description</a> has changed, i.e. <a>Properties</a>, <a>Events</a> or <a>Actions</a> have been defined, removed, or the definition has changed.
-              </li>
-            </ul>
-          </li>
+          <li>Observe <a>Events</a> emitted by the <a>Thing</a>.</li>
+          <li>Observe changes to the <a>Thing Description</a> of the <a>Thing</a>.</li>
         </ul>
       </li>
     </ul>
@@ -187,41 +174,38 @@
     <section><h4>Exposing a Thing</h4>
     <ul>
       <li>
-        Create and expose a <a>Thing</a> based on a <a>Thing Description</a> provided as a URL, or local file, or a string. Exposing the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
+        Exposing the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
+      </li>>
+      <li>
+        Create a local <a>ExposedThing</a> to be exposed, based on a <a>Thing Description</a> provided as a URL, or a in string serialized format, or out of a template or an existing <a>ConsumedThing</a> object.</li>
+      <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
+      <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
+      <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
+      <li>Attach semantic information to an <a>Action</a></li>
+      <li>Attach semantic information to a <a>Property</a></li>
+      <li>Attach semantic information to an <a>Event</a></li>
+      <li>
+        Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
       </li>
-      <li>Programmatically create and expose a local or remote <a>Thing</a>. This may include the following use cases:
-        <ul>
-          <li>Create a local <a>Thing</a>.</li>
-          <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
-          <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
-          <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
-          <li>Attach semantic information to an <a>Action</a></li>
-          <li>Attach semantic information to a <a>Property</a></li>
-          <li>Attach semantic information to an <a>Event</a></li>
-          <li>
-            Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
-          </li>
-          <li>
-            Provide notifications for TD changes to clients subscribed to that.
-          </li>
-          <li>Register handlers for external requests:
-            <ul>
-              <li>to retrieve a <a>Property</a> value;</li>
-              <li>to update a <a>Property</a> value;</li>
-              <li>
-                to run an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
-              </li>
-              <li>to add a listener to an <a>Event</a>;</li>
-              <li>to remove an <a>Event</a> listener.</li>
-              <li>to fetch the <a>Thing Description</a>;</li>
-            </ul>
-          </li>
-        </ul>
+      <li>
+        Provide notifications for TD changes to clients subscribed to that.
       </li>
       <li>Mark/unmark the Thing to be discoverable.</li>
       <li>Mark/unmark the Thing to be consumable.</li>
       <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
       <li>Stop the exposed <a>Thing</a>.</li>
+      <li>Register handlers for external requests:
+        <ul>
+          <li>to retrieve a <a>Property</a> value;</li>
+          <li>to update a <a>Property</a> value;</li>
+          <li>
+            to run an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
+          </li>
+          <li>to add a listener to an <a>Event</a>;</li>
+          <li>to remove an <a>Event</a> listener.</li>
+          <li>to fetch the <a>Thing Description</a>;</li>
+        </ul>
+      </li>
     </ul>
     </section>
     <section><h4>Future use cases</h4>
@@ -253,7 +237,7 @@
         Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
         Promise&lt;ThingDescription&gt; fetch(USVString url);
         ConsumedThing consume(ThingDescription td);
-        ExposedThing expose(ThingTemplate init);
+        ExposedThing expose(optional Dictionary template);
       };
       typedef USVString ThingDescription;
     </pre>
@@ -458,9 +442,9 @@
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
         Promise&lt;any&gt; readProperty(DOMString name);
-        Observable onEvent(DOMString name);
-        Observable onPropertyChange(DOMString name);
-        Observable onTDChange();
+        Observable&lt;ThingEventListener&gt; onEvent(DOMString name);
+        Observable&lt;PropertyChangeListener&gt; onPropertyChange(DOMString name);
+        Observable&lt;TDChangeListener&gt; onTDChange();
       };
       callback ThingEventListener = void (ThingEvent event);
       callback PropertyChangeListener = void (PropertyChangeEvent change);
