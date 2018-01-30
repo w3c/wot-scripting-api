@@ -177,7 +177,7 @@
         Exposing the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
       </li>>
       <li>
-        Create a local <a>ExposedThing</a> to be exposed, based on a <a>Thing Description</a> provided as a URL, or a in string serialized format, or out of a template or an existing <a>ConsumedThing</a> object.</li>
+        Create a local <a>ExposedThing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of a template or an existing <a>ConsumedThing</a> object.</li>
       <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
       <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
       <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
@@ -237,9 +237,10 @@
         Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
         Promise&lt;ThingDescription&gt; fetch(USVString url);
         ConsumedThing consume(ThingDescription td);
-        ExposedThing expose(optional Dictionary template);
+        ExposedThing produce(optional ThingModel model);
       };
       typedef USVString ThingDescription;
+      typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
     </pre>
 
     <p class="ednote">
@@ -249,7 +250,7 @@
     <section data-dfn-for="ThingDescription">
     <h3>The <dfn>ThingDescription</dfn> type</h3>
       <p>
-        WoT provides a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
+        Representation of the <a>Thing Description</a>, a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
       </p>
       <p class="note">
         In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
@@ -287,8 +288,15 @@
       <p>
         Represents a semantic type annotation, containing a name and a context.
         <ul>
-          <li>The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.</li>
-          <li>The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.</li>
+          <li>
+            The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.
+          </li>
+          <li>
+            The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.
+          </li>
+          <li>
+            The <dfn>prefix</dfn> attribute represents a short prefix associated with a context.
+          </li>
         </ul>
       </p>
       <p class="ednote">
@@ -306,7 +314,9 @@
       </pre>
       <p>The <a>SemanticMetadata</a> dictionary describes the semantic metadata elements attached to a <a>Thing</a>:
         <ul>
-          <li>The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.</li>
+          <li>
+            The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.
+          </li>
           <li>The <dfn>value</dfn> attribute represents the metadata value.</li>
         </ul>
       </p>
