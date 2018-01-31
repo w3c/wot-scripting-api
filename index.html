@@ -100,7 +100,7 @@
       The <a>Web of Things</a> (WoT) provides layered interoperability between <a>Things</a> by using the <a>WoT Interface</a>s.
     </p>
     <p>
-      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by <a> WoT interactions</a>, i.e. <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
+      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a>, i.e. <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
     </p>
     <p>
       Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
@@ -261,17 +261,21 @@
           dictionary ThingFilter {
             (DiscoveryMethod or DOMString) method = "any";
             USVString url;
-            Dictionary description;
+            USVString query;
+            sequence&lt;Dictionary&gt; constraints;
           };
         </pre>
         <p>
           The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that can be extended by string values defined by solutions (with no guarantee of interoperability).
         </p>
         <p>
-          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the <a>Thing Directory</a> server to be used.
+          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a <a>Thing Directory</a> or a Thing.
         </p>
         <p>
-          The <dfn>description</dfn> property represents additional information for the discovery method in the form of a set of key-value pairs, as defined in the <a>Thing Description</a>.
+          The <dfn>query</dfn>> property represents a query string accepted by the implementation, for instance a SPARQL query.
+        </p>
+        <p>
+          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of key-value pairs, defined based on the semantic metadata of the <a>Thing Description</a>. The sequence elements are in OR relationship, and within an element the key-value pairs define AND type constraints.
         </p>
         <p class="ednote">
           The <a>DiscoveryMethod</a> enumeration can be extended by the <a>Thing Description</a> with values that are not specified here. This extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
@@ -317,7 +321,7 @@
     <section data-dfn-for="ThingDescription">
     <h3>The <dfn>ThingDescription</dfn> type</h3>
       <p>
-        Representation of the <a>Thing Description</a>, a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
+        Representation of the <a>Thing Description</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
       </p>
       <p class="note">
         In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
@@ -333,7 +337,18 @@
 
     <section> <h3>The <dfn>produce()</dfn> method</h3>
       <p>
-        Accepts an optional <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters.
+        Accepts an optional <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
+        <ul>
+          <li>
+            from an initial model (name and semantic annotations), then adding properties, actions, events and request handlers;
+          </li>
+          <li>
+            from a <a>Thing Description</a>, then adding request handlers;
+          </li>
+          <li>
+            from an existing <a>ConsumedThing</a> object, taking its <a>Thing Description</a> over, then adding request handlers.
+          </li>
+        </ul>
       </p>
     </section> <!-- produce() -->
 
@@ -355,6 +370,12 @@
             sequence&lt;SemanticMetadata&gt; metadata;
         };
       </pre>
+      <p>
+        The <dfn>semanticTypes</dfn> property denotes a list of <a>SemanticType</a> objects that define the semantic types that can be used in semantic metadata type-value pairs.
+      </p>
+      <p>
+        The <dfn>metadata</dfn> property denotes a list of <a>SemanticMetadata</a> objects (type-value pairs).
+      </p>
     </section> <!-- SemanticAnnotations -->
 
     <section data-dfn-for="SemanticType" >
@@ -535,7 +556,7 @@
     <section data-dfn-for="PropertyChangeListener">
       <h2>The <dfn>PropertyChangeListener</dfn> callback</h2>
       <p>
-        A function called with an <a>name</a> argument of type string that denotes the changed property name, and a <a>value</a> argument that denotes the new property value.
+        A function called with an <code>name</code> argument of type string that denotes the changed property name, and a <code>value</code> argument that denotes the new property value.
       </p>
     </section>
 
@@ -559,14 +580,16 @@
         Clients can subscribe to the <a>Events</a> defined in <a href="#events-supported-by-exposedthing">ExposedThing events</a>. The event types are described in this section.
       </p>
       <pre class="idl">
-        [Constructor(any data)]
+        [Constructor(DOMString name, any data)]
         interface ThingEvent {
           readonly attribute DOMString name;
           readonly attribute any data;
         };
       </pre>
       <p>
-          The <dfn>data</dfn> attribute represents the data attached to the event. The data type and values are defined in the <a>Thing Description</a> of the remote <a>ExposedThing</a> that exposes the event.
+        The <dfn>name</dfn> attribute represents the <a>Event</a> name.
+      <p>
+        The <dfn>data</dfn> attribute represents the data attached to the event. The data type and values are defined in the <a>Thing Description</a> of the remote <a>ExposedThing</a> that exposes the event.
       </p>
     </section> <!-- ThingEvent -->
 
@@ -613,12 +636,13 @@
         void removeAction(DOMString name);
         void addEvent(ThingEventInit event);
         void removeEvent(DOMString name);
-        void setActionHandler(DOMString actionName, Function action);
+        void setActionHandler(DOMString actionName, ActionHandler action);
         void setPropertyReadHandler(DOMString propertyName, PropertyReadHandler readHandler);
-        void setPropertyWriteHandler(DOMString propertyName, PropertyWriteHandler readHandler);
+        void setPropertyWriteHandler(DOMString propertyName, PropertyWriteHandler writeHandler);
       };
-      callback PropertyReadHandler = any (DOMString propertyName);
-      callback PropertyWriteHandler = void (DOMString propertyName, any value);
+      callback ActionHandler = Promise&lt;any&gt; (any parameters);
+      callback PropertyReadHandler = Promise&lt;any&gt; (DOMString propertyName);
+      callback PropertyWriteHandler = Promise&lt;void&gt; (DOMString propertyName, any value);
     </pre>
 
     <section> <h3>The <dfn>start()</dfn> method</h3>
@@ -657,13 +681,17 @@
         typedef DOMString ValueType;
         dictionary ValueDefinition {
           ValueType type;
-          any defaultValue;
-          any min;
-          any max;
         };
       </pre>
       <p>
-        Represents a value definition, including type, minimum value, maximum value, and default value.
+        Represents a value definition, including type, and possible constraints like minimum value, maximum value, etc.
+        <ul>
+          <li>
+            The <dfn>type</dfn> property represents the type name of the value.
+        </ul>
+      </p>
+      <p>
+        The <dfn>ValueType</dfn> type represents a type name specified in the <a>Thing Description</a>.
       </p>
     </section>
 
@@ -687,6 +715,9 @@
           Represents the <a>Thing</a> <a>Property</a> description.
           <ul>
             <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
+            <li>
+              The <dfn>valueDescription</dfn> attribute of type <a>ValueDefinition</a> represents the type of the <a>Property</a>.
+            </li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
               The <dfn>configurable</dfn> attribute defines whether the <a>Property</a> can be deleted from the object and whether its type can be changed. The default value is <code>false</code>.
@@ -760,6 +791,45 @@
     <section> <h3>The <dfn>removeEvent()</dfn> method</h3>
       <p>
         Removes the event specified by the <code>name</code> argument and updates the <a>Thing Description</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="ActionHandler">
+      <h3>The <dfn>ActionHandler</dfn> callback</h3>
+      <p>
+        A function called with any parameters that returns a Promise.
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyReadHandler">
+      <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
+      <p>
+        A function called with a <code>propertyName</code> argument that returns a Promise and resolves it with the value of the <a>Property</a> matching <code>propertyName</code>, or rejects with and error if the property is not found or the value cannot be retrieved.
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyWriteHandler">
+      <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
+      <p>
+        A function called with a <code>propertyName</code>  and a <code>value</code> argument that returns a Promise and resolves it when the value of the <a>Property</a> matching <code>propertyName</code> is updated with <code>value</code>, or rejects with and error if the property is not found or the value cannot be updated.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
+      <p>
+        Takes a <code>actionName</code> as string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code>. Throws on error.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
+      <p>
+        Takes a <code>propertyName</code> as string argument, and a <code>readHandler</code> argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>propertyName</code>. Throws on error.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
+      <p>
+        Takes a <code>propertyName</code> as string argument, and a <code>writeHandler</code> argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>propertyName</code>. Throws on error.
       </p>
     </section>
 
@@ -856,7 +926,7 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
     </p>
     <p class="note">
       In this version of the specification, a <a>WoT Runtime</a> is assumed to run scripts that uses this API to define one or more <a>Thing</a>s that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose <a>Actions</a> permit script lifecycle management operations.
@@ -954,12 +1024,6 @@
       <a href="http://heycam.github.io/webidl/#idl-ArrayBuffer"><dfn>ArrayBuffer</dfn></a>,
       <a href="http://heycam.github.io/webidl/#common-BufferSource"><dfn>BufferSource</dfn></a> and
       <a href="http://heycam.github.io/webidl/#idl-any"><dfn>any</dfn></a> are defined in [[!WEBIDL]].
-    </p>
-    <p>
-      The term <b><i>event</i></b> and the <b><i>Event</i></b> object are defined in [DOM](https://www.w3.org/TR/DOM-Level-2-Events/events.html) and [Node.js](https://nodejs.org/api/events.html).
-    </p>
-    <p class="note">
-      This specification uses the convention that an event listener will receive an [Event](https://www.w3.org/TR/DOM-Level-2-Events/ecma-script-binding.html) object. This should work both in a browser environment and in a Node.js like environment.
     </p>
     <p>
       <a href="https://github.com/tc39/proposal-observable"><dfn>Observable</dfn>s</a> are proposed to be included in ECMAScript.
