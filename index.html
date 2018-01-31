@@ -210,11 +210,11 @@
     </section>
     <section><h4>Future use cases</h4>
     <p>
-      The following use cases are being considered for next versions:
+      The following use cases are being considered out of scope for this version:
     </p>
     <ul>
       <li>
-        Create, start, stop, delete scripts in local or remote runtimes in order to implement Thing lifecycle management.
+        Deploy, start, stop, delete scripts in local or remote runtimes in order to implement Thing lifecycle management.
       </li>
     </ul>
     <p class="ednote">
@@ -247,85 +247,10 @@
       The algorithms for the WoT methods will be specified later.
     </p>
 
-    <section data-dfn-for="ThingDescription">
-    <h3>The <dfn>ThingDescription</dfn> type</h3>
-      <p>
-        Representation of the <a>Thing Description</a>, a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
-      </p>
-      <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
-        Parsing and composing <a>Thing Description</a>s is left for external libraries until standardized here.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingTemplate" >
-      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary ThingTemplate {
-            DOMString name;
-            sequence&lt;SemanticType&gt; semanticTypes;
-            sequence&lt;SemanticMetadata&gt; metadata;
-        };
-      </pre>
-      <p>The <a>ThingTemplate</a> dictionary contains properties to initialize a <a>Thing</a>:
-        <ul>
-          <li>The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.</li>
-          <li>The <dfn>semanticTypes</dfn> attribute represents an array of <a>SemanticType</a> objects that describe the types supported by the <a>Thing</a>.</li>
-          <li>The <dfn>metadata</dfn> nullable attribute represents the metadata fields to be added to the <a>Thing Description</a> of the <a>Thing</a>.</li>
-        </ul>
-      </p>
-    </section> <!-- ThingTemplate -->
-
-    <section data-dfn-for="SemanticType" >
-      <h3>The <dfn>SemanticType</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary SemanticType {
-            DOMString name;
-            USVString context;
-            DOMString prefix;
-        };
-      </pre>
-      <p>
-        Represents a semantic type annotation, containing a name and a context.
-        <ul>
-          <li>
-            The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.
-          </li>
-          <li>
-            The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.
-          </li>
-          <li>
-            The <dfn>prefix</dfn> attribute represents a short prefix associated with a context.
-          </li>
-        </ul>
-      </p>
-      <p class="ednote">
-        Semantic type examples to be added.
-      </p>
-    </section> <!-- SemanticType -->
-
-    <section data-dfn-for="SemanticMetadata" >
-      <h3>The <dfn>SemanticMetadata</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary SemanticMetadata {
-            SemanticType type;
-            any          value;
-        };
-      </pre>
-      <p>The <a>SemanticMetadata</a> dictionary describes the semantic metadata elements attached to a <a>Thing</a>:
-        <ul>
-          <li>
-            The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.
-          </li>
-          <li>The <dfn>value</dfn> attribute represents the metadata value.</li>
-        </ul>
-      </p>
-    </section> <!-- SemanticMetadata -->
-
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
         Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, starts the widest discovery the <a>Thing Description</a> and <a>Protocol Bindings</a> allow and support.
-        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed and unsubscribed to.
+        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from.
       </p>
       <section data-dfn-for="ThingFilter">
         <h4>The <dfn>ThingFilter</dfn> dictionary</h4>
@@ -389,17 +314,116 @@
       </p>
     </section>
 
+    <section data-dfn-for="ThingDescription">
+    <h3>The <dfn>ThingDescription</dfn> type</h3>
+      <p>
+        Representation of the <a>Thing Description</a>, a unified representation for data exchange between <a>Thing</a>s, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
+      </p>
+      <p class="note">
+        In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
+        Parsing and composing <a>Thing Description</a>s is left for external libraries until standardized here.
+      </p>
+    </section>
+
     <section> <h3> The <dfn>consume()</dfn> method</h3>
       <p>
         Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on that description.
       </p>
     </section>
 
-    <section> <h3>The <dfn>expose()</dfn> method</h3>
+    <section> <h3>The <dfn>produce()</dfn> method</h3>
       <p>
-        Accepts an <code>init</code> argument of type <code><a>ThingTemplate</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters.
+        Accepts an optional <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters.
       </p>
-    </section> <!-- expose() -->
+    </section> <!-- produce() -->
+
+    <section data-dfn-for="ThingModel" >
+    <h3>The <dfn>ThingModel</dfn> type</h3>
+    <p>
+      A Thing model is used for producing a new <a>ExposedThing</a> and can be either a <a>ThingTemplate</a>, or a <a>ThingDescription</a>, or a <a>ConsumedThing</a>.
+    </p>
+    </section>
+
+    <section data-dfn-for="SemanticAnnotations" >
+      <h3>The <dfn>SemanticAnnotations</dfn> dictionary</h3>
+      <p>
+        A dictionary that provides the semantic types and semantic metadata.
+      </p>
+      <pre class="idl">
+        dictionary SemanticAnnotations {
+            sequence&lt;SemanticType&gt; semanticTypes;
+            sequence&lt;SemanticMetadata&gt; metadata;
+        };
+      </pre>
+    </section> <!-- SemanticAnnotations -->
+
+    <section data-dfn-for="SemanticType" >
+      <h3>The <dfn>SemanticType</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary SemanticType {
+            DOMString name;
+            USVString context;
+            DOMString prefix;
+        };
+      </pre>
+      <p>
+        Represents a semantic type annotation, containing a name, a context and a prefix.
+        <ul>
+          <li>
+            The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.
+          </li>
+          <li>
+            The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.
+          </li>
+          <li>
+            The <dfn>prefix</dfn> attribute represents a short prefix associated with a context.
+          </li>
+        </ul>
+      </p>
+      <p class="ednote">
+        Semantic type examples to be added.
+      </p>
+    </section> <!-- SemanticType -->
+
+    <section data-dfn-for="SemanticMetadata" >
+      <h3>The <dfn>SemanticMetadata</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary SemanticMetadata {
+            SemanticType type;
+            any          value;
+        };
+      </pre>
+      <p>The <a>SemanticMetadata</a> dictionary describes a pair of semantic type and value:
+        <ul>
+          <li>
+            The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.
+          </li>
+          <li>The <dfn>value</dfn> attribute represents the metadata value.</li>
+        </ul>
+      </p>
+    </section> <!-- SemanticMetadata -->
+
+    <section data-dfn-for="ThingTemplate" >
+      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
+      <p>
+        A Thing Template is a dictionary that provides the semantic types and semantic metadata at the <a>ExposedThing</a> description's root level.
+      </p>
+      <pre class="idl">
+        dictionary ThingTemplate: SemanticAnnotations {
+            DOMString name;
+        };
+      </pre>
+      <p>The <a>ThingTemplate</a> dictionary extends <a>SemanticAnnotations</a> and contains properties to initialize a <a>Thing</a>:
+        <ul>
+          <li>
+            The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.
+          </li>
+        </ul>
+      </p>
+      <p class="ednote">
+        Support for configuration and security data might be added later.
+      </p>
+    </section> <!-- ThingTemplate -->
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
@@ -448,7 +472,7 @@
     <pre class="idl">
       interface ConsumedThing {
         readonly attribute DOMString name;
-        readonly attribute ThingDescription description;
+        readonly attribute ThingDescription td;
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
         Promise&lt;any&gt; readProperty(DOMString name);
@@ -457,16 +481,15 @@
         Observable&lt;TDChangeListener&gt; onTDChange();
       };
       callback ThingEventListener = void (ThingEvent event);
-      callback PropertyChangeListener = void (PropertyChangeEvent change);
-      callback TDChangeListener = void (TDChangeEvent td);
+      callback PropertyChangeListener = void (DOMString name, any value);
+      callback TDChangeListener = void (optional ThingDescription td);
     </pre>
     <p>
       Represents a local proxy object of the remote <a>Thing</a>.
       <ul>
         <li>The <dfn>name</dfn> read-only attribute represents the name of the <a>Thing</a>.</li>
-        <li>The <dfn>url</dfn> read-only attribute represents the URL of the <a>Thing</a>.</li>
         <li>
-          The <dfn>description</dfn> attribute read-only attribute represents the description of the <a>Thing</a>.
+          The <dfn>td</dfn> attribute read-only attribute represents the description of the <a>Thing</a>.
           <p class="ednote">
             Parsing and exposing <a>Thing Description</a>s is discussed in [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38).</p>
         </li>
@@ -493,174 +516,59 @@
 
     <section> <h3>The <dfn>onEvent()</dfn> method</h3>
       <p>
-        Returns an <a>Observable</a> for the <a>Property</a>, <a>Event</a> or <a>Action</a> specified in the <var>name</var> argument, allowing subscribing and unsubscribing to notifications. Takes an argument of type <a>ThingEventListener</a>.
+        Returns an <a>Observable</a> for the <a>Property</a>, <a>Event</a> or <a>Action</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications. Takes an argument of type <a>ThingEventListener</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>onPropertyChange()</dfn> method</h3>
       <p>
-        Returns an <a>Observable</a> for the <a>Property</a> specified in the <var>name</var> argument, allowing subscribing and unsubscribing to notifications. Takes an argument of type <a>PropertyChangeListener</a>.
+        Returns an <a>Observable</a> for the <a>Property</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications. Takes an argument of type <a>PropertyChangeListener</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>onTDChange()</dfn> method</h3>
       <p>
-        Returns an <a>Observable</a>, allowing subscribing and unsubscribing to notifications to the <a>Thing Description</a>. Takes no arguments.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingEventListener">
-      <h2>The <dfn>ThingEventListener</dfn> callback</h2>
-      <p>
-        A function called with an <a>ThingEvent</a> object when an event is emitted.
+        Returns an <a>Observable</a>, allowing subscribing to and unsubscribing from notifications to the <a>Thing Description</a>. Takes no arguments.
       </p>
     </section>
 
     <section data-dfn-for="PropertyChangeListener">
       <h2>The <dfn>PropertyChangeListener</dfn> callback</h2>
       <p>
-        A function called with an <a>ThingProperty</a> object.
+        A function called with an <a>name</a> argument of type string that denotes the changed property name, and a <a>value</a> argument that denotes the new property value.
       </p>
     </section>
 
     <section data-dfn-for="TDChangeListener">
       <h2>The <dfn>TDChangeListener</dfn> callback</h2>
       <p>
-        A function called with one optional argument of type <a>ThingDescription</a>.
+        A function called with one optional argument of type <a>ThingDescription</a> that denotes the new <a>Thing Description</a>.
       </p>
     </section>
 
-    <section> <h2> Thing Events</h2>
+    <section data-dfn-for="ThingEventListener">
+      <h2>The <dfn>ThingEventListener</dfn> callback</h2>
+      <p>
+        A function called with an <a>ThingEvent</a> object.
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingEvent">
+      <h3>The <dfn>ThingEvent</dfn> interface</h3>
       <p>
         Clients can subscribe to the <a>Events</a> defined in <a href="#events-supported-by-exposedthing">ExposedThing events</a>. The event types are described in this section.
       </p>
-
-      <section data-dfn-for="PropertyChangeEvent">
-        <h3>The <dfn>PropertyChangeEvent</dfn> interface</h3>
-        <pre class="idl">
-          [Constructor(PropertyChangeEventInit init)]
-          interface PropertyChangeEvent: Event {
-            readonly attribute PropertyChangeEventInit data;
-          };
-        </pre>
-        <p>
-            The <dfn>data</dfn> attribute represents the changed <a>Property</a>.
-        </p>
-        <section data-dfn-for="PropertyChangeEventInit">
-          <h2>The <dfn>PropertyChangeEventInit</dfn> dictionary</h2>
-          <pre class="idl">
-            dictionary PropertyChangeEventInit {
-                DOMString name;
-                any value;
-            };
-          </pre>
-          <p>The <dfn>name</dfn> attribute represents the <a>Property</a> name.</p>
-          <p>The <dfn>value</dfn> attribute represents the new value of the <a>Property</a>.</p>
-        </section>
-      </section>
-
-      <section data-dfn-for="ActionInvocationEvent">
-        <h2>The <dfn>ActionInvocationEvent</dfn> interface</h2>
-        <pre class="idl">
-          [Constructor(ActionInvocationEventInit init)]
-          interface ActionInvocationEvent: Event {
-              readonly attribute ActionInvocationEventInit data;
-          };
-        </pre>
-        <p>
-            The <dfn>data</dfn> attribute represents the notification data from the <a>Action</a> invocation.
-        </p>
-        <section data-dfn-for="ActionInvocationEventInit">
-          <h2>The <dfn>ActionInvocationEventInit</dfn> dictionary</h2>
-          <pre class="idl">
-            dictionary ActionInvocationEventInit {
-                DOMString actionName;
-                any returnValue;
-            };
-          </pre>
-          <p class="ednote">
-            Action parameters could be also included, but it's debatable because privacy reasons.
-          </p>
-          <p>
-            The <dfn>actionName</dfn> attribute represents the name of the <a>Action</a> that has been invoked.
-          </p>
-          <p>
-            The <dfn>returnValue</dfn> attribute represents the return value of the <a>Action</a>.
-          </p>
-        </section>
-      </section>
-
-      <section data-dfn-for="TDChangeEvent">
-        <h2>The <dfn>TDChangeEvent</dfn> interface</h2>
-        <pre class="idl">
-          [Constructor(TDChangeEventInit init)]
-          interface TDChangeEvent: Event {
-              readonly attribute TDChangeEventInit data;
-          };
-        </pre>
-        <p>
-          The <dfn>data</dfn> attribute represents the changes that occurred to the <a>Thing Description</a>.
-        </p>
-        <section data-dfn-for="TDChangeEventInit">
-          <h3>The <dfn>TDChangeEventInit</dfn> dictionary</h3>
-          <pre class="idl">
-            dictionary TDChangeEventInit {
-                TDChangeType type;
-                TDChangeMethod method;
-                DOMString name;
-                TDChangeData data;
-                ThingDescription description;
-            };
-          </pre>
-          <ul>
-            <li>
-              The <dfn>type</dfn> attribute represents the change type, whether has it been applied on properties, <a>Actions</a> or <a>Events</a>.
-            </li>
-            <li>
-             The <dfn>method</dfn> attribute tells what operation has been applied, addition, removal or change.
-            </li>
-            <li>
-              The <dfn>name</dfn> attribute represents the name of the <a>Property</a>, <a>Action</a> or event that has changed.
-            </li>
-            <li>
-              The <dfn>data</dfn> attribute provides the initialization data for the added or changed elements.
-            </li>
-            <li>
-              The <dfn>description</dfn> attribute is defined for the addition and change methods, and represents the new description.
-            </li>
-          </ul>
-          <section data-dfn-for="TDChangeMethod">
-            <h4>The <dfn>TDChangeMethod</dfn> enumeration</h4>
-            <pre class="idl">
-              enum TDChangeMethod { "add", "remove", "change" };
-            </pre>
-            <ul>
-              <li>The <dfn>add</dfn> value denotes addition of a <a>Property</a>, <a>Action</a> or event.</li>
-              <li>The <dfn>remove</dfn> value denotes removal of a <a>Property</a>, <a>Action</a> or event.</li>
-              <li>The <dfn>change</dfn> value denotes a change applied on a <a>Property</a>, <a>Action</a> or event.</li>
-            </ul>
-          </section>
-          <section data-dfn-for="TDChangeType">
-            <h4>The <dfn>TDChangeType</dfn> enumeration</h4>
-            <pre class="idl">
-              enum TDChangeType { "property", "action", "event" };
-              typedef (ThingPropertyInit or ThingActionInit or ThingEventInit) TDChangeData;
-            </pre>
-            <ul>
-              <li>The <dfn>property</dfn> value tells the operation was applied on a <a>Property</a> definition.</li>
-              <li>The <dfn>action</dfn> value tells the operation was applied on a action definition.</li>
-              <li>The <dfn>event</dfn> value tells the operation was applied on an event definition.</li>
-            </ul>
-          </section>
-          <section data-dfn-for="TDChangeData">
-            <h4>The <dfn>TDChangeData</dfn> type</h4>
-            <p>
-              Represents the new description of the changed element. Depending on the change type, it can be either a <a>ThingPropertyInit</a>, <a>ThingActionInit</a>, or <a>ThingEventInit</a>.
-            </p>
-          </section>
-        </section> <!-- TDChangeEventInit -->
-      </section> <!-- TDChangeEvent -->
-    </section> <!-- Events -->
+      <pre class="idl">
+        [Constructor(any data)]
+        interface ThingEvent {
+          readonly attribute DOMString name;
+          readonly attribute any data;
+        };
+      </pre>
+      <p>
+          The <dfn>data</dfn> attribute represents the data attached to the event. The data type and values are defined in the <a>Thing Description</a> of the remote <a>ExposedThing</a> that exposes the event.
+      </p>
+    </section> <!-- ThingEvent -->
 
     <section>
       <h2>Examples</h2>
@@ -668,16 +576,17 @@
         Below a <code><a>ConsumedThing</a></code> interface example is given.
       </p>
       <pre class="example" title="Consume a Thing">
-        wot.consume("http://mmyservice.org/mySensor").then( thing => {
+        wot.fetch("http://mmyservice.org/mySensor")
+        .then(td) => { consume(td)
+        .then(thing => {
             console.log("Thing " + thing.name + " has been consumed.");
             console.log("{ " + JSON.serialize(thing) + " }");
-            thing.onPropertyChange("temperature", function(event) {
-                if (event instanceof PropertyChangeEvent) {
-                    console.log("Property " + event.name + " value has changed to " + event.value);
+            thing.onPropertyChange("temperature", function(name, value) {
+                    console.log("Property " + name + " value has changed to " + value);
                 }
-            }).invokeAction("startMeasurement", ["Celsius"]);
+            }).invokeAction("startMeasurement", { units: "Celsius" });
           },
-        ).catch(error => {
+        )}).catch(error => {
           console.log("Discovery finished because an error: " + error.message);
         });
       </pre>
@@ -704,7 +613,12 @@
         void removeAction(DOMString name);
         void addEvent(ThingEventInit event);
         void removeEvent(DOMString name);
+        void setActionHandler(DOMString actionName, Function action);
+        void setPropertyReadHandler(DOMString propertyName, PropertyReadHandler readHandler);
+        void setPropertyWriteHandler(DOMString propertyName, PropertyWriteHandler readHandler);
       };
+      callback PropertyReadHandler = any (DOMString propertyName);
+      callback PropertyWriteHandler = void (DOMString propertyName, any value);
     </pre>
 
     <section> <h3>The <dfn>start()</dfn> method</h3>
@@ -737,6 +651,22 @@
       </p>
     </section>
 
+    <section data-dfn-for="ValueDefinition">
+      <h4>The <dfn>ValueDefinition</dfn> dictionary</h4>
+      <pre class="idl">
+        typedef DOMString ValueType;
+        dictionary ValueDefinition {
+          ValueType type;
+          any defaultValue;
+          any min;
+          any max;
+        };
+      </pre>
+      <p>
+        Represents a value definition, including type, minimum value, maximum value, and default value.
+      </p>
+    </section>
+
     <section> <h3>The <dfn>addProperty()</dfn> method</h3>
       <p>
         Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>.
@@ -744,14 +674,13 @@
       <section data-dfn-for="ThingPropertyInit">
         <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingPropertyInit {
+          dictionary ThingPropertyInit: SemanticAnnotations {
             DOMString name;
+            ValueDefinition valueDescription;
+            any value;
             boolean configurable = false;
             boolean enumerable = true;
             boolean writable = true;
-            sequence&lt;SemanticType&gt; semanticTypes;
-            ThingDescription description;
-            any value;
           };
         </pre>
         <p>
@@ -768,12 +697,6 @@
             <li>
               The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>true</code>.
             </li>
-            <li>
-              The <dfn>semanticTypes</dfn> attribute represents a list of semantic type annotations (e.g. labels, classifications etc) relevant to the <a>Property</a>, represented as <a>SemanticType</a> dictionaries.
-            </li>
-            <li>
-              The <dfn>description</dfn> attribute represents the <a>Property</a> description to be added to the <a>Thing Description</a>.
-            </li>
           </ul>
         </p>
       </section>
@@ -781,7 +704,7 @@
 
     <section> <h3>The <dfn>removeProperty()</dfn> method</h3>
       <p>
-        Removes the <a>Property</a> specified by the <code>name</code> argument, updates the <a>Thing Description</a> and returns the object.
+        Removes the <a>Property</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>.
       </p>
     </section>
 
@@ -792,12 +715,10 @@
       <section data-dfn-for="ThingActionInit">
         <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingActionInit {
+          dictionary ThingActionInit: SemanticAnnotations {
             DOMString name;
-            ThingDescription inputDataDescription;
-            ThingDescription outputDataDescription;
-            sequence&lt;SemanticType&gt; semanticTypes;
-            Function action;
+            sequence&lt;ValueDefinition&gt; inputDataDescription;
+            ValueDefinition outputDataDescription;
           };
       </pre>
       <p>
@@ -806,10 +727,6 @@
           <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
           <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments.</li>
           <li>The <dfn>outputDataDescription</dfn> attribute provides the description of the returned data.</li>
-          <li>
-              The <dfn>semanticTypes</dfn> attribute provides a list of semantic type annotations (e.g. labels, classifications etc) relevant to the <a>Action</a>, represented as <a>SemanticType</a> dictionaries.
-          </li>
-		  <li>The <dfn>action</dfn> attribute provides a function that defines the <a>Action</a>.</li>
         </ul>
       </p>
       </section>
@@ -817,7 +734,7 @@
 
     <section> <h3>The <dfn>removeAction()</dfn> method</h3>
       <p>
-        Removes the <a>Action</a> specified by the <code>name</code> argument, updates the <a>Thing Description</a> and returns the object.
+        Removes the <a>Action</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>.
       </p>
     </section>
 
@@ -828,15 +745,13 @@
       <section data-dfn-for="ThingEventInit">
         <h4>The <dfn>ThingEventInit</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingEventInit {
+          dictionary ThingEventInit: SemanticAnnotations {
             DOMString name;
-            sequence&lt;SemanticType&gt; semanticTypes;
-            ThingDescription dataDescription;
+            ValueDefinition dataDescription;
           };
         </pre>
         <ul>
           <li>The <dfn>name</dfn> attribute represents the event name.</li>
-          <li>The <dfn>semanticTypes</dfn> attribute represent a list of semantic type annotations attached to the event.</li>
           <li>The <dfn>dataDescription</dfn> attribute represents the description of the data that is attached to the event.</li>
         </ul>
       </section>
@@ -844,24 +759,9 @@
 
     <section> <h3>The <dfn>removeEvent()</dfn> method</h3>
       <p>
-        Removes the event specified by the <code>name</code> argument, updates the <a>Thing Description</a> and returns the object.
+        Removes the event specified by the <code>name</code> argument and updates the <a>Thing Description</a>.
       </p>
     </section>
-
-    <section data-dfn-for="ExposedThing-Events">
-      <h2>Events supported by ExposedThing</h2>
-      <p>
-        The following default events SHOULD be supported by <a>ExposedThing</a> implementations:
-        <ul>
-          <li>"<dfn>propertychange</dfn>" of type <a>PropertyChangeEvent</a></li>
-          <li>"<dfn>actioninvocation</dfn>" of type <a>ActionInvocationEvent</a></li>
-          <li>"<dfn>descriptionchange</dfn>" of type <a>TDChangeEvent</a>.</li>
-        </ul>
-      </p>
-      <p>
-        In addition, user defined events are specified by the <a>Thing Description</a>.
-      </p>
-    </section> <!-- Events -->
 
     <section>
       <h2>Examples</h2>
