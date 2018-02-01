@@ -240,7 +240,7 @@
         ExposedThing produce(optional ThingModel model);
       };
       typedef USVString ThingDescription;
-      typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
+      typedef (ThingTemplate or ThingDescription) ThingModel;
     </pre>
 
     <p class="ednote">
@@ -335,7 +335,7 @@
       </p>
     </section>
 
-    <section> <h3>The <dfn>produce()</dfn> method</h3>
+    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
         Accepts an optional <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
         <ul>
@@ -346,7 +346,7 @@
             from a <a>Thing Description</a>, then adding request handlers;
           </li>
           <li>
-            from an existing <a>ConsumedThing</a> object, taking its <a>Thing Description</a> over, then adding request handlers.
+            from an existing <a>ConsumedThing</a> object, based on its <a>Thing Description</a>, then adding request handlers.
           </li>
         </ul>
       </p>
@@ -355,7 +355,7 @@
     <section data-dfn-for="ThingModel" >
     <h3>The <dfn>ThingModel</dfn> type</h3>
     <p>
-      A Thing model is used for producing a new <a>ExposedThing</a> and can be either a <a>ThingTemplate</a>, or a <a>ThingDescription</a>, or a <a>ConsumedThing</a>.
+      A Thing model is used for producing a new <a>ExposedThing</a> and can be either a <a>ThingTemplate</a>, or a <a>ThingDescription</a>.
     </p>
     </section>
 
@@ -619,9 +619,13 @@
   <section data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
     <p>
-      The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>.
+      The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>. It also implements the <a>ConsumedThing</a> interface. An <a>ExposedThing</a> is created by the <a href="#the-produce-method">produce()</a> method.
+    </p>
+    <p class="ednote">
+      It is under consideration to use a constructor for <a>ExposedThing</a> instead of a factory method.
     </p>
     <pre class="idl">
+      ExposedThing implements ConsumedThing;
       interface ExposedThing {
         // define how to expose and run the Thing
         Promise&lt;void&gt; start();
@@ -675,10 +679,22 @@
       </p>
     </section>
 
+    <section data-dfn-for="ValueType">
+      <h4>The <dfn>ValueType</dfn> type</h4>
+      <pre class="idl">
+        typedef DOMString ValueType;
+      </pre>
+      <p>
+        The <a>ValueType</a> type represents a type name specified in the <a>Thing Description</a>.
+      </p>
+      <p class="ednote">
+        <a>ValueType</a> is under development, currently it is a string that in principle can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as <code>"boolean"</code>, <code>"integer"</code>, <code>"number"</code>, <code>"string"</code>, <code>"array"</code>, <code>"object</code>.
+      </p>
+    </section>
+
     <section data-dfn-for="ValueDefinition">
       <h4>The <dfn>ValueDefinition</dfn> dictionary</h4>
       <pre class="idl">
-        typedef DOMString ValueType;
         dictionary ValueDefinition {
           ValueType type;
         };
@@ -690,8 +706,8 @@
             The <dfn>type</dfn> property represents the type name of the value.
         </ul>
       </p>
-      <p>
-        The <dfn>ValueType</dfn> type represents a type name specified in the <a>Thing Description</a>.
+      <p class="ednote">
+        The <a>Thing Description</a> [specification](https://w3c.github.io/wot-thing-description/) supports constraints like range for numbers and array size. These are not yet represented in this version.
       </p>
     </section>
 
