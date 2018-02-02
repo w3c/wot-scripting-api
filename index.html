@@ -603,14 +603,19 @@
         .then(td) => { consume(td)
         .then(thing => {
             console.log("Thing " + thing.name + " has been consumed.");
-            console.log("{ " + JSON.serialize(thing) + " }");
-            thing.onPropertyChange("temperature", function(name, value) {
-                    console.log("Property " + name + " value has changed to " + value);
-                }
-            }).invokeAction("startMeasurement", { units: "Celsius" });
+            let subscription = thing.onPropertyChange("temperature")
+              .subscribe(function(name, value) {
+                console.log("Property " + name + " value has changed to " + value);
+              });
+            thing.invokeAction("startMeasurement", { units: "Celsius" })
+              .then(() => { console.log("Temperature measurement started."); })
+              .catch(e => {
+                 console.log("Error starting measurement.");
+                 subscription.cancel();
+               })
           },
         )}).catch(error => {
-          console.log("Discovery finished because an error: " + error.message);
+          console.log("Error during fetch or consume: " + error.message);
         });
       </pre>
     </section> <!-- Examples -->
@@ -640,9 +645,9 @@
         void removeAction(DOMString name);
         void addEvent(ThingEventInit event);
         void removeEvent(DOMString name);
-        void setActionHandler(DOMString actionName, ActionHandler action);
-        void setPropertyReadHandler(DOMString propertyName, PropertyReadHandler readHandler);
-        void setPropertyWriteHandler(DOMString propertyName, PropertyWriteHandler writeHandler);
+        void setActionHandler(ActionHandler action, optional DOMString actionName);
+        void setPropertyReadHandler(PropertyReadHandler readHandler, optional DOMString propertyName);
+        void setPropertyWriteHandler(PropertyWriteHandler writeHandler, optional DOMString propertyName);
       };
       callback ActionHandler = Promise&lt;any&gt; (any parameters);
       callback PropertyReadHandler = Promise&lt;any&gt; (DOMString propertyName);
@@ -692,18 +697,18 @@
       </p>
     </section>
 
-    <section data-dfn-for="ValueDefinition">
-      <h4>The <dfn>ValueDefinition</dfn> dictionary</h4>
+    <section data-dfn-for="ValueTypeDefinition">
+      <h4>The <dfn>ValueTypeDefinition</dfn> dictionary</h4>
       <pre class="idl">
-        dictionary ValueDefinition {
-          ValueType type;
+        dictionary ValueTypeDefinition {
+          ValueType typeName;
         };
       </pre>
       <p>
         Represents a value definition, including type, and possible constraints like minimum value, maximum value, etc.
         <ul>
           <li>
-            The <dfn>type</dfn> property represents the type name of the value.
+            The <dfn>typeName</dfn> property represents the type name of the value.
         </ul>
       </p>
       <p class="ednote">
@@ -720,7 +725,7 @@
         <pre class="idl">
           dictionary ThingPropertyInit: SemanticAnnotations {
             DOMString name;
-            ValueDefinition valueDescription;
+            ValueTypeDefinition type;
             any value;
             boolean configurable = false;
             boolean enumerable = true;
@@ -732,7 +737,7 @@
           <ul>
             <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
             <li>
-              The <dfn>valueDescription</dfn> attribute of type <a>ValueDefinition</a> represents the type of the <a>Property</a>.
+              The <dfn>type</dfn> attribute represents the type and accepted value range for the <a>Property</a> by a of type <a>ValueTypeDefinition</a> object.
             </li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
@@ -764,8 +769,8 @@
         <pre class="idl">
           dictionary ThingActionInit: SemanticAnnotations {
             DOMString name;
-            sequence&lt;ValueDefinition&gt; inputDataDescription;
-            ValueDefinition outputDataDescription;
+            sequence&lt;ValueTypeDefinition&gt; inputDataDescription;
+            ValueTypeDefinition outputDataDescription;
           };
       </pre>
       <p>
@@ -794,7 +799,7 @@
         <pre class="idl">
           dictionary ThingEventInit: SemanticAnnotations {
             DOMString name;
-            ValueDefinition dataDescription;
+            ValueTypeDefinition dataDescription;
           };
         </pre>
         <ul>
@@ -833,19 +838,19 @@
 
     <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes a <code>actionName</code> as string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code>. Throws on error.
+        Takes a <code>actionName</code> as an optional string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code> if <code>actionName</code> is specified, otherwise sets it for any action. Throws on error.
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes a <code>propertyName</code> as string argument, and a <code>readHandler</code> argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>propertyName</code>. Throws on error.
+        Takes a <code>propertyName</code> as an optional string argument, and a <code>readHandler</code> argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>propertyName</code> if <code>propertyName</code> is specified, otherwise sets it for reading any property. Throws on error.
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes a <code>propertyName</code> as string argument, and a <code>writeHandler</code> argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>propertyName</code>. Throws on error.
+        Takes a <code>propertyName</code> as an optional string argument, and a <code>writeHandler</code> argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>propertyName</code> if the <code>propertyName</code> is specified, otherwise sets it for writing any properties. Throws on error.
       </p>
     </section>
 
@@ -858,31 +863,43 @@
       <pre class="example highlight" title="Create a new blank exposed Thing">
         WoT.createExposedThing(thingDescription)
           .then(function(thing) {
-            // manually add properties, actions, and events
-            thing.addProperty({
-              name: "temperature",
-              value: "0",
-              writable: false
-              // use default values for the rest
-            }).addEvent({
-              name: "onchange",
-              outputDataDescription: {
-                type: "float32"
-              }
-            }).addAction({
-              name: "reset",
-              action: () => { this.temperature = 0; }
-            })
-            // add server functionality
-            .onRetrieveProperty( request => {
-              console.log("Handling read request");
-              return this.temperature;
-            }).onObserve( request => {
-              console.log("Handling observe request");
-              // add listener identified by request.from
-            }).onInvokeAction( request => {
-              console.log("Handling action request");
-            }).start();
+            try {
+              // manually add properties, actions, and events
+              thing.addProperty({
+                name: "temperature",
+                value: "0",
+                type: { typeName: "double" },
+                writable: false
+                // use default values for the rest
+              });
+
+              thing.addEvent({
+                name: "onchange",
+                outputDataDescription: {
+                  type: "double"
+                }
+              });
+
+              thing.addAction({
+                name: "reset",
+                action: () => { this.temperature = 0; }
+              });
+
+              // add server functionality
+              thing.setPropertyReadHandler( propertyName => {
+                console.log("Handling read request for " + propertyName);
+                return new Promise((resolve, reject) => {
+                if (this.hasOwnProperty(propertyName))
+                  resolve(this[propertyName]);
+                else reject('Property not found');
+              });
+            } catch(e) {
+              console.log("Error");
+            }
+
+            thing.start()
+            .then (() => { thing.register();})
+            .catch((err) => { console.log("Error");});
           });
       </pre>
 
@@ -891,23 +908,27 @@
           "name": "mySensor",
           "url": "http://myservice.org/mySensor/description"
         }';
-        WoT.createExposedThing(thingDescription)
-          .then(function(thing) {
-            // properties, actions and events are added based on the TD
-            console.log("created " + thing.name });
-            // now add the requests handlers
-            thing.onRetrieveProperty(function(request) {
-                console.log("Sending property '" + request.property + "' to " + request.from);
-            }).onUpdateProperty(function(request) {
-                console.log("Updating property '" + request.property + "' by " + request.from);
-            }).onObserve(function(request) {
-                console.log("Adding listener " + request.from);
-                console.log("Observing " + request.type + " " + request.name +
-                    (request.subscribe? " recursively" : ""));
-            }).start().then(function() {
-               console.log("Thing started serving requests");
+        WoT.fetch("http://myservice.org/mySensor/description")
+        .then(td => {
+          let e_thing = WoT.produce(td);
+          // properties, actions and events are added based on the TD
+          console.log("created " + thing.name });
+          // now add the requests handlers
+          try {
+            e_thing.setPropertyReadHandler(propertyName => {
+              console.log("Handling read request for " + propertyName);
+              return new Promise((resolve, reject) => {
+              if (this.hasOwnProperty(propertyName))
+                resolve(this[propertyName]);
+              else reject('Property not found');
             });
-          })
+            e_thing.start();
+          } catch(error) {
+            console.log("Error");
+          }
+        }
+
+        });
       </pre>
 
       <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
@@ -919,17 +940,15 @@
               "http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
             ],
             "@type": [ "Thing" ],
-            "interaction": [
+            "interactions": [
               // ...
             ]
             // ...
           }'
         };
-        WoT.createExposedThing(thingDescription)
-          .then(function(thing) {
-            // properties, actions and events are added based on the TD
-            // ...
-          });
+        let e_thing = WoT.produce(thingDescription);
+        // properties, actions and events are added based on the TD
+        // ...
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
