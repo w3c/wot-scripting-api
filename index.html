@@ -252,6 +252,33 @@
         Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, starts the widest discovery the <a>Thing Description</a> and <a>Protocol Bindings</a> allow and support.
         Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from.
       </p>
+
+      <section data-dfn-for="DiscoveryMethod">
+        <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h4>
+        <pre class="idl">
+          typedef DOMString DiscoveryMethod;
+        </pre>
+        <p>
+          <a>DiscoveryMethod</a> represents the discovery type to be used:
+          <ul>
+            <li><dfn>"any"</dfn> does not provide any restriction</li>
+            <li><dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device</li>
+            <li>
+              <dfn>"nearby"</dfn> for discovering <a>Thing</a>s nearby the device, e.g. by Bluetooth or NFC
+            </li>
+            <li>
+              <dfn>"directory"</dfn> for discovery based on a service provided by a directory or repository of <a>Thing</a>s
+            </li>
+            <li>
+              <dfn>"broadcast"</dfn> for an open ended discovery based on sending a request to a broadcast address
+            </li>
+            <li>
+              <dfn>"other"</dfn> for a proprietary method defined by the solution.
+            </li>
+          </ul>
+        </p>
+      </section>
+
       <section data-dfn-for="ThingFilter">
         <h4>The <dfn>ThingFilter</dfn> dictionary</h4>
         <p>
@@ -259,7 +286,7 @@
         </p>
         <pre class="idl">
           dictionary ThingFilter {
-            (DiscoveryMethod or DOMString) method = "any";
+            DiscoveryMethod method = "any";
             USVString url;
             USVString query;
             sequence&lt;Dictionary&gt; constraints;
@@ -272,7 +299,7 @@
           The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a <a>Thing Directory</a> or a Thing.
         </p>
         <p>
-          The <dfn>query</dfn>> property represents a query string accepted by the implementation, for instance a SPARQL query.
+          The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL query.
         </p>
         <p>
           The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of key-value pairs, defined based on the semantic metadata of the <a>Thing Description</a>. The sequence elements are in OR relationship, and within an element the key-value pairs define AND type constraints.
@@ -282,32 +309,6 @@
         </p>
         <p class="ednote">
           The <a>ThingFilter</a> dictionary may be extended later with further attributes.</p>
-        </p>
-      </section>
-
-      <section data-dfn-for="DiscoveryMethod">
-        <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h4>
-        <pre class="idl">
-          enum DiscoveryMethod { "any", "local", "nearby", "directory", "broadcast", "other" };
-        </pre>
-        <p>
-          The <a>DiscoveryMethod</a> enumeration represents the discovery type to be used:
-          <ul>
-            <li>"<dfn>any</dfn>" does not provide any restriction</li>
-            <li>"<dfn>local</dfn>" for discovering <a>Thing</a>s defined in the same device</li>
-            <li>
-              "<dfn>nearby</dfn>" for discovering <a>Thing</a>s nearby the device, e.g. by Bluetooth or NFC
-            </li>
-            <li>
-              "<dfn>directory</dfn>" for discovery based on a service provided by a directory or repository of <a>Thing</a>s
-            </li>
-            <li>
-              "<dfn>broadcast</dfn>" for an open ended discovery based on sending a request to a broadcast address
-            </li>
-            <li>
-              "<dfn>other</dfn>" for a proprietary method defined by the solution.
-            </li>
-          </ul>
         </p>
       </section>
     </section> <!-- Discovery -->
@@ -587,7 +588,8 @@
         };
       </pre>
       <p>
-        The <dfn>name</dfn> attribute represents the <a>Event</a> name.
+        The <dfn for="ThingEvent">name</dfn> attribute represents the <a>Event</a> name.
+      </p>
       <p>
         The <dfn>data</dfn> attribute represents the data attached to the event. The data type and values are defined in the <a>Thing Description</a> of the remote <a>ExposedThing</a> that exposes the event.
       </p>
