@@ -237,7 +237,7 @@
         Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
         Promise&lt;ThingDescription&gt; fetch(USVString url);
         ConsumedThing consume(ThingDescription td);
-        ExposedThing produce(optional ThingModel model);
+        ExposedThing produce(ThingModel model);
       };
       typedef USVString ThingDescription;
       typedef (ThingTemplate or ThingDescription) ThingModel;
@@ -338,7 +338,7 @@
 
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
-        Accepts an optional <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
+        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
         <ul>
           <li>
             from an initial model (name and semantic annotations), then adding properties, actions, events and request handlers;
@@ -383,8 +383,8 @@
       <h3>The <dfn>SemanticType</dfn> dictionary</h3>
       <pre class="idl">
         dictionary SemanticType {
-            DOMString name;
-            USVString context;
+            required DOMString name;
+            required USVString context;
             DOMString prefix;
         };
       </pre>
@@ -432,7 +432,7 @@
       </p>
       <pre class="idl">
         dictionary ThingTemplate: SemanticAnnotations {
-            DOMString name;
+            required DOMString name;
         };
       </pre>
       <p>The <a>ThingTemplate</a> dictionary extends <a>SemanticAnnotations</a> and contains properties to initialize a <a>Thing</a>:
@@ -955,6 +955,80 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
+  <section data-dfn-for="Observable">
+    <h2>Observables</h2>
+    <p>
+      Observables are <a href="https://github.com/tc39/proposal-observable">proposed</a> to be included in ECMAScript and are used for handling pushed data associated with various possible sources, for instance events, timers, streams, etc. A minimal required implementation is described here.
+    </p>
+    <p class="ednote">
+      This section is informal and contains rather laconic information for implementations on what to support for interoperability.
+    </p>
+    <pre class="idl">
+      interface Observable {
+        Subscription subscribe((Observer or OnNext) next,
+                               optional OnError error,
+                               optional OnComplete complete);
+      };
+      interface Subscription {
+        void unsubscribe();
+        readonly attribute boolean closed;
+      };
+      interface Observer {
+        void next(any value);
+        void error(Error error);
+        void complete();
+      };
+      callback OnNext = void (any value);
+      callback OnError = void (Error error);
+      callback OnComplete = void ();
+    </pre>
+
+    <section data-dfn-for="Observer">
+      <h3>The <dfn>Observer</dfn> interface</h3>
+      <p>
+        The <a>Observer</a> interface defines the callbacks needed to handle an <a>Observable</a>:
+        <ul>
+          <li>
+            The <dfn>next()</dfn> function, as well as the <dfn>OnNext</dfn> callback takes the next sample for the data in the <dnf>value</dnf> argument.
+          </li>
+          <li>
+            The <dfn>error()</dfn> function, as well as the <dfn>OnError</dfn> callback takes an error in the <dnf>value</dnf> argument. It is called when an error occured in producing the data the client should know about.
+          </li>
+          <li>
+            The <dfn>complete()</dfn> function, as well as the <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
+          </li>
+        </ul>
+      </p>
+    </section>
+
+    <section data-dfn-for="Subscription">
+      <h3>The <dfn>Subscription</dfn> interface</h3>
+      <p>
+        Contains the <dfn>closed</dfn> property of type <code>boolean</code> that tells if the subscription is closed or active.
+      </p>
+      <p>
+        Also, contains the <dfn>unsubscribe</dfn>() method that cancels the subscription, i.e. makes a request to the underlying platform to stop receiving data from the source, and sets the <code>closed</code> property to <code>false</code>.
+      </p>
+    </section>
+
+    <section data-dfn-for="Observable">
+      <h3>The <strong>Observer</strong> interface</h3>
+      <p>
+        The <dfn>Observable</dfn> interface enabled subscribing to pushed data notifications by the <dfn>subscribe</dfn>() method:
+        <ul>
+          <li>
+            If the <code>subscribe()</code> method is called with an <a>Observer</a> object, initialize the data, error and completion handling callbacks from that object, or throw on error.
+          </li>
+          <li>
+            Otherwise, if the <code>subscribe()</code> method is called with a function, initialize the data handler callback with that function. If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error. If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
+          </li>
+          <li>
+            After callback initializations, the implementation should request the underlying platform to provide data, error and completion notifications for the supported data source.
+          </li>
+        </ul>
+    </section>
+  </section>
+
   <section> <h2 id="security">Security and Privacy</h2>
     <p class="ednote">
      Please see the <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a> repository for work in progress regarding threat models, assets, risks, recommended mitigations, and best practices for security and privacy for systems using the Web of Things. Once complete, security and privacy considerations relevant to the Scripting API will be summarized in this section.
@@ -1061,9 +1135,6 @@
       <a href="http://heycam.github.io/webidl/#idl-ArrayBuffer"><dfn>ArrayBuffer</dfn></a>,
       <a href="http://heycam.github.io/webidl/#common-BufferSource"><dfn>BufferSource</dfn></a> and
       <a href="http://heycam.github.io/webidl/#idl-any"><dfn>any</dfn></a> are defined in [[!WEBIDL]].
-    </p>
-    <p>
-      <a href="https://github.com/tc39/proposal-observable"><dfn>Observable</dfn>s</a> are proposed to be included in ECMAScript.
     </p>
     <p>
       The algorithms <a href="http://www.w3.org/TR/encoding/#utf-8-encode">
