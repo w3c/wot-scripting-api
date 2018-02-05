@@ -834,7 +834,10 @@
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>propertyName</code>  and a <code>value</code> argument that returns a Promise and resolves it when the value of the <a>Property</a> matching <code>propertyName</code> is updated with <code>value</code>, or rejects with and error if the property is not found or the value cannot be updated.
+        A function called with a <code>propertyName</code> and a <code>value</code> argument that returns a Promise and resolves it when the value of the <a>Property</a> matching <code>propertyName</code> is updated with <code>value</code>, or rejects with and error if the property is not found or the value cannot be updated. The property is updated by the implementation with the value that is resolved by this callback.
+      </p>
+      <p class="ednote">
+        Note that this function is invoked by implementations before the property is updated, so the client code in this function can invoke the <code>readProperty()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this method.
       </p>
     </section>
 
@@ -842,17 +845,32 @@
       <p>
         Takes a <code>actionName</code> as an optional string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code> if <code>actionName</code> is specified, otherwise sets it for any action. Throws on error.
       </p>
+      <p>
+        If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform.
+      </p>
+      <p>
+        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD return error if the action is invoked by any client.
+      </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
         Takes a <code>propertyName</code> as an optional string argument, and a <code>readHandler</code> argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>propertyName</code> if <code>propertyName</code> is specified, otherwise sets it for reading any property. Throws on error.
       </p>
+      <p>
+        If provided, this callback function will implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+      </p>
+      <p>
+        There SHOULD be at most one handler for any given <a>Property</a>. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property read without calling this hook.
+      </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
         Takes a <code>propertyName</code> as an optional string argument, and a <code>writeHandler</code> argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>propertyName</code> if the <code>propertyName</code> is specified, otherwise sets it for writing any properties. Throws on error.
+      </p>
+      <p>
+        There SHOULD be at most one write handler for any given <a>Property</a>. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers.
       </p>
     </section>
 
@@ -955,7 +973,7 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section data-dfn-for="Observable">
+  <section data-dfn-for="Observable" class="informative">
     <h2>Observables</h2>
     <p>
       Observables are <a href="https://github.com/tc39/proposal-observable">proposed</a> to be included in ECMAScript and are used for handling pushed data associated with various possible sources, for instance events, timers, streams, etc. A minimal required implementation is described here.
