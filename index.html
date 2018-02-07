@@ -175,7 +175,7 @@
     <ul>
       <li>
         Exposing the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
-      </li>>
+      </li>
       <li>
         Create a local <a>ExposedThing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of a template or an existing <a>ConsumedThing</a> object.</li>
       <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
@@ -326,7 +326,6 @@
       </p>
       <p class="note">
         In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
-        Parsing and composing <a>Thing Description</a>s is left for external libraries until standardized here.
       </p>
     </section>
 
@@ -498,13 +497,10 @@
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
         Promise&lt;any&gt; readProperty(DOMString name);
-        Observable&lt;ThingEventListener&gt; onEvent(DOMString name);
-        Observable&lt;PropertyChangeListener&gt; onPropertyChange(DOMString name);
-        Observable&lt;TDChangeListener&gt; onTDChange();
+        Observable onEvent(DOMString name);
+        Observable onPropertyChange(DOMString name);
+        Observable onTDChange();
       };
-      callback ThingEventListener = void (ThingEvent event);
-      callback PropertyChangeListener = void (DOMString name, any value);
-      callback TDChangeListener = void (optional ThingDescription td);
     </pre>
     <p>
       Represents a local proxy object of the remote <a>Thing</a>.
@@ -538,62 +534,30 @@
 
     <section> <h3>The <dfn>onEvent()</dfn> method</h3>
       <p>
-        Returns an <a>Observable</a> for the <a>Property</a>, <a>Event</a> or <a>Action</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications. Takes an argument of type <a>ThingEventListener</a>.
+        Returns an <a>Observable</a> for the <a>Event</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications.
+      </p>
+      <p>
+        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the event data each time the event is fired.
       </p>
     </section>
 
     <section> <h3>The <dfn>onPropertyChange()</dfn> method</h3>
       <p>
-        Returns an <a>Observable</a> for the <a>Property</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications. Takes an argument of type <a>PropertyChangeListener</a>.
+        Returns an <a>Observable</a> for the <a>Property</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications.
+      </p>
+      <p>
+        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the new property value each time it is changed.
       </p>
     </section>
 
     <section> <h3>The <dfn>onTDChange()</dfn> method</h3>
       <p>
-        Returns an <a>Observable</a>, allowing subscribing to and unsubscribing from notifications to the <a>Thing Description</a>. Takes no arguments.
+        Returns an <a>Observable</a>, allowing subscribing to and unsubscribing from notifications to the <a>Thing Description</a>.
+      </p>
+      <p>
+        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the new <a>Thing Description</a> each time it is changed.
       </p>
     </section>
-
-    <section data-dfn-for="PropertyChangeListener">
-      <h2>The <dfn>PropertyChangeListener</dfn> callback</h2>
-      <p>
-        A function called with an <code>name</code> argument of type string that denotes the changed property name, and a <code>value</code> argument that denotes the new property value.
-      </p>
-    </section>
-
-    <section data-dfn-for="TDChangeListener">
-      <h2>The <dfn>TDChangeListener</dfn> callback</h2>
-      <p>
-        A function called with one optional argument of type <a>ThingDescription</a> that denotes the new <a>Thing Description</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingEventListener">
-      <h2>The <dfn>ThingEventListener</dfn> callback</h2>
-      <p>
-        A function called with an <a>ThingEvent</a> object.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingEvent">
-      <h3>The <dfn>ThingEvent</dfn> interface</h3>
-      <p>
-        Clients can subscribe to the <a>Events</a> defined in <a href="#events-supported-by-exposedthing">ExposedThing events</a>. The event types are described in this section.
-      </p>
-      <pre class="idl">
-        [Constructor(DOMString name, any data)]
-        interface ThingEvent {
-          readonly attribute DOMString name;
-          readonly attribute any data;
-        };
-      </pre>
-      <p>
-        The <dfn for="ThingEvent">name</dfn> attribute represents the <a>Event</a> name.
-      </p>
-      <p>
-        The <dfn>data</dfn> attribute represents the data attached to the event. The data type and values are defined in the <a>Thing Description</a> of the remote <a>ExposedThing</a> that exposes the event.
-      </p>
-    </section> <!-- ThingEvent -->
 
     <section>
       <h2>Examples</h2>
@@ -606,8 +570,8 @@
         .then(thing => {
             console.log("Thing " + thing.name + " has been consumed.");
             let subscription = thing.onPropertyChange("temperature")
-              .subscribe(function(name, value) {
-                console.log("Property " + name + " value has changed to " + value);
+              .subscribe(function(value) {
+                console.log("Temperature + " has changed to " + value);
               });
             thing.invokeAction("startMeasurement", { units: "Celsius" })
               .then(() => { console.log("Temperature measurement started."); })
@@ -689,32 +653,13 @@
     <section data-dfn-for="ValueType">
       <h4>The <dfn>ValueType</dfn> type</h4>
       <pre class="idl">
-        typedef DOMString ValueType;
+        typedef any ValueType;
       </pre>
       <p>
         The <a>ValueType</a> type represents a type name specified in the <a>Thing Description</a>.
       </p>
       <p class="ednote">
-        <a>ValueType</a> is under development, currently it is a string that in principle can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as <code>"boolean"</code>, <code>"integer"</code>, <code>"number"</code>, <code>"string"</code>, <code>"array"</code>, <code>"object</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ValueTypeDefinition">
-      <h4>The <dfn>ValueTypeDefinition</dfn> dictionary</h4>
-      <pre class="idl">
-        dictionary ValueTypeDefinition {
-          ValueType typeName;
-        };
-      </pre>
-      <p>
-        Represents a value definition, including type, and possible constraints like minimum value, maximum value, etc.
-        <ul>
-          <li>
-            The <dfn>typeName</dfn> property represents the type name of the value.
-        </ul>
-      </p>
-      <p class="ednote">
-        The <a>Thing Description</a> [specification](https://w3c.github.io/wot-thing-description/) supports constraints like range for numbers and array size. These are not yet represented in this version.
+        <a>ValueType</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as <code>"boolean"</code>, <code>"number"</code>, <code>"string"</code>, <code>"array"</code>, or <code>"object"</code>.
       </p>
     </section>
 
@@ -727,7 +672,7 @@
         <pre class="idl">
           dictionary ThingPropertyInit: SemanticAnnotations {
             DOMString name;
-            ValueTypeDefinition type;
+            ValueType type;
             any value;
             boolean configurable = false;
             boolean enumerable = true;
@@ -739,7 +684,7 @@
           <ul>
             <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
             <li>
-              The <dfn>type</dfn> attribute represents the type and accepted value range for the <a>Property</a> by a of type <a>ValueTypeDefinition</a> object.
+              The <dfn>type</dfn> attribute represents the type for the <a>Property</a>.
             </li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
@@ -771,15 +716,15 @@
         <pre class="idl">
           dictionary ThingActionInit: SemanticAnnotations {
             DOMString name;
-            sequence&lt;ValueTypeDefinition&gt; inputDataDescription;
-            ValueTypeDefinition outputDataDescription;
+            ValueType inputDataDescription;
+            ValueType outputDataDescription;
           };
       </pre>
       <p>
         The <a>ThingActionInit</a> dictionary describes the arguments and the return value.
         <ul>
           <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
-          <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments.</li>
+          <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments (argument list is represented by an object).</li>
           <li>The <dfn>outputDataDescription</dfn> attribute provides the description of the returned data.</li>
         </ul>
       </p>
@@ -801,12 +746,12 @@
         <pre class="idl">
           dictionary ThingEventInit: SemanticAnnotations {
             DOMString name;
-            ValueTypeDefinition dataDescription;
+            ValueType dataDescription;
           };
         </pre>
         <ul>
           <li>The <dfn>name</dfn> attribute represents the event name.</li>
-          <li>The <dfn>dataDescription</dfn> attribute represents the description of the data that is attached to the event.</li>
+          <li>The <dfn>dataDescription</dfn> attribute represents the type of the data that is attached to the event.</li>
         </ul>
       </section>
     </section>
@@ -837,7 +782,7 @@
         A function called with a <code>propertyName</code> and a <code>value</code> argument that returns a Promise and resolves it when the value of the <a>Property</a> matching <code>propertyName</code> is updated with <code>value</code>, or rejects with and error if the property is not found or the value cannot be updated. The property is updated by the implementation with the value that is resolved by this callback.
       </p>
       <p class="ednote">
-        Note that this function is invoked by implementations before the property is updated, so the client code in this function can invoke the <code>readProperty()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this method.
+        Note that this function is invoked by implementations before the property is updated, so the code in this callback function can invoke the <code>readProperty()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this method.
       </p>
     </section>
 
@@ -888,38 +833,41 @@
               thing.addProperty({
                 name: "temperature",
                 value: "0",
-                type: { typeName: "double" },
+                type: "number",
                 writable: false
                 // use default values for the rest
               });
-
               thing.addEvent({
                 name: "onchange",
-                outputDataDescription: {
-                  type: "double"
-                }
+                dataDescription: "number"
               });
-
               thing.addAction({
                 name: "reset",
                 action: () => { this.temperature = 0; }
               });
-
               // add server functionality
-              thing.setPropertyReadHandler( propertyName => {
+              thing.setPropertyReadHandler(propertyName => {
                 console.log("Handling read request for " + propertyName);
                 return new Promise((resolve, reject) => {
-                if (this.hasOwnProperty(propertyName))
-                  resolve(this[propertyName]);
-                else reject('Property not found');
+                    if (this.hasOwnProperty(propertyName))
+                      resolve(this[propertyName]);
+                    else
+                      reject('Property not found');
+                  },
+                  e => {
+                    console.log("Error");
+                  });
               });
-            } catch(e) {
-              console.log("Error");
+            } catch (err) {
+               console.log("Thing creation error.");
             }
-
             thing.start()
-            .then (() => { thing.register();})
-            .catch((err) => { console.log("Error");});
+            .then (() => {
+              thing.register();
+            });
+          })
+          .catch (err => {
+            console.log("Error");
           });
       </pre>
 
@@ -947,7 +895,6 @@
             console.log("Error");
           }
         }
-
         });
       </pre>
 
