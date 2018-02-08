@@ -123,13 +123,16 @@
       The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>. Support for scripting is optional for WoT devices.
     </p>
     <p>
-      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the properties, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a>.
+      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a>.
     </p>
     <p>
-      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack needed to serve requests for accessing the exposed properties, <a>Actions</a> and <a>Events</a>. Defining a This specification describes how to expose and consume <a>Thing</a>s by a script.
+      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack needed to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
     </p>
     <p class="note">
       Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
+    </p>
+    <p class="note">
+      This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
     </p>
     <p>
       For an introduction on how scripts could be used in <a>Web of Things</a>, check the [Primer](https://w3c.github.io/wot-scripting-api/primer) document. For some background on API design decisions check the [Rationale](https://w3c.github.io/wot-scripting-api/rationale) document.
@@ -138,7 +141,7 @@
 
   <section class="informative"> <h3>Use Cases</h3>
     <p>
-      The following scripting use cases are covered in this specification:
+      The following scripting use cases are supported in this specification:
     </p>
     <section><h4>Discovery</h4>
     <ul>
@@ -157,11 +160,14 @@
     <section><h4>Consuming a Thing</h4>
     <ul>
       <li>
-        Fetch and <a>consume a TD</a> of a <a>Thing</a>. The <a>TD</a> may be provided in a string serialized format, or specified by a URL. Consuming the <a>Thing</a> includes parsing the <a>TD</a> and attaching to the protocol bindings in order to access lower level functionality.
+        Fetch a <a>Thing Description</a> of a <a>Thing</a> given its URL.
+      </li>
+      <li>
+        <a>Consume a TD</a> of a <a>Thing</a>, including parsing the <a>TD</a> and generating the protocol bindings in order to access lower level functionality.
       </li>
       <li>On a consumed <a>Thing</a>,
         <ul>
-          <li>Get the value of a <a>Property</a> or set of properties.</li>
+          <li>Read the value of a <a>Property</a> or set of properties.</li>
           <li>Observe value changes to a <a>Property</a>.</li>
           <li>Set the value of a <a>Property</a> or a set of properties.</li>
           <li>Invoke an <a>Action</a>.</li>
@@ -174,13 +180,14 @@
     <section><h4>Exposing a Thing</h4>
     <ul>
       <li>
-        Exposing the <a>Thing</a> includes attaching to the protocol bindings in order to access lower level functionality.
+        Exposing the <a>Thing</a> includes generating the protocol bindings in order to access lower level functionality.
       </li>
       <li>
         Create a local <a>ExposedThing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of a template or an existing <a>ConsumedThing</a> object.</li>
       <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
       <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
       <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
+      <li>Attach semantic information to the <a>Thing</a></li>
       <li>Attach semantic information to an <a>Action</a></li>
       <li>Attach semantic information to a <a>Property</a></li>
       <li>Attach semantic information to an <a>Event</a></li>
@@ -188,7 +195,7 @@
         Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
       </li>
       <li>
-        Provide notifications for TD changes to clients subscribed to that.
+        Provide notifications for <a>TD</a> changes to clients subscribed to that.
       </li>
       <li>Mark/unmark the Thing to be discoverable.</li>
       <li>Mark/unmark the Thing to be consumable.</li>
@@ -201,31 +208,15 @@
           <li>
             to run an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
           </li>
-          <li>to add a listener to an <a>Event</a>;</li>
-          <li>to remove an <a>Event</a> listener.</li>
-          <li>to fetch the <a>Thing Description</a>;</li>
         </ul>
       </li>
     </ul>
-    </section>
-    <section><h4>Future use cases</h4>
-    <p>
-      The following use cases are being considered out of scope for this version:
-    </p>
-    <ul>
-      <li>
-        Deploy, start, stop, delete scripts in local or remote runtimes in order to implement Thing lifecycle management.
-      </li>
-    </ul>
-    <p class="ednote">
-      Management use cases should be solved with exposing a special Thing that has an action for creating a <a>Thing</a> based on a <a>TD</a>.
-    </p>
     </section>
   </section>
 
   <section data-dfn-for="WoT">
     <h2>The <dfn>WoT</dfn> object</h2>
-    <p>The WoT object is the main API entry point and it is exposed by an implementation of the <a>WoT Runtime</a>. The <dfn>WoT object</dfn> has no internal state and provides methods for discovering, consuming and exposing a <a>Thing</a>.
+    <p>The WoT object is the API entry point and it is exposed by an implementation of the <a>WoT Runtime</a>. The <dfn>WoT object</dfn> does not expose properties, only methods for discovering, consuming and exposing a <a>Thing</a>.
     </p>
     <p class="note">
        Browser implementations SHOULD use a namespace object such as `wot`, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
@@ -448,18 +439,23 @@
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
-        let discoveryFilter = { method: "directory", url: "http://directory.wotservice.org" };
+        let discoveryFilter = {
+          method: "directory",
+          url: "http://directory.wotservice.org"
+        };
         let subscription = wot.discover(discoveryFilter).subscribe(
           thing => { console.log("Found Thing " + thing.url); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
-        setTimeout(
-          () => { subscription.unsubscribe(); console.log("Discovery timeout"); },
+        setTimeout( () => {
+            subscription.unsubscribe();
+            console.log("Discovery timeout");
+          },
           5000);
       </pre>
       <p class="note">
-        Note that canceling a discovery (through unsubscribe) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
+        Note that canceling a discovery (through `unsubscribe()`) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
       </p>
       <pre class="example" title="Discover Things exposed by local hardware">
         let subscription = wot.discover({ method: "local" }).subscribe(
@@ -468,15 +464,28 @@
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
-      <pre class="example" title="Discover Things exposed nearby, e.g. via Bluetooth">
-        let subscription = wot.discover({ method: "nearby", description: {protocol: "BLE4.2"} }).subscribe(
+      <pre class="example" title="Same as above but with different Observable syntax">
+        let subscription = wot.discover({ method: "local" }).subscribe({
+          next: thing => { console.log("Found local Thing " + thing.url); },
+          error: err => { console.log("Discovery error: " + err.message); },
+          complete: () => { console.log("Discovery finished successfully");}
+        });
+      </pre>
+      <pre class="example" title="Discover Things exposed nearby, via Bluetooth or NFC">
+        let subscription = wot.discover({
+          method: "nearby",
+          constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC"}]
+        }).subscribe(
           thing => { console.log("Found nearby Thing " + thing.url); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Discover Things exposed in a proprietary way">
-        let subscription = wot.discover({ method: "other", description: { solution: "XYZ123", key: "..."} }).subscribe(
+        let subscription = wot.discover({
+          method: "other",
+          constraints: [{ solution: "XYZ123", key: "..."}]
+        }).subscribe(
           thing => { console.log("Found Thing " + thing.url); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
@@ -488,7 +497,7 @@
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
-      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update properties, invoke <a>Actions</a>, and observe properties, <a>Actions</a> and <a>Events</a>.
+      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
     </p>
     <pre class="idl">
       interface ConsumedThing {
@@ -577,7 +586,7 @@
               .then(() => { console.log("Temperature measurement started."); })
               .catch(e => {
                  console.log("Error starting measurement.");
-                 subscription.cancel();
+                 subscription.unsubscribe();
                })
           },
         )}).catch(error => {
@@ -671,8 +680,8 @@
         <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ThingPropertyInit: SemanticAnnotations {
-            DOMString name;
-            ValueType type;
+            required DOMString name;
+            required ValueType type;
             any value;
             boolean configurable = false;
             boolean enumerable = true;
@@ -715,7 +724,7 @@
         <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ThingActionInit: SemanticAnnotations {
-            DOMString name;
+            required DOMString name;
             ValueType inputDataDescription;
             ValueType outputDataDescription;
           };
@@ -724,8 +733,8 @@
         The <a>ThingActionInit</a> dictionary describes the arguments and the return value.
         <ul>
           <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
-          <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments (argument list is represented by an object).</li>
-          <li>The <dfn>outputDataDescription</dfn> attribute provides the description of the returned data.</li>
+          <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
+          <li>The <dfn>outputDataDescription</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.</li>
         </ul>
       </p>
       </section>
@@ -745,13 +754,13 @@
         <h4>The <dfn>ThingEventInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ThingEventInit: SemanticAnnotations {
-            DOMString name;
+            required DOMString name;
             ValueType dataDescription;
           };
         </pre>
         <ul>
           <li>The <dfn>name</dfn> attribute represents the event name.</li>
-          <li>The <dfn>dataDescription</dfn> attribute represents the type of the data that is attached to the event.</li>
+          <li>The <dfn>dataDescription</dfn> attribute represents the type of the data that is attached to the event. If missing, it means the event does not carry data.</li>
         </ul>
       </section>
     </section>
@@ -1003,9 +1012,6 @@
   <section> <h2>Terminology and conventions</h2>
     <p>
       The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
-    </p>
-    <p class="note">
-      In this version of the specification, a <a>WoT Runtime</a> is assumed to run scripts that uses this API to define one or more <a>Thing</a>s that share a common event loop. Script deployment methods are out of scope of this version. In future versions, running multiple scripts (as modules) may be possible, and script deployment MAY be implemented using a manager <a>Thing</a> whose <a>Actions</a> permit script lifecycle management operations.
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data by providing a <code>@context</code> property with a defining URI .
