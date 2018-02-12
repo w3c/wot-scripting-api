@@ -329,17 +329,14 @@
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
         Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
-        <ul>
+        <ol>
           <li>
             from an initial model (name and semantic annotations), then adding properties, actions, events and request handlers;
           </li>
           <li>
-            from a <a>Thing Description</a>, then adding request handlers;
+            from a <a>Thing Description</a> (possibly of a <a>ConsumedThing</a> object), then adding request handlers.
           </li>
-          <li>
-            from an existing <a>ConsumedThing</a> object, based on its <a>Thing Description</a>, then adding request handlers.
-          </li>
-        </ul>
+        </ol>
       </p>
     </section> <!-- produce() -->
 
@@ -444,7 +441,7 @@
           url: "http://directory.wotservice.org"
         };
         let subscription = wot.discover(discoveryFilter).subscribe(
-          thing => { console.log("Found Thing " + thing.url); },
+          thing => { console.log("Found Thing " + thing.name); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -459,14 +456,14 @@
       </p>
       <pre class="example" title="Discover Things exposed by local hardware">
         let subscription = wot.discover({ method: "local" }).subscribe(
-          thing => { console.log("Found local Thing " + thing.url); },
+          thing => { console.log("Found local Thing " + thing.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Same as above but with different Observable syntax">
         let subscription = wot.discover({ method: "local" }).subscribe({
-          next: thing => { console.log("Found local Thing " + thing.url); },
+          next: thing => { console.log("Found local Thing " + thing.name); },
           error: err => { console.log("Discovery error: " + err.message); },
           complete: () => { console.log("Discovery finished successfully");}
         });
@@ -476,7 +473,7 @@
           method: "nearby",
           constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC"}]
         }).subscribe(
-          thing => { console.log("Found nearby Thing " + thing.url); },
+          thing => { console.log("Found nearby Thing " + thing.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -486,7 +483,7 @@
           method: "other",
           constraints: [{ solution: "XYZ123", key: "..."}]
         }).subscribe(
-          thing => { console.log("Found Thing " + thing.url); },
+          thing => { console.log("Found Thing " + thing.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -575,7 +572,7 @@
       </p>
       <pre class="example" title="Consume a Thing">
         wot.fetch("http://mmyservice.org/mySensor")
-        .then(td) => { consume(td)
+        .then(td) => { wot.consume(td)
         .then(thing => {
             console.log("Thing " + thing.name + " has been consumed.");
             let subscription = thing.onPropertyChange("temperature")
@@ -624,9 +621,9 @@
         void setPropertyReadHandler(PropertyReadHandler readHandler, optional DOMString propertyName);
         void setPropertyWriteHandler(PropertyWriteHandler writeHandler, optional DOMString propertyName);
       };
-      callback ActionHandler = Promise&lt;any&gt; (any parameters);
-      callback PropertyReadHandler = Promise&lt;any&gt; (DOMString propertyName);
-      callback PropertyWriteHandler = Promise&lt;void&gt; (DOMString propertyName, any value);
+      callback ActionHandler = Promise&lt;any&gt;(any parameters);
+      callback PropertyReadHandler = Promise&lt;any&gt;();
+      callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
     </pre>
 
     <section> <h3>The <dfn>start()</dfn> method</h3>
@@ -683,9 +680,8 @@
             required DOMString name;
             required ValueType type;
             any value;
-            boolean configurable = false;
-            boolean enumerable = true;
             boolean writable = true;
+            boolean observable = true;
           };
         </pre>
         <p>
@@ -697,13 +693,10 @@
             </li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
-              The <dfn>configurable</dfn> attribute defines whether the <a>Property</a> can be deleted from the object and whether its type can be changed. The default value is <code>false</code>.
-            </li>
-            <li>
-              The <dfn>enumerable</dfn> attribute defines whether the <a>Property</a> can be listed and iterated. The default value is <code>true</code>.
-            </li>
-            <li>
               The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>true</code>.
+            </li>
+            <li>
+              The <dfn>observable</dfn> attribute defines whether the <a>Property</a> changes can be observed by an external client. The default value is <code>true</code>.
             </li>
           </ul>
         </p>
@@ -835,49 +828,44 @@
       </p>
 
       <pre class="example highlight" title="Create a new blank exposed Thing">
-        WoT.createExposedThing(thingDescription)
-          .then(function(thing) {
-            try {
-              // manually add properties, actions, and events
-              thing.addProperty({
-                name: "temperature",
-                value: "0",
-                type: "number",
-                writable: false
-                // use default values for the rest
-              });
-              thing.addEvent({
-                name: "onchange",
-                dataDescription: "number"
-              });
-              thing.addAction({
-                name: "reset",
-                action: () => { this.temperature = 0; }
-              });
-              // add server functionality
-              thing.setPropertyReadHandler(propertyName => {
-                console.log("Handling read request for " + propertyName);
-                return new Promise((resolve, reject) => {
-                    if (this.hasOwnProperty(propertyName))
-                      resolve(this[propertyName]);
-                    else
-                      reject('Property not found');
-                  },
-                  e => {
-                    console.log("Error");
-                  });
-              });
-            } catch (err) {
-               console.log("Thing creation error.");
-            }
-            thing.start()
-            .then (() => {
-              thing.register();
-            });
-          })
-          .catch (err => {
-            console.log("Error");
+        let thing = WoT.produce(thingDescription);
+        try {
+          // manually add properties, actions, and events
+          thing.addProperty({
+            name: "temperature",
+            value: "0",
+            type: "number",
+            writable: false
+            // use default values for the rest
           });
+          thing.addEvent({
+            name: "onchange",
+            dataDescription: "number"
+          });
+          thing.addAction({
+            name: "reset",
+            action: () => { this.temperature = 0; }
+          });
+          // add server functionality
+          thing.setPropertyReadHandler(propertyName => {
+            console.log("Handling read request for " + propertyName);
+            return new Promise((resolve, reject) => {
+                if (this.hasOwnProperty(propertyName))
+                  resolve(this[propertyName]);
+                else
+                  reject('Property not found');
+              },
+              e => {
+                console.log("Error");
+              });
+          });
+        } catch (err) {
+           console.log("Thing creation error.");
+        }
+        thing.start()
+        .then (() => {
+          thing.register();
+        });
       </pre>
 
       <pre class="example highlight" title="Create a new exposed Thing from a TD URI">
@@ -986,9 +974,9 @@
     </section>
 
     <section data-dfn-for="Observable">
-      <h3>The <strong>Observer</strong> interface</h3>
+      <h3>The <dfn>Observable</dfn> interface</h3>
       <p>
-        The <dfn>Observable</dfn> interface enabled subscribing to pushed data notifications by the <dfn>subscribe</dfn>() method:
+        The <a>Observable</a> interface enabled subscribing to pushed data notifications by the <dfn>subscribe</dfn>() method:
         <ul>
           <li>
             If the <code>subscribe()</code> method is called with an <a>Observer</a> object, initialize the data, error and completion handling callbacks from that object, or throw on error.
