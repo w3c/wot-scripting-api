@@ -187,10 +187,10 @@
       <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
       <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
       <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
-      <li>Attach semantic information to the <a>Thing</a></li>
-      <li>Attach semantic information to an <a>Action</a></li>
-      <li>Attach semantic information to a <a>Property</a></li>
-      <li>Attach semantic information to an <a>Event</a></li>
+      <li>Attach semantic information to the <a>Thing</a>.</li>
+      <li>Attach semantic information to an <a>Action</a>.</li>
+      <li>Attach semantic information to a <a>Property</a>.</li>
+      <li>Attach semantic information to an <a>Event</a>.</li>
       <li>
         Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
       </li>
@@ -235,7 +235,7 @@
     </pre>
 
     <p class="ednote">
-      The algorithms for the WoT methods will be specified later.
+      The algorithms for the WoT methods will be specified later, including error handling and security considerations.
     </p>
 
     <section> <h3>The <dfn>discover()</dfn> method</h3>
@@ -286,6 +286,9 @@
         <p>
           The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that can be extended by string values defined by solutions (with no guarantee of interoperability).
         </p>
+        <p class="ednote">
+          The <a>DiscoveryMethod</a> enumeration can be extended by the <a>Thing Description</a> with values that are not specified here. This extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
+        </p>
         <p>
           The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a <a>Thing Directory</a> or a Thing.
         </p>
@@ -293,13 +296,18 @@
           The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL query.
         </p>
         <p>
-          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of key-value pairs, defined based on the semantic metadata of the <a>Thing Description</a>. The sequence elements are in OR relationship, and within an element the key-value pairs define AND type constraints.
+          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of property-value pairs (dictionaries). The list elements (dictionaries) are in OR relationship, and within a constraint dictionary the key-value pairs are in AND relationship. Implementations SHOULD make the following mapping from the constraint dictionaries to <a>SemanticAnnotations</a>: for each property-value pair in a constraint dictionary,
+          <ul>
+            <li>
+              Each property name in the constraint dictionary SHOULD match the either the  `name` property of a defined <a>SemanticType</a> on the target <a>Thing</a> object, or the name of a <a>Property</a> on the target <a>Thing</a>.
+            </li>
+            <li>
+              When the name matches, the values are compared. If the values match, the constraint is matched.
+            </li>
+          </ul>
         </p>
         <p class="ednote">
-          The <a>DiscoveryMethod</a> enumeration can be extended by the <a>Thing Description</a> with values that are not specified here. This extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
-        </p>
-        <p class="ednote">
-          The <a>ThingFilter</a> dictionary may be extended later with further attributes.</p>
+          Semantic annotations need revisiting in order to simplify their representation. In the [[WOT-TD]] specification they represent the `@type` construct. At the moment only `@context`, `@type` and `@id` constructs are used in the <a>TD</a>.
         </p>
       </section>
     </section> <!-- Discovery -->
@@ -331,7 +339,7 @@
         Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
         <ol>
           <li>
-            from an initial model (name and semantic annotations), then adding properties, actions, events and request handlers;
+            from an initial model (including a user given name and <a href="#the-semanticannotations-dictionary">semantic annotations</a>), then adding properties, actions, events and request handlers;
           </li>
           <li>
             from a <a>Thing Description</a> (possibly of a <a>ConsumedThing</a> object), then adding request handlers.
@@ -415,7 +423,7 @@
     <section data-dfn-for="ThingTemplate" >
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        A Thing Template is a dictionary that provides the semantic types and semantic metadata at the <a>ExposedThing</a> description's root level.
+        A Thing Template is a dictionary that provides a user given name, and the semantic types and semantic metadata attached to the <a>ExposedThing</a> <a>Thing Description</a>'s root level.
       </p>
       <pre class="idl">
         dictionary ThingTemplate: SemanticAnnotations {
@@ -499,7 +507,8 @@
     <pre class="idl">
       interface ConsumedThing {
         readonly attribute DOMString name;
-        readonly attribute ThingDescription td;
+        void setName(DOMString name);
+        ThingDescription getThingDescription();
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
         Promise&lt;any&gt; readProperty(DOMString name);
@@ -509,16 +518,28 @@
       };
     </pre>
     <p>
-      Represents a local proxy object of the remote <a>Thing</a>.
+      <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
       <ul>
-        <li>The <dfn>name</dfn> read-only attribute represents the name of the <a>Thing</a>.</li>
         <li>
-          The <dfn>td</dfn> attribute read-only attribute represents the description of the <a>Thing</a>.
-          <p class="ednote">
-            Parsing and exposing <a>Thing Description</a>s is discussed in [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38).</p>
+          The <dfn>name</dfn> read-only attribute represents the user given name of the <a>Thing</a>.
         </li>
       </ul>
     </p>
+
+    <section> <h3>The <dfn>setName()</dfn> method</h3>
+      <p>
+        Takes a <code>name</code> parameter and sets the name of the <a>Thing</a>, as used in applications. Applications can provide a maximum 128 bytes long name, but implementations may reject (by throwing a `RangeError`) or truncate the provided name, depending on the capabilities of the underlying platform. Setting <code>name</code> throws `TypeError` on other invalid (not string) input.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>getThingDescription()</dfn> method</h3>
+      <p>
+        Returns the <a>Thing Description</a> of the <a>Thing</a>.
+      </p>
+      <p class="ednote">
+        In this version, introspection based on <a>TD</a> is out of scope. Parsing and exposing <a>Thing Description</a>s is discussed in [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38).
+      </p>
+    </section>
 
     <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
       <p>
@@ -571,22 +592,20 @@
         Below a <code><a>ConsumedThing</a></code> interface example is given.
       </p>
       <pre class="example" title="Consume a Thing">
-        wot.fetch("http://mmyservice.org/mySensor")
-        .then(td) => { wot.consume(td)
-        .then(thing => {
-            console.log("Thing " + thing.name + " has been consumed.");
-            let subscription = thing.onPropertyChange("temperature")
-              .subscribe(function(value) {
-                console.log("Temperature + " has changed to " + value);
-              });
-            thing.invokeAction("startMeasurement", { units: "Celsius" })
-              .then(() => { console.log("Temperature measurement started."); })
-              .catch(e => {
-                 console.log("Error starting measurement.");
-                 subscription.unsubscribe();
-               })
-          },
-        )}).catch(error => {
+        wot.fetch("http://mmyservice.org/mySensor").then(td => {
+          let thing = wot.consume(td);
+          console.log("Thing " + thing.name + " has been consumed.");
+          let subscription = thing.onPropertyChange("temperature")
+            .subscribe(function(value) {
+              console.log("Temperature + " has changed to " + value);
+            });
+          thing.invokeAction("startMeasurement", { units: "Celsius" })
+            .then(() => { console.log("Temperature measurement started."); })
+            .catch(e => {
+               console.log("Error starting measurement.");
+               subscription.unsubscribe();
+             })
+        }).catch(error => {
           console.log("Error during fetch or consume: " + error.message);
         });
       </pre>
@@ -656,16 +675,16 @@
       </p>
     </section>
 
-    <section data-dfn-for="ValueType">
-      <h4>The <dfn>ValueType</dfn> type</h4>
+    <section data-dfn-for="DataSchema">
+      <h4>The <dfn>DataSchema</dfn> type</h4>
       <pre class="idl">
-        typedef any ValueType;
+        typedef USVString DataSchema;
       </pre>
       <p>
-        The <a>ValueType</a> type represents a type name specified in the <a>Thing Description</a>.
+        The <a>DataSchema</a> type represents a type name specified in the <a>Thing Description</a> in a serialized form, for instance JSON Schema.
       </p>
       <p class="ednote">
-        <a>ValueType</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as <code>"boolean"</code>, <code>"number"</code>, <code>"string"</code>, <code>"array"</code>, or <code>"object"</code>.
+        <a>DataSchema</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as simple type like <code>"boolean"</code>, <code>"number"</code>, <code>"string"</code>, or <code>"array"</code>, or <code>"object"</code> that may specify value range etc.
       </p>
     </section>
 
@@ -678,7 +697,7 @@
         <pre class="idl">
           dictionary ThingPropertyInit: SemanticAnnotations {
             required DOMString name;
-            required ValueType type;
+            required DataSchema type;
             any value;
             boolean writable = true;
             boolean observable = true;
@@ -718,8 +737,8 @@
         <pre class="idl">
           dictionary ThingActionInit: SemanticAnnotations {
             required DOMString name;
-            ValueType inputDataDescription;
-            ValueType outputDataDescription;
+            DataSchema inputDataDescription;
+            DataSchema outputDataDescription;
           };
       </pre>
       <p>
@@ -748,7 +767,7 @@
         <pre class="idl">
           dictionary ThingEventInit: SemanticAnnotations {
             required DOMString name;
-            ValueType dataDescription;
+            DataSchema dataDescription;
           };
         </pre>
         <ul>
@@ -920,7 +939,7 @@
   <section data-dfn-for="Observable" class="informative">
     <h2>Observables</h2>
     <p>
-      Observables are <a href="https://github.com/tc39/proposal-observable">proposed</a> to be included in ECMAScript and are used for handling pushed data associated with various possible sources, for instance events, timers, streams, etc. A minimal required implementation is described here.
+      <dfn>Observables</dfn> are <a href="https://github.com/tc39/proposal-observable">proposed</a> to be included in ECMAScript and are used for handling pushed data associated with various possible sources, for instance events, timers, streams, etc. A minimal required implementation is described here.
     </p>
     <p class="ednote">
       This section is informal and contains rather laconic information for implementations on what to support for interoperability.
@@ -989,7 +1008,7 @@
           </li>
         </ul>
     </section>
-  </section>
+  </section> <!-- Observables -->
 
   <section> <h2 id="security">Security and Privacy</h2>
     <p class="ednote">
