@@ -630,15 +630,16 @@
         Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
-        void addProperty(ThingPropertyInit property);
-        void removeProperty(DOMString name);
-        void addAction(ThingActionInit action);
-        void removeAction(DOMString name);
-        void addEvent(ThingEventInit event);
-        void removeEvent(DOMString name);
-        void setActionHandler(ActionHandler action, optional DOMString actionName);
-        void setPropertyReadHandler(PropertyReadHandler readHandler, optional DOMString propertyName);
-        void setPropertyWriteHandler(PropertyWriteHandler writeHandler, optional DOMString propertyName);
+        ExposedThing addProperty(ThingPropertyInit property);
+        ExposedThing removeProperty(DOMString name);
+        ExposedThing addAction(ThingActionInit action);
+        ExposedThing removeAction(DOMString name);
+        ExposedThing addEvent(ThingEventInit event);
+        ExposedThing removeEvent(DOMString name);
+        // define request handlers
+        ExposedThing setActionHandler(ActionHandler action, optional DOMString actionName);
+        ExposedThing setPropertyReadHandler(PropertyReadHandler readHandler, optional DOMString propertyName);
+        ExposedThing setPropertyWriteHandler(PropertyWriteHandler writeHandler, optional DOMString propertyName);
       };
       callback ActionHandler = Promise&lt;any&gt;(any parameters);
       callback PropertyReadHandler = Promise&lt;any&gt;();
@@ -690,9 +691,9 @@
 
     <section> <h3>The <dfn>addProperty()</dfn> method</h3>
       <p>
-        Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>.
+        Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingPropertyInit">
+      <section data-dfn-for="ThingPropertyInit" data-link-for="ThingPropertyInit">
         <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ThingPropertyInit: SemanticAnnotations {
@@ -724,13 +725,13 @@
 
     <section> <h3>The <dfn>removeProperty()</dfn> method</h3>
       <p>
-        Removes the <a>Property</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>.
+        Removes the <a>Property</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section>
 
     <section> <h3>The <dfn>addAction()</dfn> method</h3>
       <p>
-        Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingActionInit</a> and updates the <a>Thing Description</a>.
+        Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingActionInit</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <section data-dfn-for="ThingActionInit">
         <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
@@ -754,13 +755,13 @@
 
     <section> <h3>The <dfn>removeAction()</dfn> method</h3>
       <p>
-        Removes the <a>Action</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>.
+        Removes the <a>Action</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section>
 
     <section> <h3>The <dfn>addEvent()</dfn> method</h3>
       <p>
-        Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEventInit</a> and updates the <a>Thing Description</a>.
+        Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEventInit</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <section data-dfn-for="ThingEventInit">
         <h4>The <dfn>ThingEventInit</dfn> dictionary</h4>
@@ -779,7 +780,7 @@
 
     <section> <h3>The <dfn>removeEvent()</dfn> method</h3>
       <p>
-        Removes the event specified by the <code>name</code> argument and updates the <a>Thing Description</a>.
+        Removes the event specified by the <code>name</code> argument and updates the <a>Thing Description</a>. Returns a reference to the same object for supporting chaining.
       </p>
     </section>
 
@@ -809,7 +810,7 @@
 
     <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes a <code>actionName</code> as an optional string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code> if <code>actionName</code> is specified, otherwise sets it for any action. Throws on error.
+        Takes a <code>actionName</code> as an optional string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code> if <code>actionName</code> is specified, otherwise sets it for any action. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <p>
         If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform.
@@ -821,7 +822,7 @@
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes a <code>propertyName</code> as an optional string argument, and a <code>readHandler</code> argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>propertyName</code> if <code>propertyName</code> is specified, otherwise sets it for reading any property. Throws on error.
+        Takes a <code>propertyName</code> as an optional string argument, and a <code>readHandler</code> argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>propertyName</code> if <code>propertyName</code> is specified, otherwise sets it for reading any property. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <p>
         If provided, this callback function will implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
@@ -833,7 +834,7 @@
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes a <code>propertyName</code> as an optional string argument, and a <code>writeHandler</code> argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>propertyName</code> if the <code>propertyName</code> is specified, otherwise sets it for writing any properties. Throws on error.
+        Takes a <code>propertyName</code> as an optional string argument, and a <code>writeHandler</code> argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>propertyName</code> if the <code>propertyName</code> is specified, otherwise sets it for writing any properties. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <p>
         There SHOULD be at most one write handler for any given <a>Property</a>. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers.
@@ -936,7 +937,7 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section data-dfn-for="Observable" class="informative">
+  <section class="informative">
     <h2>Observables</h2>
     <p>
       <dfn>Observables</dfn> are <a href="https://github.com/tc39/proposal-observable">proposed</a> to be included in ECMAScript and are used for handling pushed data associated with various possible sources, for instance events, timers, streams, etc. A minimal required implementation is described here.
