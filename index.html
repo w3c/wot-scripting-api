@@ -173,6 +173,8 @@
           <li>Invoke an <a>Action</a>.</li>
           <li>Observe <a>Events</a> emitted by the <a>Thing</a>.</li>
           <li>Observe changes to the <a>Thing Description</a> of the <a>Thing</a>.</li>
+          <li>Get the <a>Thing Description</a>.</li>
+          <li>Get the list of linked resources based on the <a>Thing Description</a>.</li>
         </ul>
       </li>
     </ul>
@@ -509,6 +511,7 @@
         readonly attribute DOMString name;
         void setName(DOMString name);
         ThingDescription getThingDescription();
+        sequence&lt;TDLink&gt; getLinks();
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
         Promise&lt;any&gt; readProperty(DOMString name);
@@ -540,6 +543,41 @@
         In this version, introspection based on <a>TD</a> is out of scope. Parsing and exposing <a>Thing Description</a>s is discussed in [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38).
       </p>
     </section>
+
+    <section> <h3>The <dfn>getLinks()</dfn> method</h3>
+      <p>
+        Returns the list of linked resources in <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>TDLink</a> objects.
+      </p>
+      <section data-dfn-for="TDLink" >
+        <h4>The <dfn>TDLink</dfn> dictionary</h4>
+        <p>
+          Contains a hyperlink reference, a relation type and a media type.
+        </p>
+        <pre class="idl">
+          dictionary TDLink {
+              required USVString href;
+              USVString mediaType;
+              DOMString rel;
+          };
+        </pre>
+        <p>The <a>TDLink</a> dictionary contains the following properties:
+          <ul>
+            <li>
+              The <dfn>href</dfn> attribute represents a <a>hyperlink reference</a>.
+            </li>
+            <li>
+              The <dfn>rel</dfn> attribute represents a <a>relation type</a>.
+            </li>
+            <li>
+              The <dfn>mediaType</dfn> attribute represents a <a>IANA media type</a>.
+            </li>
+          </ul>
+        </p>
+      </section> <!-- TDLink -->
+    </section>
+
+
+
 
     <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
       <p>
@@ -685,7 +723,7 @@
         The <a>DataSchema</a> type represents a data type <a href="https://w3c.github.io/wot-thing-description/#dataschema">specified</a> in the <a>Thing Description</a> in a serialized form.
       </p>
       <p class="ednote">
-        <a>DataSchema</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as simple type like <code>"boolean"</code>, <code>"number"</code>, <code>"string"</code>, or <code>"array"</code>, or <code>"object"</code> that may specify value range etc.
+        <a>DataSchema</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>.
       </p>
     </section>
 
@@ -854,13 +892,13 @@
           thing.addProperty({
             name: "temperature",
             value: "0",
-            schema: "number",
+            schema: '{ \"type\": \"number\" }',
             writable: false
             // use default values for the rest
           });
           thing.addEvent({
             name: "onchange",
-            schema: "number"
+            schema: '{ \"type\": \"number\" }'
           });
           thing.addAction({
             name: "reset",
@@ -1124,6 +1162,9 @@
     <p>
       <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
       <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
+    </p>
+    <p>
+      The terms <dfn>hyperlink reference</dfn> and <dfn>relation type</dfn> are defined in [[!HTML5]] and <a href="https://tools.ietf.org/html/rfc8288">RFC8288</a>.
     </p>
   </section>
 
