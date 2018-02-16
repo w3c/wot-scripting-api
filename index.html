@@ -682,7 +682,7 @@
         typedef USVString DataSchema;
       </pre>
       <p>
-        The <a>DataSchema</a> type represents a type name specified in the <a>Thing Description</a> in a serialized form, for instance JSON Schema.
+        The <a>DataSchema</a> type represents a data type <a href="https://w3c.github.io/wot-thing-description/#dataschema">specified</a> in the <a>Thing Description</a> in a serialized form.
       </p>
       <p class="ednote">
         <a>DataSchema</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as simple type like <code>"boolean"</code>, <code>"number"</code>, <code>"string"</code>, or <code>"array"</code>, or <code>"object"</code> that may specify value range etc.
@@ -698,7 +698,7 @@
         <pre class="idl">
           dictionary ThingPropertyInit: SemanticAnnotations {
             required DOMString name;
-            required DataSchema type;
+            required DataSchema schema;
             any value;
             boolean writable = true;
             boolean observable = true;
@@ -709,7 +709,7 @@
           <ul>
             <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
             <li>
-              The <dfn>type</dfn> attribute represents the type for the <a>Property</a>.
+              The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>DataSchema</a>.
             </li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
@@ -738,16 +738,16 @@
         <pre class="idl">
           dictionary ThingActionInit: SemanticAnnotations {
             required DOMString name;
-            DataSchema inputDataDescription;
-            DataSchema outputDataDescription;
+            DataSchema inputSchema;
+            DataSchema outputSchema;
           };
       </pre>
       <p>
         The <a>ThingActionInit</a> dictionary describes the arguments and the return value.
         <ul>
           <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
-          <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
-          <li>The <dfn>outputDataDescription</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.</li>
+          <li>The <dfn>inputSchema</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
+          <li>The <dfn>outputSchema</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.</li>
         </ul>
       </p>
       </section>
@@ -768,12 +768,12 @@
         <pre class="idl">
           dictionary ThingEventInit: SemanticAnnotations {
             required DOMString name;
-            DataSchema dataDescription;
+            DataSchema schema;
           };
         </pre>
         <ul>
           <li>The <dfn>name</dfn> attribute represents the event name.</li>
-          <li>The <dfn>dataDescription</dfn> attribute represents the type of the data that is attached to the event. If missing, it means the event does not carry data.</li>
+          <li>The <dfn>schema</dfn> attribute represents the type of the data that is attached to the event. If missing, it means the event does not carry data.</li>
         </ul>
       </section>
     </section>
@@ -854,13 +854,13 @@
           thing.addProperty({
             name: "temperature",
             value: "0",
-            type: "number",
+            schema: "number",
             writable: false
             // use default values for the rest
           });
           thing.addEvent({
             name: "onchange",
-            dataDescription: "number"
+            schema: "number"
           });
           thing.addAction({
             name: "reset",
