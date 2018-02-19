@@ -508,10 +508,7 @@
     </p>
     <pre class="idl">
       interface ConsumedThing {
-        readonly attribute DOMString name;
-        void setName(DOMString name);
         ThingDescription getThingDescription();
-        sequence&lt;TDLink&gt; getLinks();
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
         Promise&lt;any&gt; readProperty(DOMString name);
@@ -522,18 +519,7 @@
     </pre>
     <p>
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
-      <ul>
-        <li>
-          The <dfn>name</dfn> read-only attribute represents the user given name of the <a>Thing</a>.
-        </li>
-      </ul>
     </p>
-
-    <section> <h3>The <dfn>setName()</dfn> method</h3>
-      <p>
-        Takes a <code>name</code> parameter and sets the name of the <a>Thing</a>, as used in applications. Applications can provide a maximum 128 bytes long name, but implementations may reject (by throwing a `RangeError`) or truncate the provided name, depending on the capabilities of the underlying platform. Setting <code>name</code> throws `TypeError` on other invalid (not string) input.
-      </p>
-    </section>
 
     <section> <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
@@ -543,41 +529,6 @@
         In this version, introspection based on <a>TD</a> is out of scope. Parsing and exposing <a>Thing Description</a>s is discussed in [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38).
       </p>
     </section>
-
-    <section> <h3>The <dfn>getLinks()</dfn> method</h3>
-      <p>
-        Returns the list of linked resources in <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>TDLink</a> objects.
-      </p>
-      <section data-dfn-for="TDLink" >
-        <h4>The <dfn>TDLink</dfn> dictionary</h4>
-        <p>
-          Contains a hyperlink reference, a relation type and a media type.
-        </p>
-        <pre class="idl">
-          dictionary TDLink {
-              required USVString href;
-              USVString mediaType;
-              DOMString rel;
-          };
-        </pre>
-        <p>The <a>TDLink</a> dictionary contains the following properties:
-          <ul>
-            <li>
-              The <dfn>href</dfn> attribute represents a <a>hyperlink reference</a>.
-            </li>
-            <li>
-              The <dfn>rel</dfn> attribute represents a <a>relation type</a>.
-            </li>
-            <li>
-              The <dfn>mediaType</dfn> attribute represents a <a>IANA media type</a>.
-            </li>
-          </ul>
-        </p>
-      </section> <!-- TDLink -->
-    </section>
-
-
-
 
     <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
       <p>
@@ -668,11 +619,11 @@
         Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
-        ExposedThing addProperty(ThingPropertyInit property);
+        ExposedThing addProperty(ThingProperty property);
         ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(ThingActionInit action);
+        ExposedThing addAction(ThingAction action);
         ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(ThingEventInit event);
+        ExposedThing addEvent(ThingEvent event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
         ExposedThing setActionHandler(ActionHandler action, optional DOMString actionName);
@@ -731,10 +682,10 @@
       <p>
         Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingPropertyInit" data-link-for="ThingPropertyInit">
-        <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
+      <section data-dfn-for="ThingProperty" data-link-for="ThingProperty">
+        <h4>The <dfn>ThingProperty</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingPropertyInit: SemanticAnnotations {
+          dictionary ThingProperty: SemanticAnnotations {
             required DOMString name;
             required DataSchema schema;
             any value;
@@ -769,19 +720,19 @@
 
     <section> <h3>The <dfn>addAction()</dfn> method</h3>
       <p>
-        Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingActionInit</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingAction</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingActionInit">
-        <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
+      <section data-dfn-for="ThingAction">
+        <h4>The <dfn>ThingAction</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingActionInit: SemanticAnnotations {
+          dictionary ThingAction: SemanticAnnotations {
             required DOMString name;
             DataSchema inputSchema;
             DataSchema outputSchema;
           };
       </pre>
       <p>
-        The <a>ThingActionInit</a> dictionary describes the arguments and the return value.
+        The <a>ThingAction</a> dictionary describes the arguments and the return value.
         <ul>
           <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
           <li>The <dfn>inputSchema</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
@@ -799,12 +750,12 @@
 
     <section> <h3>The <dfn>addEvent()</dfn> method</h3>
       <p>
-        Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEventInit</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEvent</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingEventInit">
-        <h4>The <dfn>ThingEventInit</dfn> dictionary</h4>
+      <section data-dfn-for="ThingEvent">
+        <h4>The <dfn>ThingEvent</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingEventInit: SemanticAnnotations {
+          dictionary ThingEvent: SemanticAnnotations {
             required DOMString name;
             DataSchema schema;
           };
@@ -974,6 +925,71 @@
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
+
+  <section class="informative" data-dfn-for="ConsumedThing">
+    <h2>Experimental extensions to the <strong>ConsumedThing</strong> interface</h2>
+    <p>
+      The <a>ThingDescription</a> related functionality, such as enumerating <a>Properties</a>, <a>Action</a>s, <a>Event</a>s and links (introspection) is an API extension that is out of scope for this specification. However, the draft interfaces are defined here for informative purposes.
+    </p>
+    <pre class="idl">
+      partial interface ConsumedThing {
+        sequence&lt;ThingProperty&gt; getProperties();
+        sequence&lt;ThingAction&gt; getActions();
+        sequence&lt;ThingEvent&gt; getEvents();
+        sequence&lt;TDLink&gt; getLinks();
+      };
+    </pre>
+
+    <section> <h3>The <dfn>getProperties()</dfn> method</h3>
+      <p>
+        Returns the list of <a>Properties</a> defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingProperty</a> objects.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>getActions()</dfn> method</h3>
+      <p>
+        Returns the list of <a>Action</a>s defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingAction</a> objects.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>getEvents()</dfn> method</h3>
+      <p>
+        Returns the list of <a>Event</a>s defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingEvent</a> objects.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>getLinks()</dfn> method</h3>
+      <p>
+        Returns the list of linked resources in <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>TDLink</a> objects.
+      </p>
+      <section data-dfn-for="TDLink" >
+        <h4>The <dfn>TDLink</dfn> dictionary</h4>
+        <p>
+          Contains a hyperlink reference, a relation type and a media type.
+        </p>
+        <pre class="idl">
+          dictionary TDLink {
+              required USVString href;
+              USVString mediaType;
+              DOMString rel;
+          };
+        </pre>
+        <p>The <a>TDLink</a> dictionary contains the following properties:
+          <ul>
+            <li>
+              The <dfn>href</dfn> attribute represents a <a>hyperlink reference</a>.
+            </li>
+            <li>
+              The <dfn>rel</dfn> attribute represents a <a>relation type</a>.
+            </li>
+            <li>
+              The <dfn>mediaType</dfn> attribute represents a <a>IANA media type</a>. For <a>TD</a>s there will be registered media types, so applications will be able to check whether an `href` link points to a <a>TD</a>, i.e. whether the link is fetcheable with this API.
+            </li>
+          </ul>
+        </p>
+      </section> <!-- TDLink -->
+    </section>
+  </section>
 
   <section data-dfn-for="Observable" class="informative">
     <h2>Observables</h2>
