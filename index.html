@@ -309,6 +309,9 @@
           </ul>
         </p>
         <p class="ednote">
+          Constraints are experimental feature, implementations are not required to support them.
+        </p>
+        <p class="ednote">
           Semantic annotations need revisiting in order to simplify their representation. In the [[WOT-TD]] specification they represent the `@type` construct. At the moment only `@context`, `@type` and `@id` constructs are used in the <a>TD</a>.
         </p>
       </section>
@@ -451,7 +454,7 @@
           url: "http://directory.wotservice.org"
         };
         let subscription = wot.discover(discoveryFilter).subscribe(
-          thing => { console.log("Found Thing " + thing.name); },
+          thing => { console.log("Found Thing " + await thing.readProperty('name'); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -466,14 +469,14 @@
       </p>
       <pre class="example" title="Discover Things exposed by local hardware">
         let subscription = wot.discover({ method: "local" }).subscribe(
-          thing => { console.log("Found local Thing " + thing.name); },
+          thing => { console.log("Found local Thing " + await thing.readProperty('name'); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Same as above but with different Observable syntax">
         let subscription = wot.discover({ method: "local" }).subscribe({
-          next: thing => { console.log("Found local Thing " + thing.name); },
+          thing => { console.log("Found local Thing " + await thing.readProperty('name'); },
           error: err => { console.log("Discovery error: " + err.message); },
           complete: () => { console.log("Discovery finished successfully");}
         });
@@ -483,7 +486,7 @@
           method: "nearby",
           constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC"}]
         }).subscribe(
-          thing => { console.log("Found nearby Thing " + thing.name); },
+          thing => { console.log("Found nearby Thing " + await thing.readProperty('name'); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -493,7 +496,7 @@
           method: "other",
           constraints: [{ solution: "XYZ123", key: "..."}]
         }).subscribe(
-          thing => { console.log("Found Thing " + thing.name); },
+          thing => { console.log("Found Thing " + await thing.readProperty('name'); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -581,8 +584,10 @@
         Below a <code><a>ConsumedThing</a></code> interface example is given.
       </p>
       <pre class="example" title="Consume a Thing">
-        wot.fetch("http://mmyservice.org/mySensor").then(td => {
+        try {
+          let td = await wot.fetch("http://mmyservice.org/mySensor");
           let thing = wot.consume(td);
+          let thingName = await thing.readProperty('name');
           console.log("Thing " + thing.name + " has been consumed.");
           let subscription = thing.onPropertyChange("temperature")
             .subscribe(function(value) {
@@ -594,9 +599,9 @@
                console.log("Error starting measurement.");
                subscription.unsubscribe();
              })
-        }).catch(error => {
+        } catch(error) {
           console.log("Error during fetch or consume: " + error.message);
-        });
+        };
       </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
@@ -885,8 +890,7 @@
         WoT.fetch("http://myservice.org/mySensor/description")
         .then(td => {
           let e_thing = WoT.produce(td);
-          // properties, actions and events are added based on the TD
-          console.log("created " + thing.name });
+          // properties, actions and events have been added based on the TD
           // now add the requests handlers
           try {
             e_thing.setPropertyReadHandler(propertyName => {
