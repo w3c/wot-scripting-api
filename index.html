@@ -454,7 +454,7 @@
           url: "http://directory.wotservice.org"
         };
         let subscription = wot.discover(discoveryFilter).subscribe(
-          thing => { console.log("Found Thing " + await thing.readProperty('name'); },
+          thing => { console.log("Found Thing " + thing.name); },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -469,14 +469,14 @@
       </p>
       <pre class="example" title="Discover Things exposed by local hardware">
         let subscription = wot.discover({ method: "local" }).subscribe(
-          thing => { console.log("Found local Thing " + await thing.readProperty('name'); },
+          thing => { console.log("Found local Thing " + thing.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Same as above but with different Observable syntax">
         let subscription = wot.discover({ method: "local" }).subscribe({
-          thing => { console.log("Found local Thing " + await thing.readProperty('name'); },
+          thing => { console.log("Found local Thing " + thing.name); },
           error: err => { console.log("Discovery error: " + err.message); },
           complete: () => { console.log("Discovery finished successfully");}
         });
@@ -486,7 +486,7 @@
           method: "nearby",
           constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC"}]
         }).subscribe(
-          thing => { console.log("Found nearby Thing " + await thing.readProperty('name'); },
+          thing => { console.log("Found nearby Thing " + thing.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -496,7 +496,7 @@
           method: "other",
           constraints: [{ solution: "XYZ123", key: "..."}]
         }).subscribe(
-          thing => { console.log("Found Thing " + await thing.readProperty('name'); },
+          thing => { console.log("Found Thing " + thing.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -511,6 +511,7 @@
     </p>
     <pre class="idl">
       interface ConsumedThing {
+        readonly attribute DOMString name;
         ThingDescription getThingDescription();
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
@@ -524,6 +525,11 @@
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
     </p>
 
+    <section> <h3>The <dfn>name</dfn> property</h3>
+      <p>
+        The `name` property represents the name of the <a>Thing</a> as specified in the <a>TD</a>. In this version it is read only.
+      </p>
+    </section>
     <section> <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
         Returns the <a>Thing Description</a> of the <a>Thing</a>.
@@ -587,7 +593,6 @@
         try {
           let td = await wot.fetch("http://mmyservice.org/mySensor");
           let thing = wot.consume(td);
-          let thingName = await thing.readProperty('name');
           console.log("Thing " + thing.name + " has been consumed.");
           let subscription = thing.onPropertyChange("temperature")
             .subscribe(function(value) {
