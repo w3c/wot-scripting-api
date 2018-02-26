@@ -173,6 +173,8 @@
           <li>Invoke an <a>Action</a>.</li>
           <li>Observe <a>Events</a> emitted by the <a>Thing</a>.</li>
           <li>Observe changes to the <a>Thing Description</a> of the <a>Thing</a>.</li>
+          <li>Get the <a>Thing Description</a>.</li>
+          <li>Get the list of linked resources based on the <a>Thing Description</a>.</li>
         </ul>
       </li>
     </ul>
@@ -305,6 +307,9 @@
               When the name matches, the values are compared. If the values match, the constraint is matched.
             </li>
           </ul>
+        </p>
+        <p class="ednote">
+          Constraints are experimental feature, implementations are not required to support them.
         </p>
         <p class="ednote">
           Semantic annotations need revisiting in order to simplify their representation. In the [[WOT-TD]] specification they represent the `@type` construct. At the moment only `@context`, `@type` and `@id` constructs are used in the <a>TD</a>.
@@ -471,7 +476,7 @@
       </pre>
       <pre class="example" title="Same as above but with different Observable syntax">
         let subscription = wot.discover({ method: "local" }).subscribe({
-          next: thing => { console.log("Found local Thing " + thing.name); },
+          thing => { console.log("Found local Thing " + thing.name); },
           error: err => { console.log("Discovery error: " + err.message); },
           complete: () => { console.log("Discovery finished successfully");}
         });
@@ -507,7 +512,6 @@
     <pre class="idl">
       interface ConsumedThing {
         readonly attribute DOMString name;
-        void setName(DOMString name);
         ThingDescription getThingDescription();
         Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Promise&lt;void&gt; writeProperty(DOMString name, any value);
@@ -519,19 +523,13 @@
     </pre>
     <p>
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
-      <ul>
-        <li>
-          The <dfn>name</dfn> read-only attribute represents the user given name of the <a>Thing</a>.
-        </li>
-      </ul>
     </p>
 
-    <section> <h3>The <dfn>setName()</dfn> method</h3>
+    <section> <h3>The <dfn>name</dfn> property</h3>
       <p>
-        Takes a <code>name</code> parameter and sets the name of the <a>Thing</a>, as used in applications. Applications can provide a maximum 128 bytes long name, but implementations may reject (by throwing a `RangeError`) or truncate the provided name, depending on the capabilities of the underlying platform. Setting <code>name</code> throws `TypeError` on other invalid (not string) input.
+        The `name` property represents the name of the <a>Thing</a> as specified in the <a>TD</a>. In this version it is read only.
       </p>
     </section>
-
     <section> <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
         Returns the <a>Thing Description</a> of the <a>Thing</a>.
@@ -592,7 +590,8 @@
         Below a <code><a>ConsumedThing</a></code> interface example is given.
       </p>
       <pre class="example" title="Consume a Thing">
-        wot.fetch("http://mmyservice.org/mySensor").then(td => {
+        try {
+          let td = await wot.fetch("http://mmyservice.org/mySensor");
           let thing = wot.consume(td);
           console.log("Thing " + thing.name + " has been consumed.");
           let subscription = thing.onPropertyChange("temperature")
@@ -605,9 +604,9 @@
                console.log("Error starting measurement.");
                subscription.unsubscribe();
              })
-        }).catch(error => {
+        } catch(error) {
           console.log("Error during fetch or consume: " + error.message);
-        });
+        };
       </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
@@ -630,11 +629,11 @@
         Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
-        ExposedThing addProperty(ThingPropertyInit property);
+        ExposedThing addProperty(ThingProperty property);
         ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(ThingActionInit action);
+        ExposedThing addAction(ThingAction action);
         ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(ThingEventInit event);
+        ExposedThing addEvent(ThingEvent event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
         ExposedThing setActionHandler(ActionHandler action, optional DOMString actionName);
@@ -682,10 +681,10 @@
         typedef USVString DataSchema;
       </pre>
       <p>
-        The <a>DataSchema</a> type represents a type name specified in the <a>Thing Description</a> in a serialized form, for instance JSON Schema.
+        The <a>DataSchema</a> type represents a data type <a href="https://w3c.github.io/wot-thing-description/#dataschema">specified</a> in the <a>Thing Description</a> in a serialized form.
       </p>
       <p class="ednote">
-        <a>DataSchema</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>, such as simple type like <code>"boolean"</code>, <code>"number"</code>, <code>"string"</code>, or <code>"array"</code>, or <code>"object"</code> that may specify value range etc.
+        <a>DataSchema</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>.
       </p>
     </section>
 
@@ -693,12 +692,12 @@
       <p>
         Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingPropertyInit" data-link-for="ThingPropertyInit">
-        <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
+      <section data-dfn-for="ThingProperty" data-link-for="ThingProperty">
+        <h4>The <dfn>ThingProperty</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingPropertyInit: SemanticAnnotations {
+          dictionary ThingProperty: SemanticAnnotations {
             required DOMString name;
-            required DataSchema type;
+            required DataSchema schema;
             any value;
             boolean writable = true;
             boolean observable = true;
@@ -709,7 +708,7 @@
           <ul>
             <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
             <li>
-              The <dfn>type</dfn> attribute represents the type for the <a>Property</a>.
+              The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>DataSchema</a>.
             </li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
@@ -731,23 +730,23 @@
 
     <section> <h3>The <dfn>addAction()</dfn> method</h3>
       <p>
-        Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingActionInit</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingAction</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingActionInit">
-        <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
+      <section data-dfn-for="ThingAction">
+        <h4>The <dfn>ThingAction</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingActionInit: SemanticAnnotations {
+          dictionary ThingAction: SemanticAnnotations {
             required DOMString name;
-            DataSchema inputDataDescription;
-            DataSchema outputDataDescription;
+            DataSchema inputSchema;
+            DataSchema outputSchema;
           };
       </pre>
       <p>
-        The <a>ThingActionInit</a> dictionary describes the arguments and the return value.
+        The <a>ThingAction</a> dictionary describes the arguments and the return value.
         <ul>
           <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
-          <li>The <dfn>inputDataDescription</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
-          <li>The <dfn>outputDataDescription</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.</li>
+          <li>The <dfn>inputSchema</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
+          <li>The <dfn>outputSchema</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.</li>
         </ul>
       </p>
       </section>
@@ -761,19 +760,19 @@
 
     <section> <h3>The <dfn>addEvent()</dfn> method</h3>
       <p>
-        Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEventInit</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEvent</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingEventInit">
-        <h4>The <dfn>ThingEventInit</dfn> dictionary</h4>
+      <section data-dfn-for="ThingEvent">
+        <h4>The <dfn>ThingEvent</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingEventInit: SemanticAnnotations {
+          dictionary ThingEvent: SemanticAnnotations {
             required DOMString name;
-            DataSchema dataDescription;
+            DataSchema schema;
           };
         </pre>
         <ul>
           <li>The <dfn>name</dfn> attribute represents the event name.</li>
-          <li>The <dfn>dataDescription</dfn> attribute represents the type of the data that is attached to the event. If missing, it means the event does not carry data.</li>
+          <li>The <dfn>schema</dfn> attribute represents the type of the data that is attached to the event. If missing, it means the event does not carry data.</li>
         </ul>
       </section>
     </section>
@@ -854,13 +853,13 @@
           thing.addProperty({
             name: "temperature",
             value: "0",
-            type: "number",
+            schema: '{ \"type\": \"number\" }',
             writable: false
             // use default values for the rest
           });
           thing.addEvent({
             name: "onchange",
-            dataDescription: "number"
+            schema: '{ \"type\": \"number\" }'
           });
           thing.addAction({
             name: "reset",
@@ -896,8 +895,7 @@
         WoT.fetch("http://myservice.org/mySensor/description")
         .then(td => {
           let e_thing = WoT.produce(td);
-          // properties, actions and events are added based on the TD
-          console.log("created " + thing.name });
+          // properties, actions and events have been added based on the TD
           // now add the requests handlers
           try {
             e_thing.setPropertyReadHandler(propertyName => {
@@ -936,6 +934,71 @@
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
+
+  <section class="informative" data-dfn-for="ConsumedThing">
+    <h2>Experimental extensions to the <strong>ConsumedThing</strong> interface</h2>
+    <p>
+      The <a>ThingDescription</a> related functionality, such as enumerating <a>Properties</a>, <a>Action</a>s, <a>Event</a>s and links (introspection) is an API extension that is out of scope for this specification. However, the draft interfaces are defined here for informative purposes.
+    </p>
+    <pre class="idl">
+      partial interface ConsumedThing {
+        sequence&lt;ThingProperty&gt; getProperties();
+        sequence&lt;ThingAction&gt; getActions();
+        sequence&lt;ThingEvent&gt; getEvents();
+        sequence&lt;TDLink&gt; getLinks();
+      };
+    </pre>
+
+    <section> <h3>The <dfn>getProperties()</dfn> method</h3>
+      <p>
+        Returns the list of <a>Properties</a> defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingProperty</a> objects.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>getActions()</dfn> method</h3>
+      <p>
+        Returns the list of <a>Action</a>s defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingAction</a> objects.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>getEvents()</dfn> method</h3>
+      <p>
+        Returns the list of <a>Event</a>s defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingEvent</a> objects.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>getLinks()</dfn> method</h3>
+      <p>
+        Returns the list of linked resources in <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>TDLink</a> objects.
+      </p>
+      <section data-dfn-for="TDLink" >
+        <h4>The <dfn>TDLink</dfn> dictionary</h4>
+        <p>
+          Contains a hyperlink reference, a relation type and a media type.
+        </p>
+        <pre class="idl">
+          dictionary TDLink {
+              required USVString href;
+              USVString mediaType;
+              DOMString rel;
+          };
+        </pre>
+        <p>The <a>TDLink</a> dictionary contains the following properties:
+          <ul>
+            <li>
+              The <dfn>href</dfn> attribute represents a <a>hyperlink reference</a>.
+            </li>
+            <li>
+              The <dfn>rel</dfn> attribute represents a <a>relation type</a>.
+            </li>
+            <li>
+              The <dfn>mediaType</dfn> attribute represents a <a>IANA media type</a>. For <a>TD</a>s there will be registered media types, so applications will be able to check whether an `href` link points to a <a>TD</a>, i.e. whether the link is fetcheable with this API.
+            </li>
+          </ul>
+        </p>
+      </section> <!-- TDLink -->
+    </section>
+  </section>
 
   <section data-dfn-for="Observable" class="informative">
     <h2>Observables</h2>
@@ -1124,6 +1187,9 @@
     <p>
       <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
       <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
+    </p>
+    <p>
+      The terms <dfn>hyperlink reference</dfn> and <dfn>relation type</dfn> are defined in [[!HTML5]] and <a href="https://tools.ietf.org/html/rfc8288">RFC8288</a>.
     </p>
   </section>
 
