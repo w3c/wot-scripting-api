@@ -847,90 +847,77 @@
       </p>
 
       <pre class="example highlight" title="Create a new blank exposed Thing">
-        let thing = WoT.produce(thingDescription);
         try {
-          // manually add properties, actions, and events
+          var thing = WoT.produce({ name: "tempSensor" });
+          // manually add Interactions
           thing.addProperty({
             name: "temperature",
-            value: "0",
-            schema: '{ \"type\": \"number\" }',
-            writable: false
+            value: 0.0,
+            schema: '{ "type": "number" }'
             // use default values for the rest
-          });
-          thing.addEvent({
-            name: "onchange",
-            schema: '{ \"type\": \"number\" }'
-          });
-          thing.addAction({
+          }).addProperty({
+            name: "max",
+            value: 0.0,
+            schema: '{ "type": "number" }'
+            // use default values for the rest
+          }).addAction({
             name: "reset",
-            action: () => { this.temperature = 0; }
+            // no input, no output
+          }).addEvent({
+            name: "onchange",
+            schema: '{ "type": "number" }'
           });
           // add server functionality
-          thing.setPropertyReadHandler(propertyName => {
-            console.log("Handling read request for " + propertyName);
-            return new Promise((resolve, reject) => {
-                if (this.hasOwnProperty(propertyName))
-                  resolve(this[propertyName]);
-                else
-                  reject('Property not found');
-              },
-              e => {
-                console.log("Error");
-              });
-          });
-        } catch (err) {
-           console.log("Thing creation error.");
-        }
-        thing.start()
-        .then (() => {
-          thing.register();
-        });
-      </pre>
+          thing.setActionHandler( () => {
+            console.log("Resetting maximum");
+            thing.writeProperty("max", 0.0);
+          }, "reset");
 
-      <pre class="example highlight" title="Create a new exposed Thing from a TD URI">
-        let thingDescription = '{
-          "name": "mySensor",
-          "url": "http://myservice.org/mySensor/description"
-        }';
-        WoT.fetch("http://myservice.org/mySensor/description")
-        .then(td => {
-          let e_thing = WoT.produce(td);
-          // properties, actions and events have been added based on the TD
-          // now add the requests handlers
-          try {
-            e_thing.setPropertyReadHandler(propertyName => {
-              console.log("Handling read request for " + propertyName);
-              return new Promise((resolve, reject) => {
-              if (this.hasOwnProperty(propertyName))
-                resolve(this[propertyName]);
-              else reject('Property not found');
-            });
-            e_thing.start();
-          } catch(error) {
-            console.log("Error");
-          }
+          thing.start();
+
+          setInterval( async () => {
+            let mock = Math.random()*100;
+            thing.writeProperty("temperature", mock);
+            let old = await thing.readProperty("max");
+            if (old < mock) {
+              thing.writeProperty("max", mock);
+              thing.emitEvent("onchange");
+            }
+          }, 1000);
+
+        } catch (err) {
+           console.log("Script error: " + err);
         }
-        });
       </pre>
 
       <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
-        let thingDescription = '{
-          "name": "mySensor",
-          "description": {
-            "@context": [
-              "http://w3c.github.io/wot/w3c-wot-td-context.jsonld",
-              "http://w3c.github.io/wot/w3c-wot-common-context.jsonld",
-            ],
-            "@type": [ "Thing" ],
-            "interactions": [
-              // ...
-            ]
-            // ...
-          }'
-        };
-        let e_thing = WoT.produce(thingDescription);
-        // properties, actions and events are added based on the TD
-        // ...
+        let thingDescription = '{ "@context": [ "https://w3c.github.io/wot/w3c-wot-td-context.jsonld", "https://w3c.github.io/wot/w3c-wot-common-context.jsonld" ], "@type": [ "Thing", "Sensor" ], "name": "mySensor", "geo:location": "testspace", "interaction": [ { "@type": [ "Property", "Temperature" ], "name": "prop1", "schema": { "type": "number" }, "saref:TemperatureUnit": "degree_Celsius" } ] }';
+        try {
+          // note that produce() fails if thingDescription contains error
+          let thing = WoT.produce(thingDescription);
+          // Interactions were added from TD
+          // add server functionality
+          thing.setPropertyReadHandler( (propertyName) => {
+            console.log("Handling read request for " + propertyName);
+            return new Promise((resolve, reject) => {
+              resolve(Math.random(100));
+            })
+          }, "prop1");
+          thing.start();
+        } catch(err) {
+          console.log("Script error: " + err);
+        }
+      </pre>
+
+      <pre class="example highlight" title="Create a new exposed Thing from a TD URI">
+        // fetch an external TD, e.g., to set up a proxy for that Thing
+        WoT.fetch("http://myservice.org/mySensor/description").then(td => {
+          // WoT.produce() ignores instance-specific metadata (security, form)
+          let thing = WoT.produce(td);
+          // Interactions were added from TD
+          // add server functionality
+          // ...
+        });
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
