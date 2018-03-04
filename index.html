@@ -168,8 +168,8 @@
       <li>On a consumed <a>Thing</a>,
         <ul>
           <li>Read the value of a <a>Property</a> or set of properties.</li>
-          <li>Observe value changes to a <a>Property</a>.</li>
           <li>Set the value of a <a>Property</a> or a set of properties.</li>
+          <li>Observe value changes of a <a>Property</a>.</li>
           <li>Invoke an <a>Action</a>.</li>
           <li>Observe <a>Events</a> emitted by the <a>Thing</a>.</li>
           <li>Observe changes to the <a>Thing Description</a> of the <a>Thing</a>.</li>
@@ -187,11 +187,11 @@
       <li>
         Create a local <a>ExposedThing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of a template or an existing <a>ConsumedThing</a> object.</li>
       <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
-      <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
       <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
+      <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
       <li>Attach semantic information to the <a>Thing</a>.</li>
-      <li>Attach semantic information to an <a>Action</a>.</li>
       <li>Attach semantic information to a <a>Property</a>.</li>
+      <li>Attach semantic information to an <a>Action</a>.</li>
       <li>Attach semantic information to an <a>Event</a>.</li>
       <li>
         Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
@@ -507,17 +507,17 @@
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
-      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
+      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
     </p>
     <pre class="idl">
       interface ConsumedThing {
         readonly attribute DOMString name;
         ThingDescription getThingDescription();
-        Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
-        Promise&lt;void&gt; writeProperty(DOMString name, any value);
         Promise&lt;any&gt; readProperty(DOMString name);
-        Observable onEvent(DOMString name);
+        Promise&lt;void&gt; writeProperty(DOMString name, any value);
+        Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
         Observable onPropertyChange(DOMString name);
+        Observable onEvent(DOMString name);
         Observable onTDChange();
       };
     </pre>
@@ -539,9 +539,9 @@
       </p>
     </section>
 
-    <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
+    <section> <h3>The <dfn>readProperty()</dfn> method</h3>
       <p>
-        Takes the <a>Action</a> name from the <var>name</var> argument and the list of parameters, then requests from the underlying platform and the <a>Protocol Bindings</a> to invoke the <a>Action</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the return value or rejects with an <a>Error</a>.
+        Takes the <a>Property</a> name as the <var>name</var> argument, then requests from the underlying platform  and the <a>Protocol Bindings</a> to retrieve the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the <a>Property</a> value or rejects with an <a>Error</a>.
       </p>
     </section>
 
@@ -551,18 +551,9 @@
       </p>
     </section>
 
-    <section> <h3>The <dfn>readProperty()</dfn> method</h3>
+    <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
       <p>
-        Takes the <a>Property</a> name as the <var>name</var> argument, then requests from the underlying platform  and the <a>Protocol Bindings</a> to retrieve the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the <a>Property</a> value or rejects with an <a>Error</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>onEvent()</dfn> method</h3>
-      <p>
-        Returns an <a>Observable</a> for the <a>Event</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications.
-      </p>
-      <p>
-        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the event data each time the event is fired.
+        Takes the <a>Action</a> name from the <var>name</var> argument and the list of parameters, then requests from the underlying platform and the <a>Protocol Bindings</a> to invoke the <a>Action</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the return value or rejects with an <a>Error</a>.
       </p>
     </section>
 
@@ -572,6 +563,15 @@
       </p>
       <p>
         The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the new property value each time it is changed.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>onEvent()</dfn> method</h3>
+      <p>
+        Returns an <a>Observable</a> for the <a>Event</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications.
+      </p>
+      <p>
+        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the event data each time the event is fired.
       </p>
     </section>
 
@@ -636,13 +636,13 @@
         ExposedThing addEvent(ThingEvent event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
-        ExposedThing setActionHandler(ActionHandler action, optional DOMString actionName);
         ExposedThing setPropertyReadHandler(PropertyReadHandler readHandler, optional DOMString propertyName);
         ExposedThing setPropertyWriteHandler(PropertyWriteHandler writeHandler, optional DOMString propertyName);
+        ExposedThing setActionHandler(ActionHandler action, optional DOMString actionName);
       };
-      callback ActionHandler = Promise&lt;any&gt;(any parameters);
       callback PropertyReadHandler = Promise&lt;any&gt;();
       callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
+      callback ActionHandler = Promise&lt;any&gt;(any parameters);
     </pre>
 
     <section> <h3>The <dfn>start()</dfn> method</h3>
@@ -783,13 +783,6 @@
       </p>
     </section>
 
-    <section data-dfn-for="ActionHandler">
-      <h3>The <dfn>ActionHandler</dfn> callback</h3>
-      <p>
-        A function called with any parameters that returns a Promise.
-      </p>
-    </section>
-
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
@@ -807,15 +800,10 @@
       </p>
     </section>
 
-    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
+    <section data-dfn-for="ActionHandler">
+      <h3>The <dfn>ActionHandler</dfn> callback</h3>
       <p>
-        Takes a <code>actionName</code> as an optional string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code> if <code>actionName</code> is specified, otherwise sets it for any action. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-        If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform.
-      </p>
-      <p>
-        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD return error if the action is invoked by any client.
+        A function called with any parameters that returns a Promise.
       </p>
     </section>
 
@@ -837,6 +825,18 @@
       </p>
       <p>
         There SHOULD be at most one write handler for any given <a>Property</a>. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
+      <p>
+        Takes a <code>actionName</code> as an optional string argument, and an <code>action</code> argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code> if <code>actionName</code> is specified, otherwise sets it for any action. Throws on error. Returns a reference to the same object for supporting chaining.
+      </p>
+      <p>
+        If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform.
+      </p>
+      <p>
+        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD return error if the action is invoked by any client.
       </p>
     </section>
 
