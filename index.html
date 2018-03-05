@@ -896,9 +896,9 @@
           // note that produce() fails if thingDescription contains error
           let thing = WoT.produce(thingDescription);
           // Interactions were added from TD
-          // add server functionality
-          thing.setPropertyReadHandler( (propertyName) => {
-            console.log("Handling read request for " + propertyName);
+          // add server functionality (a Property handler specifically for prop1)
+          thing.setPropertyReadHandler( () => {
+            console.log("Handling read request for prop1");
             return new Promise((resolve, reject) => {
               resolve(Math.random(100));
             })
