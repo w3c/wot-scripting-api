@@ -699,8 +699,8 @@
             required DOMString name;
             required DataSchema schema;
             any value;
-            boolean writable = true;
-            boolean observable = true;
+            boolean writable = false;
+            boolean observable = false;
           };
         </pre>
         <p>
@@ -712,10 +712,10 @@
             </li>
             <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
             <li>
-              The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>true</code>.
+              The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>false</code>.
             </li>
             <li>
-              The <dfn>observable</dfn> attribute defines whether the <a>Property</a> changes can be observed by an external client. The default value is <code>true</code>.
+              The <dfn>observable</dfn> attribute defines whether the <a>Property</a> changes can be observed by an external client. The default value is <code>false</code>.
             </li>
           </ul>
         </p>
