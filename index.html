@@ -872,9 +872,10 @@
             console.log("Resetting maximum");
             thing.writeProperty("max", 0.0);
           }, "reset");
-
-          thing.start();
-
+          thing.start().then(() => {
+              thing.register();
+          });
+          // define Thing business logic
           setInterval( async () => {
             let mock = Math.random()*100;
             thing.writeProperty("temperature", mock);
@@ -884,9 +885,8 @@
               thing.emitEvent("onchange");
             }
           }, 1000);
-
         } catch (err) {
-           console.log("Script error: " + err);
+           console.log("Error creating ExposedThing: " + err);
         }
       </pre>
 
@@ -896,7 +896,23 @@
           // note that produce() fails if thingDescription contains error
           let thing = WoT.produce(thingDescription);
           // Interactions were added from TD
-          // add server functionality (a Property handler specifically for prop1)
+          // add generic handler for reading any property
+          thing.setPropertyReadHandler(propertyName => {
+            console.log("Handling read request for " + propertyName);
+            return new Promise((resolve, reject) => {
+                if (this.hasOwnProperty(propertyName))
+                  // application can dispatch fetching property values
+                  // if (propertyName === 'prop1') { ... }
+                  // but in general, just read the property value
+                  resolve(this[propertyName]);
+                else
+                  reject('Property not found');
+              },
+              e => {
+                console.log("Error");
+              });
+          });
+          // add specific handler for reading prop1, replaces the generic handler
           thing.setPropertyReadHandler( () => {
             console.log("Handling read request for prop1");
             return new Promise((resolve, reject) => {
@@ -905,7 +921,7 @@
           }, "prop1");
           thing.start();
         } catch(err) {
-          console.log("Script error: " + err);
+           console.log("Error creating ExposedThing: " + err);
         }
       </pre>
 
