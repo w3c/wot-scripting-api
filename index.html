@@ -640,9 +640,9 @@
         ExposedThing setPropertyWriteHandler(PropertyWriteHandler writeHandler, optional DOMString propertyName);
         ExposedThing setActionHandler(ActionHandler action, optional DOMString actionName);
       };
-      callback PropertyReadHandler = Promise&lt;any&gt;();
-      callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
-      callback ActionHandler = Promise&lt;any&gt;(any parameters);
+      callback PropertyReadHandler = Promise&lt;any&gt;(DOMString name);
+      callback PropertyWriteHandler = Promise&lt;void&gt;(DOMString name, any value);
+      callback ActionHandler = Promise&lt;any&gt;(DOMString name, any parameters);
     </pre>
 
     <section> <h3>The <dfn>start()</dfn> method</h3>
@@ -786,14 +786,14 @@
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>propertyName</code> argument that returns a Promise and resolves it with the value of the <a>Property</a> matching <code>propertyName</code>, or rejects with and error if the property is not found or the value cannot be retrieved.
+        A function called with a <code>name</code> argument that returns a Promise and resolves it with the value of the <a>Property</a> matching <code>name</code>, or rejects with and error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
 
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>propertyName</code> and a <code>value</code> argument that returns a Promise and resolves it when the value of the <a>Property</a> matching <code>propertyName</code> is updated with <code>value</code>, or rejects with and error if the property is not found or the value cannot be updated. The property is updated by the implementation with the value that is resolved by this callback.
+        A function called with a <code>name</code> and a <code>value</code> argument that returns a Promise and resolves it when the value of the <a>Property</a> matching <code>name</code> is updated with <code>value</code>, or rejects with and error if the property is not found or the value cannot be updated. The property is updated by the implementation with the value that is resolved by this callback.
       </p>
       <p class="ednote">
         Note that this function is invoked by implementations before the property is updated, so the code in this callback function can invoke the <code>readProperty()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this method.
@@ -803,7 +803,7 @@
     <section data-dfn-for="ActionHandler">
       <h3>The <dfn>ActionHandler</dfn> callback</h3>
       <p>
-        A function called with any parameters that returns a Promise.
+        A function called with a <code>name</code> argument that provides the action name, and another parameter that provides the arguments, either as a simple type or an `object` (multiple arguments are represented by an `object` or an `array`). It returns a Promise.
       </p>
     </section>
 
