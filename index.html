@@ -636,13 +636,13 @@
         ExposedThing addEvent(ThingEvent event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
-        ExposedThing setPropertyReadHandler(PropertyReadHandler readHandler, optional DOMString propertyName);
-        ExposedThing setPropertyWriteHandler(PropertyWriteHandler writeHandler, optional DOMString propertyName);
-        ExposedThing setActionHandler(ActionHandler action, optional DOMString actionName);
+        ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
+        ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
+        ExposedThing setActionHandler(DOMString name, ActionHandler action);
       };
-      callback PropertyReadHandler = Promise&lt;any&gt;(DOMString name);
-      callback PropertyWriteHandler = Promise&lt;void&gt;(DOMString name, any value);
-      callback ActionHandler = Promise&lt;any&gt;(DOMString name, any parameters);
+      callback PropertyReadHandler = Promise&lt;any&gt;();
+      callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
+      callback ActionHandler = Promise&lt;any&gt;(any parameters);
     </pre>
 
     <section> <h3>The <dfn>start()</dfn> method</h3>
@@ -786,14 +786,14 @@
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>name</code> argument that returns a Promise and resolves it with the value of the <a>Property</a> matching <code>name</code>, or rejects with an error if the property is not found or the value cannot be retrieved.
+        A function that returns a Promise and resolves it with the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function, or rejects with an error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
 
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>name</code> and a <code>value</code> argument that returns a Promise which is resolved when the value of the <a>Property</a> matching <code>name</code> is updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
+        A function called with <code>value</code> as argument that returns a Promise which is resolved when the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function is updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
       </p>
       <p class="ednote">
         Note that this function is invoked by implementations before the property is updated, so the code in this callback function can invoke the <code>readProperty()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this method.
@@ -803,37 +803,37 @@
     <section data-dfn-for="ActionHandler">
       <h3>The <dfn>ActionHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>name</code> argument that provides the action name, and another parameter that provides the arguments, either as a simple type or an `object` (multiple arguments are represented by an `object` or an `array`). It returns a Promise.
+        A function called with a <code>parameters</code> dictionary argument assembled by the <a>WoT runtime</a> based on the <a>Thing Description</a> and the external client request. It returns a Promise that rejects with an error or resolves if the action is successful or ongoing (may also resolve with a control object such as an <a>Observable</a> for actions that need progress notifications or that can be canceled).
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes <code>readHandler</code> as argument of type <a>PropertyReadHandler</a> and a <code>propertyName</code> as an optional string argument. Sets the handler function for reading the specified <a>Property</a> matched by <code>propertyName</code> if <code>propertyName</code> is specified, otherwise sets it for reading any property. Throws on error. Returns a reference to the same object for supporting chaining.
+        Takes <code>name</code> as string argument and <code>readHandler</code> as argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <p>
-        If provided, this callback function will implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+         The <code>readHandler</code> callback function will implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There SHOULD be at most one handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property read without calling this hook.
+        There SHOULD be at most one handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler.
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a> and <code>propertyName</code> as an optional string argument. Sets the handler function for writing the specified <a>Property</a> matched by <code>propertyName</code> if the <code>propertyName</code> is specified, otherwise sets it for writing any properties. Throws on error. Returns a reference to the same object for supporting chaining.
+        Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <p>
-        There SHOULD be at most one write handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers.
+        There SHOULD be at most one write handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change.
       </p>
     </section>
 
     <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes <code>action</code> as argument of type <a>ActionHandler</a>, and <code>actionName</code> as an optional string argument. Sets the handler function for the specified <a>Action</a> matched by <code>actionName</code> if <code>actionName</code> is specified, otherwise sets it for any action. Throws on error. Returns a reference to the same object for supporting chaining.
+        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
       <p>
-        If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform.
+        If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform. The callback will receive a <code>parameters</code> dictionary argument.
       </p>
       <p>
         There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD return error if the action is invoked by any client.
@@ -868,10 +868,10 @@
             schema: '{ "type": "number" }'
           });
           // add server functionality
-          thing.setActionHandler( () => {
+          thing.setActionHandler("reset", () => {
             console.log("Resetting maximum");
             thing.writeProperty("max", 0.0);
-          }, "reset");
+          });
           thing.start().then(() => {
               thing.register();
           });
@@ -896,29 +896,19 @@
           // note that produce() fails if thingDescription contains error
           let thing = WoT.produce(thingDescription);
           // Interactions were added from TD
-          // add generic handler for reading any property
-          thing.setPropertyReadHandler(propertyName => {
-            console.log("Handling read request for " + propertyName);
+          // WoT adds generic handler for reading any property
+          // define a specific handler for one property
+          let name = "examplePropertyName";
+          thing.setPropertyReadHandler(name, () => {
+            console.log("Handling read request for " + name);
             return new Promise((resolve, reject) => {
-                if (this.hasOwnProperty(propertyName))
-                  // application can dispatch fetching property values
-                  // if (propertyName === 'prop1') { ... }
-                  // but in general, just read the property value
-                  resolve(this[propertyName]);
-                else
-                  reject('Property not found');
+                let examplePropertyValue = 5;
+                resolve(examplePropertyValue);
               },
               e => {
                 console.log("Error");
               });
           });
-          // add specific handler for reading prop1, replaces the generic handler
-          thing.setPropertyReadHandler( () => {
-            console.log("Handling read request for prop1");
-            return new Promise((resolve, reject) => {
-              resolve(Math.random(100));
-            })
-          }, "prop1");
           thing.start();
         } catch(err) {
            console.log("Error creating ExposedThing: " + err);
