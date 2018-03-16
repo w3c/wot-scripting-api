@@ -253,23 +253,23 @@
         </pre>
         <p>
           <a>DiscoveryMethod</a> represents the discovery type to be used:
-          <ul>
-            <li><dfn>"any"</dfn> does not provide any restriction</li>
-            <li><dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device</li>
-            <li>
-              <dfn>"nearby"</dfn> for discovering <a>Thing</a>s nearby the device, e.g. by Bluetooth or NFC
-            </li>
-            <li>
-              <dfn>"directory"</dfn> for discovery based on a service provided by a directory or repository of <a>Thing</a>s
-            </li>
-            <li>
-              <dfn>"broadcast"</dfn> for an open ended discovery based on sending a request to a broadcast address
-            </li>
-            <li>
-              <dfn>"other"</dfn> for a proprietary method defined by the solution.
-            </li>
-          </ul>
         </p>
+        <ul>
+          <li><dfn>"any"</dfn> does not provide any restriction</li>
+          <li><dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device</li>
+          <li>
+            <dfn>"nearby"</dfn> for discovering <a>Thing</a>s nearby the device, e.g. by Bluetooth or NFC
+          </li>
+          <li>
+            <dfn>"directory"</dfn> for discovery based on a service provided by a directory or repository of <a>Thing</a>s
+          </li>
+          <li>
+            <dfn>"broadcast"</dfn> for an open ended discovery based on sending a request to a broadcast address
+          </li>
+          <li>
+            <dfn>"other"</dfn> for a proprietary method defined by the solution.
+          </li>
+        </ul>
       </section>
 
       <section data-dfn-for="ThingFilter">
@@ -299,15 +299,15 @@
         </p>
         <p>
           The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of property-value pairs (dictionaries). The list elements (dictionaries) are in OR relationship, and within a constraint dictionary the key-value pairs are in AND relationship. Implementations SHOULD make the following mapping from the constraint dictionaries to <a>SemanticAnnotations</a>: for each property-value pair in a constraint dictionary,
-          <ul>
-            <li>
-              Each property name in the constraint dictionary SHOULD match the either the  `name` property of a defined <a>SemanticType</a> on the target <a>Thing</a> object, or the name of a <a>Property</a> on the target <a>Thing</a>.
-            </li>
-            <li>
-              When the name matches, the values are compared. If the values match, the constraint is matched.
-            </li>
-          </ul>
         </p>
+        <ul>
+          <li>
+            Each property name in the constraint dictionary SHOULD match the either the  `name` property of a defined <a>SemanticType</a> on the target <a>Thing</a> object, or the name of a <a>Property</a> on the target <a>Thing</a>.
+          </li>
+          <li>
+            When the name matches, the values are compared. If the values match, the constraint is matched.
+          </li>
+        </ul>
         <p class="ednote">
           Constraints are experimental feature, implementations are not required to support them.
         </p>
@@ -342,15 +342,15 @@
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
         Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
-        <ol>
-          <li>
-            from an initial model (including a user given name and <a href="#the-semanticannotations-dictionary">semantic annotations</a>), then adding properties, actions, events and request handlers;
-          </li>
-          <li>
-            from a <a>Thing Description</a> (possibly of a <a>ConsumedThing</a> object), then adding request handlers.
-          </li>
-        </ol>
       </p>
+      <ol>
+        <li>
+          from an initial model (including a user given name and <a href="#the-semanticannotations-dictionary">semantic annotations</a>), then adding properties, actions, events and request handlers;
+        </li>
+        <li>
+          from a <a>Thing Description</a> (possibly of a <a>ConsumedThing</a> object), then adding request handlers.
+        </li>
+      </ol>
     </section> <!-- produce() -->
 
     <section data-dfn-for="ThingModel" >
@@ -390,18 +390,18 @@
       </pre>
       <p>
         Represents a semantic type annotation, containing a name, a context and a prefix.
-        <ul>
-          <li>
-            The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.
-          </li>
-          <li>
-            The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.
-          </li>
-          <li>
-            The <dfn>prefix</dfn> attribute represents a short prefix associated with a context.
-          </li>
-        </ul>
       </p>
+      <ul>
+        <li>
+          The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.
+        </li>
+        <li>
+          The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.
+        </li>
+        <li>
+          The <dfn>prefix</dfn> attribute represents a short prefix associated with a context.
+        </li>
+      </ul>
       <p class="ednote">
         Semantic type examples to be added.
       </p>
@@ -416,13 +416,13 @@
         };
       </pre>
       <p>The <a>SemanticMetadata</a> dictionary describes a pair of semantic type and value:
-        <ul>
-          <li>
-            The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.
-          </li>
-          <li>The <dfn>value</dfn> attribute represents the metadata value.</li>
-        </ul>
       </p>
+      <ul>
+        <li>
+          The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.
+        </li>
+        <li>The <dfn>value</dfn> attribute represents the metadata value.</li>
+      </ul>
     </section> <!-- SemanticMetadata -->
 
     <section data-dfn-for="ThingTemplate" >
@@ -436,12 +436,12 @@
         };
       </pre>
       <p>The <a>ThingTemplate</a> dictionary extends <a>SemanticAnnotations</a> and contains properties to initialize a <a>Thing</a>:
-        <ul>
-          <li>
-            The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.
-          </li>
-        </ul>
       </p>
+      <ul>
+        <li>
+          The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.
+        </li>
+      </ul>
       <p class="ednote">
         Support for configuration and security data might be added later.
       </p>
@@ -705,20 +705,20 @@
         </pre>
         <p>
           Represents the <a>Thing</a> <a>Property</a> description.
-          <ul>
-            <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
-            <li>
-              The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>DataSchema</a>.
-            </li>
-            <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
-            <li>
-              The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>false</code>.
-            </li>
-            <li>
-              The <dfn>observable</dfn> attribute defines whether the <a>Property</a> changes can be observed by an external client. The default value is <code>false</code>.
-            </li>
-          </ul>
         </p>
+        <ul>
+          <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
+          <li>
+            The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>DataSchema</a>.
+          </li>
+          <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
+          <li>
+            The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>false</code>.
+          </li>
+          <li>
+            The <dfn>observable</dfn> attribute defines whether the <a>Property</a> changes can be observed by an external client. The default value is <code>false</code>.
+          </li>
+        </ul>
       </section>
     </section> <!-- addProperty() -->
 
@@ -743,12 +743,12 @@
       </pre>
       <p>
         The <a>ThingAction</a> dictionary describes the arguments and the return value.
+      </p>
         <ul>
           <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
           <li>The <dfn>inputSchema</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
           <li>The <dfn>outputSchema</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.</li>
         </ul>
-      </p>
       </section>
     </section> <!-- addAction -->
 
@@ -880,7 +880,7 @@
             let mock = Math.random()*100;
             thing.writeProperty("temperature", mock);
             let old = await thing.readProperty("max");
-            if (old < mock) {
+            if (old &lt; mock) {
               thing.writeProperty("max", mock);
               thing.emitEvent("onchange");
             }
@@ -977,18 +977,18 @@
           };
         </pre>
         <p>The <a>TDLink</a> dictionary contains the following properties:
-          <ul>
-            <li>
-              The <dfn>href</dfn> attribute represents a <a>hyperlink reference</a>.
-            </li>
-            <li>
-              The <dfn>rel</dfn> attribute represents a <a>relation type</a>.
-            </li>
-            <li>
-              The <dfn>mediaType</dfn> attribute represents a <a>IANA media type</a>. For <a>TD</a>s there will be registered media types, so applications will be able to check whether an `href` link points to a <a>TD</a>, i.e. whether the link is fetcheable with this API.
-            </li>
-          </ul>
         </p>
+        <ul>
+          <li>
+            The <dfn>href</dfn> attribute represents a <a>hyperlink reference</a>.
+          </li>
+          <li>
+            The <dfn>rel</dfn> attribute represents a <a>relation type</a>.
+          </li>
+          <li>
+            The <dfn>mediaType</dfn> attribute represents a <a>IANA media type</a>. For <a>TD</a>s there will be registered media types, so applications will be able to check whether an `href` link points to a <a>TD</a>, i.e. whether the link is fetcheable with this API.
+          </li>
+        </ul>
       </section> <!-- TDLink -->
     </section>
   </section>
@@ -1025,18 +1025,18 @@
       <h3>The <dfn>Observer</dfn> interface</h3>
       <p>
         The <a>Observer</a> interface defines the callbacks needed to handle an <a>Observable</a>:
-        <ul>
-          <li>
-            The <dfn>next()</dfn> function, as well as the <dfn>OnNext</dfn> callback takes the next sample for the data in the <dnf>value</dnf> argument.
-          </li>
-          <li>
-            The <dfn>error()</dfn> function, as well as the <dfn>OnError</dfn> callback takes an error in the <dnf>value</dnf> argument. It is called when an error occured in producing the data the client should know about.
-          </li>
-          <li>
-            The <dfn>complete()</dfn> function, as well as the <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
-          </li>
-        </ul>
       </p>
+      <ul>
+        <li>
+          The <dfn>next()</dfn> function, as well as the <dfn>OnNext</dfn> callback takes the next sample for the data in the <code>value</code> argument.
+        </li>
+        <li>
+          The <dfn>error()</dfn> function, as well as the <dfn>OnError</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
+        </li>
+        <li>
+          The <dfn>complete()</dfn> function, as well as the <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
+        </li>
+      </ul>
     </section>
 
     <section data-dfn-for="Subscription">
@@ -1053,17 +1053,18 @@
       <h3>The <dfn data-dfn-for="">Observable</dfn> interface</h3>
       <p>
         The <a>Observable</a> interface enabled subscribing to pushed data notifications by the <dfn>subscribe</dfn>() method:
-        <ul>
-          <li>
-            If the <code>subscribe()</code> method is called with an <a>Observer</a> object, initialize the data, error and completion handling callbacks from that object, or throw on error.
-          </li>
-          <li>
-            Otherwise, if the <code>subscribe()</code> method is called with a function, initialize the data handler callback with that function. If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error. If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
-          </li>
-          <li>
-            After callback initializations, the implementation should request the underlying platform to provide data, error and completion notifications for the supported data source.
-          </li>
-        </ul>
+      </p>
+      <ul>
+        <li>
+          If the <code>subscribe()</code> method is called with an <a>Observer</a> object, initialize the data, error and completion handling callbacks from that object, or throw on error.
+        </li>
+        <li>
+          Otherwise, if the <code>subscribe()</code> method is called with a function, initialize the data handler callback with that function. If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error. If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
+        </li>
+        <li>
+          After callback initializations, the implementation should request the underlying platform to provide data, error and completion notifications for the supported data source.
+        </li>
+      </ul>
     </section>
   </section> <!-- Observables -->
 
@@ -1079,7 +1080,6 @@
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data by providing a <code>@context</code> property with a defining URI .
-      </dd>
     </p>
     <p>
       The terms <a href="http://www.w3.org/TR/url-1/"><dfn>URL</dfn></a> and
