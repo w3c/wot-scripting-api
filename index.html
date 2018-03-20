@@ -1211,6 +1211,31 @@
     <p>
       The following is a list of major changes to the document. For a complete list of changes, see the [github change log](https://github.com/w3c/wot-scripting-api/commits/master). You can also view the [recently closed bugs](https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed).
     </p>
+    <p>
+      <ul>
+        <li>
+          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingTemplate</code>, <code>SemanticAnnotations</code>, <code>SemanticType</code>, <code>SemanticMetadata</code>, input and output data descriptions, etc.
+        </li>
+        <li>
+          Separated <code>consume()</code> to <code>fetch()</code> and <code>consume()</code>.
+        </li>
+        <li>
+          Changed <code>expose()</code> to accept a <a>Thing Template</a>.
+        </li>
+        <li>
+          Instead of <code>addListener()</code>, <code>removeListener()</code> introduced <code>onEvent()</code>, <code>onPropertyChange()</code>, <code>onTDChange()</code>.
+        </li>
+        <li>
+          Revised <code>ExposedThing</code> handlers for Property, Action and Event.
+        </li>
+        <li>
+          Added an informal section on <a>TD</a> introspection.
+        </li>
+        <li>
+          Added informal section for <code>Observable</code>.
+        </li>
+      </ul>
+    </p>
   </section>
 
   <section> <h3 class="appendix" id="openissues">Open issues</h3>
@@ -1218,6 +1243,18 @@
       The following problems are being discussed and need most attention:
     </p>
       <ul>
+        <li>
+          Revised API for tracking the <a>TD</a> better (https://github.com/w3c/wot-scripting-api/issues/96).
+        </li>
+        <li>
+          Security related metadata (https://github.com/w3c/wot-scripting-api/issues/91).
+        </li>
+        <li>
+          Defining <code>DataSchema</code> better (https://github.com/w3c/wot-scripting-api/issues/89).
+        </li>
+        <li>
+          Providing Protocol Binding for <a>ExposedThing</a> (https://github.com/w3c/wot-scripting-api/issues/45).
+        </li>
         <li> Retrieving information from Thing Description (https://github.com/w3c/wot-scripting-api/issues/38) </li>
         <li> Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/) </li>
       </ul>
