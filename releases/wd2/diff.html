@@ -2795,13 +2795,10 @@ method
 The
 </ins><span data-dfn-for= "" data-dfn-type="dfn" data-idl="" data-title= "TDLink"><code><ins class="diff-new">
 TDLink
-</ins></code></span><ins class="diff-new">
-dictionary
-</ins></a>
-</li>
-</ol>
-</li>
-</ol>
+</ins></code>
+</span>
+<ins class="diff-new">dictionary
+</ins></a></li></ol></li></ol>
 </li>
 <li class="tocline">
 <a href="#observables" class= "tocxref">
@@ -2963,7 +2960,7 @@ are
 described
 in
 the
-<a href= "https://w3c.github.io/wot-architecture/">
+<a href= "https://www.w3.org/TR/2017/WD-wot-architecture-20170914/">
 WoT
 Architecture
 </a>
@@ -2977,7 +2974,7 @@ made
 of
 entities
 (
-<a href= "#dfn-things" class="internalDFN" data-link-type="dfn">
+<a href="#dfn-things" class="internalDFN" data-link-type= "dfn">
 Thing
 </a>
 s)
@@ -3002,7 +2999,7 @@ these
 capabilities
 through
 the
-<a href="#dfn-wot-interface" class= "internalDFN" data-link-type="dfn">
+<a href= "#dfn-wot-interface" class="internalDFN" data-link-type="dfn">
 WoT
 Interface
 </a>.
@@ -4107,9 +4104,7 @@ and
 return
 the
 result;
-</ins>
-</li>
-</ul>
+</ins></li></ul>
 </li>
 </ul>
 </section>
@@ -5191,11 +5186,11 @@ representation.
 In
 the
 [
-</ins><cite>
-<a class="bibref" href="#bib-WOT-TD">
-<ins class="diff-new">WOT-TD
-</ins></a></cite><ins class="diff-new">
-]
+</ins><cite><a class="bibref" href="#bib-WOT-TD"><ins class="diff-chg">
+WOT-TD
+</ins></a>
+</cite>
+<ins class="diff-new">]
 specification
 they
 represent
@@ -5763,10 +5758,8 @@ list
 of
 </ins><a href="#dom-semantictype" class="internalDFN" data-link-type="dfn"><code><ins class="diff-chg">
 SemanticType
-</ins>
-</code>
-</a>
-<ins class="diff-new">objects
+</ins></code></a><ins class="diff-chg">
+objects
 that
 define
 the
@@ -5781,20 +5774,22 @@ semantic
 metadata
 type-value
 pairs.
-</ins></p><p><ins class="diff-new">
+</ins></p><p><ins class="diff-chg">
 The
-</ins><dfn data-dfn-for="semanticannotations" data-dfn-type="dfn" id="dom-semanticannotations-metadata" data-idl="" data-title= "metadata"><code><ins class="diff-new">
+</ins><dfn data-dfn-for="semanticannotations" data-dfn-type="dfn" id="dom-semanticannotations-metadata" data-idl="" data-title= "metadata"><code><ins class="diff-chg">
 metadata
-</ins></code></dfn><ins class="diff-new">
+</ins></code></dfn><ins class="diff-chg">
 property
 denotes
 a
 list
 of
-</ins><a href="#dom-semanticmetadata" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
+</ins><a href="#dom-semanticmetadata" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
 SemanticMetadata
-</ins></code></a><ins class="diff-new">
-objects
+</ins>
+</code>
+</a>
+<ins class="diff-new">objects
 (type-value
 pairs).
 </ins></p></section><section data-dfn-for="SemanticType" id= "the-semantictype-dictionary"><h3 id="x3-8-the-semantictype-dictionary"><span class= "secno"><ins class="diff-new">
@@ -8789,8 +8784,9 @@ Thing
 s,
 standardized
 in
+</del>
 the
-Wot
+<del class="diff-old">Wot
 Things
 Description
 specification.
@@ -8799,9 +8795,8 @@ In
 this
 version
 of
-</del>
 the
-<del class="diff-old">API,
+API,
 </del>
 <a href="#dfn-things" class="internalDFN" data-link-type="dfn">
 Thing
@@ -9177,20 +9172,15 @@ and
 Action
 invocation
 requests.
+5.2.1
+The
+RequestType
 </del>
 </p>
 </section>
 <section id="the-unregister-method">
 <h3 id="x5-4-the-unregister-method">
-<del class="diff-old">5.2.1
-</del>
-<span class="secno">
-<ins class="diff-chg">5.4
-</ins>
-</span>
-The
-<del class="diff-old">RequestType
-enumeration
+<del class="diff-old">enumeration
 &lt;span class="idlEnum" id="idl-def-requesttype"
 data-idl="" data-title="RequestType"&gt;enum &lt;span class=
 "idlEnumID"&gt;&lt;a data-lt="RequestType" href="#dom-requesttype" class=
@@ -9204,8 +9194,13 @@ data-idl="" data-title="RequestType"&gt;enum &lt;span class=
 "idlEnumItem"&gt;"event",
     
 };
+</del>
+<span class="secno">
+<ins class="diff-chg">5.4
+</ins>
+</span>
 The
-value
+<del class="diff-old">value
 "
 </del>
 <dfn data-dfn-for="exposedthing" data-dfn-type="dfn" id= "dom-exposedthing-unregister" data-idl="" data-title="unregister()" data-lt="unregister()|unregister">
@@ -11740,17 +11735,16 @@ callback
 will
 receive
 a
-</ins>
-<code>
-<ins class="diff-new">parameters
-</ins></code><ins class="diff-new">
+</ins><code><ins class="diff-chg">
+parameters
+</ins></code><ins class="diff-chg">
 dictionary
 argument.
-</ins></p><p><ins class="diff-new">
+</ins></p><p><ins class="diff-chg">
 There
-</ins><em class="rfc2119" title="SHOULD"><ins class="diff-new">
+</ins><em class="rfc2119" title="SHOULD"><ins class="diff-chg">
 SHOULD
-</ins></em><ins class="diff-new">
+</ins></em><ins class="diff-chg">
 be
 exactly
 one
@@ -11758,9 +11752,9 @@ handler
 for
 any
 given
-</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-new">
+</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
 Action
-</ins></a>.<ins class="diff-new">
+</ins></a>.<ins class="diff-chg">
 If
 no
 handler
@@ -11769,13 +11763,13 @@ initialized
 for
 any
 given
-</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-new">
+</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
 Action
-</ins></a>,<ins class="diff-new">
+</ins></a>,<ins class="diff-chg">
 implementations
-</ins><em class="rfc2119" title="SHOULD"><ins class="diff-new">
+</ins><em class="rfc2119" title="SHOULD"><ins class="diff-chg">
 SHOULD
-</ins></em><ins class="diff-new">
+</ins></em><ins class="diff-chg">
 return
 error
 if
@@ -11786,15 +11780,16 @@ invoked
 by
 any
 client.
-</ins></p></section><section id="examples-1"><h3 id="x5-19-examples">
-<span class="secno">
-<ins class="diff-chg">5.19
+</ins></p></section><section id="examples-1"><h3 id="x5-19-examples"><span class="secno"><ins class="diff-chg">
+5.19
 </ins></span><ins class="diff-chg">
 Examples
 </ins></h3><p><ins class="diff-chg">
 Below
 some
-</ins><code><a href="#dom-exposedthing" class="internalDFN" data-link-type="dfn">
+</ins>
+<code>
+<a href="#dom-exposedthing" class="internalDFN" data-link-type="dfn">
 <code>
 <del class="diff-old">Request
 </del>
@@ -14973,7 +14968,7 @@ https://heycam.github.io/webidl/
 [WOT-ARCHITECTURE]
 </dt>
 <dd>
-<a href="https://w3c.github.io/wot-architecture/">
+<a href= "https://www.w3.org/TR/2017/WD-wot-architecture-20170914/">
 <cite>
 Web
 of
@@ -14982,20 +14977,14 @@ Architecture
 </cite>
 </a>.
 W3C.
-20
-August
+<ins class="diff-new">14
+September
 2017.
 URL:
-<a href= "https://w3c.github.io/wot-architecture/">
-https://w3c.github.io/wot-architecture/
-</a>
-</dd>
-</dl>
-</section>
-<section id="informative-references">
-<h3 id="d-2-informative-references">
-<span class="secno">
-<ins class="diff-new">D.2
+</ins><a href= "https://www.w3.org/TR/2017/WD-wot-architecture-20170914/"><ins class="diff-new">
+https://www.w3.org/TR/2017/WD-wot-architecture-20170914/
+</ins></a></dd></dl></section><section id="informative-references"><h3 id="d-2-informative-references"><span class="secno"><ins class="diff-new">
+D.2
 </ins></span><ins class="diff-new">
 Informative
 references
@@ -15008,13 +14997,20 @@ Description
 </ins></cite></a><ins class="diff-new">
 .
 W3C.
+</ins>
 20
 August
 2017.
 URL:
-</ins><a href= "https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/"><ins class="diff-new">
-https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/
-</ins></a></dd></dl></section>
+<del class="diff-old">https://w3c.github.io/wot-architecture/
+</del>
+<a href= "https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/">
+<ins class="diff-chg">https://www.w3.org/TR/2018/WD-wot-thing-description-20180405/
+</ins>
+</a>
+</dd>
+</dl>
+</section>
 </section>
 <p role="navigation" id="back-to-top">
 <a href="#toc">
