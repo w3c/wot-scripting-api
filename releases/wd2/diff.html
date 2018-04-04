@@ -909,7 +909,7 @@
       "date": "1 October 2012"
     },
     "WEBAPPSEC": {
-      "href": "https://w3c.github.io/webappsec/specs/powerfulfeatures",
+      "href": "https://w3c.github.io/webappsec/specs/powerfulfeatures/",
       "title": "Secure Contexts",
       "publisher": "W3C",
       "date": "17 July 2015"
@@ -3247,7 +3247,7 @@ Things
 </a>,
 check
 the
-<a href= "https://w3c.github.io/wot-scripting-api/primer">
+<a href= "https://w3c.github.io/wot-scripting-api/primer/">
 Primer
 </a>
 document.
@@ -4106,9 +4106,7 @@ and
 return
 the
 result;
-</ins>
-</li>
-</ul>
+</ins></li></ul>
 </li>
 </ul>
 </section>
@@ -7545,9 +7543,7 @@ Property
 .
 4.9.1.1
 The
-</del>
-<code>
-<del class="diff-old">PropertyChangeEventInit
+PropertyChangeEventInit
 dictionary
 &lt;span class="idlDictionary" id=
 "idl-def-propertychangeeventinit" data-idl="" data-title=
@@ -7579,7 +7575,9 @@ the
 Property
 name.
 The
-value
+</del>
+<code>
+<del class="diff-old">value
 </del>
 <ins class="diff-chg">subscribe()
 </ins>
@@ -8718,20 +8716,16 @@ href="#dom-propertyreadhandler" class="internalDFN" data-link-type=
 "idlCallbackID"><a data-no-default="" data-link-for="" data-lt=""
 href="#dom-propertywritehandler" class="internalDFN"
 data-link-type="dfn"><code>PropertyWriteHandler</code></a></span> = <span class="idlCallbackType"><a href="https://heycam.github.io/webidl/#idl-promise">Promise</a>&lt;void&gt;</span> (<span class="idlParam"><span class="idlParamType"><a href="https://heycam.github.io/webidl/#idl-any">any</a></span> <span class="idlParamName">value</span></span>);</span>
-</ins>
-<span class="idlCallback" id="idl-def-actionhandler" data-idl=""
-<ins class="diff-new">data-title="ActionHandler">callback <span class=
+</ins><span class="idlCallback" id="idl-def-actionhandler" data-idl=""<ins class="diff-chg">
+data-title="ActionHandler">callback <span class=
 "idlCallbackID"><a data-no-default="" data-link-for="" data-lt=""
 href="#dom-actionhandler" class="internalDFN" data-link-type=
 "dfn"><code>ActionHandler</code></a></span> = <span class=
 "idlCallbackType"><a href=
 "https://heycam.github.io/webidl/#idl-promise">
 Promise
-</ins>
-</a>
-<del class="diff-old">;
-</del>
-<ins class="diff-chg">&lt;
+</ins></a><ins class="diff-chg">
+&lt;
 </ins><a<ins class="diff-chg">
 href="https://heycam.github.io/webidl/#idl-any">
 any
@@ -8739,10 +8733,16 @@ any
 &gt;
 </ins></span><ins class="diff-chg">
 (
-</ins><span class="idlParam"><span class="idlParamType"><a href="https://heycam.github.io/webidl/#idl-any"><ins class="diff-chg">
-any
-</ins></a></span><span class="idlParamName"><ins class="diff-chg">
-parameters
+</ins><span class="idlParam"><span class="idlParamType">
+<a href="https://heycam.github.io/webidl/#idl-any">
+<ins class="diff-new">any
+</ins>
+</a>
+<del class="diff-old">;
+</del>
+</span>
+<span class="idlParamName">
+<ins class="diff-chg">parameters
 </ins></span></span><ins class="diff-chg">
 );
 </ins>
@@ -11739,17 +11739,16 @@ callback
 will
 receive
 a
-</ins>
-<code>
-<ins class="diff-new">parameters
-</ins></code><ins class="diff-new">
+</ins><code><ins class="diff-chg">
+parameters
+</ins></code><ins class="diff-chg">
 dictionary
 argument.
-</ins></p><p><ins class="diff-new">
+</ins></p><p><ins class="diff-chg">
 There
-</ins><em class="rfc2119" title="SHOULD"><ins class="diff-new">
+</ins><em class="rfc2119" title="SHOULD"><ins class="diff-chg">
 SHOULD
-</ins></em><ins class="diff-new">
+</ins></em><ins class="diff-chg">
 be
 exactly
 one
@@ -11757,9 +11756,9 @@ handler
 for
 any
 given
-</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-new">
+</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
 Action
-</ins></a>.<ins class="diff-new">
+</ins></a>.<ins class="diff-chg">
 If
 no
 handler
@@ -11768,13 +11767,13 @@ initialized
 for
 any
 given
-</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-new">
+</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
 Action
-</ins></a>,<ins class="diff-new">
+</ins></a>,<ins class="diff-chg">
 implementations
-</ins><em class="rfc2119" title="SHOULD"><ins class="diff-new">
+</ins><em class="rfc2119" title="SHOULD"><ins class="diff-chg">
 SHOULD
-</ins></em><ins class="diff-new">
+</ins></em><ins class="diff-chg">
 return
 error
 if
@@ -11785,15 +11784,16 @@ invoked
 by
 any
 client.
-</ins></p></section><section id="examples-1"><h3 id="x5-19-examples">
-<span class="secno">
-<ins class="diff-chg">5.19
+</ins></p></section><section id="examples-1"><h3 id="x5-19-examples"><span class="secno"><ins class="diff-chg">
+5.19
 </ins></span><ins class="diff-chg">
 Examples
 </ins></h3><p><ins class="diff-chg">
 Below
 some
-</ins><code><a href="#dom-exposedthing" class="internalDFN" data-link-type="dfn">
+</ins>
+<code>
+<a href="#dom-exposedthing" class="internalDFN" data-link-type="dfn">
 <code>
 <del class="diff-old">Request
 </del>
@@ -14012,8 +14012,8 @@ ECMASCRIPT
 ].
 </p>
 <p>
-<a href= "http://heycam.github.io/webidl/#idl-DOMString">
-<dfn data-dfn-type= "dfn" id="dfn-domstring">
+<a href= "https://heycam.github.io/webidl/#idl-DOMString">
+<dfn data-dfn-type="dfn" id="dfn-domstring">
 DOMString
 </dfn>
 </a>,
@@ -14022,18 +14022,18 @@ DOMString
 USVString
 </dfn>
 </a>,
-<a href= "http://heycam.github.io/webidl/#idl-ArrayBuffer">
+<a href= "https://heycam.github.io/webidl/#idl-ArrayBuffer">
 <dfn data-dfn-type="dfn" id="dfn-arraybuffer">
 ArrayBuffer
 </dfn>
 </a>,
-<a href= "http://heycam.github.io/webidl/#common-BufferSource">
+<a href= "https://heycam.github.io/webidl/#common-BufferSource">
 <dfn data-dfn-type="dfn" id="dfn-buffersource">
 BufferSource
 </dfn>
 </a>
 and
-<a href= "http://heycam.github.io/webidl/#idl-any">
+<a href= "https://heycam.github.io/webidl/#idl-any">
 <dfn data-dfn-type="dfn" id="dfn-any-0">
 any
 </dfn>
@@ -14144,7 +14144,7 @@ types)
 are
 defined
 in
-<a href= "http://tools.ietf.org/html/rfc2046">
+<a href= "https://tools.ietf.org/html/rfc2046">
 RFC2046
 </a>.
 </p>
@@ -14956,7 +14956,7 @@ https://url.spec.whatwg.org/
 [WEBAPPSEC]
 </dt>
 <dd>
-<a href= "https://w3c.github.io/webappsec/specs/powerfulfeatures">
+<a href= "https://w3c.github.io/webappsec/specs/powerfulfeatures/">
 <cite>
 Secure
 Contexts
@@ -14967,8 +14967,11 @@ W3C.
 July
 2015.
 URL:
-<a href= "https://w3c.github.io/webappsec/specs/powerfulfeatures">
-https://w3c.github.io/webappsec/specs/powerfulfeatures
+<del class="diff-old">https://w3c.github.io/webappsec/specs/powerfulfeatures
+</del>
+<a href= "https://w3c.github.io/webappsec/specs/powerfulfeatures/">
+<ins class="diff-chg">https://w3c.github.io/webappsec/specs/powerfulfeatures/
+</ins>
 </a>
 </dd>
 <dt id="bib-WEBIDL">
