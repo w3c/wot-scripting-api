@@ -1745,17 +1745,17 @@ Discovery
 Consuming
 a
 Thing
-</ins></a>
-</li>
-<li class="tocline">
-<a href="#exposing-a-thing" class= "tocxref">
-<span class="secno">
-<ins class="diff-new">2.3
+</ins></a></li><li class="tocline"><a href="#exposing-a-thing" class= "tocxref"><span class="secno"><ins class="diff-new">
+2.3
 </ins></span><ins class="diff-new">
 Exposing
 a
 Thing
-</ins></a></li></ol></li><li class="tocline">
+</ins></a>
+</li>
+</ol>
+</li>
+<li class="tocline">
 <a href="#the-wot-object" class= "tocxref">
 <span class="secno">
 3.
@@ -1874,13 +1874,12 @@ The
 </span>
 <del class="diff-old">Examples
 4.
-</del>
 The
-<del class="diff-old">ConsumedThing
+ConsumedThing
 interface
 4.1
-The
 </del>
+The
 <span data-dfn-for= "wot" data-dfn-type="dfn" data-idl="" data-title="consume()" data-lt="consume()|consume">
 <code>
 <del class="diff-old">invokeAction()
@@ -2795,10 +2794,13 @@ method
 The
 </ins><span data-dfn-for= "" data-dfn-type="dfn" data-idl="" data-title= "TDLink"><code><ins class="diff-new">
 TDLink
-</ins></code>
-</span>
-<ins class="diff-new">dictionary
-</ins></a></li></ol></li></ol>
+</ins></code></span><ins class="diff-new">
+dictionary
+</ins></a>
+</li>
+</ol>
+</li>
+</ol>
 </li>
 <li class="tocline">
 <a href="#observables" class= "tocxref">
@@ -4104,7 +4106,9 @@ and
 return
 the
 result;
-</ins></li></ul>
+</ins>
+</li>
+</ul>
 </li>
 </ul>
 </section>
@@ -7438,9 +7442,7 @@ an
 Action
 is
 observed.
-</del>
-</p>
-<del class="diff-old">Editor's
+Editor's
 note
 The
 observe()
@@ -7458,7 +7460,9 @@ be
 kept
 for
 convenience.
-4.8
+</del>
+</p>
+<del class="diff-old">4.8
 </del>
 <p>
 The
@@ -8784,9 +8788,8 @@ Thing
 s,
 standardized
 in
-</del>
 the
-<del class="diff-old">Wot
+Wot
 Things
 Description
 specification.
@@ -8795,8 +8798,9 @@ In
 this
 version
 of
+</del>
 the
-API,
+<del class="diff-old">API,
 </del>
 <a href="#dfn-things" class="internalDFN" data-link-type="dfn">
 Thing
@@ -10015,10 +10019,7 @@ the
 Thing
 Description
 .
-</del>
-</ul>
-</section>
-<del class="diff-old">5.4.2
+5.4.2
 The
 SemanticType
 dictionary
@@ -10081,7 +10082,9 @@ of
 the
 semantic
 classification.
-Editor's
+</del>
+</ul>
+<del class="diff-old">Editor's
 note
 Semantic
 type
@@ -10090,6 +10093,7 @@ to
 be
 added.
 </del>
+</section>
 </section>
 <section id="the-removeproperty-method">
 <h3 id="x5-8-the-removeproperty-method">
@@ -11142,9 +11146,8 @@ by
 <ins class="diff-chg">Description
 </ins></a><ins class="diff-chg">
 and
-</ins>
 the
-<ins class="diff-new">external
+external
 client
 request.
 It
@@ -11159,8 +11162,9 @@ error
 or
 resolves
 if
+</ins>
 the
-action
+<ins class="diff-new">action
 is
 successful
 or
@@ -11735,16 +11739,17 @@ callback
 will
 receive
 a
-</ins><code><ins class="diff-chg">
-parameters
-</ins></code><ins class="diff-chg">
+</ins>
+<code>
+<ins class="diff-new">parameters
+</ins></code><ins class="diff-new">
 dictionary
 argument.
-</ins></p><p><ins class="diff-chg">
+</ins></p><p><ins class="diff-new">
 There
-</ins><em class="rfc2119" title="SHOULD"><ins class="diff-chg">
+</ins><em class="rfc2119" title="SHOULD"><ins class="diff-new">
 SHOULD
-</ins></em><ins class="diff-chg">
+</ins></em><ins class="diff-new">
 be
 exactly
 one
@@ -11752,9 +11757,9 @@ handler
 for
 any
 given
-</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
+</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-new">
 Action
-</ins></a>.<ins class="diff-chg">
+</ins></a>.<ins class="diff-new">
 If
 no
 handler
@@ -11763,13 +11768,13 @@ initialized
 for
 any
 given
-</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
+</ins><a href="#dfn-actions" class= "internalDFN" data-link-type="dfn"><ins class="diff-new">
 Action
-</ins></a>,<ins class="diff-chg">
+</ins></a>,<ins class="diff-new">
 implementations
-</ins><em class="rfc2119" title="SHOULD"><ins class="diff-chg">
+</ins><em class="rfc2119" title="SHOULD"><ins class="diff-new">
 SHOULD
-</ins></em><ins class="diff-chg">
+</ins></em><ins class="diff-new">
 return
 error
 if
@@ -11780,16 +11785,15 @@ invoked
 by
 any
 client.
-</ins></p></section><section id="examples-1"><h3 id="x5-19-examples"><span class="secno"><ins class="diff-chg">
-5.19
+</ins></p></section><section id="examples-1"><h3 id="x5-19-examples">
+<span class="secno">
+<ins class="diff-chg">5.19
 </ins></span><ins class="diff-chg">
 Examples
 </ins></h3><p><ins class="diff-chg">
 Below
 some
-</ins>
-<code>
-<a href="#dom-exposedthing" class="internalDFN" data-link-type="dfn">
+</ins><code><a href="#dom-exposedthing" class="internalDFN" data-link-type="dfn">
 <code>
 <del class="diff-old">Request
 </del>
@@ -13717,8 +13721,11 @@ defined
 in
 [
 <cite>
-<a class="bibref" href="#bib-HTML5">
-HTML5
+<del class="diff-old">HTML5
+</del>
+<a class="bibref" href="#bib-HTML52">
+<ins class="diff-chg">HTML52
+</ins>
 </a>
 </cite>
 ]
@@ -13731,60 +13738,60 @@ context
 of
 browser
 implementations:
-<a href= "https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
+<a href= "https://www.w3.org/TR/html52/single-page.html#browsing-context">
 <dfn data-dfn-type="dfn" id="dfn-browsing-context">
 browsing
 context
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#top-level-browsing-context">
-<dfn data-dfn-type="dfn" id="dfn-top-level-browsing-context">
+<a href= "https://www.w3.org/TR/html52/single-page.html#top-level-browsing-context">
+<dfn data-dfn-type="dfn" id= "dfn-top-level-browsing-context">
 top-level
 browsing
 context
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/multipage/webappapis.html#global-object">
+<a href= "https://www.w3.org/TR/html52/single-page.html#global-object">
 <dfn data-dfn-type="dfn" id="dfn-global-object">
 global
 object
 </dfn>
 </a>,
-<a href= "http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
+<a href= "https://www.w3.org/TR/html52/single-page.html#incumbent-settings-object">
 <dfn data-dfn-type="dfn" id= "dfn-incumbent-settings-object">
 incumbent
 settings
 object
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#document">
+<a href= "https://www.w3.org/TR/html52/single-page.html#document">
 <dfn data-dfn-type="dfn" id="dfn-document">
 Document
 </dfn>
 </a>,
-<a href= "http://www.w3.org/TR/2011/WD-html5-20110113/urls.html#document-base-url">
+<a href= "https://www.w3.org/TR/html52/single-page.html#document-base-url">
 <dfn data-dfn-type="dfn" id="dfn-document-base-url">
 document
 base
 URL
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#window">
-<dfn data-dfn-type="dfn" id= "dfn-window">
+<a href= "https://www.w3.org/TR/html52/single-page.html#window">
+<dfn data-dfn-type="dfn" id="dfn-window">
 Window
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#windowproxy">
-<dfn data-dfn-type= "dfn" id="dfn-windowproxy">
+<a href= "https://www.w3.org/TR/html52/single-page.html#windowproxy">
+<dfn data-dfn-type="dfn" id="dfn-windowproxy">
 WindowProxy
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#origin">
-<dfn data-dfn-type="dfn" id= "dfn-origin">
+<a href= "https://www.w3.org/TR/html52/single-page.html#section-origin">
+<dfn data-dfn-type="dfn" id="dfn-origin">
 origin
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#ascii-serialisation-of-an-origin">
+<a href= "https://www.w3.org/TR/html52/single-page.html#ascii-serialization-of-an-origin">
 <dfn data-dfn-type="dfn" id="dfn-ascii-serialized-origin">
 ASCII
 serialized
@@ -13793,32 +13800,32 @@ origin
 </a>,
 executing
 algorithms
-<a href= "https://html.spec.whatwg.org/#in-parallel">
-<dfn data-dfn-type= "dfn" id="dfn-in-parallel">
+<a href= "https://www.w3.org/TR/html52/single-page.html#in-parallel">
+<dfn data-dfn-type="dfn" id="dfn-in-parallel">
 in
 parallel
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#queue-a-task">
-<dfn data-dfn-type= "dfn" id="dfn-queue-a-task">
+<a href= "https://www.w3.org/TR/html52/single-page.html#queuing">
+<dfn data-dfn-type="dfn" id="dfn-queue-a-task">
 queue
 a
 task
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#task-source">
-<dfn data-dfn-type= "dfn" id="dfn-task-source">
+<a href= "https://www.w3.org/TR/html52/single-page.html#task-source">
+<dfn data-dfn-type="dfn" id="dfn-task-source">
 task
 source
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#the-iframe-element">
+<a href= "https://www.w3.org/TR/html52/single-page.html#the-iframe-element">
 <dfn data-dfn-type="dfn" id="dfn-iframe">
 iframe
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#valid-mime-type">
-<dfn data-dfn-type= "dfn" id="dfn-valid-mime-type">
+<a href= "https://www.w3.org/TR/html52/single-page.html#valid-mime-type">
+<dfn data-dfn-type="dfn" id="dfn-valid-mime-type">
 valid
 MIME
 type
@@ -14157,8 +14164,8 @@ are
 defined
 in
 [
-</ins><cite><a class="bibref" href= "#bib-HTML5"><ins class="diff-new">
-HTML5
+</ins><cite><a class="bibref" href= "#bib-HTML52"><ins class="diff-new">
+HTML52
 </ins></a></cite><ins class="diff-new">
 ]
 and
@@ -14783,39 +14790,67 @@ URL:
 </ins>
 </a>
 </dd>
-<dt id="bib-HTML5">
-[HTML5]
+<del class="diff-old">[HTML5]
+</del>
+<dt id="bib-HTML52">
+<ins class="diff-chg">[HTML52]
+</ins>
 </dt>
 <dd>
-<a href="https://www.w3.org/TR/html5/">
+<a href="https://www.w3.org/TR/html52/">
 <cite>
-HTML5
+<del class="diff-old">HTML5
+</del>
+<ins class="diff-chg">HTML
+5.2
+</ins>
 </cite>
 </a>.
-Ian
+<del class="diff-old">Ian
 Hickson;
 Robin
 Berjon;
+</del>
 Steve
 Faulkner;
+<ins class="diff-new">Arron
+Eicholz;
+</ins>
 Travis
 Leithead;
+<ins class="diff-new">Alex
+Danilo;
+Sangwhan
+Moon;
+</ins>
 Erika
 Doyle
 Navara;
 Theresa
 O'Connor;
-Silvia
+<del class="diff-old">Silvia
 Pfeiffer.
+</del>
+<ins class="diff-chg">Robin
+Berjon.
+</ins>
 W3C.
-28
+<del class="diff-old">28
 October
 2014.
+</del>
+<ins class="diff-chg">14
+December
+2017.
+</ins>
 W3C
 Recommendation.
 URL:
-<a href= "https://www.w3.org/TR/html5/">
-https://www.w3.org/TR/html5/
+<del class="diff-old">https://www.w3.org/TR/html5/
+</del>
+<a href= "https://www.w3.org/TR/html52/">
+<ins class="diff-chg">https://www.w3.org/TR/html52/
+</ins>
 </a>
 </dd>
 <dt id="bib-JSON-LD">
