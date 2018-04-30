@@ -227,22 +227,104 @@
       // [SecureContext]
       // [NamespaceObject]
       interface WoT {
-        Observable&lt;ConsumedThing&gt; discover(optional ThingFilter filter);
+        Observable&lt;ThingDescription&gt; discover(optional ThingFilter filter);
         Promise&lt;ThingDescription&gt; fetch(USVString url);
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
       };
       typedef USVString ThingDescription;
-      typedef (ThingTemplate or ThingDescription) ThingModel;
+      typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
     </pre>
+
+    <p class="ednote">
+      The <code>fetch()</code> method could be merged into <code>discover()</code>, i.e. <code>discover({ url: tdURL })</code> is equivalent to former <code>fetch(tdURL)</code>. Alternatively, both could be replaced by `fetch(optional (ThingFilter or USVString) locator)`, where `locator` can be a URL (for direct fetch) or a `ThingFilter` (for discovery).
+    </p>
 
     <p class="ednote">
       The algorithms for the WoT methods will be specified later, including error handling and security considerations.
     </p>
 
+    <section data-dfn-for="ThingTemplate" >
+      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
+      <p>
+        A `ThingTemplate` is a dictionary that provides <a>Thing</a> related semantic metadata.
+      </p>
+      <pre class="idl">
+        typedef (object or USVString or sequence&lt;USVString&gt;) JsonLdDefinition;
+        interface ThingTemplate {
+          getter JsonLdDefinition (USVString name);
+          setter void (USVString name, JsonLdDefinition value);
+        };
+      </pre>
+      <p>
+        The <a>JsonLdDefinition</a> type can be either a JSON object, a string representing an IRI, or an array of strings.
+      </p>
+      <p>The <a>ThingTemplate</a> dictionary initializes a <a>Thing</a>:
+      </p>
+      <ul>
+        <li>
+          The <dfn>@context</dfn> attribute represents a semantic context as <code>USVString</code>.
+        </li>
+        <li>
+          The <dfn>@type</dfn> attribute represents a semantic type as <code>USVString</code>.
+        </li>
+        <li>
+          The <dfn>@id</dfn> attribute represents an identifier, typically a URI, IRI, or URN as <code>USVString</code>.
+        </li>
+        <li>
+          The <dfn>base</dfn> attribute represents a base URL as <code>USVString</code>.
+        </li>
+        <li>
+          The <dfn>name</dfn> attribute represents a user given name as <code>DOMString</code>.
+        </li>
+        <li>
+          Apart from the core semantic properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
+        </li>
+      </ul>
+      <p class="ednote">
+        Support for configuration and security metadata will be added later.
+      </p>
+    </section> <!-- ThingTemplate -->
+
+    <section data-dfn-for="ThingDescription">
+    <h3>The <dfn>ThingDescription</dfn> type</h3>
+      <p>
+        Representation of the <a>Thing Description</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
+      </p>
+      <p class="note">
+        In this version of the API, <a>Thing Description</a>s are represented as an opaque `USVString` representing a serialized <a>TD</a>.
+      </p>
+    </section>
+
+    <section> <h3> The <dfn>fetch()</dfn> method</h3>
+      <p>
+        Accepts an <code>url</code> argument of type `USVString` and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a>.
+      </p>
+    </section>
+
+    <section> <h3> The <dfn>consume()</dfn> method</h3>
+      <p>
+        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on that description.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
+      <p>
+        Accepts a <code>model</code> argument of type <code><a>ThingTemplate</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
+      </p>
+      <ol>
+        <li>
+          from an initial model (including a user given name and semantic metadata properties), then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
+        </li>
+        <li>
+          from a <a>Thing Description</a> (possibly of a <a>ConsumedThing</a> object), then adding request handlers.
+        </li>
+      </ol>
+    </section> <!-- produce() -->
+
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
-        Starts the discovery process that will provide <code><a>ConsumedThing</a></code> objects that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, starts the widest discovery the <a>Thing Description</a> and <a>Protocol Bindings</a> allow and support.
+        Starts the discovery process that will provide <code><a>ThingDescription</a></code>s that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, uses all supported discovery methods.
         Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from.
       </p>
 
@@ -256,15 +338,17 @@
         </p>
         <ul>
           <li><dfn>"any"</dfn> does not provide any restriction</li>
-          <li><dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device</li>
           <li>
-            <dfn>"nearby"</dfn> for discovering <a>Thing</a>s nearby the device, e.g. by Bluetooth or NFC
+            <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device
           </li>
           <li>
             <dfn>"directory"</dfn> for discovery based on a service provided by a directory or repository of <a>Thing</a>s
           </li>
           <li>
-            <dfn>"broadcast"</dfn> for an open ended discovery based on sending a request to a broadcast address
+            <dfn>"nfc"</dfn> for discovering <a>Thing</a>s in the device's proximity by using NFC
+          </li>
+          <li>
+            <dfn>"ble"</dfn> for discovering <a>Thing</a>s by using Bluetooth Low Energy (BLE)
           </li>
           <li>
             <dfn>"other"</dfn> for a proprietary method defined by the solution.
@@ -292,160 +376,27 @@
           The <a>DiscoveryMethod</a> enumeration can be extended by the <a>Thing Description</a> with values that are not specified here. This extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
         </p>
         <p>
-          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a <a>Thing Directory</a> or a Thing.
+          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or a Thing (otherwise).
         </p>
         <p>
-          The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL query.
+          The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query.
         </p>
         <p>
-          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of property-value pairs (dictionaries). The list elements (dictionaries) are in OR relationship, and within a constraint dictionary the key-value pairs are in AND relationship. Implementations SHOULD make the following mapping from the constraint dictionaries to <a>SemanticAnnotations</a>: for each property-value pair in a constraint dictionary,
+          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of property-value pairs (dictionaries). The list elements (dictionaries) are in OR relationship, and within a constraint dictionary the key-value pairs are in AND relationship. Implementations SHOULD make the following mapping from the constraint dictionaries to <a>ThingTemplate</a>: for each property-value pair in a constraint dictionary,
         </p>
         <ul>
           <li>
-            Each property name in the constraint dictionary SHOULD match the either the  `name` property of a defined <a>SemanticType</a> on the target <a>Thing</a> object, or the name of a <a>Property</a> on the target <a>Thing</a>.
+            Each property name in the constraint dictionary SHOULD match the name of a <a>Property</a> on the target <a>ThingTemplate</a>.
           </li>
           <li>
             When the name matches, the values are compared. If the values match, the constraint is matched.
           </li>
         </ul>
         <p class="ednote">
-          Constraints are experimental feature, implementations are not required to support them.
-        </p>
-        <p class="ednote">
-          Semantic annotations need revisiting in order to simplify their representation. In the [[WOT-TD]] specification they represent the `@type` construct. At the moment only `@context`, `@type` and `@id` constructs are used in the <a>TD</a>.
+          Queries and constraints are experimental features. Implementations are not required to support them.
         </p>
       </section>
     </section> <!-- Discovery -->
-
-    <section> <h3> The <dfn>fetch()</dfn> method</h3>
-      <p>
-        Accepts an <code>url</code> argument and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingDescription">
-    <h3>The <dfn>ThingDescription</dfn> type</h3>
-      <p>
-        Representation of the <a>Thing Description</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
-      </p>
-      <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD. See [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38) and [Issue 45](https://github.com/w3c/wot-scripting-api/issues/45).
-      </p>
-    </section>
-
-    <section> <h3> The <dfn>consume()</dfn> method</h3>
-      <p>
-        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on that description.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
-      <p>
-        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
-      </p>
-      <ol>
-        <li>
-          from an initial model (including a user given name and <a href="#the-semanticannotations-dictionary">semantic annotations</a>), then adding properties, actions, events and request handlers;
-        </li>
-        <li>
-          from a <a>Thing Description</a> (possibly of a <a>ConsumedThing</a> object), then adding request handlers.
-        </li>
-      </ol>
-    </section> <!-- produce() -->
-
-    <section data-dfn-for="ThingModel" >
-    <h3>The <dfn>ThingModel</dfn> type</h3>
-    <p>
-      A Thing model is used for producing a new <a>ExposedThing</a> and can be either a <a>ThingTemplate</a>, or a <a>ThingDescription</a>.
-    </p>
-    </section>
-
-    <section data-dfn-for="SemanticAnnotations" >
-      <h3>The <dfn>SemanticAnnotations</dfn> dictionary</h3>
-      <p>
-        A dictionary that provides the semantic types and semantic metadata.
-      </p>
-      <pre class="idl">
-        dictionary SemanticAnnotations {
-            sequence&lt;SemanticType&gt; semanticType;
-            sequence&lt;SemanticMetadata&gt; metadata;
-        };
-      </pre>
-      <p>
-        The <dfn>semanticType</dfn> property denotes a list of <a>SemanticType</a> objects that define the semantic types that can be used in semantic metadata type-value pairs.
-      </p>
-      <p>
-        The <dfn>metadata</dfn> property denotes a list of <a>SemanticMetadata</a> objects (type-value pairs).
-      </p>
-    </section> <!-- SemanticAnnotations -->
-
-    <section data-dfn-for="SemanticType" >
-      <h3>The <dfn data-dfn-for="">SemanticType</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary SemanticType {
-            required DOMString name;
-            required USVString context;
-            DOMString prefix;
-        };
-      </pre>
-      <p>
-        Represents a semantic type annotation, containing a name, a context and a prefix.
-      </p>
-      <ul>
-        <li>
-          The <dfn>name</dfn> attribute represents the name of the semantic type in the given context.
-        </li>
-        <li>
-          The <dfn>context</dfn> attribute represents an URL link to the context of the semantic classification.
-        </li>
-        <li>
-          The <dfn>prefix</dfn> attribute represents a short prefix associated with a context.
-        </li>
-      </ul>
-      <p class="ednote">
-        Semantic type examples to be added.
-      </p>
-    </section> <!-- SemanticType -->
-
-    <section data-dfn-for="SemanticMetadata" >
-      <h3>The <dfn>SemanticMetadata</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary SemanticMetadata {
-            SemanticType type;
-            any          value;
-        };
-      </pre>
-      <p>The <a>SemanticMetadata</a> dictionary describes a pair of semantic type and value:
-      </p>
-      <ul>
-        <li>
-          The <dfn>type</dfn> attribute represents the semantic type name defined by a <a>SemanticType</a> object.
-        </li>
-        <li>The <dfn>value</dfn> attribute represents the metadata value.</li>
-      </ul>
-    </section> <!-- SemanticMetadata -->
-
-    <section data-dfn-for="ThingTemplate" >
-      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
-      <p>
-        A Thing Template is a dictionary that provides a user given name, and the semantic types and semantic metadata attached to the <a>ExposedThing</a> <a>Thing Description</a>'s root level.
-      </p>
-      <pre class="idl">
-        dictionary ThingTemplate: SemanticAnnotations {
-            required DOMString name;
-        };
-      </pre>
-      <p>The <a>ThingTemplate</a> dictionary extends <a>SemanticAnnotations</a> and contains properties to initialize a <a>Thing</a>:
-      </p>
-      <ul>
-        <li>
-          The <dfn>name</dfn> attribute represents the user given name of the <a>Thing</a>.
-        </li>
-      </ul>
-      <p class="ednote">
-        Support for configuration and security data might be added later.
-      </p>
-    </section> <!-- ThingTemplate -->
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
@@ -454,7 +405,11 @@
           url: "http://directory.wotservice.org"
         };
         let subscription = wot.discover(discoveryFilter).subscribe(
-          thing => { console.log("Found Thing " + thing.name); },
+          td => {
+            console.log("Found Thing " + td.name);
+            // fetch the TD and create a ConsumedThing
+            let thing = wot.consume(td);
+          },
           error => { console.log("Discovery finished because an error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -469,24 +424,24 @@
       </p>
       <pre class="example" title="Discover Things exposed by local hardware">
         let subscription = wot.discover({ method: "local" }).subscribe(
-          thing => { console.log("Found local Thing " + thing.name); },
+          td => { console.log("Found local Thing " + td.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
       </pre>
       <pre class="example" title="Same as above but with different Observable syntax">
         let subscription = wot.discover({ method: "local" }).subscribe({
-          thing => { console.log("Found local Thing " + thing.name); },
+          td => { console.log("Found local Thing " + td.name); },
           error: err => { console.log("Discovery error: " + err.message); },
           complete: () => { console.log("Discovery finished successfully");}
         });
       </pre>
       <pre class="example" title="Discover Things exposed nearby, via Bluetooth or NFC">
         let subscription = wot.discover({
-          method: "nearby",
-          constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC"}]
+          method: "ble",
+          constraints: [{ protocol: "BLE-4.2" }]
         }).subscribe(
-          thing => { console.log("Found nearby Thing " + thing.name); },
+          td => { console.log("Found nearby Thing " + td.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -496,7 +451,7 @@
           method: "other",
           constraints: [{ solution: "XYZ123", key: "..."}]
         }).subscribe(
-          thing => { console.log("Found Thing " + thing.name); },
+          td => { console.log("Found Thing " + td.name); },
           error => { console.log("Discovery error: " + error.message); },
           () => { console.log("Discovery finished successfully");}
         );
@@ -510,79 +465,52 @@
       The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
     </p>
     <pre class="idl">
-      interface ConsumedThing {
-        readonly attribute DOMString name;
-        ThingDescription getThingDescription();
-        Promise&lt;any&gt; readProperty(DOMString name);
-        Promise&lt;void&gt; writeProperty(DOMString name, any value);
-        Promise&lt;any&gt; invokeAction(DOMString name, any parameters);
-        Observable onPropertyChange(DOMString name);
-        Observable onEvent(DOMString name);
-        Observable onTDChange();
+      interface ConsumedThing: ThingTemplate {
+        readonly attribute maplike&lt;DOMString, ThingProperty&gt; properties;
+        readonly attribute maplike&lt;DOMString, ThingAction&gt; actions;
+        readonly attribute maplike&lt;DOMString, ThingEvent&gt; events;
+        sequence&lt;WebLink&gt; links();
+      };
+      ConsumedThing implements Observable;  // for TD changes
+      [NoInterfaceObject]
+      interface Interaction: ThingTemplate {  // abstract class
+        sequence&lt;Form&gt; forms();
+      };
+      interface ThingProperty: Interaction {
+        readonly attribute DataSchema schema;
+        readonly attribute boolean writable;
+        readonly attribute boolean observable;
+        Promise<any> get();
+        Promise set(any value);
+        Observable<any> observe();  // may allow options later
+      };
+      interface ThingAction: Interaction {
+        readonly attribute DataSchema inputSchema;
+        readonly attribute DataSchema outputSchema;
+        Promise<any> run(any parameters);
+      };
+      interface ThingEvent: Interaction {
+        readonly attribute DataSchema schema;
+        readonly attribute any data;
+      };
+      ThingEvent implements Observable;
+      typedef JSON DataSchema;
+      dictionary WebLink {
+        required USVString href;
+        USVString mediaType;
+        DOMString rel;
+        DOMString anchor;
+      };
+      dictionary Form {
+        required USVString href;
+        USVString mediaType;
+        DOMString rel;
+        DOMString security; // TBD
       };
     </pre>
     <p>
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
     </p>
-
-    <section> <h3>The <dfn>name</dfn> property</h3>
-      <p>
-        The `name` property represents the name of the <a>Thing</a> as specified in the <a>TD</a>. In this version it is read only.
-      </p>
-    </section>
-    <section> <h3>The <dfn>getThingDescription()</dfn> method</h3>
-      <p>
-        Returns the <a>Thing Description</a> of the <a>Thing</a>.
-      </p>
-      <p class="ednote">
-        In this version, introspection based on <a>TD</a> is out of scope. Parsing and exposing <a>Thing Description</a>s is discussed in [Issue 38](https://github.com/w3c/wot-scripting-api/issues/38).
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>readProperty()</dfn> method</h3>
-      <p>
-        Takes the <a>Property</a> name as the <var>name</var> argument, then requests from the underlying platform  and the <a>Protocol Bindings</a> to retrieve the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the <a>Property</a> value or rejects with an <a>Error</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>writeProperty()</dfn> method</h3>
-      <p>
-        Takes the <a>Property</a> name as the <var>name</var> argument and the new value as the <var>value</var> argument, then requests from the underlying platform and the <a>Protocol Bindings</a> to update the <a>Property</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves on success or rejects with an <a>Error</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>invokeAction()</dfn> method</h3>
-      <p>
-        Takes the <a>Action</a> name from the <var>name</var> argument and the list of parameters, then requests from the underlying platform and the <a>Protocol Bindings</a> to invoke the <a>Action</a> on the remote <a>Thing</a> and return the result. Returns a <code><a>Promise</a></code> that resolves with the return value or rejects with an <a>Error</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>onPropertyChange()</dfn> method</h3>
-      <p>
-        Returns an <a>Observable</a> for the <a>Property</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications.
-      </p>
-      <p>
-        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the new property value each time it is changed.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>onEvent()</dfn> method</h3>
-      <p>
-        Returns an <a>Observable</a> for the <a>Event</a> specified in the <var>name</var> argument, allowing subscribing to and unsubscribing from notifications.
-      </p>
-      <p>
-        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the event data each time the event is fired.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>onTDChange()</dfn> method</h3>
-      <p>
-        Returns an <a>Observable</a>, allowing subscribing to and unsubscribing from notifications to the <a>Thing Description</a>.
-      </p>
-      <p>
-        The callback function passed to the <code>subscribe()</code> method when invoked on the returned observer will receive the new <a>Thing Description</a> each time it is changed.
-      </p>
-    </section>
 
     <section>
       <h2>Examples</h2>
@@ -591,14 +519,14 @@
       </p>
       <pre class="example" title="Consume a Thing">
         try {
-          let td = await wot.fetch("http://mmyservice.org/mySensor");
+          let td = await wot.discover({ url: "http://mmyservice.org/mySensor"});
           let thing = wot.consume(td);
           console.log("Thing " + thing.name + " has been consumed.");
           let subscription = thing.onPropertyChange("temperature")
             .subscribe(function(value) {
               console.log("Temperature + " has changed to " + value);
             });
-          thing.invokeAction("startMeasurement", { units: "Celsius" })
+          thing.actions["startMeasurement"].run({ units: "Celsius" })
             .then(() => { console.log("Temperature measurement started."); })
             .catch(e => {
                console.log("Error starting measurement.");
@@ -623,17 +551,17 @@
       ExposedThing implements ConsumedThing;
       interface ExposedThing {
         // define how to expose and run the Thing
-        Promise&lt;void&gt; start();
-        Promise&lt;void&gt; stop();
+        Promise&lt;void&gt; expose();
+        Promise&lt;void&gt; destroy();
         Promise&lt;void&gt; register(optional USVString directory);
         Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
-        ExposedThing addProperty(ThingProperty property);
+        ExposedThing addProperty(ThingPropertyInit property);
         ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(ThingAction action);
+        ExposedThing addAction(ThingActionInit action);
         ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(ThingEvent event);
+        ExposedThing addEvent(ThingEventInit event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
         ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
@@ -645,15 +573,9 @@
       callback ActionHandler = Promise&lt;any&gt;(any parameters);
     </pre>
 
-    <section> <h3>The <dfn>start()</dfn> method</h3>
+    <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
         Start serving external requests for the <a>Thing</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>stop()</dfn> method</h3>
-      <p>
-        Stop serving external requests for the <a>Thing</a>.
       </p>
     </section>
 
@@ -665,7 +587,13 @@
 
     <section> <h3>The <dfn>unregister()</dfn> method</h3>
       <p>
-        If a <code>directory</code> argument is given, make a request to unregister the <a>Thing Description</a> with the given WoT repository by invoking its <code>unregister</code> <a>Action</a>. Then, and in the case no arguments were provided to this function, stop the <a>Thing</a> and remove the <a>Thing Description</a>.
+        If a <code>directory</code> argument is given, make a request to unregister the <a>Thing Description</a> with the given WoT repository by invoking its <code>unregister</code> <a>Action</a>.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>destroy()</dfn> method</h3>
+      <p>
+        Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method.
       </p>
     </section>
 
@@ -692,11 +620,10 @@
       <p>
         Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingProperty" data-link-for="ThingProperty">
-        <h4>The <dfn>ThingProperty</dfn> dictionary</h4>
+      <section data-dfn-for="ThingPropertyInit">
+        <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingProperty: SemanticAnnotations {
-            required DOMString name;
+          dictionary ThingPropertyInit: ThingTemplate {
             required DataSchema schema;
             any value;
             boolean writable = false;
@@ -707,7 +634,9 @@
           Represents the <a>Thing</a> <a>Property</a> description.
         </p>
         <ul>
-          <li>The <dfn>name</dfn> attribute represents the name of the <a>Property</a>.</li>
+          <li>
+            The <code>name</code> attribute represents the name of the <a>Property</a>.
+          </li>
           <li>
             The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>DataSchema</a>.
           </li>
@@ -732,11 +661,10 @@
       <p>
         Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingAction</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingAction">
-        <h4>The <dfn>ThingAction</dfn> dictionary</h4>
+      <section data-dfn-for="ThingActionInit">
+        <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingAction: SemanticAnnotations {
-            required DOMString name;
+          dictionary ThingActionInit: ThingTemplate {
             DataSchema inputSchema;
             DataSchema outputSchema;
           };
@@ -745,9 +673,15 @@
         The <a>ThingAction</a> dictionary describes the arguments and the return value.
       </p>
         <ul>
-          <li>The <dfn>name</dfn> attribute provides the <a>Action</a> name.</li>
-          <li>The <dfn>inputSchema</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.</li>
-          <li>The <dfn>outputSchema</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.</li>
+          <li>
+            The <code>name</code> attribute provides the <a>Action</a> name.
+          </li>
+          <li>
+            The <dfn>inputSchema</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.
+          </li>
+          <li>
+            The <dfn>outputSchema</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.
+          </li>
         </ul>
       </section>
     </section> <!-- addAction -->
@@ -762,16 +696,16 @@
       <p>
         Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEvent</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingEvent">
-        <h4>The <dfn>ThingEvent</dfn> dictionary</h4>
+      <section data-dfn-for="ThingEventInit">
+        <h4>The <dfn>ThingEventInit</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ThingEvent: SemanticAnnotations {
+          dictionary ThingEventInit: ThingTemplate {
             required DOMString name;
             DataSchema schema;
           };
         </pre>
         <ul>
-          <li>The <dfn>name</dfn> attribute represents the event name.</li>
+          <li>The <code>name</code> attribute represents the event name.</li>
           <li>The <dfn>schema</dfn> attribute represents the type of the data that is attached to the event. If missing, it means the event does not carry data.</li>
         </ul>
       </section>
@@ -927,71 +861,6 @@
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
-
-  <section class="informative" data-dfn-for="ConsumedThing">
-    <h2>Experimental extensions to the <strong>ConsumedThing</strong> interface</h2>
-    <p>
-      The <a>ThingDescription</a> related functionality, such as enumerating <a>Properties</a>, <a>Action</a>s, <a>Event</a>s and links (introspection) is an API extension that is out of scope for this specification. However, the draft interfaces are defined here for informative purposes.
-    </p>
-    <pre class="idl">
-      partial interface ConsumedThing {
-        sequence&lt;ThingProperty&gt; getProperties();
-        sequence&lt;ThingAction&gt; getActions();
-        sequence&lt;ThingEvent&gt; getEvents();
-        sequence&lt;TDLink&gt; getLinks();
-      };
-    </pre>
-
-    <section> <h3>The <dfn>getProperties()</dfn> method</h3>
-      <p>
-        Returns the list of <a>Properties</a> defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingProperty</a> objects.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>getActions()</dfn> method</h3>
-      <p>
-        Returns the list of <a>Action</a>s defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingAction</a> objects.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>getEvents()</dfn> method</h3>
-      <p>
-        Returns the list of <a>Event</a>s defined in the <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>ThingEvent</a> objects.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>getLinks()</dfn> method</h3>
-      <p>
-        Returns the list of linked resources in <a>Thing Description</a> of the <a>Thing</a> in the form of a list of <a>TDLink</a> objects.
-      </p>
-      <section data-dfn-for="TDLink" >
-        <h4>The <dfn>TDLink</dfn> dictionary</h4>
-        <p>
-          Contains a hyperlink reference, a relation type and a media type.
-        </p>
-        <pre class="idl">
-          dictionary TDLink {
-              required USVString href;
-              USVString mediaType;
-              DOMString rel;
-          };
-        </pre>
-        <p>The <a>TDLink</a> dictionary contains the following properties:
-        </p>
-        <ul>
-          <li>
-            The <dfn>href</dfn> attribute represents a <a>hyperlink reference</a>.
-          </li>
-          <li>
-            The <dfn>rel</dfn> attribute represents a <a>relation type</a>.
-          </li>
-          <li>
-            The <dfn>mediaType</dfn> attribute represents a <a>IANA media type</a>. For <a>TD</a>s there will be registered media types, so applications will be able to check whether an `href` link points to a <a>TD</a>, i.e. whether the link is fetcheable with this API.
-          </li>
-        </ul>
-      </section> <!-- TDLink -->
-    </section>
-  </section>
 
   <section data-dfn-for="Observable" class="informative">
     <h2>Observables</h2>
@@ -1214,7 +1083,7 @@
     <p>
       <ul>
         <li>
-          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingTemplate</code>, <code>SemanticAnnotations</code>, <code>SemanticType</code>, <code>SemanticMetadata</code>, input and output data descriptions, etc.
+          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingTemplate</code>, <code>ThingMetadata</code>, <code>SemanticType</code>, <code>SemanticMetadata</code>, input and output data descriptions, etc.
         </li>
         <li>
           Separated <code>consume()</code> to <code>fetch()</code> and <code>consume()</code>.
