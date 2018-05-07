@@ -244,41 +244,61 @@
       The algorithms for the WoT methods will be specified later, including error handling and security considerations.
     </p>
 
+    <section data-dfn-for="ThingDescription">
+    <h3>The <dfn>ThingDescription</dfn> type</h3>
+      <p>
+        Serialized representation of the <a>Thing Description</a> (a <a>JSON-LD</a> document).
+      </p>
+      <p class="note">
+        In this version of the API, <a>Thing Description</a>s are represented as an opaque `USVString` that can be transmitted between devices.
+      </p>
+    </section>
+
     <section data-dfn-for="ThingTemplate" >
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        A `ThingTemplate` is a dictionary that provides <a>Thing</a> related semantic metadata.
+        A `ThingTemplate` is a dictionary that provides <a>Thing</a> related semantic metadata used for initializing a <a>Thing Description</a> as defined in [[!WOT-TD]].
       </p>
       <pre class="idl">
-        typedef (object or USVString or sequence&lt;USVString&gt;) JsonLdDefinition;
-        interface ThingTemplate {
-          getter JsonLdDefinition (USVString name);
-          setter void (USVString name, JsonLdDefinition value);
-        };
+        typedef (object or USVString or sequence&lt;USVString&gt;) TDValue;
+        typedef Dictionary ThingTemplate;
+        // interface ThingTemplate {
+        //  getter TDValue (DOMString name);
+        //  setter void (DOMString name, TDValue value);
+        // };
       </pre>
       <p>
-        The <a>JsonLdDefinition</a> type can be either a JSON object, a string representing an IRI, or an array of strings.
+        The <a>TDValue</a> type can be either a <a>JSON</a> object, a string representing an IRI, or an array of strings, as defined in [[!WOT-TD]].
       </p>
-      <p>The <a>ThingTemplate</a> dictionary initializes a <a>Thing</a>:
+      <p>The <a>ThingTemplate</a> dictionary initializes a <a>Thing</a> as defined in [[!WOT-TD]]:
       </p>
       <ul>
         <li>
-          The <dfn>@context</dfn> attribute represents a semantic context as <code>USVString</code>.
+          The <dfn>name</dfn> mandatory attribute represents the name of the <a>Thing</a> as <code>DOMString</code>.
         </li>
         <li>
-          The <dfn>@type</dfn> attribute represents a semantic type as <code>USVString</code>.
+          The <dfn>id</dfn> optional attribute represents a unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. Note that this is not the same as the <a>JSON-LD</a> `@id` attribute.
         </li>
         <li>
-          The <dfn>@id</dfn> attribute represents an identifier, typically a URI, IRI, or URN as <code>USVString</code>.
+          The <dfn>base</dfn> optional attribute represents a base URL as <code>USVString</code>.
         </li>
         <li>
-          The <dfn>base</dfn> attribute represents a base URL as <code>USVString</code>.
+          The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
         </li>
         <li>
-          The <dfn>name</dfn> attribute represents a user given name as <code>DOMString</code>.
+          The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
         </li>
         <li>
-          Apart from the core semantic properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
+          The <dfn>security</dfn> optional attribute represents security metadata defined by the <a>Security</a> dictionary;
+        </li>
+        <li>
+          The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
+        </li>
+        <li>
+          The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
+        </li>
+        <li>
+          Apart from the core semantic properties defined above, others may also be defined on a <a>Thing</a>, for instance `@id`, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
         </li>
       </ul>
       <p class="ednote">
@@ -286,38 +306,28 @@
       </p>
     </section> <!-- ThingTemplate -->
 
-    <section data-dfn-for="ThingDescription">
-    <h3>The <dfn>ThingDescription</dfn> type</h3>
-      <p>
-        Representation of the <a>Thing Description</a>, standardized in the [Wot Things Description](https://w3c.github.io/wot-thing-description/) specification.
-      </p>
-      <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as an opaque `USVString` representing a serialized <a>TD</a>.
-      </p>
-    </section>
-
     <section> <h3> The <dfn>fetch()</dfn> method</h3>
       <p>
-        Accepts an <code>url</code> argument of type `USVString` and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a>.
+        Accepts an <code>url</code> argument of type `USVString` that represents a URL (e.g. `file://` or `https://`) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type `USVString`).
       </p>
     </section>
 
     <section> <h3> The <dfn>consume()</dfn> method</h3>
       <p>
-        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on that description.
+        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
       </p>
     </section>
 
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
-        Accepts a <code>model</code> argument of type <code><a>ThingTemplate</a></code> and returns an <a>ExposedThing</a> object, locally created based on the provided initialization parameters. An <a>ExposedThing</a> can be created in the following ways:
+        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
       </p>
       <ol>
         <li>
-          from an initial model (including a user given name and semantic metadata properties), then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
+          from a <a>ThingTemplate</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
         </li>
         <li>
-          from a <a>Thing Description</a> (possibly of a <a>ConsumedThing</a> object), then adding request handlers.
+          from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
         </li>
       </ol>
     </section> <!-- produce() -->
@@ -350,9 +360,6 @@
           <li>
             <dfn>"ble"</dfn> for discovering <a>Thing</a>s by using Bluetooth Low Energy (BLE)
           </li>
-          <li>
-            <dfn>"other"</dfn> for a proprietary method defined by the solution.
-          </li>
         </ul>
       </section>
 
@@ -370,28 +377,28 @@
           };
         </pre>
         <p>
-          The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that can be extended by string values defined by solutions (with no guarantee of interoperability).
-        </p>
-        <p class="ednote">
-          The <a>DiscoveryMethod</a> enumeration can be extended by the <a>Thing Description</a> with values that are not specified here. This extensibility of <a>DiscoveryMethod</a> by proprietary or private methods is a working assumption until consensus is formed and may be removed later.
+          The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that MAY be extended by string values defined by solutions (with no guarantee of interoperability).
         </p>
         <p>
-          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or a Thing (otherwise).
+          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or a Thing (otherwise).
         </p>
         <p>
           The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query.
         </p>
         <p>
-          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of property-value pairs (dictionaries). The list elements (dictionaries) are in OR relationship, and within a constraint dictionary the key-value pairs are in AND relationship. Implementations SHOULD make the following mapping from the constraint dictionaries to <a>ThingTemplate</a>: for each property-value pair in a constraint dictionary,
+          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of property-value pairs (dictionaries). The list elements (dictionaries) are in OR relationship, and within a constraint dictionary the key-value pairs are in AND relationship. Implementations SHOULD make the following mapping from the constraint dictionaries to <a>ThingTemplate</a>.
         </p>
-        <ul>
+        <p>
+          For each property-value pair in a constraint dictionary,
+          <ul>
           <li>
             Each property name in the constraint dictionary SHOULD match the name of a <a>Property</a> on the target <a>ThingTemplate</a>.
           </li>
           <li>
             When the name matches, the values are compared. If the values match, the constraint is matched.
           </li>
-        </ul>
+          </ul>
+        </p>
         <p class="ednote">
           Queries and constraints are experimental features. Implementations are not required to support them.
         </p>
@@ -448,8 +455,9 @@
       </pre>
       <pre class="example" title="Discover Things exposed in a proprietary way">
         let subscription = wot.discover({
-          method: "other",
-          constraints: [{ solution: "XYZ123", key: "..."}]
+          method: "myOwnMethod", // not standardized
+          url: myDirectoryURL,
+          constraints: [{ account: "XYZ123", key: "..."}]
         }).subscribe(
           td => { console.log("Found Thing " + td.name); },
           error => { console.log("Discovery error: " + error.message); },
@@ -469,43 +477,74 @@
         readonly attribute maplike&lt;DOMString, ThingProperty&gt; properties;
         readonly attribute maplike&lt;DOMString, ThingAction&gt; actions;
         readonly attribute maplike&lt;DOMString, ThingEvent&gt; events;
-        sequence&lt;WebLink&gt; links();
+        readonly attribute FrozenArray&lt;WebLink&gt; links;
       };
       ConsumedThing implements Observable;  // for TD changes
       [NoInterfaceObject]
-      interface Interaction: ThingTemplate {  // abstract class
-        sequence&lt;Form&gt; forms();
+      interface Interaction {  // abstract class
+        readonly attribute FrozenArray&lt;Form&gt; forms;
       };
-      interface ThingProperty: Interaction {
-        readonly attribute DataSchema schema;
-        readonly attribute boolean writable;
-        readonly attribute boolean observable;
-        Promise<any> get();
+      enum JSONType { "boolean", "number", "string", "null", "object", "array" };
+      typedef (unsigned long or unrestricted double) Number;
+      dictionary PropertyTemplate {
+        DOMString label;
+        boolean writable = false;
+        boolean observable = false;
+        boolean const;  // TBD
+        boolean required;
+      };
+      dictionary SimplePropertyInit: PropertyTemplate {
+        required DOMString type;  // null, boolean, string
+        any value;
+      };
+      dictionary NumberPropertyInit: PropertyTemplate {
+        DOMString type = "number";
+        Number value;
+        Number minimum;
+        Number maximum;
+      };
+      dictionary ObjectPropertyInit: PropertyTemplate {
+        DOMString type = "object";
+        object value;
+      };
+      dictionary ArrayPropertyInit: PropertyTemplate {
+        DOMString type = "array";
+        sequence&lt;any&gt; value;
+        unsigned long minItems;
+        unsigned long maxItems;
+      };
+      typedef (SimplePropertyInit or NumberPropertyInit or ObjectPropertyInit or ArrayPropertyInit) PropertyInit;
+      interface ThingProperty: PropertyTemplate {
+        readonly attribute DOMString type;
+        Promise&lt;any&gt; get();
         Promise set(any value);
-        Observable<any> observe();  // may allow options later
+      };
+      ThingProperty implements Observable;
+      dictionary ActionInit {
+        PropertyInit input;
+        PropertyInit output;
+        DOMString description;
+        DOMString label;
       };
       interface ThingAction: Interaction {
-        readonly attribute DataSchema inputSchema;
-        readonly attribute DataSchema outputSchema;
-        Promise<any> run(any parameters);
+        readonly attribute PropertyInit input;
+        readonly attribute PropertyInit output;
+        readonly attribute DOMString description;
+        readonly attribute DOMString label;
+        Promise<any> run();
       };
-      interface ThingEvent: Interaction {
-        readonly attribute DataSchema schema;
-        readonly attribute any data;
+      interface ThingEvent : ThingProperty {
       };
-      ThingEvent implements Observable;
-      typedef JSON DataSchema;
-      dictionary WebLink {
+      dictionary Link {
         required USVString href;
         USVString mediaType;
         DOMString rel;
-        DOMString anchor;
       };
-      dictionary Form {
-        required USVString href;
-        USVString mediaType;
-        DOMString rel;
-        DOMString security; // TBD
+      dictionary WebLink: Link {
+        USVString anchor;
+      };
+      dictionary Form: Link {
+        DOMString security;
       };
     </pre>
     <p>
@@ -519,7 +558,7 @@
       </p>
       <pre class="example" title="Consume a Thing">
         try {
-          let td = await wot.discover({ url: "http://mmyservice.org/mySensor"});
+          let td = await wot.discover({ url: "http://mmyservice.org/myDirectory"});
           let thing = wot.consume(td);
           console.log("Thing " + thing.name + " has been consumed.");
           let subscription = thing.onPropertyChange("temperature")
@@ -544,9 +583,6 @@
     <p>
       The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>. It also implements the <a>ConsumedThing</a> interface. An <a>ExposedThing</a> is created by the <a href="#the-produce-method">produce()</a> method.
     </p>
-    <p class="ednote">
-      It is under consideration to use a constructor for <a>ExposedThing</a> instead of a factory method.
-    </p>
     <pre class="idl">
       ExposedThing implements ConsumedThing;
       interface ExposedThing {
@@ -557,11 +593,11 @@
         Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
-        ExposedThing addProperty(ThingPropertyInit property);
+        ExposedThing addProperty(ThingProperty property);
         ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(ThingActionInit action);
+        ExposedThing addAction(ThingAction action);
         ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(ThingEventInit event);
+        ExposedThing addEvent(ThingEvent event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
         ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
@@ -603,19 +639,6 @@
       </p>
     </section>
 
-    <section data-dfn-for="DataSchema">
-      <h4>The <dfn>DataSchema</dfn> type</h4>
-      <pre class="idl">
-        typedef USVString DataSchema;
-      </pre>
-      <p>
-        The <a>DataSchema</a> type represents a data type <a href="https://w3c.github.io/wot-thing-description/#dataschema">specified</a> in the <a>Thing Description</a> in a serialized form.
-      </p>
-      <p class="ednote">
-        <a>DataSchema</a> is under development, currently it can denote any type supported by the <a>Thing Description</a> and the <a>WoT Runtime</a>.
-      </p>
-    </section>
-
     <section> <h3>The <dfn>addProperty()</dfn> method</h3>
       <p>
         Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
@@ -624,10 +647,10 @@
         <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ThingPropertyInit: ThingTemplate {
-            required DataSchema schema;
-            any value;
+            required TDValueType schema;
             boolean writable = false;
             boolean observable = false;
+            any value;
           };
         </pre>
         <p>
@@ -638,7 +661,7 @@
             The <code>name</code> attribute represents the name of the <a>Property</a>.
           </li>
           <li>
-            The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>DataSchema</a>.
+            The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>TDValueType</a>.
           </li>
           <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
           <li>
@@ -665,8 +688,8 @@
         <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ThingActionInit: ThingTemplate {
-            DataSchema inputSchema;
-            DataSchema outputSchema;
+            TDValueType inputSchema;
+            TDValueType outputSchema;
           };
       </pre>
       <p>
@@ -701,7 +724,7 @@
         <pre class="idl">
           dictionary ThingEventInit: ThingTemplate {
             required DOMString name;
-            DataSchema schema;
+            TDValueType schema;
           };
         </pre>
         <ul>
@@ -948,7 +971,7 @@
       The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
     </p>
     <p>
-      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data by providing a <code>@context</code> property with a defining URI .
+      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
     </p>
     <p>
       The terms <a href="http://www.w3.org/TR/url-1/"><dfn>URL</dfn></a> and
@@ -1119,7 +1142,7 @@
           Security related metadata (https://github.com/w3c/wot-scripting-api/issues/91).
         </li>
         <li>
-          Defining <code>DataSchema</code> better (https://github.com/w3c/wot-scripting-api/issues/89).
+          Defining <code>TDValueType</code> better (https://github.com/w3c/wot-scripting-api/issues/89).
         </li>
         <li>
           Providing Protocol Binding for <a>ExposedThing</a> (https://github.com/w3c/wot-scripting-api/issues/45).
