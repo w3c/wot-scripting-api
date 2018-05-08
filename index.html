@@ -232,8 +232,14 @@
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
       };
+      typedef (ThingInit or ThingDescription or ConsumedThing) ThingModel;
       typedef USVString ThingDescription;
-      typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
+      typedef Dictionary ThingInit;
+      typedef (object or USVString or sequence&lt;USVString&gt;) TDValue;
+      interface ThingTemplate {
+        getter TDValue (DOMString name);
+        setter void (DOMString name, TDValue value);
+       };
     </pre>
 
     <p class="ednote">
@@ -254,23 +260,22 @@
       </p>
     </section>
 
-    <section data-dfn-for="ThingTemplate" >
-      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
+    <section data-dfn-for="ThingInit" >
+      <h3>The <dfn>ThingInit</dfn> dictionary</h3>
       <p>
-        A `ThingTemplate` is a dictionary that provides <a>Thing</a> related semantic metadata used for initializing a <a>Thing Description</a> as defined in [[!WOT-TD]].
+        `ThingInit` is a dictionary used for initializing a <a>ThingTemplate</a>.
       </p>
-      <pre class="idl">
-        typedef (object or USVString or sequence&lt;USVString&gt;) TDValue;
-        typedef Dictionary ThingTemplate;
-        // interface ThingTemplate {
-        //  getter TDValue (DOMString name);
-        //  setter void (DOMString name, TDValue value);
-        // };
-      </pre>
+    </section>
+
+    <section data-dfn-for="ThingTemplate" >
+      <h3>The <dfn>ThingTemplate</dfn> interface</h3>
+      <p>
+        `ThingTemplate` is an abstract interface that defines <a>Thing</a> related semantic metadata used for initializing a <a>Thing Description</a> as defined in [[!WOT-TD]]. The properties are of type <a>TDValue</a>.
+      </p>
       <p>
         The <a>TDValue</a> type can be either a <a>JSON</a> object, a string representing an IRI, or an array of strings, as defined in [[!WOT-TD]].
       </p>
-      <p>The <a>ThingTemplate</a> dictionary initializes a <a>Thing</a> as defined in [[!WOT-TD]]:
+      <p>The <a>ThingInit</a> dictionary initializes a <a>ThingTemplate</a> using the following attributes.
       </p>
       <ul>
         <li>
@@ -335,7 +340,7 @@
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
         Starts the discovery process that will provide <code><a>ThingDescription</a></code>s that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, uses all supported discovery methods.
-        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from.
+        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. Errors are also signaled at the subscription object.
       </p>
 
       <section data-dfn-for="DiscoveryMethod">
@@ -373,7 +378,6 @@
             DiscoveryMethod method = "any";
             USVString url;
             USVString query;
-            sequence&lt;Dictionary&gt; constraints;
           };
         </pre>
         <p>
@@ -383,26 +387,15 @@
           The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or a Thing (otherwise).
         </p>
         <p>
-          The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query.
-        </p>
-        <p>
-          The <dfn>constraints</dfn> property represents additional information for the discovery method in the form of a list of sets of property-value pairs (dictionaries). The list elements (dictionaries) are in OR relationship, and within a constraint dictionary the key-value pairs are in AND relationship. Implementations SHOULD make the following mapping from the constraint dictionaries to <a>ThingTemplate</a>.
-        </p>
-        <p>
-          For each property-value pair in a constraint dictionary,
-          <ul>
-          <li>
-            Each property name in the constraint dictionary SHOULD match the name of a <a>Property</a> on the target <a>ThingTemplate</a>.
-          </li>
-          <li>
-            When the name matches, the values are compared. If the values match, the constraint is matched.
-          </li>
-          </ul>
+          The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
         </p>
         <p class="ednote">
-          Queries and constraints are experimental features. Implementations are not required to support them.
+          Queries are experimental features. Implementations are not required to support them.
         </p>
       </section>
+      <p>
+        If queries are specified, but not supported, implementations should signal a `NotSupportedError` on the subscription objects. For security errors (e.g. authentication error) a `SecurityError` should be signaled. For query validation errors a `TypeError` should be signaled. For other errors an `Error` should be signaled.
+      </p>
     </section> <!-- Discovery -->
 
     <section> <h3>Examples</h3>
@@ -467,23 +460,12 @@
     </section> <!-- Examples -->
   </section> <!-- WoT API -->
 
-  <section data-dfn-for="ConsumedThing">
-    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
+  <section>
+    <h2>Data types used in a <a>Thing</a></h2>
     <p>
-      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
+      Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
     </p>
     <pre class="idl">
-      interface ConsumedThing: ThingTemplate {
-        readonly attribute maplike&lt;DOMString, ThingProperty&gt; properties;
-        readonly attribute maplike&lt;DOMString, ThingAction&gt; actions;
-        readonly attribute maplike&lt;DOMString, ThingEvent&gt; events;
-        readonly attribute FrozenArray&lt;WebLink&gt; links;
-      };
-      ConsumedThing implements Observable;  // for TD changes
-      [NoInterfaceObject]
-      interface Interaction {  // abstract class
-        readonly attribute FrozenArray&lt;Form&gt; forms;
-      };
       enum JSONType { "boolean", "number", "string", "null", "object", "array" };
       typedef (unsigned long or unrestricted double) Number;
       dictionary PropertyTemplate {
@@ -534,6 +516,26 @@
         Promise<any> run();
       };
       interface ThingEvent : ThingProperty {
+      };
+    </pre>
+  </section>
+
+  <section data-dfn-for="ConsumedThing">
+    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
+    <p>
+      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
+    </p>
+    <pre class="idl">
+      interface ConsumedThing: ThingTemplate {
+        readonly attribute maplike&lt;DOMString, ThingProperty&gt; properties;
+        readonly attribute maplike&lt;DOMString, ThingAction&gt; actions;
+        readonly attribute maplike&lt;DOMString, ThingEvent&gt; events;
+        readonly attribute FrozenArray&lt;WebLink&gt; links;
+      };
+      ConsumedThing implements Observable;  // for TD changes
+      [NoInterfaceObject]
+      interface Interaction {  // abstract class
+        readonly attribute FrozenArray&lt;Form&gt; forms;
       };
       dictionary Link {
         required USVString href;
