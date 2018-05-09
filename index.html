@@ -232,14 +232,9 @@
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
       };
-      typedef (ThingInit or ThingDescription or ConsumedThing) ThingModel;
       typedef USVString ThingDescription;
-      typedef Dictionary ThingInit;
-      typedef (object or USVString or sequence&lt;USVString&gt;) TDValue;
-      interface ThingTemplate {
-        getter TDValue (DOMString name);
-        setter void (DOMString name, TDValue value);
-       };
+      typedef dictionary ThingTemplate;
+      typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
     </pre>
 
     <p class="ednote">
@@ -260,22 +255,10 @@
       </p>
     </section>
 
-    <section data-dfn-for="ThingInit" >
-      <h3>The <dfn>ThingInit</dfn> dictionary</h3>
-      <p>
-        `ThingInit` is a dictionary used for initializing a <a>ThingTemplate</a>.
-      </p>
-    </section>
-
     <section data-dfn-for="ThingTemplate" >
-      <h3>The <dfn>ThingTemplate</dfn> interface</h3>
+      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        `ThingTemplate` is an abstract interface that defines <a>Thing</a> related semantic metadata used for initializing a <a>Thing Description</a> as defined in [[!WOT-TD]]. The properties are of type <a>TDValue</a>.
-      </p>
-      <p>
-        The <a>TDValue</a> type can be either a <a>JSON</a> object, a string representing an IRI, or an array of strings, as defined in [[!WOT-TD]].
-      </p>
-      <p>The <a>ThingInit</a> dictionary initializes a <a>ThingTemplate</a> using the following attributes.
+        `ThingTemplate` is a dictionary used for initializing a <a>Thing</a>. It contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s) used for initializing a <a>Thing Description</a> as defined in [[!WOT-TD]].
       </p>
       <ul>
         <li>
@@ -295,6 +278,15 @@
         </li>
         <li>
           The <dfn>security</dfn> optional attribute represents security metadata defined by the <a>Security</a> dictionary;
+        </li>
+        <li>
+          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyInit</a>.
+        </li>
+        <li>
+          The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionInit</a>.
+        </li>
+        <li>
+          The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventInit</a>.
         </li>
         <li>
           The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
@@ -378,6 +370,7 @@
             DiscoveryMethod method = "any";
             USVString url;
             USVString query;
+            ThingTemplate template;
           };
         </pre>
         <p>
@@ -389,8 +382,11 @@
         <p>
           The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
         </p>
+        <p>
+          The <dfn>template</dfn> property represents a <a>ThingTemplate</a> dictionary used for matching against discovered <a>Thing</a>s.
+        </p>
         <p class="ednote">
-          Queries are experimental features. Implementations are not required to support them.
+          Queries and templates are experimental features. Implementations are not required to support them. The template matching algorithm will be defined later, but there are two possibilities: either direct matching (property to property) or serializing the template and matching that against <a>TD</a>s.
         </p>
       </section>
       <p>
@@ -465,10 +461,39 @@
     <p>
       Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
     </p>
+    <section><h3>Links and Forms</h3>
+    <pre class="idl">
+      [NoInterfaceObject]
+      dictionary Link {
+        required USVString href;
+        USVString mediaType;
+        DOMString rel;
+      };
+      dictionary WebLink: Link {
+        USVString anchor;
+      };
+      dictionary Form: Link {
+        DOMString security;
+      };
+    </pre>
+    </section>
+    <section><h3>The <dfn>Interaction</dfn> interface</h3>
+    <pre class="idl">
+      interface Interaction {  // abstract class
+        readonly attribute DOMString name;
+        readonly attribute FrozenArray&lt;Form&gt; forms;
+      };
+      dictionary InteractionInit {
+        DOMString name;
+        sequence&lt;Form&gt; forms;
+      };
+    </pre>
+    </section>
+    <section><h3>Properties</h3>
     <pre class="idl">
       enum JSONType { "boolean", "number", "string", "null", "object", "array" };
       typedef (unsigned long or unrestricted double) Number;
-      dictionary PropertyTemplate {
+      dictionary PropertyTemplate: InteractionInit {
         DOMString label;
         boolean writable = false;
         boolean observable = false;
@@ -496,28 +521,38 @@
         unsigned long maxItems;
       };
       typedef (SimplePropertyInit or NumberPropertyInit or ObjectPropertyInit or ArrayPropertyInit) PropertyInit;
-      interface ThingProperty: PropertyTemplate {
+      interface ThingProperty: Interaction {
         readonly attribute DOMString type;
         Promise&lt;any&gt; get();
         Promise set(any value);
       };
       ThingProperty implements Observable;
-      dictionary ActionInit {
+    </pre>
+    </section>
+    <section><h3>Actions</h3>
+    <pre class="idl">
+      dictionary ActionInit: InteractionInit {
+        DOMString label;
         PropertyInit input;
         PropertyInit output;
         DOMString description;
-        DOMString label;
       };
       interface ThingAction: Interaction {
         readonly attribute PropertyInit input;
         readonly attribute PropertyInit output;
         readonly attribute DOMString description;
         readonly attribute DOMString label;
-        Promise<any> run();
-      };
-      interface ThingEvent : ThingProperty {
+        Promise&lt;any&gt; run();
       };
     </pre>
+    </section>
+    <section><h3>Events</h3>
+    <pre class="idl">
+      interface ThingEvent : ThingProperty {
+      };
+      typedef PropertyInit EventInit;
+    </pre>
+    </section>
   </section>
 
   <section data-dfn-for="ConsumedThing">
@@ -526,28 +561,15 @@
       The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
     </p>
     <pre class="idl">
-      interface ConsumedThing: ThingTemplate {
+      interface ConsumedThing {
         readonly attribute maplike&lt;DOMString, ThingProperty&gt; properties;
         readonly attribute maplike&lt;DOMString, ThingAction&gt; actions;
         readonly attribute maplike&lt;DOMString, ThingEvent&gt; events;
         readonly attribute FrozenArray&lt;WebLink&gt; links;
+        // getter for ThingTemplate properties
+        getter any(DOMString name);
       };
       ConsumedThing implements Observable;  // for TD changes
-      [NoInterfaceObject]
-      interface Interaction {  // abstract class
-        readonly attribute FrozenArray&lt;Form&gt; forms;
-      };
-      dictionary Link {
-        required USVString href;
-        USVString mediaType;
-        DOMString rel;
-      };
-      dictionary WebLink: Link {
-        USVString anchor;
-      };
-      dictionary Form: Link {
-        DOMString security;
-      };
     </pre>
     <p>
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
@@ -560,21 +582,26 @@
       </p>
       <pre class="example" title="Consume a Thing">
         try {
-          let td = await wot.discover({ url: "http://mmyservice.org/myDirectory"});
-          let thing = wot.consume(td);
-          console.log("Thing " + thing.name + " has been consumed.");
-          let subscription = thing.onPropertyChange("temperature")
-            .subscribe(function(value) {
-              console.log("Temperature + " has changed to " + value);
-            });
-          thing.actions["startMeasurement"].run({ units: "Celsius" })
-            .then(() => { console.log("Temperature measurement started."); })
-            .catch(e => {
-               console.log("Error starting measurement.");
-               subscription.unsubscribe();
-             })
+          let subscription = wot.discover({ method: "local" }).subscribe(
+            td => {
+              let thing = wot.consume(td);
+              console.log("Thing " + thing.name + " has been consumed.");
+              let subscription = thing.onPropertyChange("temperature")
+                .subscribe(function(value) {
+                  console.log("Temperature + " has changed to " + value);
+                });
+              thing.actions["startMeasurement"].run({ units: "Celsius" })
+                .then(() => { console.log("Temperature measurement started."); })
+                .catch(e => {
+                   console.log("Error starting measurement.");
+                   subscription.unsubscribe();
+                 })
+            },
+            error => { console.log("Discovery error: " + error.message); },
+            () => { console.log("Discovery finished successfully");}
+          );
         } catch(error) {
-          console.log("Error during fetch or consume: " + error.message);
+          console.log("Error: " + error.message);
         };
       </pre>
     </section> <!-- Examples -->
@@ -588,6 +615,10 @@
     <pre class="idl">
       ExposedThing implements ConsumedThing;
       interface ExposedThing {
+        // getter for ThingTemplate properties
+        getter any(DOMString name);
+        // setter for ThingTemplate properties
+        setter void(DOMString name, any value);
         // define how to expose and run the Thing
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
@@ -645,35 +676,6 @@
       <p>
         Adds a <a>Property</a> defined by the argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingPropertyInit">
-        <h4>The <dfn>ThingPropertyInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ThingPropertyInit: ThingTemplate {
-            required TDValueType schema;
-            boolean writable = false;
-            boolean observable = false;
-            any value;
-          };
-        </pre>
-        <p>
-          Represents the <a>Thing</a> <a>Property</a> description.
-        </p>
-        <ul>
-          <li>
-            The <code>name</code> attribute represents the name of the <a>Property</a>.
-          </li>
-          <li>
-            The <dfn>schema</dfn> attribute represents the data type for the <a>Property</a> described by <a>TDValueType</a>.
-          </li>
-          <li>The <dfn>value</dfn> attribute represents the value of the <a>Property</a>.</li>
-          <li>
-            The <dfn>writable</dfn> attribute defines whether the <a>Property</a> can be updated. The default value is <code>false</code>.
-          </li>
-          <li>
-            The <dfn>observable</dfn> attribute defines whether the <a>Property</a> changes can be observed by an external client. The default value is <code>false</code>.
-          </li>
-        </ul>
-      </section>
     </section> <!-- addProperty() -->
 
     <section> <h3>The <dfn>removeProperty()</dfn> method</h3>
@@ -686,29 +688,6 @@
       <p>
         Adds an <a>Action</a> to the <a>Thing</a> object as defined by the <code>action</code> argument of type <a>ThingAction</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingActionInit">
-        <h4>The <dfn>ThingActionInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ThingActionInit: ThingTemplate {
-            TDValueType inputSchema;
-            TDValueType outputSchema;
-          };
-      </pre>
-      <p>
-        The <a>ThingAction</a> dictionary describes the arguments and the return value.
-      </p>
-        <ul>
-          <li>
-            The <code>name</code> attribute provides the <a>Action</a> name.
-          </li>
-          <li>
-            The <dfn>inputSchema</dfn> attribute provides the description of the input arguments (argument list is represented by an object). If missing, it means the action does not accept arguments.
-          </li>
-          <li>
-            The <dfn>outputSchema</dfn> attribute provides the description of the returned data. If missing, it means the action does not return data.
-          </li>
-        </ul>
-      </section>
     </section> <!-- addAction -->
 
     <section> <h3>The <dfn>removeAction()</dfn> method</h3>
@@ -721,19 +700,6 @@
       <p>
         Adds an event to the <a>Thing</a> object as defined by the <code>event</code> argument of type <a>ThingEvent</a> and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
-      <section data-dfn-for="ThingEventInit">
-        <h4>The <dfn>ThingEventInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ThingEventInit: ThingTemplate {
-            required DOMString name;
-            TDValueType schema;
-          };
-        </pre>
-        <ul>
-          <li>The <code>name</code> attribute represents the event name.</li>
-          <li>The <dfn>schema</dfn> attribute represents the type of the data that is attached to the event. If missing, it means the event does not carry data.</li>
-        </ul>
-      </section>
     </section>
 
     <section> <h3>The <dfn>removeEvent()</dfn> method</h3>
@@ -1108,25 +1074,7 @@
     <p>
       <ul>
         <li>
-          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingTemplate</code>, <code>ThingMetadata</code>, <code>SemanticType</code>, <code>SemanticMetadata</code>, input and output data descriptions, etc.
-        </li>
-        <li>
-          Separated <code>consume()</code> to <code>fetch()</code> and <code>consume()</code>.
-        </li>
-        <li>
-          Changed <code>expose()</code> to accept a <a>Thing Template</a>.
-        </li>
-        <li>
-          Instead of <code>addListener()</code>, <code>removeListener()</code> introduced <code>onEvent()</code>, <code>onPropertyChange()</code>, <code>onTDChange()</code>.
-        </li>
-        <li>
-          Revised <code>ExposedThing</code> handlers for Property, Action and Event.
-        </li>
-        <li>
-          Added an informal section on <a>TD</a> introspection.
-        </li>
-        <li>
-          Added informal section for <code>Observable</code>.
+          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingTemplate</code>, data type descriptions, etc. Refined discovery filtering.
         </li>
       </ul>
     </p>
@@ -1144,12 +1092,8 @@
           Security related metadata (https://github.com/w3c/wot-scripting-api/issues/91).
         </li>
         <li>
-          Defining <code>TDValueType</code> better (https://github.com/w3c/wot-scripting-api/issues/89).
-        </li>
-        <li>
           Providing Protocol Binding for <a>ExposedThing</a> (https://github.com/w3c/wot-scripting-api/issues/45).
         </li>
-        <li> Retrieving information from Thing Description (https://github.com/w3c/wot-scripting-api/issues/38) </li>
         <li> Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/) </li>
       </ul>
   </section>
