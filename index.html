@@ -232,8 +232,14 @@
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
       };
-      typedef USVString ThingDescription;
+      enum ThingCoreProperties {
+        "name", "id", "base", "description", "support", "security",
+        "actions", "properties", "events", "links",
+        "@context", "@type"
+      };
+      typedef (ThingCoreProperties or DOMString) ThingProperties;
       typedef dictionary ThingTemplate;
+      typedef USVString ThingDescription;
       typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
     </pre>
 
@@ -254,7 +260,7 @@
     <section data-dfn-for="ThingTemplate" >
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        `ThingTemplate` is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]].
+        `ThingTemplate` is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]]. The set of core properties is defined by the <dfn>ThingCoreProperties</dfn> enumeration. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
       </p>
       <ul>
         <li>
@@ -294,7 +300,7 @@
           The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
         </li>
         <li>
-          Apart from the core semantic properties defined above, others may also be defined on a <a>Thing</a>, for instance `@id`, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
+          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance `@id`, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
         </li>
       </ul>
       <p class="ednote">
