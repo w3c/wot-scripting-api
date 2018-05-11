@@ -238,10 +238,6 @@
     </pre>
 
     <p class="ednote">
-      The <code>fetch()</code> method could be merged into <code>discover()</code>, i.e. <code>discover({ url: tdURL })</code> is equivalent to former <code>fetch(tdURL)</code>. Alternatively, both could be replaced by `fetch(optional (ThingFilter or USVString) locator)`, where `locator` can be a URL (for direct fetch) or a `ThingFilter` (for discovery).
-    </p>
-
-    <p class="ednote">
       The algorithms for the WoT methods will be specified later, including error handling and security considerations.
     </p>
 
@@ -258,7 +254,7 @@
     <section data-dfn-for="ThingTemplate" >
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        `ThingTemplate` is a dictionary used for initializing a <a>Thing</a>. It contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s) used for initializing a <a>Thing Description</a> as defined in [[!WOT-TD]].
+        `ThingTemplate` is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]].
       </p>
       <ul>
         <li>
@@ -287,6 +283,9 @@
         </li>
         <li>
           The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventInit</a>.
+        </li>
+        <li>
+          The <strong><em>links</em></strong> optional attribute represents an array <a>WebLink</a> objects.
         </li>
         <li>
           The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
@@ -433,19 +432,23 @@
         });
       </pre>
       <pre class="example" title="Discover Things exposed nearby, via Bluetooth or NFC">
-        let subscription = wot.discover({
+        let bleSub = wot.discover({
           method: "ble",
           constraints: [{ protocol: "BLE-4.2" }]
         }).subscribe(
           td => { console.log("Found nearby Thing " + td.name); },
-          error => { console.log("Discovery error: " + error.message); },
-          () => { console.log("Discovery finished successfully");}
+          error => { console.log("Discovery error: " + error.message); }
+        );
+        let nfcSub = wot.discover({ method: "nfc" }).subscribe(
+          td => { console.log("Found nearby Thing " + td.name); },
+          error => { console.log("Discovery error: " + error.message); }
         );
       </pre>
       <pre class="example" title="Discover Things exposed in a proprietary way">
         let subscription = wot.discover({
           method: "myOwnMethod", // not standardized
           url: myDirectoryURL,
+          // includes non-standard, app-specific property "constraints"
           constraints: [{ account: "XYZ123", key: "..."}]
         }).subscribe(
           td => { console.log("Found Thing " + td.name); },
@@ -480,7 +483,7 @@
     <section><h3>The <dfn>Interaction</dfn> interface</h3>
     <pre class="idl">
       interface Interaction {  // abstract class
-        readonly attribute DOMString name;
+        // readonly attribute DOMString name;
         readonly attribute FrozenArray&lt;Form&gt; forms;
       };
       dictionary InteractionInit {
@@ -773,31 +776,43 @@
 
       <pre class="example highlight" title="Create a new blank exposed Thing">
         try {
-          var thing = WoT.produce({ name: "tempSensor" });
-          // manually add Interactions
-          thing.addProperty({
-            name: "temperature",
-            value: 0.0,
-            schema: '{ "type": "number" }'
-            // use default values for the rest
-          }).addProperty({
-            name: "max",
-            value: 0.0,
-            schema: '{ "type": "number" }'
-            // use default values for the rest
-          }).addAction({
-            name: "reset",
-            // no input, no output
-          }).addEvent({
-            name: "onchange",
-            schema: '{ "type": "number" }'
+          var thing = WoT.produce({
+            name: "tempSensor",
+            properties: {
+              temperature: {
+                type: "number",
+                value: 0.0,
+                minimum: -50,
+                maximum: 10000,
+                forms: []
+              },
+            },
+            actions: {
+              reset: {
+                description: "Reset the temperature sensor",
+                input: {
+                  temperature: {
+                    type: "number",
+                    value: 0.0,
+                    minimum: -50,
+                    maximum: 10000
+                  }
+                },
+                output: null,
+                forms: []
+              },
+            },
+            events: {
+              onchange: {
+                type: "number",
+                minimum: -50,
+                maximum: 10000,
+                forms: []
+              },
+            },
+            links: []
           });
-          // add server functionality
-          thing.setActionHandler("reset", () => {
-            console.log("Resetting maximum");
-            thing.writeProperty("max", 0.0);
-          });
-          thing.start().then(() => {
+          thing.expose().then(() => {
               thing.register();
           });
           // define Thing business logic
@@ -816,7 +831,18 @@
       </pre>
 
       <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
-        let thingDescription = '{ "@context": [ "https://w3c.github.io/wot/w3c-wot-td-context.jsonld", "https://w3c.github.io/wot/w3c-wot-common-context.jsonld" ], "@type": [ "Thing", "Sensor" ], "name": "mySensor", "geo:location": "testspace", "interaction": [ { "@type": [ "Property", "Temperature" ], "name": "prop1", "schema": { "type": "number" }, "saref:TemperatureUnit": "degree_Celsius" } ] }';
+        let thingDescription = '{ \
+          "name": "mySensor", \
+          "@context": [ "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",\
+             "https://w3c.github.io/wot/w3c-wot-common-context.jsonld" ],\
+          "@type": [ "Thing", "Sensor" ], \
+          "geo:location": "testspace", \
+          "properties": { \
+            "prop1": { \
+              "type": "number",\
+              "@type": [ "Property", "Temperature" ], \
+              "saref:TemperatureUnit": "degree_Celsius" \
+          } } }';
         try {
           // note that produce() fails if thingDescription contains error
           let thing = WoT.produce(thingDescription);
@@ -834,7 +860,7 @@
                 console.log("Error");
               });
           });
-          thing.start();
+          thing.expose();
         } catch(err) {
            console.log("Error creating ExposedThing: " + err);
         }
