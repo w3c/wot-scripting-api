@@ -232,12 +232,6 @@
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
       };
-      enum ThingCoreProperties {
-        "name", "id", "base", "description", "support", "security",
-        "actions", "properties", "events", "links",
-        "@context", "@type"
-      };
-      typedef (ThingCoreProperties or DOMString) ThingProperties;
       typedef dictionary ThingTemplate;
       typedef USVString ThingDescription;
       typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
@@ -257,7 +251,7 @@
       </p>
     </section>
 
-    <section data-dfn-for="ThingTemplate" >
+    <section data-dfn-for="ThingTemplate">
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
         `ThingTemplate` is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]]. The set of core properties is defined by the <dfn>ThingCoreProperties</dfn> enumeration. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
@@ -282,7 +276,7 @@
           The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>Security</a> dictionary;
         </li>
         <li>
-          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyInit</a>.
+          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyTemplate</a>.
         </li>
         <li>
           The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionInit</a>.
@@ -292,6 +286,12 @@
         </li>
         <li>
           The <strong><em>links</em></strong> optional attribute represents an array <a>WebLink</a> objects.
+        </li>
+        <li>
+          The <dfn>securityDefinitions</dfn> optional attribute represents a dictionary where property names are security configuration names, and values are <a>Security</a> dictionaries.
+        </li>
+        <li>
+          The <dfn>typeDefinitions</dfn> optional attribute represents a dictionary where property names are type names, and values are <a></a> dictionaries.
         </li>
         <li>
           The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
@@ -317,7 +317,7 @@
       enum SecurityScheme { "basic", "digest", "oauth2" };
       dictionary Security {
         required SecurityScheme scheme;
-        USVString authentication;
+        any input;
       };
     </pre>
       <p>
@@ -326,7 +326,7 @@
             The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
           </li>
           <li>
-            The <dfn>authentication</dfn> property represents the location of the authentication information.
+            The <dfn>input</dfn> property represents security initialization data.
           </li>
         </ul>
       </p>
@@ -494,97 +494,145 @@
     <p>
       Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
     </p>
-    <section><h3>Links and Forms</h3>
-    <pre class="idl">
-      [NoInterfaceObject]
-      dictionary Link {
-        required USVString href;
-        USVString mediaType;
-        DOMString rel;
-      };
-      dictionary WebLink: Link {
-        USVString anchor;
-      };
-      dictionary Form: Link {
-        DOMString security;
-      };
-    </pre>
+    <section data-dfn-for="Link"><h3>Links and Forms</h3>
+      <pre class="idl">
+        [NoInterfaceObject]
+        dictionary Link {
+          required USVString href;
+          USVString mediaType;
+          DOMString rel;
+        };
+        dictionary WebLink: Link {
+          USVString anchor;
+        };
+        dictionary Form: Link {
+          DOMString security;
+        };
+      </pre>
     </section>
-    <section><h3>The <dfn>Interaction</dfn> interface</h3>
-    <pre class="idl">
-      interface Interaction {  // abstract class
-        // readonly attribute DOMString name;
-        readonly attribute FrozenArray&lt;Form&gt; forms;
-      };
-      dictionary InteractionInit {
-        DOMString name;
-        sequence&lt;Form&gt; forms;
-      };
-    </pre>
+
+    <section data-dfn-for="ValueType"><h3>Value types</h3>
+      <p>
+        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
+      </p>
+      <p>
+        A type definition is either a <a>ValueType</a> object or a string that matches a property name in the <a>typeDefinitions</a> dictionary of the <a>ThingTemplate</a> the type definition is used in.
+      </p>
+      <pre class="idl">
+        enum JSONType { "boolean", "number", "string", "object", "array" };
+        typedef (unsigned long or unrestricted double) Number;
+        dictionary BooleanValueType {
+          const type = "boolean";
+          boolean value;
+        };
+        dictionary StringValueType {
+          const type = "string";
+          USVString value;
+        };
+        dictionary NumberValueType {
+          const type = "number";
+          Number value;
+          Number minimum;
+          Number maximum;
+        };
+        dictionary ObjectValueType {
+          const type = "object";
+          object value;
+        };
+        dictionary ArrayValueType {
+          const type = "array";
+          FrozenArray&lt;any&gt; value;
+          unsigned long minItems;
+          unsigned long maxItems;
+        };
+        typedef (BooleanValueType or StringValueType or NumberValueType or ObjectValueType or ArrayValueType) ValueType;
+        typedef (ValueType or DOMString) TypeDefinition;
+      </pre>
     </section>
-    <section><h3>Properties</h3>
-    <pre class="idl">
-      enum JSONType { "boolean", "number", "string", "null", "object", "array" };
-      typedef (unsigned long or unrestricted double) Number;
-      dictionary PropertyTemplate: InteractionInit {
-        DOMString label;
-        boolean writable = false;
-        boolean observable = false;
-        boolean const;  // TBD
-        boolean required;
-      };
-      dictionary SimplePropertyInit: PropertyTemplate {
-        required DOMString type;  // null, boolean, string
-        any value;
-      };
-      dictionary NumberPropertyInit: PropertyTemplate {
-        DOMString type = "number";
-        Number value;
-        Number minimum;
-        Number maximum;
-      };
-      dictionary ObjectPropertyInit: PropertyTemplate {
-        DOMString type = "object";
-        object value;
-      };
-      dictionary ArrayPropertyInit: PropertyTemplate {
-        DOMString type = "array";
-        sequence&lt;any&gt; value;
-        unsigned long minItems;
-        unsigned long maxItems;
-      };
-      typedef (SimplePropertyInit or NumberPropertyInit or ObjectPropertyInit or ArrayPropertyInit) PropertyInit;
-      interface ThingProperty: Interaction {
-        readonly attribute DOMString type;
-        Promise&lt;any&gt; get();
-        Promise set(any value);
-      };
-      ThingProperty implements Observable;
-    </pre>
+
+    <section data-dfn-for="ThingProperty">
+      <h3>The <dfn>ThingProperty</dfn> interface</h3>
+      <p>
+        The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
+      </p>
+      <p>
+        The <a>PropertyTemplate</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>ValueType</a> dictionaries.
+      </p>
+      <pre class="idl">
+        dictionary PropertyTemplate {
+          required TypeDefinition type;
+          DOMString label;
+          boolean writable = false;
+          boolean observable = false;
+          boolean const;
+          boolean required;
+          sequence&lt;Form&gt; forms;
+        };
+        PropertyTemplate implements ValueType;
+        interface ThingProperty {
+          // getter for PropertyTemplate properties
+          getter any(DOMString name);
+          // get and set interface for the Property
+          Promise&lt;any&gt; get();
+          Promise set(any value);
+        };
+        ThingProperty implements PropertyTemplate;
+        ThingProperty implements Observable;
+      </pre>
+      <p>
+        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyTemplate</a> as read-only properties.
+      </p>
+      <p>
+        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>JSONType</a>, then it MUST implement the corresponding <a>ValueType</a> dictionary. Otherwise, if it matches a property name in the <a>typeDefinitions</a> dictionary of the parent <a>ThingTemplate</a>, then implementations SHOULD use the dictionary value of the matched property for property type definition.
+      </p>
+      <p>
+        The <dfn>label</dfn> read-only property represents a text label for the <a>Property</a>.
+      </p>
+      <p>
+        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is `false`, then the `set(value)` method SHOULD always reject.
+      </p>
+      <p>
+        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is `false`, then the `subscribe()` method SHOULD always fail.
+      </p>
+      <p>
+        The <dfn>const</dfn> read-only property tells whether the <a>Property</a> value is a constant. If `true`, the `set()` and `subscribe()` methods SHOULD always fail.
+      </p>
+      <p>
+        The <dfn>required</dfn> read-only property tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
+      </p>
+      <p>
+        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data.
+      </p>
     </section>
-    <section><h3>Actions</h3>
-    <pre class="idl">
-      dictionary ActionInit: InteractionInit {
-        DOMString label;
-        PropertyInit input;
-        PropertyInit output;
-        DOMString description;
-      };
-      interface ThingAction: Interaction {
-        readonly attribute PropertyInit input;
-        readonly attribute PropertyInit output;
-        readonly attribute DOMString description;
-        readonly attribute DOMString label;
-        Promise&lt;any&gt; run();
-      };
-    </pre>
+
+    <section data-dfn-for="ThingAction">
+      <h3>The <dfn>ThingAction</dfn> interface</h3>
+      <pre class="idl">
+        dictionary ActionInit: InteractionInit {
+          DOMString label;
+          TypeDefinition input;
+          TypeDefinition output;
+          DOMString description;
+          sequence&lt;Form&gt; forms;
+        };
+        interface ThingAction: Interaction {
+          readonly attribute TypeDefinition input;
+          readonly attribute TypeDefinition output;
+          readonly attribute DOMString description;
+          readonly attribute DOMString label;
+          readonly attribute FrozenArray&lt;Form&gt; forms;
+          Promise&lt;any&gt; run();
+        };
+      </pre>
     </section>
+
     <section><h3>Events</h3>
-    <pre class="idl">
-      interface ThingEvent : ThingProperty {
-      };
-      typedef PropertyInit EventInit;
-    </pre>
+      <pre class="idl">
+        interface ThingEvent {
+        };
+        ThingEvent implements ThingProperty;
+        typedef PropertyTemplate EventInit;
+      </pre>
     </section>
   </section>
 
@@ -808,37 +856,30 @@
         try {
           var thing = WoT.produce({
             name: "tempSensor",
-            properties: {
-              temperature: {
+            typeDefinitions: {
+              TemperatureValueType: {
                 type: "number",
                 value: 0.0,
                 minimum: -50,
                 maximum: 10000,
                 forms: []
-              },
+              }
+            },
+            properties: {
+              temperature: "TemperatureValueType"
             },
             actions: {
               reset: {
                 description: "Reset the temperature sensor",
                 input: {
-                  temperature: {
-                    type: "number",
-                    value: 0.0,
-                    minimum: -50,
-                    maximum: 10000
-                  }
+                  temperature: "TemperatureValueType"
                 },
                 output: null,
                 forms: []
               },
             },
             events: {
-              onchange: {
-                type: "number",
-                minimum: -50,
-                maximum: 10000,
-                forms: []
-              },
+              onchange: "TemperatureValueType"
             },
             links: []
           });
