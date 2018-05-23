@@ -254,7 +254,7 @@
     <section data-dfn-for="ThingTemplate">
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        `ThingTemplate` is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]]. The set of core properties is defined by the <dfn>ThingCoreProperties</dfn> enumeration. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
+        `ThingTemplate` is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]]. The set of core properties is defined below. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
       </p>
       <ul>
         <li>
@@ -286,12 +286,6 @@
         </li>
         <li>
           The <strong><em>links</em></strong> optional attribute represents an array <a>WebLink</a> objects.
-        </li>
-        <li>
-          The <dfn>securityDefinitions</dfn> optional attribute represents a dictionary where property names are security configuration names, and values are <a>Security</a> dictionaries.
-        </li>
-        <li>
-          The <dfn>typeDefinitions</dfn> optional attribute represents a dictionary where property names are type names, and values are <a></a> dictionaries.
         </li>
         <li>
           The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
@@ -515,38 +509,37 @@
       <p>
         Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
       </p>
-      <p>
-        A type definition is either a <a>ValueType</a> object or a string that matches a property name in the <a>typeDefinitions</a> dictionary of the <a>ThingTemplate</a> the type definition is used in.
-      </p>
       <pre class="idl">
         enum JSONType { "boolean", "number", "string", "object", "array" };
         typedef (unsigned long or unrestricted double) Number;
-        dictionary BooleanValueType {
+        dictionary ValueType {
+          required boolean type;
+          boolean required;
+        };
+        dictionary BooleanValueType: ValueType {
           const type = "boolean";
           boolean value;
         };
-        dictionary StringValueType {
+        dictionary StringValueType: ValueType {
           const type = "string";
           USVString value;
         };
-        dictionary NumberValueType {
+        dictionary NumberValueType: ValueType {
           const type = "number";
           Number value;
           Number minimum;
           Number maximum;
         };
-        dictionary ObjectValueType {
+        dictionary ObjectValueType: ValueType {
           const type = "object";
-          object value;
+          maplike&ltDOMString, ValueType&gt properties;
         };
-        dictionary ArrayValueType {
+        dictionary ArrayValueType: ValueType {
           const type = "array";
-          FrozenArray&lt;any&gt; value;
+          FrozenArray&lt;ValueType&gt; items;
           unsigned long minItems;
           unsigned long maxItems;
         };
-        typedef (BooleanValueType or StringValueType or NumberValueType or ObjectValueType or ArrayValueType) ValueType;
-        typedef (ValueType or DOMString) TypeDefinition;
       </pre>
     </section>
 
@@ -559,16 +552,13 @@
         The <a>PropertyTemplate</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>ValueType</a> dictionaries.
       </p>
       <pre class="idl">
-        dictionary PropertyTemplate {
-          required TypeDefinition type;
+        dictionary PropertyTemplate: ValueType {
           DOMString label;
           boolean writable = false;
           boolean observable = false;
           boolean const;
-          boolean required;
           sequence&lt;Form&gt; forms;
         };
-        PropertyTemplate implements ValueType;
         interface ThingProperty {
           // getter for PropertyTemplate properties
           getter any(DOMString name);
@@ -583,7 +573,7 @@
         The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyTemplate</a> as read-only properties.
       </p>
       <p>
-        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>JSONType</a>, then it MUST implement the corresponding <a>ValueType</a> dictionary. Otherwise, if it matches a property name in the <a>typeDefinitions</a> dictionary of the parent <a>ThingTemplate</a>, then implementations SHOULD use the dictionary value of the matched property for property type definition.
+        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>JSONType</a>, then it MUST implement the corresponding <a>ValueType</a> dictionary.
       </p>
       <p>
         The <dfn>label</dfn> read-only property represents a text label for the <a>Property</a>.
@@ -610,14 +600,14 @@
       <pre class="idl">
         dictionary ActionInit: InteractionInit {
           DOMString label;
-          TypeDefinition input;
-          TypeDefinition output;
+          ValueType input;
+          ValueType output;
           DOMString description;
           sequence&lt;Form&gt; forms;
         };
         interface ThingAction: Interaction {
-          readonly attribute TypeDefinition input;
-          readonly attribute TypeDefinition output;
+          readonly attribute ValueType input;
+          readonly attribute ValueType output;
           readonly attribute DOMString description;
           readonly attribute DOMString label;
           readonly attribute FrozenArray&lt;Form&gt; forms;
@@ -852,34 +842,34 @@
         Below some <code><a>ExposedThing</a></code> interface examples are given.
       </p>
 
-      <pre class="example highlight" title="Create a new blank exposed Thing">
+      <pre class="example highlight" title="Create a new exposed Thing with a simple property">
         try {
+          var temperatureValueDefinition = {
+            type: "number",
+            value: 0.0,
+            minimum: -50,
+            maximum: 10000
+          };
+          var temperaturePropertyDefinition = temperatureValueDefinition;
+          // add the 'forms' property
+          temperaturePropertyDefinition.forms = [ ... ];
           var thing = WoT.produce({
             name: "tempSensor",
-            typeDefinitions: {
-              TemperatureValueType: {
-                type: "number",
-                value: 0.0,
-                minimum: -50,
-                maximum: 10000,
-                forms: []
-              }
-            },
             properties: {
-              temperature: "TemperatureValueType"
+              temperature: temperaturePropertyDefinition
             },
             actions: {
               reset: {
                 description: "Reset the temperature sensor",
                 input: {
-                  temperature: "TemperatureValueType"
+                  temperature: temperatureValueDefinition
                 },
                 output: null,
                 forms: []
               },
             },
             events: {
-              onchange: "TemperatureValueType"
+              onchange: temperatureValueDefinition
             },
             links: []
           });
@@ -890,12 +880,72 @@
           setInterval( async () => {
             let mock = Math.random()*100;
             thing.writeProperty("temperature", mock);
-            let old = await thing.readProperty("max");
-            if (old &lt; mock) {
-              thing.writeProperty("max", mock);
-              thing.emitEvent("onchange");
+            let old = await thing.readProperty("temperature");
+            if (old < mock) {
+              thing.writeProperty("temperature", mock);
+              thing.emitEvent("onchange", mock);
             }
           }, 1000);
+        } catch (err) {
+           console.log("Error creating ExposedThing: " + err);
+        }
+      </pre>
+
+      <pre class="example highlight" title="Create a new exposed Thing with object property">
+        try {
+          var statusValueDefinition = {
+            type: "object",
+            properties: {
+              brightness: {
+                type: "number",
+                minimum: 0.0,
+                maximum: 100.0,
+                required: true
+              },
+              rgb: {
+                type: "array",
+                "minItems": 3,
+                "maxItems": 3,
+                items : {
+                    "type" : "number",
+                    "minimum": 0,
+                    "maximum": 255
+                }
+              }
+          };
+          var statusPropertyDefinition = statusValueDefinition;
+          // add the 'forms' property
+          statusPropertyDefinition["forms"] = [];
+          var thing = WoT.produce({
+            name: "mySensor",
+            properties: {
+              brightness: {
+                type: "number",
+                value: 0.0,
+                minimum: 0.0,
+                maximum: 100.0,
+                required: true,
+              },
+              status: statusPropertyDefinition
+            },
+            actions: {
+              status: {
+                description: "Get status object",
+                input: null,
+                output: {
+                  status : statusValueDefinition;
+                },
+                forms: []
+              },
+            },
+            events: {
+              onstatuschange: statusValueDefinition;
+            },
+            links: []
+          });
+          thing.expose().then(() => {
+              thing.register();
+          });
         } catch (err) {
            console.log("Error creating ExposedThing: " + err);
         }
