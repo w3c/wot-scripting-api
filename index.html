@@ -256,11 +256,11 @@
     <section data-dfn-for="ThingTemplate">
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        <a>ThingTemplate</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]]. The set of core properties is defined below. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
+        <a>ThingTemplate</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]], and it is also used in <a>ThingFilter</a>. The set of core properties is defined below. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
       </p>
       <ul>
         <li>
-          The <dfn>name</dfn> optional attribute represents the name of the <a>Thing</a> as <code>DOMString</code>.
+          The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>. In the <a>Thing Description</a> this attribute is mandatory, but in <a>ThingFilter</a> it is optional.
         </li>
         <li>
           The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. Note that this is not the same as the <a>JSON-LD</a> <code>@id</code> attribute. Also note that the <a>WoT Runtime</a> may override this with a different value when exposing the <a>Thing</a>.
@@ -542,7 +542,9 @@
         typedef (unsigned long or unrestricted double) Number;
         dictionary ValueType {
           required boolean type;
-          boolean required;
+          boolean required = "false";
+          DOMString description;
+          boolean const;
         };
         dictionary BooleanValueType: ValueType {
           const type = "boolean";
@@ -551,6 +553,7 @@
         dictionary StringValueType: ValueType {
           const type = "string";
           USVString value;
+          sequence&lt;DOMString&gt;? enum;
         };
         dictionary NumberValueType: ValueType {
           const type = "number";
