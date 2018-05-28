@@ -221,7 +221,7 @@
     <p>The WoT object is the API entry point and it is exposed by an implementation of the <a>WoT Runtime</a>. The <dfn>WoT object</dfn> does not expose properties, only methods for discovering, consuming and exposing a <a>Thing</a>.
     </p>
     <p class="note">
-       Browser implementations SHOULD use a namespace object such as `wot`, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
+       Browser implementations SHOULD use a namespace object such as <code>wot</code>, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
     </p>
     <pre class="idl">
       // [SecureContext]
@@ -231,6 +231,8 @@
         Promise&lt;ThingDescription&gt; fetch(USVString url);
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
+        Promise&lt;void&gt; register(USVString directory, ExposedThing thing);
+        Promise&lt;void&gt; unregister(USVString directory, ExposedThing thing);
       };
       typedef dictionary ThingTemplate;
       typedef USVString ThingDescription;
@@ -247,24 +249,21 @@
         Serialized representation of the <a>Thing Description</a> (a <a>JSON-LD</a> document).
       </p>
       <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as an opaque `USVString` that can be transmitted between devices.
+        In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
       </p>
     </section>
 
     <section data-dfn-for="ThingTemplate">
       <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
       <p>
-        `ThingTemplate` is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]]. The set of core properties is defined below. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
+        <a>ThingTemplate</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]]. The set of core properties is defined below. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
       </p>
       <ul>
         <li>
-          The <dfn>name</dfn> mandatory attribute represents the name of the <a>Thing</a> as <code>DOMString</code>.
+          The <dfn>name</dfn> optional attribute represents the name of the <a>Thing</a> as <code>DOMString</code>.
         </li>
         <li>
-          The <dfn>id</dfn> optional attribute represents a unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. Note that this is not the same as the <a>JSON-LD</a> `@id` attribute.
-        </li>
-        <li>
-          The <dfn>base</dfn> optional attribute represents a base URL as <code>USVString</code>.
+          The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. Note that this is not the same as the <a>JSON-LD</a> <code>@id</code> attribute. Also note that the <a>WoT Runtime</a> may override this with a different value when exposing the <a>Thing</a>.
         </li>
         <li>
           The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
@@ -294,7 +293,7 @@
           The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
         </li>
         <li>
-          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance `@id`, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
+          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
         </li>
       </ul>
       <p class="ednote">
@@ -308,19 +307,28 @@
         Contains security related configuration.
       </p>
     <pre class="idl">
-      enum SecurityScheme { "basic", "digest", "oauth2" };
       dictionary Security {
-        required SecurityScheme scheme;
-        any input;
+        required DOMString scheme;
+        any in;
       };
     </pre>
       <p>
         <ul>
           <li>
-            The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
-          </li>
+            The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>, for instance
+            <ul>
+              <li> <code>"basic+https"</code>,</li>
+              <li> <code>"digest+https"</code>,</li>
+              <li> <code>"bearer+https"</code>,</li>
+              <li> <code>"bearer+coaps"</code>,</li>
+              <li> <code>"pop+https"</code>, </li>
+              <li> <code>"pop+coaps"</code>, </li>
+              <li> <code>"apikey+https"</code>, </li>
+              <li> <code>"apikey+coaps"</code>, </li>
+              <li> <code>"ocf+coaps"</code>. </li>
+          </ul>
           <li>
-            The <dfn>input</dfn> property represents security initialization data.
+            The <dfn>in</dfn> property represents security initialization data as described in the [Security metadata description](https://github.com/w3c/wot-security/blob/master/wot-security-metadata.md).
           </li>
         </ul>
       </p>
@@ -328,7 +336,7 @@
 
     <section> <h3> The <dfn>fetch()</dfn> method</h3>
       <p>
-        Accepts an <code>url</code> argument of type `USVString` that represents a URL (e.g. `file://` or `https://`) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type `USVString`).
+        Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
       </p>
     </section>
 
@@ -352,10 +360,39 @@
       </ol>
     </section> <!-- produce() -->
 
+    <section> <h3>The <dfn>register()</dfn> method</h3>
+      <p>
+        Takes two mandatory arguments:
+        <ul>
+          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
+          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
+        </ul>
+      </p>
+      <p>
+        Generate the <a>Thing Description</a> as <var>td</var>, given the <a>Properties</a>, <a>Action</a>s and <a>Event</a>s defined for this <a>ExposedThing</a> object. Then make a request to register <var>td</var> to the given WoT <a>Thing Directory</a>.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>unregister()</dfn> method</h3>
+      <p>
+        Takes two mandatory arguments:
+        <ul>
+          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
+          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
+        </ul>
+      </p>
+      <p>
+        Makes a request to unregister the <code>thing</code> from the given WoT <a>Thing Directory</a>.
+      </p>
+    </section>
+
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
         Starts the discovery process that will provide <code><a>ThingDescription</a></code>s that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, uses all supported discovery methods.
         Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. Errors are also signaled at the subscription object.
+      </p>
+      <p class="note">
+        Note that canceling a discovery (via invoking <code>unsubscribe()</code>) may not be successful in all cases, for instance when discovery is based on open ended multicast requests. However, once <code>unsubscribe()</code> has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
       </p>
 
       <section data-dfn-for="DiscoveryMethod">
@@ -369,16 +406,13 @@
         <ul>
           <li><dfn>"any"</dfn> does not provide any restriction</li>
           <li>
-            <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device
+            <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
           </li>
           <li>
-            <dfn>"directory"</dfn> for discovery based on a service provided by a directory or repository of <a>Thing</a>s
+            <dfn>"directory"</dfn> for discovery based on a service provided by a <a>Thing Directory</a>.
           </li>
           <li>
-            <dfn>"nfc"</dfn> for discovering <a>Thing</a>s in the device's proximity by using NFC
-          </li>
-          <li>
-            <dfn>"ble"</dfn> for discovering <a>Thing</a>s by using Bluetooth Low Energy (BLE)
+            <dfn>"multicast"</dfn> for discovering <a>Thing</a>s in the device's network by using a supported multicast protocol.
           </li>
         </ul>
       </section>
@@ -413,7 +447,7 @@
         </p>
       </section>
       <p>
-        If queries are specified, but not supported, implementations should signal a `NotSupportedError` on the subscription objects. For security errors (e.g. authentication error) a `SecurityError` should be signaled. For query validation errors a `TypeError` should be signaled. For other errors an `Error` should be signaled.
+        If queries are specified, but not supported, implementations should signal a <code>NotSupportedError</code> on the subscription objects. For security errors (e.g. authentication error) a <code>SecurityError</code> should be signaled. For query validation errors a <code>TypeError</code> should be signaled. For other errors an <code>Error</code> should be signaled.
       </p>
     </section> <!-- Discovery -->
 
@@ -438,9 +472,6 @@
           },
           5000);
       </pre>
-      <p class="note">
-        Note that canceling a discovery (through `unsubscribe()`) may not be successful in all cases, for instance when discovery is based on open ended broadcast requests. However, once `unsubscribe()` has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
-      </p>
       <pre class="example" title="Discover Things exposed by local hardware">
         let subscription = wot.discover({ method: "local" }).subscribe(
           td => { console.log("Found local Thing " + td.name); },
@@ -456,14 +487,11 @@
         });
       </pre>
       <pre class="example" title="Discover Things exposed nearby, via Bluetooth or NFC">
+        // Use a proprietary extension of "local" discovery via "constraints"
         let bleSub = wot.discover({
-          method: "ble",
-          constraints: [{ protocol: "BLE-4.2" }]
+          method: "local",
+          constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC" }]
         }).subscribe(
-          td => { console.log("Found nearby Thing " + td.name); },
-          error => { console.log("Discovery error: " + error.message); }
-        );
-        let nfcSub = wot.discover({ method: "nfc" }).subscribe(
           td => { console.log("Found nearby Thing " + td.name); },
           error => { console.log("Discovery error: " + error.message); }
         );
@@ -579,13 +607,13 @@
         The <dfn>label</dfn> read-only property represents a text label for the <a>Property</a>.
       </p>
       <p>
-        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is `false`, then the `set(value)` method SHOULD always reject.
+        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
       </p>
       <p>
-        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is `false`, then the `subscribe()` method SHOULD always fail.
+        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
       </p>
       <p>
-        The <dfn>const</dfn> read-only property tells whether the <a>Property</a> value is a constant. If `true`, the `set()` and `subscribe()` methods SHOULD always fail.
+        The <dfn>const</dfn> read-only property tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
       </p>
       <p>
         The <dfn>required</dfn> read-only property tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
@@ -693,8 +721,6 @@
         // define how to expose and run the Thing
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
-        Promise&lt;void&gt; register(optional USVString directory);
-        Promise&lt;void&gt; unregister(optional USVString directory);
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
         ExposedThing addProperty(ThingProperty property);
@@ -715,19 +741,7 @@
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
-        Start serving external requests for the <a>Thing</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>register()</dfn> method</h3>
-      <p>
-        Generates the <a>Thing Description</a> given the properties, <a>Actions</a> and <a>Event</a> defined for this object. If a <code>directory</code> argument is given, make a request to register the <a>Thing Description</a> with the given WoT repository by invoking its <code>register</code> <a>Action</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>unregister()</dfn> method</h3>
-      <p>
-        If a <code>directory</code> argument is given, make a request to unregister the <a>Thing Description</a> with the given WoT repository by invoking its <code>unregister</code> <a>Action</a>.
+        Start serving external requests for the <a>Thing</a>, so that WoT interactions using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible.
       </p>
     </section>
 
@@ -1097,46 +1111,32 @@
       The following terms are defined in [[!HTML5]] and are used in the context of browser implementations:
       <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
       <dfn>browsing context</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#top-level-browsing-context">
       <dfn>top-level browsing context</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object">
       <dfn>global object</dfn></a>,
-
       <a href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
       <dfn>incumbent settings object</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#document">
       <dfn>Document</dfn></a>,
-
       <a href="http://www.w3.org/TR/2011/WD-html5-20110113/urls.html#document-base-url">
       <dfn>document base URL</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#window">
       <dfn>Window</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#windowproxy">
       <dfn>WindowProxy</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#origin">
       <dfn>origin</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#ascii-serialisation-of-an-origin">
       <dfn>ASCII serialized origin</dfn></a>,
-
       executing algorithms <a href="https://html.spec.whatwg.org/#in-parallel">
       <dfn>in parallel</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#queue-a-task">
       <dfn>queue a task</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#task-source">
       <dfn>task source</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#the-iframe-element">
       <dfn>iframe</dfn></a>,
-
       <a href="https://html.spec.whatwg.org/#valid-mime-type">
       <dfn>valid MIME type</dfn></a>.
     </p>
