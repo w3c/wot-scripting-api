@@ -97,10 +97,10 @@
 
   <section id="abstract">
     <p>
-      The <a>Web of Things</a> (WoT) provides layered interoperability between <a>Things</a> by using the <a>WoT Interface</a>s.
+      The overall <a>Web of Things</a> (WoT) concepts are described in the [WoT Architecture](https://w3c.github.io/wot-architecture/) document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
     </p>
     <p>
-      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a>, i.e. <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
+      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing Description</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
     </p>
     <p>
       Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
@@ -119,14 +119,13 @@
 
   <section id="introduction"> <h2>Introduction</h2>
     <p>
-      The overall WoT concepts are described in the [WoT Architecture](https://w3c.github.io/wot-architecture/) document.
-      The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>. Support for scripting is optional for WoT devices.
+      WoT provides layered interoperability based on how <a>Thing</a>s are modeled: as being "consumed" and "exposed".
     </p>
     <p>
-      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a>.
+      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the  server <a>Thing</a> exposed on a remote device.
     </p>
     <p>
-      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack needed to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
+      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
     </p>
     <p class="note">
       Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
@@ -147,10 +146,10 @@
     <ul>
       <li>Discover all <a>Thing</a>s in the WoT network by sending a broadcast request.</li>
       <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
-      <li>Discover nearby <a>Thing</a>s, for instance by NFC or Bluetooth.</li>
+      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth.</li>
       <li>Discover <a>Thing</a>s by sending a discovery request to a given registry.</li>
       <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s</li>
-      <li>Discover <a>Thing</a>s by semantic filters.</li>
+      <li>Discover <a>Thing</a>s by semantic queries.</li>
       <li>Stop or suppress an ongoing discovery process.</li>
       <li>
           Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
@@ -221,7 +220,7 @@
     <p>The WoT object is the API entry point and it is exposed by an implementation of the <a>WoT Runtime</a>. The <dfn>WoT object</dfn> does not expose properties, only methods for discovering, consuming and exposing a <a>Thing</a>.
     </p>
     <p class="note">
-       Browser implementations SHOULD use a namespace object such as <code>wot</code>, and [Node.js](https://nodejs.org/en/)-like runtimes MAY provide the API object through the [`require()`](https://nodejs.org/api/modules.html) or [`import`](http://www.ecma-international.org/ecma-262/6.0/#sec-imports) mechanism.
+       Browser implementations SHOULD use a namespace object such as <code>navigator.wot</code>. <a href="https://nodejs.org/en/">Node.js</a>-like runtimes MAY provide the API object through the <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a> mechanism.
     </p>
     <pre class="idl">
       // [SecureContext]
@@ -241,6 +240,10 @@
 
     <p class="ednote">
       The algorithms for the WoT methods will be specified later, including error handling and security considerations.
+    </p>
+
+    <p>
+      The <dfn>ThingModel</dfn> type represents either a <a>ThingTemplate</a>, or a <a>ThingDescription</a> or a <a>ConsumedThing</a> object.
     </p>
 
     <section data-dfn-for="ThingDescription">
@@ -275,7 +278,7 @@
           The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>Security</a> dictionary;
         </li>
         <li>
-          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyTemplate</a>.
+          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyInit</a>.
         </li>
         <li>
           The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionInit</a>.
@@ -284,7 +287,7 @@
           The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventInit</a>.
         </li>
         <li>
-          The <strong><em>links</em></strong> optional attribute represents an array <a>WebLink</a> objects.
+          The <strong><em>links</em></strong> optional attribute represents an array of <a>WebLink</a> objects.
         </li>
         <li>
           The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
@@ -306,31 +309,28 @@
       <p>
         Contains security related configuration.
       </p>
-    <pre class="idl">
-      dictionary Security {
-        required DOMString scheme;
-        any in;
-      };
-    </pre>
+      <pre class="idl">
+        dictionary Security {
+          required DOMString scheme;
+          any in;
+        };
+      </pre>
       <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>, for instance
         <ul>
-          <li>
-            The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>, for instance
-            <ul>
-              <li> <code>"basic+https"</code>,</li>
-              <li> <code>"digest+https"</code>,</li>
-              <li> <code>"bearer+https"</code>,</li>
-              <li> <code>"bearer+coaps"</code>,</li>
-              <li> <code>"pop+https"</code>, </li>
-              <li> <code>"pop+coaps"</code>, </li>
-              <li> <code>"apikey+https"</code>, </li>
-              <li> <code>"apikey+coaps"</code>, </li>
-              <li> <code>"ocf+coaps"</code>. </li>
-          </ul>
-          <li>
-            The <dfn>in</dfn> property represents security initialization data as described in the [Security metadata description](https://github.com/w3c/wot-security/blob/master/wot-security-metadata.md).
-          </li>
+          <li> <code>"basic+https"</code>,</li>
+          <li> <code>"digest+https"</code>,</li>
+          <li> <code>"bearer+https"</code>,</li>
+          <li> <code>"bearer+coaps"</code>,</li>
+          <li> <code>"pop+https"</code>, </li>
+          <li> <code>"pop+coaps"</code>, </li>
+          <li> <code>"apikey+https"</code>, </li>
+          <li> <code>"apikey+coaps"</code>, </li>
+          <li> <code>"ocf+coaps"</code>. </li>
         </ul>
+      </p>
+      <p>
+        The <dfn>in</dfn> property represents security initialization data as described in the [Security metadata description](https://github.com/w3c/wot-security/blob/master/wot-security-metadata.md).
       </p>
     </section>
 
@@ -516,62 +516,239 @@
     <p>
       Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
     </p>
-    <section data-dfn-for="Link"><h3>Links and Forms</h3>
+
+    <section data-dfn-for="Link"><h3>The <dfn>Link</dfn> dictionary</h3>
       <pre class="idl">
-        [NoInterfaceObject]
         dictionary Link {
           required USVString href;
           USVString mediaType;
           DOMString rel;
         };
+      </pre>
+      <p>
+        The <dfn>href</dfn> property is a hypertext reference that defines the <a>Link</a>.
+      </p>
+      <p>
+        The <dfn>mediaType</dfn> property represents the <a>IANA media type</a> associated with the <a>Link</a>.
+      </p>
+      <p>
+        The <dfn>rel</dfn> property represents a semantic label that specifies how to interact with the linked resource.
+      </p>
+    </section>
+
+    <section data-dfn-for="WebLink"><h3>The <dfn>WebLink</dfn> dictionary</h3>
+      <pre class="idl">
         dictionary WebLink: Link {
           USVString anchor;
         };
-        dictionary Form: Link {
-          DOMString security;
-        };
       </pre>
+      <p>
+        The <dfn>anchor</dfn> property represents a URI that overrides the default context of a <a>Link</a>.
+      </p>
     </section>
 
-    <section data-dfn-for="ValueType"><h3>Value types</h3>
+    <section data-dfn-for="Form"><h3>The <dfn>Form</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary Form: Link {
+          Security security;
+        };
+      </pre>
+      <p>
+        The <dfn>security</dfn> property represents the security requirements for the linked resource.
+      </p>
+    </section>
+
+    <section><h3>Value types</h3>
       <p>
         Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
       </p>
+
+      <section data-dfn-for="JSONType"><h4>The <dfn>JSONType</dfn> enumeration type</h4>
+        <pre class="idl">
+          enum JSONType { "boolean", "number", "string", "object", "array" };
+        </pre>
+        <p>
+          Defines the types that values can take, i.e. "<dfn>boolean</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
+        </p>
+      </section>
+
+      <section data-dfn-for="Number"><h4>The <dfn>Number</dfn> type</h4>
+        <pre class="idl">
+          typedef (long or unrestricted double) Number;
+        </pre>
+        <p>
+          A number is either an integer or floating point number supported by the underlying platform. A number value may have associated a permited range between a minimum and maximum value.
+        </p>
+      </section>
+
+      <section data-dfn-for="ValueType"><h4>The <dfn>ValueType</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary ValueType {
+            required JSONType type;
+            boolean required = "false";
+            DOMString description;
+            boolean const;
+          };
+        </pre>
+        <p>
+          Represents the common properties of a value type definition.
+        </p>
+        <p>
+          The <dfn>type</dfn> property represents the value type enumerated in <a>JSONType</a>.
+        </p>
+        <p>
+          The <dfn>required</dfn> property tells whether this value is required to be speficied.
+        </p>
+        <p>
+          The <dfn>description</dfn> property represents a textual description of the value.
+        </p>
+        <p>
+          The <dfn>const</dfn> property tells whether this value is constant.
+        </p>
+      </section>
+
+      <section data-dfn-for="NumberValueType"><h4>The <dfn>NumberValueType</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary NumberValueType: ValueType {
+            const type = "number";
+            Number value;
+            Number minimum;
+            Number maximum;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"number"</code>.
+        </p>
+        <p>
+          The <dfn>value</dfn> property represents the numeric value.
+        </p>
+        <p>
+          The <dfn>minimum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the minimum value that can be used.
+        </p>
+        <p>
+          The <dfn>maximum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the maximum value that can be used.
+        </p>
+      </section>
+
+      <section data-dfn-for="BooleanValueType"><h4>The <dfn>BooleanValueType</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary BooleanValueType: ValueType {
+            const type = "boolean";
+            boolean value;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"boolean"</code>.
+        </p>
+        <p>
+          The <dfn>value</dfn> property represents the boolean value.
+        </p>
+      </section>
+
+      <section data-dfn-for="StringValueType"><h4>The <dfn>StringValueType</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary StringValueType: ValueType {
+            const type = "string";
+            USVString value;
+            sequence&lt;DOMString&gt;? enum;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
+        </p>
+        <p>
+          The <dfn>value</dfn> property represents the string value.
+        </p>
+        <p>
+          The <dfn>enum</dfn> property represents the list of allowed string values as a string array.
+        </p>
+      </section>
+
+      <section data-dfn-for="ObjectValueType"><h4>The <dfn>ObjectValueType</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary ObjectValueType: ValueType {
+            const type = "object";
+            maplike&ltDOMString, ValueType&gt properties;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
+        </p>
+        <p>
+          The <dfn>properties</dfn> property is a dictionary that contains the object properties.
+        </p>
+      </section>
+
+      <section data-dfn-for="ArrayValueType"><h4>The <dfn>ArrayValueType</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary ArrayValueType: ValueType {
+            const type = "array";
+            FrozenArray&lt;ValueType&gt; items;
+            unsigned long minItems;
+            unsigned long maxItems;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"array"</code>.
+        </p>
+        <p>
+          The <dfn>items</dfn> property is an array of <a>ValueType</a> elements.
+        </p>
+        <p>
+          The <dfn>minItems</dfn> property represents the minimum number of elements required to be in the array.
+        </p>
+        <p>
+          The <dfn>maxItems</dfn> property represents the maximum number of elements that can be specified in the array.
+        </p>
+      </section>
+    </section>
+
+    <section data-dfn-for="Interaction">
+      <h3>The <dfn>Interaction</dfn> interface</h3>
+      <p>
+        The <a>Interaction</a> interface is an abstract class to represent <a>Thing</a> interactions: <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
+      </p>
+      <p>
+        The <a>InteractionInit</a> dictionary holds the common properties of <a>PropertyInit</a>, <a>ActionInit</a> and <a>EventInit</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object.
+      </p>
+
       <pre class="idl">
-        enum JSONType { "boolean", "number", "string", "object", "array" };
-        typedef (unsigned long or unrestricted double) Number;
-        dictionary ValueType {
-          required boolean type;
-          boolean required = "false";
-          DOMString description;
-          boolean const;
+        interface Interaction {
+          attribute DOMString label;
+          readonly attribute FrozenArray&lt;Form&gt; forms;
+          readonly attribute FrozenArray&lt;Link&gt; links;
         };
-        dictionary BooleanValueType: ValueType {
-          const type = "boolean";
-          boolean value;
-        };
-        dictionary StringValueType: ValueType {
-          const type = "string";
-          USVString value;
-          sequence&lt;DOMString&gt;? enum;
-        };
-        dictionary NumberValueType: ValueType {
-          const type = "number";
-          Number value;
-          Number minimum;
-          Number maximum;
-        };
-        dictionary ObjectValueType: ValueType {
-          const type = "object";
-          maplike&ltDOMString, ValueType&gt properties;
-        };
-        dictionary ArrayValueType: ValueType {
-          const type = "array";
-          FrozenArray&lt;ValueType&gt; items;
-          unsigned long minItems;
-          unsigned long maxItems;
-        };
+        Interaction implements Observable;
       </pre>
+      <p>
+        The <dfn>label</dfn> property represents a text label for the interaction.
+      </p>
+      <p>
+        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data.
+      </p>
+      <p>
+        The <dfn>links</dfn> read-only property represents an array of <a>Link</a>s attached to the interaction.
+      </p>
+
+      <section data-dfn-for="InteractionInit"><h4>The <dfn>InteractionInit</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary InteractionInit {
+            DOMString label;
+            sequence&lt;Form&gt; forms;
+            sequence&lt;Link&gt; links;
+          };
+        </pre>
+        <p>
+          The <dfn>label</dfn> property initializes the text label for the interaction.
+        </p>
+        <p>
+          The <dfn>forms</dfn> read-only property initializes the protocol bindings initialization data.
+        </p>
+        <p>
+          The <dfn>links</dfn> read-only property initializes the array of <a>Link</a>s attached to the interaction.
+        </p>
+      </section>
+
     </section>
 
     <section data-dfn-for="ThingProperty">
@@ -580,34 +757,24 @@
         The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
       </p>
       <p>
-        The <a>PropertyTemplate</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>ValueType</a> dictionaries.
+        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>ValueType</a> dictionaries.
       </p>
       <pre class="idl">
-        dictionary PropertyTemplate: ValueType {
-          DOMString label;
-          boolean writable = false;
-          boolean observable = false;
-          boolean const;
-          sequence&lt;Form&gt; forms;
-        };
-        interface ThingProperty {
-          // getter for PropertyTemplate properties
+        interface ThingProperty: Interaction {
+          // getter for PropertyInit properties
           getter any(DOMString name);
           // get and set interface for the Property
           Promise&lt;any&gt; get();
           Promise set(any value);
         };
-        ThingProperty implements PropertyTemplate;
+        ThingProperty implements PropertyInit;
         ThingProperty implements Observable;
       </pre>
       <p>
-        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyTemplate</a> as read-only properties.
+        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyInit</a> as read-only properties.
       </p>
       <p>
         The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>JSONType</a>, then it MUST implement the corresponding <a>ValueType</a> dictionary.
-      </p>
-      <p>
-        The <dfn>label</dfn> read-only property represents a text label for the <a>Property</a>.
       </p>
       <p>
         The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
@@ -616,44 +783,95 @@
         The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
       </p>
       <p>
-        The <dfn>const</dfn> read-only property tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
+        The <strong><em>const</em></strong> read-only property - defined in <a>ValueType</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
       </p>
       <p>
-        The <dfn>required</dfn> read-only property tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
+        The <strong><em>required</em></strong> read-only property  - defined in <a>ValueType</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
       </p>
       <p>
-        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data.
+        The <dfn>get()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
       </p>
+      <p>
+        The <dfn>set()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
+      </p>
+
+      <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary PropertyInit: InteractionInit {
+            boolean writable = false;
+            boolean observable = false;
+          };
+          PropertyInit implements ValueType;
+        </pre>
+      <p>
+        The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
+      </p>
+      <p>
+        The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
+      </p>
+      </section>
     </section>
 
     <section data-dfn-for="ThingAction">
       <h3>The <dfn>ThingAction</dfn> interface</h3>
       <pre class="idl">
-        dictionary ActionInit: InteractionInit {
-          DOMString label;
-          ValueType input;
-          ValueType output;
-          DOMString description;
-          sequence&lt;Form&gt; forms;
-        };
         interface ThingAction: Interaction {
           readonly attribute ValueType input;
           readonly attribute ValueType output;
           readonly attribute DOMString description;
-          readonly attribute DOMString label;
-          readonly attribute FrozenArray&lt;Form&gt; forms;
           Promise&lt;any&gt; run();
         };
       </pre>
+      <p>
+        The <dfn>input</dfn> read-only property represents the input of type <a>ValueType</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
+      </p>
+      <p>
+        The <dfn>output</dfn> read-only property represents the output of type <a>ValueType</a> of the <a>ThingAction</a>.
+      </p>
+      <p>
+        The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
+      </p>
+      <p>
+        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction and returns a <a>Promise</a> that will reject with an error or will resolve with a value defined by the <code>output</code> property.
+      </p>
+
+      <section data-dfn-for="ActionInit"><h4>The <dfn>ActionInit</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary ActionInit: InteractionInit {
+            ValueType input;
+            ValueType output;
+            DOMString description;
+          };
+        </pre>
+        <p>
+          The <dfn>input</dfn> property initializes the input of type <a>ValueType</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
+        </p>
+        <p>
+          The <dfn>output</dfn> property initializes the output of type <a>ValueType</a> of the <a>ThingAction</a>. The value is overridden when the action is executed.
+        </p>
+        <p>
+          The <dfn>description</dfn> read-only property initializes a human-readable textual description of the <a>Action</a> interaction.
+        </p>
+      </section>
     </section>
 
-    <section><h3>Events</h3>
+    <section><h3>The <dfn>ThingEvent</dfn> interface</h3>
       <pre class="idl">
         interface ThingEvent {
         };
         ThingEvent implements ThingProperty;
-        typedef PropertyTemplate EventInit;
       </pre>
+      <p>
+        The data events are carrying is represented as a <a>Property</a>. <a>ThingEvent</a> SHOULD also implement the event mechanism of the underlying platform (such as a DOM Event or a Node.js Event).
+      </p>
+      <section data-dfn-for="EventInit"><h4>The <dfn>EventInit</dfn> dictionary</h4>
+        <pre class="idl">
+          typedef PropertyInit EventInit;
+        </pre>
+        <p>
+          The value an event is carrying is initialized as a <a>Property</a> value.
+        </p>
+      </section>
     </section>
   </section>
 
@@ -676,6 +894,18 @@
     <p>
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
     </p>
+    <p>
+      The <dfn>properties</dfn> property represents a dictionary of <a>ThingProperty</a> items.
+    </p>
+    <p>
+      The <dfn>actions</dfn> property represents a dictionary of <a>ThingAction</a> items.
+    </p>
+    <p>
+      The <dfn>events</dfn> property represents a dictionary of <a>ThingEvent</a> items.
+    </p>
+    <li>
+      The <dfn>links</dfn> property represents an array of <a>WebLink</a> objects.
+    </li>
 
     <section>
       <h2>Examples</h2>
@@ -1235,9 +1465,6 @@
       The following problems are being discussed and need most attention:
     </p>
       <ul>
-        <li>
-          Revised API for tracking the <a>TD</a> better (https://github.com/w3c/wot-scripting-api/issues/96).
-        </li>
         <li>
           Security related metadata (https://github.com/w3c/wot-scripting-api/issues/91).
         </li>
