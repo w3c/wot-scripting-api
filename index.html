@@ -565,10 +565,10 @@
 
       <section data-dfn-for="JSONType"><h4>The <dfn>JSONType</dfn> enumeration type</h4>
         <pre class="idl">
-          enum JSONType { "boolean", "number", "string", "object", "array" };
+          enum JSONType { "boolean", "integer", "number", "string", "object", "array" };
         </pre>
         <p>
-          Defines the types that values can take, i.e. "<dfn>boolean</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
+          Defines the types that values can take, i.e. "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
         </p>
       </section>
 
@@ -610,17 +610,17 @@
       <section data-dfn-for="NumberValueType"><h4>The <dfn>NumberValueType</dfn> dictionary</h4>
         <pre class="idl">
           dictionary NumberValueType: ValueType {
-            const type = "number";
+            required DOMString type;
             Number value;
             Number minimum;
             Number maximum;
           };
         </pre>
         <p>
-          The <dfn>type</dfn> property MUST have the value <code>"number"</code>.
+          The <dfn>type</dfn> property MUST have either the value <code>"number"</code> (representing a floating point number) or <code>"integer"</code> (representing an integer) as defined by the underlying platform.
         </p>
         <p>
-          The <dfn>value</dfn> property represents the numeric value.
+          The <dfn>value</dfn> property represents the numeric value, cast to integer if <a>type</a> is <code>"integer"</code> or to floating point number if the value of <a>type</a> is <code>"number"</code>. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is not accepted.
         </p>
         <p>
           The <dfn>minimum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the minimum value that can be used.
@@ -641,7 +641,7 @@
           The <dfn>type</dfn> property MUST have the value <code>"boolean"</code>.
         </p>
         <p>
-          The <dfn>value</dfn> property represents the boolean value.
+          The <dfn>value</dfn> property represents the boolean value. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is not accepted.
         </p>
       </section>
 
@@ -649,7 +649,7 @@
         <pre class="idl">
           dictionary StringValueType: ValueType {
             const type = "string";
-            USVString value;
+            USVString? value;
             sequence&lt;DOMString&gt;? enum;
           };
         </pre>
@@ -657,7 +657,7 @@
           The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
         </p>
         <p>
-          The <dfn>value</dfn> property represents the string value.
+          The <dfn>value</dfn> property represents the string value. If not provided in the dictionary object, it SHOULD be initialized as <code>undefined</code>.
         </p>
         <p>
           The <dfn>enum</dfn> property represents the list of allowed string values as a string array.
@@ -668,14 +668,14 @@
         <pre class="idl">
           dictionary ObjectValueType: ValueType {
             const type = "object";
-            maplike&ltDOMString, ValueType&gt properties;
+            maplike&ltDOMString, ValueType&gt? properties;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
         </p>
         <p>
-          The <dfn>properties</dfn> property is a dictionary that contains the object properties.
+          The <dfn>properties</dfn> property is a dictionary that contains the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is accepted, as well as an empty object.
         </p>
       </section>
 
@@ -692,7 +692,7 @@
           The <dfn>type</dfn> property MUST have the value <code>"array"</code>.
         </p>
         <p>
-          The <dfn>items</dfn> property is an array of <a>ValueType</a> elements.
+          The <dfn>items</dfn> property is an array of <a>ValueType</a> elements. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is not accepted.
         </p>
         <p>
           The <dfn>minItems</dfn> property represents the minimum number of elements required to be in the array.
@@ -716,7 +716,6 @@
         interface Interaction {
           attribute DOMString label;
           readonly attribute FrozenArray&lt;Form&gt; forms;
-          readonly attribute FrozenArray&lt;Link&gt; links;
         };
         Interaction implements Observable;
       </pre>
@@ -724,28 +723,17 @@
         The <dfn>label</dfn> property represents a text label for the interaction.
       </p>
       <p>
-        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data.
-      </p>
-      <p>
-        The <dfn>links</dfn> read-only property represents an array of <a>Link</a>s attached to the interaction.
+        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
       </p>
 
       <section data-dfn-for="InteractionInit"><h4>The <dfn>InteractionInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary InteractionInit {
             DOMString label;
-            sequence&lt;Form&gt; forms;
-            sequence&lt;Link&gt; links;
           };
         </pre>
         <p>
           The <dfn>label</dfn> property initializes the text label for the interaction.
-        </p>
-        <p>
-          The <dfn>forms</dfn> read-only property initializes the protocol bindings initialization data.
-        </p>
-        <p>
-          The <dfn>links</dfn> read-only property initializes the array of <a>Link</a>s attached to the interaction.
         </p>
       </section>
 
@@ -796,6 +784,7 @@
       </p>
 
       <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
+        Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
         <pre class="idl">
           dictionary PropertyInit: InteractionInit {
             boolean writable = false;
