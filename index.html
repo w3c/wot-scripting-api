@@ -611,16 +611,12 @@
         <pre class="idl">
           dictionary NumberValueType: ValueType {
             required DOMString type;
-            Number value;
             Number minimum;
             Number maximum;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have either the value <code>"number"</code> (representing a floating point number) or <code>"integer"</code> (representing an integer) as defined by the underlying platform.
-        </p>
-        <p>
-          The <dfn>value</dfn> property represents the numeric value, cast to integer if <a>type</a> is <code>"integer"</code> or to floating point number if the value of <a>type</a> is <code>"number"</code>. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is not accepted.
         </p>
         <p>
           The <dfn>minimum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the minimum value that can be used.
@@ -634,14 +630,10 @@
         <pre class="idl">
           dictionary BooleanValueType: ValueType {
             const type = "boolean";
-            boolean value;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"boolean"</code>.
-        </p>
-        <p>
-          The <dfn>value</dfn> property represents the boolean value. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is not accepted.
         </p>
       </section>
 
@@ -649,15 +641,11 @@
         <pre class="idl">
           dictionary StringValueType: ValueType {
             const type = "string";
-            USVString? value;
             sequence&lt;DOMString&gt;? enum;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
-        </p>
-        <p>
-          The <dfn>value</dfn> property represents the string value. If not provided in the dictionary object, it SHOULD be initialized as <code>undefined</code>.
         </p>
         <p>
           The <dfn>enum</dfn> property represents the list of allowed string values as a string array.
@@ -668,14 +656,18 @@
         <pre class="idl">
           dictionary ObjectValueType: ValueType {
             const type = "object";
-            maplike&ltDOMString, ValueType&gt? properties;
+            maplike&lt;DOMString, ValueType&gt;? properties;
+            sequence&lt;DOMString&gt; required;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
         </p>
         <p>
-          The <dfn>properties</dfn> property is a dictionary that contains the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is accepted, as well as an empty object.
+          The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
+        </p>
+        <p>
+          The <dfn>required</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
         </p>
       </section>
 
@@ -683,7 +675,7 @@
         <pre class="idl">
           dictionary ArrayValueType: ValueType {
             const type = "array";
-            FrozenArray&lt;ValueType&gt; items;
+            ValueType? items;
             unsigned long minItems;
             unsigned long maxItems;
           };
@@ -692,7 +684,7 @@
           The <dfn>type</dfn> property MUST have the value <code>"array"</code>.
         </p>
         <p>
-          The <dfn>items</dfn> property is an array of <a>ValueType</a> elements. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is not accepted.
+          The <dfn>items</dfn> property represents the type of the elements in the array. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is accepted.
         </p>
         <p>
           The <dfn>minItems</dfn> property represents the minimum number of elements required to be in the array.
@@ -780,7 +772,7 @@
         The <dfn>get()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
       </p>
       <p>
-        The <dfn>set()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
+        The <dfn>set()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
       </p>
 
       <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
@@ -789,6 +781,7 @@
           dictionary PropertyInit: InteractionInit {
             boolean writable = false;
             boolean observable = false;
+            any value;  // initialization value
           };
           PropertyInit implements ValueType;
         </pre>
@@ -798,6 +791,9 @@
       <p>
         The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
       </p>
+        <p>
+          The <dfn>value</dfn> property represents the initialization value of the property. Its type should match the one defined in the <code>type</code> property. If not provided in the dictionary object, it SHOULD be initialized as <code>undefined</code>.
+        </p>
       </section>
     </section>
 
@@ -805,30 +801,30 @@
       <h3>The <dfn>ThingAction</dfn> interface</h3>
       <pre class="idl">
         interface ThingAction: Interaction {
-          readonly attribute ValueType input;
-          readonly attribute ValueType output;
+          readonly attribute ValueType? input;
+          readonly attribute ValueType? output;
           readonly attribute DOMString description;
-          Promise&lt;any&gt; run(any input);
+          Promise&lt;any&gt; run(optional any inputValue);
         };
       </pre>
       <p>
-        The <dfn>input</dfn> read-only property represents the input of type <a>ValueType</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
+        The <dfn>input</dfn> read-only property represents the input of type <a>ValueType</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
       </p>
       <p>
-        The <dfn>output</dfn> read-only property represents the output of type <a>ValueType</a> of the <a>ThingAction</a>.
+        The <dfn>output</dfn> read-only property represents the output of type <a>ValueType</a> of the <a>ThingAction</a>. If the value is <code>null</code> or <code>undefined</code>, the action does not return any values.
       </p>
       <p>
         The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
       </p>
       <p>
-        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction and returns a <a>Promise</a> that will reject with an error or will resolve with a value defined by the <code>output</code> property.
+        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>ValueType</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
       </p>
 
       <section data-dfn-for="ActionInit"><h4>The <dfn>ActionInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ActionInit: InteractionInit {
             ValueType input;
-            ValueType output;
+            ValueType? output;
             DOMString description;
           };
         </pre>
@@ -836,7 +832,7 @@
           The <dfn>input</dfn> property initializes the input of type <a>ValueType</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
         </p>
         <p>
-          The <dfn>output</dfn> property initializes the output of type <a>ValueType</a> of the <a>ThingAction</a>. The value is overridden when the action is executed.
+          The <dfn>output</dfn> property initializes the output of type <a>ValueType</a> of the <a>ThingAction</a>.
         </p>
         <p>
           The <dfn>description</dfn> read-only property initializes a human-readable textual description of the <a>Action</a> interaction.
@@ -862,6 +858,113 @@
         </p>
       </section>
     </section>
+
+    <section><h3>The <dfn>value-matching algorithm</dfn></h3>
+      <p>
+        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>ValueType</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>run()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
+        <ol>
+          <li>
+            If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>JSONType</a>, return <code>false</code>.
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"boolean"</code>: if <var>value</var> is either <code>true</code> or <code>false</code>, then return <code>true</code>, otherwise return <code>false</code>.
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"integer"</code>: if <var>value</var> is not an integer type defined by the underlying platform (such as <code>long</code> or <code>long long</code>), then return <code>false</code>, otherwise execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                Return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"number"</code>, if <var>value</var> is not an integer or floating point type defined by the underlying platform (such as <code>long</code> or <code>long long</code> or <code>double</code>), then return <code>false</code>, otherwise otherwise execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                Return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"string"</code>: if <var>value</var> is not a string type defined by the underlying platform, then return <code>false</code>, otherwise return <code>true</code>. In this case the algorithm expects a third parameter <var>valueType.enum</var> and runs the following sub-steps:
+            <ul>
+              <li>
+                If <var>valueType.enum</var> is an array of strings, then if <var>value</var> fully matches one of the strings defined in the array, return <var>true</var>.
+              </li>
+              <li>
+                Otherwise, return <var>false</var>.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"array"</code>, execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>valueType.minItems</var> is defined, and <var>value</var> is not an array that contains at least <var>valueType.minItems</var> elements, return <var>false</var>.
+              </li>
+              <li>
+                If <var>valueType.maxItems</var> is defined, and <var>value</var> is not an array that contains at maximum <var>valueType.maxItems</var> elements, return <var>false</var>.
+              </li>
+              <li>
+                Otherwise, if <var>value</var> is not an array, return <code>false</code>.
+              </li>
+              <li>
+                Otherwise, if <var>valueType.items</var> is <code>undefined</code>, return <code>false</code>.
+              </li>
+              <li>
+                Otherwise, if <var>valueType.items</var> is <code>null</code>, return <code>true</code> (i.e. any type is accepted as array element, including heterogenous arrays).
+              </li>
+              <li>
+                Otherwise, for each element of the array <var>value</var> run the <a>value-matching algorithm</a> against the <var>valueType.items</var> object. If any of these runs returns <code>false</code>, then return <code>false</code>.
+              </li>
+              <li>
+                Otherwise, return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Otherwise, if <var>type</var> is <code>"object"</code>, execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>value</var> is not an <code>Object</code> or <code>null</code>, return <code>false</code>.
+              </li>
+              <li>
+                If <var>valueType.properties</var> is not defined or is not <code>null</code> or it is not an object, return <code>false</code>.
+              </li>
+              <li>
+                If <var>valueType.properties</var> is <code>null</code>, return <code>true</code> (i.e. accept any object value).
+              </li>
+              <li>
+                For each string in the <var>valueType.required</var> array, if it does not match a property name in the <var>value.properties</var> object or in the <var>value</var> object, then return <code>false</code>.
+              </li>
+              <li>
+                For each property with name <var>propName</var> and value <var>propValueType</var> found in <var>valueType.properties</var>, run the following sub-steps:
+                <ol>
+                  <li>
+                    If the result of applying the <a>value-matching algorithm</a> on the value <var>value[propName]</var> and <var>propValueType</var> is <var>false</var>, then return <var>false</var>.
+                  </li>
+                </ol>
+              </li>
+              <li>
+                Return <code>true</code>.
+            </ol>
+          </li>
+        </ol>
+      </p>
+    </section>
+
   </section>
 
   <section data-dfn-for="ConsumedThing">
@@ -945,11 +1048,11 @@
         Promise&lt;void&gt; destroy();
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
-        ExposedThing addProperty(DOMString name, ThingPropertyInit property);
+        ExposedThing addProperty(DOMString name, PropertyInit property);
         ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(DOMString name, ThingActionInit action);
+        ExposedThing addAction(DOMString name, ActionInit action);
         ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(DOMString name, ThingEventInit event);
+        ExposedThing addEvent(DOMString name, EventInit event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
         ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
