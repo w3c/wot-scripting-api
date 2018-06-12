@@ -808,7 +808,7 @@
           readonly attribute ValueType input;
           readonly attribute ValueType output;
           readonly attribute DOMString description;
-          Promise&lt;any&gt; run();
+          Promise&lt;any&gt; run(any input);
         };
       </pre>
       <p>
@@ -945,11 +945,11 @@
         Promise&lt;void&gt; destroy();
         Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
         // define Thing Description modifiers
-        ExposedThing addProperty(DOMString name, ThingProperty property);
+        ExposedThing addProperty(DOMString name, ThingPropertyInit property);
         ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(DOMString name, ThingAction action);
+        ExposedThing addAction(DOMString name, ThingActionInit action);
         ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(DOMString name, ThingEvent event);
+        ExposedThing addEvent(DOMString name, ThingEventInit event);
         ExposedThing removeEvent(DOMString name);
         // define request handlers
         ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
@@ -981,7 +981,7 @@
 
     <section> <h3>The <dfn>addProperty()</dfn> method</h3>
       <p>
-        Adds a <a>Property</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>property</var> argument of type <a>ThingProperty</a>. It updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds a <a>Property</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>property</var> argument of type <a>PropertyInit</a>. It updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section> <!-- addProperty() -->
 
@@ -993,7 +993,7 @@
 
     <section> <h3>The <dfn>addAction()</dfn> method</h3>
       <p>
-        Adds an <a>Action</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>action</var> argument of type <a>ThingAction</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds an <a>Action</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>action</var> argument of type <a>ActionInit</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section> <!-- addAction -->
 
@@ -1005,7 +1005,7 @@
 
     <section> <h3>The <dfn>addEvent()</dfn> method</h3>
       <p>
-        Adds an event with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>event</var> argument of type <a>ThingEvent</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds an event with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>event</var> argument of type <a>EventInit</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section>
 
