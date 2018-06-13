@@ -304,36 +304,6 @@
       </p>
     </section> <!-- ThingTemplate -->
 
-    <section data-dfn-for="Security" >
-      <h3> The <dfn data-dfn-for="">Security</dfn> dictionary</h3>
-      <p>
-        Contains security related configuration.
-      </p>
-      <pre class="idl">
-        dictionary Security {
-          required DOMString scheme;
-          any in;
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>, for instance
-        <ul>
-          <li> <code>"basic+https"</code>,</li>
-          <li> <code>"digest+https"</code>,</li>
-          <li> <code>"bearer+https"</code>,</li>
-          <li> <code>"bearer+coaps"</code>,</li>
-          <li> <code>"pop+https"</code>, </li>
-          <li> <code>"pop+coaps"</code>, </li>
-          <li> <code>"apikey+https"</code>, </li>
-          <li> <code>"apikey+coaps"</code>, </li>
-          <li> <code>"ocf+coaps"</code>. </li>
-        </ul>
-      </p>
-      <p>
-        The <dfn>in</dfn> property represents security initialization data as described in the [Security metadata description](https://github.com/w3c/wot-security/blob/master/wot-security-metadata.md).
-      </p>
-    </section>
-
     <section> <h3> The <dfn>fetch()</dfn> method</h3>
       <p>
         Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
@@ -1418,6 +1388,35 @@
     <p class="ednote">
      Please see the <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a> repository for work in progress regarding threat models, assets, risks, recommended mitigations, and best practices for security and privacy for systems using the Web of Things. Once complete, security and privacy considerations relevant to the Scripting API will be summarized in this section.
     </p>
+    <section data-dfn-for="Security" >
+      <h3> The <dfn data-dfn-for="">Security</dfn> dictionary</h3>
+      <p>
+        Contains security related configuration.
+      </p>
+      <pre class="idl">
+        dictionary Security {
+          required DOMString scheme;
+          any in;
+        };
+      </pre>
+      <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>, for instance
+        <ul>
+          <li> <code>"basic+https"</code>,</li>
+          <li> <code>"digest+https"</code>,</li>
+          <li> <code>"bearer+https"</code>,</li>
+          <li> <code>"bearer+coaps"</code>,</li>
+          <li> <code>"pop+https"</code>, </li>
+          <li> <code>"pop+coaps"</code>, </li>
+          <li> <code>"apikey+https"</code>, </li>
+          <li> <code>"apikey+coaps"</code>, </li>
+          <li> <code>"ocf+coaps"</code>. </li>
+        </ul>
+      </p>
+      <p>
+        The <dfn>in</dfn> property represents security initialization data as described in the [Security metadata description](https://github.com/w3c/wot-security/blob/master/wot-security-metadata.md).
+      </p>
+    </section>
   </section>
 
   <section> <h2>Terminology and conventions</h2>
