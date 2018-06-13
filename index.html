@@ -1071,10 +1071,10 @@
 
       <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
         <pre class="idl">
-          enum DataType { "boolean", "integer", "number", "string", "object", "array" };
+          enum DataType { "boolean", "integer", "number", "string", "object", "array", "null" };
         </pre>
         <p>
-          Defines the types that values can take, i.e. "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
+          Defines the types that values can take, i.e. "<dfn>null</dfn>" "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
         </p>
       </section>
 
@@ -1207,6 +1207,9 @@
         <ol>
           <li>
             If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>DataType</a>, return <code>false</code>.
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"null"</code>: if <var>value</var> is <code>null</code>, return <code>true</code>, otherwise return <code>false</code>.
           </li>
           <li>
             Otherwise, if <var>valueType.type</var> is <code>"boolean"</code>: if <var>value</var> is either <code>true</code> or <code>false</code>, then return <code>true</code>, otherwise return <code>false</code>.
