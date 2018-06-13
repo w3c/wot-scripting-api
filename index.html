@@ -563,9 +563,9 @@
         Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
       </p>
 
-      <section data-dfn-for="JSONType"><h4>The <dfn>JSONType</dfn> enumeration type</h4>
+      <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
         <pre class="idl">
-          enum JSONType { "boolean", "integer", "number", "string", "object", "array" };
+          enum DataType { "boolean", "integer", "number", "string", "object", "array" };
         </pre>
         <p>
           Defines the types that values can take, i.e. "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
@@ -581,10 +581,10 @@
         </p>
       </section>
 
-      <section data-dfn-for="ValueType"><h4>The <dfn>ValueType</dfn> dictionary</h4>
+      <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ValueType {
-            required JSONType type;
+          dictionary DataSchema {
+            required DataType type;
             boolean required = "false";
             DOMString description;
             boolean const;
@@ -594,7 +594,7 @@
           Represents the common properties of a value type definition.
         </p>
         <p>
-          The <dfn>type</dfn> property represents the value type enumerated in <a>JSONType</a>.
+          The <dfn>type</dfn> property represents the value type enumerated in <a>DataType</a>.
         </p>
         <p>
           The <dfn>required</dfn> property tells whether this value is required to be speficied.
@@ -607,9 +607,9 @@
         </p>
       </section>
 
-      <section data-dfn-for="NumberValueType"><h4>The <dfn>NumberValueType</dfn> dictionary</h4>
+      <section data-dfn-for="NumberSchema"><h4>The <dfn>NumberSchema</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary NumberValueType: ValueType {
+          dictionary NumberSchema: DataSchema {
             required DOMString type;
             Number minimum;
             Number maximum;
@@ -626,9 +626,9 @@
         </p>
       </section>
 
-      <section data-dfn-for="BooleanValueType"><h4>The <dfn>BooleanValueType</dfn> dictionary</h4>
+      <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary BooleanValueType: ValueType {
+          dictionary BooleanSchema: DataSchema {
             const type = "boolean";
           };
         </pre>
@@ -637,9 +637,9 @@
         </p>
       </section>
 
-      <section data-dfn-for="StringValueType"><h4>The <dfn>StringValueType</dfn> dictionary</h4>
+      <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary StringValueType: ValueType {
+          dictionary StringSchema: DataSchema {
             const type = "string";
             sequence&lt;DOMString&gt;? enum;
           };
@@ -652,11 +652,11 @@
         </p>
       </section>
 
-      <section data-dfn-for="ObjectValueType"><h4>The <dfn>ObjectValueType</dfn> dictionary</h4>
+      <section data-dfn-for="ObjectSchema"><h4>The <dfn>ObjectSchema</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ObjectValueType: ValueType {
+          dictionary ObjectSchema: DataSchema {
             const type = "object";
-            maplike&lt;DOMString, ValueType&gt;? properties;
+            maplike&lt;DOMString, DataSchema&gt;? properties;
             sequence&lt;DOMString&gt; required;
           };
         </pre>
@@ -671,11 +671,11 @@
         </p>
       </section>
 
-      <section data-dfn-for="ArrayValueType"><h4>The <dfn>ArrayValueType</dfn> dictionary</h4>
+      <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
         <pre class="idl">
-          dictionary ArrayValueType: ValueType {
+          dictionary ArraySchema: DataSchema {
             const type = "array";
-            ValueType? items;
+            DataSchema? items;
             unsigned long minItems;
             unsigned long maxItems;
           };
@@ -737,7 +737,7 @@
         The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
       </p>
       <p>
-        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>ValueType</a> dictionaries.
+        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
       </p>
       <pre class="idl">
         interface ThingProperty: Interaction {
@@ -754,7 +754,7 @@
         The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyInit</a> as read-only properties.
       </p>
       <p>
-        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>JSONType</a>, then it MUST implement the corresponding <a>ValueType</a> dictionary.
+        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>DataType</a>, then it MUST implement the corresponding <a>DataSchema</a> dictionary.
       </p>
       <p>
         The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
@@ -763,10 +763,10 @@
         The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
       </p>
       <p>
-        The <strong><em>const</em></strong> read-only property - defined in <a>ValueType</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
+        The <strong><em>const</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
       </p>
       <p>
-        The <strong><em>required</em></strong> read-only property  - defined in <a>ValueType</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
+        The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
       </p>
       <p>
         The <dfn>get()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
@@ -783,7 +783,7 @@
             boolean observable = false;
             any value;  // initialization value
           };
-          PropertyInit implements ValueType;
+          PropertyInit implements DataSchema;
         </pre>
       <p>
         The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
@@ -801,38 +801,38 @@
       <h3>The <dfn>ThingAction</dfn> interface</h3>
       <pre class="idl">
         interface ThingAction: Interaction {
-          readonly attribute ValueType? input;
-          readonly attribute ValueType? output;
+          readonly attribute DataSchema? input;
+          readonly attribute DataSchema? output;
           readonly attribute DOMString description;
           Promise&lt;any&gt; run(optional any inputValue);
         };
       </pre>
       <p>
-        The <dfn>input</dfn> read-only property represents the input of type <a>ValueType</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
+        The <dfn>input</dfn> read-only property represents the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
       </p>
       <p>
-        The <dfn>output</dfn> read-only property represents the output of type <a>ValueType</a> of the <a>ThingAction</a>. If the value is <code>null</code> or <code>undefined</code>, the action does not return any values.
+        The <dfn>output</dfn> read-only property represents the output of type <a>DataSchema</a> of the <a>ThingAction</a>. If the value is <code>null</code> or <code>undefined</code>, the action does not return any values.
       </p>
       <p>
         The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
       </p>
       <p>
-        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>ValueType</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
+        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
       </p>
 
       <section data-dfn-for="ActionInit"><h4>The <dfn>ActionInit</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ActionInit: InteractionInit {
-            ValueType input;
-            ValueType? output;
+            DataSchema input;
+            DataSchema? output;
             DOMString description;
           };
         </pre>
         <p>
-          The <dfn>input</dfn> property initializes the input of type <a>ValueType</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
+          The <dfn>input</dfn> property initializes the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
         </p>
         <p>
-          The <dfn>output</dfn> property initializes the output of type <a>ValueType</a> of the <a>ThingAction</a>.
+          The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
         </p>
         <p>
           The <dfn>description</dfn> read-only property initializes a human-readable textual description of the <a>Action</a> interaction.
@@ -861,10 +861,10 @@
 
     <section><h3>The <dfn>value-matching algorithm</dfn></h3>
       <p>
-        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>ValueType</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>run()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
+        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>run()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
         <ol>
           <li>
-            If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>JSONType</a>, return <code>false</code>.
+            If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>DataType</a>, return <code>false</code>.
           </li>
           <li>
             Otherwise, if <var>valueType.type</var> is <code>"boolean"</code>: if <var>value</var> is either <code>true</code> or <code>false</code>, then return <code>true</code>, otherwise return <code>false</code>.
@@ -950,10 +950,10 @@
                 For each string in the <var>valueType.required</var> array, if it does not match a property name in the <var>value.properties</var> object or in the <var>value</var> object, then return <code>false</code>.
               </li>
               <li>
-                For each property with name <var>propName</var> and value <var>propValueType</var> found in <var>valueType.properties</var>, run the following sub-steps:
+                For each property with name <var>propName</var> and value <var>propDataSchema</var> found in <var>valueType.properties</var>, run the following sub-steps:
                 <ol>
                   <li>
-                    If the result of applying the <a>value-matching algorithm</a> on the value <var>value[propName]</var> and <var>propValueType</var> is <var>false</var>, then return <var>false</var>.
+                    If the result of applying the <a>value-matching algorithm</a> on the value <var>value[propName]</var> and <var>propDataSchema</var> is <var>false</var>, then return <var>false</var>.
                   </li>
                 </ol>
               </li>
