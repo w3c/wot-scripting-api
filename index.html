@@ -275,7 +275,7 @@
           The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
         </li>
         <li>
-          The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>Security</a> dictionary;
+          The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>SecurityScheme</a> dictionary;
         </li>
         <li>
           The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyInit</a>.
@@ -892,7 +892,7 @@
     <section data-dfn-for="Form"><h3>The <dfn>Form</dfn> dictionary</h3>
       <pre class="idl">
         dictionary Form: Link {
-          Security security;
+          SecurityScheme security;
         };
       </pre>
       <p>
@@ -1388,33 +1388,165 @@
     <p class="ednote">
      Please see the <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a> repository for work in progress regarding threat models, assets, risks, recommended mitigations, and best practices for security and privacy for systems using the Web of Things. Once complete, security and privacy considerations relevant to the Scripting API will be summarized in this section.
     </p>
-    <section data-dfn-for="Security" >
-      <h3> The <dfn data-dfn-for="">Security</dfn> dictionary</h3>
+
+    <section data-dfn-for="SecuritySchemeType"><h4>The <dfn>SecuritySchemeType</dfn> enumeration type</h4>
+      <pre class="idl">
+        enum SecuritySchemeType { "basic", "digest", "bearer", "pop", "oauth2", "apikey" };
+      </pre>
       <p>
-        Contains security related configuration.
+        Defines the supported security schemes, i.e. "<dfn>basic</dfn>", "<dfn>digest</dfn>", "<dfn>bearer</dfn>", "<dfn>pop</dfn>", "<dfn>oauth2</dfn>" and "<dfn>apikey</dfn>".
+      </p>
+    </section>
+
+    <section data-dfn-for="AuthenticationType"><h4>The <dfn>AuthenticationType</dfn> enumeration type</h4>
+      <pre class="idl">
+        enum AuthenticationType { "header", "body", "query", "cookie" };
+      </pre>
+      <p>
+        Defines the  location of the authentication information, i.e. "<dfn>header</dfn>", "<dfn>body</dfn>", "<dfn>query</dfn>" and "<dfn>cookie</dfn>".
+      </p>
+    </section>
+
+    <section data-dfn-for="SecurityScheme" >
+      <h3> The <dfn data-dfn-for="">SecurityScheme</dfn> dictionary</h3>
+      <p>
+        Represents the base class for security related configuration. One of the subclasses (differentiated by <code>scheme</code>) SHOULD be used.
       </p>
       <pre class="idl">
-        dictionary Security {
-          required DOMString scheme;
-          any in;
+        dictionary SecurityScheme {
+          required SecuritySchemeType scheme;
         };
       </pre>
       <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>, for instance
-        <ul>
-          <li> <code>"basic+https"</code>,</li>
-          <li> <code>"digest+https"</code>,</li>
-          <li> <code>"bearer+https"</code>,</li>
-          <li> <code>"bearer+coaps"</code>,</li>
-          <li> <code>"pop+https"</code>, </li>
-          <li> <code>"pop+coaps"</code>, </li>
-          <li> <code>"apikey+https"</code>, </li>
-          <li> <code>"apikey+coaps"</code>, </li>
-          <li> <code>"ocf+coaps"</code>. </li>
-        </ul>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="BasicSecurityScheme" >
+      <h3> The <dfn data-dfn-for="">BasicSecurityScheme</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary BasicSecurityScheme: SecurityScheme {
+          const scheme = "basic";
+          DOMString in;
+          DOMString pname;
+        };
+      </pre>
+      <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
       </p>
       <p>
-        The <dfn>in</dfn> property represents security initialization data as described in the [Security metadata description](https://github.com/w3c/wot-security/blob/master/wot-security-metadata.md).
+        The <dfn>in</dfn> property of type <a>AuthenticationType</a> represents represents the location of the authentication information.
+      </p>
+      <p>
+        The <dfn>pname</dfn> property represents the authentication parameter name.
+      </p>
+    </section>
+
+    <section data-dfn-for="DigestSecurityScheme" >
+      <h3> The <dfn data-dfn-for="">DigestSecurityScheme</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary DigestSecurityScheme: BasicSecurityScheme {
+          const scheme = "digest";
+          DOMString qop = "auth";
+        };
+      </pre>
+      <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"digest"</code>.
+      </p>
+      <p>
+        The <dfn>qop</dfn> property represents the quality of protection. The default value is <code>"auth"</code>. The other accepted value is <code>"auth-int"</code>.
+      </p>
+    </section>
+
+    <section data-dfn-for="BearerSecurityScheme" >
+      <h3> The <dfn data-dfn-for="">BearerSecurityScheme</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary BearerSecurityScheme: BasicSecurityScheme {
+          const scheme = "bearer";
+          USVString authorizationURL;
+          DOMString alg = "ES256";
+          DOMString format = "jwt";
+        };
+      </pre>
+      <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"bearer"</code>.
+      </p>
+      <p>
+        The <dfn>authorizationURL</dfn> property represents the authorization server URL.
+      </p>
+      <p>
+        The <dfn>alg</dfn> property represents the encoding, encryption or digest algorithm. Accepted values include <code>"MD5"</code>, <code>"ES256"</code>, <code>"ES512-256"</code>. The default value is <code>"ES256"</code>.
+      </p>
+      <p>
+        The <dfn>format</dfn> property represents the format of the authentication information. Accepted values are <code>"jwt"</code> (the default value), <code>"jwe"</code> and <code>"jws"</code>.
+      </p>
+    </section>
+
+    <section data-dfn-for="PopSecurityScheme" >
+      <h3> The <dfn data-dfn-for="">PopSecurityScheme</dfn> dictionary</h3>
+      <p>
+        Represents the proof-of-possession token authentication security configuration.
+      </p>
+      <pre class="idl">
+        dictionary PopSecurityScheme: DigestSecurityScheme {
+          const scheme = "pop";
+        };
+      </pre>
+      <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"pop"</code>.
+      </p>
+    </section>
+
+    <section data-dfn-for="ApikeySecurityScheme" >
+      <h3> The <dfn data-dfn-for="">ApikeySecurityScheme</dfn> dictionary</h3>
+      <p>
+        Represents the API key authentication security configuration, where the access token is opaque and is not using a standard token format.
+      </p>
+      <pre class="idl">
+        dictionary ApikeySecurityScheme: BasicSecurityScheme {
+          const scheme = "apikey";
+        };
+      </pre>
+      <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"apikey"</code>.
+      </p>
+    </section>
+
+    <section data-dfn-for="OAuth2SecurityScheme" >
+      <h3> The <dfn data-dfn-for="">OAuth2SecurityScheme</dfn> dictionary</h3>
+      <p>
+        Represents the OAuth2 authentication security configuration.
+      </p>
+      <pre class="idl">
+        dictionary OAuth2SecurityScheme: SecurityScheme {
+          const scheme = "oauth2";
+          USVString tokenURL;
+          USVString authorizationURL;
+          USVString refreshURL;
+          sequence&lt;DOMString&gt; scopes;
+          DOMString flow = "implicit";
+        };
+      </pre>
+      <p>
+        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"oauth2"</code>.
+      </p>
+      <p>
+        The <dfn>tokenURL</dfn> property represents the URL of the token server.
+      </p>
+      <p>
+        The <dfn>authorizationURL</dfn> property represents the URL of the authorization server.
+      </p>
+      <p>
+        The <dfn>refreshURL</dfn> property represents the URL of the refresh server.
+      </p>
+      <p>
+        The <dfn>scopes</dfn> property represents the authorization scope identifiers as an array of strings.
+      </p>
+      <p>
+        The <dfn>flow</dfn> property represents the authorization flow of type. Accepted values are: <code>"implicit"</code> (the default value), <code>"password"</code>, <code>"client"</code>, or <code>"code"</code>.
+      </p>
+      <p>
+         For the <code>"implicit"</code> flow the <code>authorizationURL</code> and <code>scopes</code> properties are required. For the <code>"password"</code> and <code>"client"</code> flows the <code>tokenURL</code> and <code>scopes</code> properties are required. For the <code>"code"</code> flow the <code>authorizationURL</code>, <code>tokenURL</code> and <code>scopes</code> properties are required.
       </p>
     </section>
   </section>
