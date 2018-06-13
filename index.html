@@ -511,462 +511,6 @@
     </section> <!-- Examples -->
   </section> <!-- WoT API -->
 
-  <section>
-    <h2>Data types used in a <a>Thing</a></h2>
-    <p>
-      Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
-    </p>
-
-    <section data-dfn-for="Link"><h3>The <dfn>Link</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary Link {
-          required USVString href;
-          USVString mediaType;
-          DOMString rel;
-        };
-      </pre>
-      <p>
-        The <dfn>href</dfn> property is a hypertext reference that defines the <a>Link</a>.
-      </p>
-      <p>
-        The <dfn>mediaType</dfn> property represents the <a>IANA media type</a> associated with the <a>Link</a>.
-      </p>
-      <p>
-        The <dfn>rel</dfn> property represents a semantic label that specifies how to interact with the linked resource.
-      </p>
-    </section>
-
-    <section data-dfn-for="WebLink"><h3>The <dfn>WebLink</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary WebLink: Link {
-          USVString anchor;
-        };
-      </pre>
-      <p>
-        The <dfn>anchor</dfn> property represents a URI that overrides the default context of a <a>Link</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="Form"><h3>The <dfn>Form</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary Form: Link {
-          Security security;
-        };
-      </pre>
-      <p>
-        The <dfn>security</dfn> property represents the security requirements for the linked resource.
-      </p>
-    </section>
-
-    <section><h3>Value types</h3>
-      <p>
-        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
-      </p>
-
-      <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
-        <pre class="idl">
-          enum DataType { "boolean", "integer", "number", "string", "object", "array" };
-        </pre>
-        <p>
-          Defines the types that values can take, i.e. "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
-        </p>
-      </section>
-
-      <section data-dfn-for="Number"><h4>The <dfn data-dfn-for="">Number</dfn> type</h4>
-        <pre class="idl">
-          typedef (long or unrestricted double) Number;
-        </pre>
-        <p>
-          A number is either an integer or floating point number supported by the underlying platform. A number value may have associated a permited range between a minimum and maximum value.
-        </p>
-      </section>
-
-      <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary DataSchema {
-            required DataType type;
-            boolean required = "false";
-            DOMString description;
-            boolean const;
-          };
-        </pre>
-        <p>
-          Represents the common properties of a value type definition.
-        </p>
-        <p>
-          The <dfn>type</dfn> property represents the value type enumerated in <a>DataType</a>.
-        </p>
-        <p>
-          The <dfn>required</dfn> property tells whether this value is required to be speficied.
-        </p>
-        <p>
-          The <dfn>description</dfn> property represents a textual description of the value.
-        </p>
-        <p>
-          The <dfn>const</dfn> property tells whether this value is constant.
-        </p>
-      </section>
-
-      <section data-dfn-for="NumberSchema"><h4>The <dfn>NumberSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary NumberSchema: DataSchema {
-            required DOMString type;
-            Number minimum;
-            Number maximum;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have either the value <code>"number"</code> (representing a floating point number) or <code>"integer"</code> (representing an integer) as defined by the underlying platform.
-        </p>
-        <p>
-          The <dfn>minimum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the minimum value that can be used.
-        </p>
-        <p>
-          The <dfn>maximum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the maximum value that can be used.
-        </p>
-      </section>
-
-      <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary BooleanSchema: DataSchema {
-            const type = "boolean";
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"boolean"</code>.
-        </p>
-      </section>
-
-      <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary StringSchema: DataSchema {
-            const type = "string";
-            sequence&lt;DOMString&gt;? enum;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
-        </p>
-        <p>
-          The <dfn>enum</dfn> property represents the list of allowed string values as a string array.
-        </p>
-      </section>
-
-      <section data-dfn-for="ObjectSchema"><h4>The <dfn>ObjectSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ObjectSchema: DataSchema {
-            const type = "object";
-            maplike&lt;DOMString, DataSchema&gt;? properties;
-            sequence&lt;DOMString&gt; required;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
-        </p>
-        <p>
-          The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
-        </p>
-        <p>
-          The <dfn>required</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
-        </p>
-      </section>
-
-      <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ArraySchema: DataSchema {
-            const type = "array";
-            DataSchema? items;
-            unsigned long minItems;
-            unsigned long maxItems;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"array"</code>.
-        </p>
-        <p>
-          The <dfn>items</dfn> property represents the type of the elements in the array. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is accepted.
-        </p>
-        <p>
-          The <dfn>minItems</dfn> property represents the minimum number of elements required to be in the array.
-        </p>
-        <p>
-          The <dfn>maxItems</dfn> property represents the maximum number of elements that can be specified in the array.
-        </p>
-      </section>
-    </section>
-
-    <section data-dfn-for="Interaction">
-      <h3>The <dfn>Interaction</dfn> interface</h3>
-      <p>
-        The <a>Interaction</a> interface is an abstract class to represent <a>Thing</a> interactions: <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
-      </p>
-      <p>
-        The <a>InteractionInit</a> dictionary holds the common properties of <a>PropertyInit</a>, <a>ActionInit</a> and <a>EventInit</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object.
-      </p>
-
-      <pre class="idl">
-        interface Interaction {
-          attribute DOMString label;
-          readonly attribute FrozenArray&lt;Form&gt; forms;
-        };
-        Interaction implements Observable;
-      </pre>
-      <p>
-        The <dfn>label</dfn> property represents a text label for the interaction.
-      </p>
-      <p>
-        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
-      </p>
-
-      <section data-dfn-for="InteractionInit"><h4>The <dfn>InteractionInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary InteractionInit {
-            DOMString label;
-          };
-        </pre>
-        <p>
-          The <dfn>label</dfn> property initializes the text label for the interaction.
-        </p>
-      </section>
-
-    </section>
-
-    <section data-dfn-for="ThingProperty">
-      <h3>The <dfn>ThingProperty</dfn> interface</h3>
-      <p>
-        The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
-      </p>
-      <p>
-        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
-      </p>
-      <pre class="idl">
-        interface ThingProperty: Interaction {
-          // getter for PropertyInit properties
-          getter any(DOMString name);
-          // get and set interface for the Property
-          Promise&lt;any&gt; get();
-          Promise set(any value);
-        };
-        ThingProperty implements PropertyInit;
-        ThingProperty implements Observable;
-      </pre>
-      <p>
-        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyInit</a> as read-only properties.
-      </p>
-      <p>
-        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>DataType</a>, then it MUST implement the corresponding <a>DataSchema</a> dictionary.
-      </p>
-      <p>
-        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
-      </p>
-      <p>
-        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
-      </p>
-      <p>
-        The <strong><em>const</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
-      </p>
-      <p>
-        The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
-      </p>
-      <p>
-        The <dfn>get()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
-      </p>
-      <p>
-        The <dfn>set()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
-      </p>
-
-      <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
-        Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
-        <pre class="idl">
-          dictionary PropertyInit: InteractionInit {
-            boolean writable = false;
-            boolean observable = false;
-            any value;  // initialization value
-          };
-          PropertyInit implements DataSchema;
-        </pre>
-      <p>
-        The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
-      </p>
-      <p>
-        The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
-      </p>
-        <p>
-          The <dfn>value</dfn> property represents the initialization value of the property. Its type should match the one defined in the <code>type</code> property. If not provided in the dictionary object, it SHOULD be initialized as <code>undefined</code>.
-        </p>
-      </section>
-    </section>
-
-    <section data-dfn-for="ThingAction">
-      <h3>The <dfn>ThingAction</dfn> interface</h3>
-      <pre class="idl">
-        interface ThingAction: Interaction {
-          readonly attribute DataSchema? input;
-          readonly attribute DataSchema? output;
-          readonly attribute DOMString description;
-          Promise&lt;any&gt; run(optional any inputValue);
-        };
-      </pre>
-      <p>
-        The <dfn>input</dfn> read-only property represents the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
-      </p>
-      <p>
-        The <dfn>output</dfn> read-only property represents the output of type <a>DataSchema</a> of the <a>ThingAction</a>. If the value is <code>null</code> or <code>undefined</code>, the action does not return any values.
-      </p>
-      <p>
-        The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
-      </p>
-      <p>
-        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
-      </p>
-
-      <section data-dfn-for="ActionInit"><h4>The <dfn>ActionInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ActionInit: InteractionInit {
-            DataSchema input;
-            DataSchema? output;
-            DOMString description;
-          };
-        </pre>
-        <p>
-          The <dfn>input</dfn> property initializes the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
-        </p>
-        <p>
-          The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
-        </p>
-        <p>
-          The <dfn>description</dfn> read-only property initializes a human-readable textual description of the <a>Action</a> interaction.
-        </p>
-      </section>
-    </section>
-
-    <section><h3>The <dfn>ThingEvent</dfn> interface</h3>
-      <pre class="idl">
-        interface ThingEvent {
-        };
-        ThingEvent implements ThingProperty;
-      </pre>
-      <p>
-        The data events are carrying is represented as a <a>Property</a>. <a>ThingEvent</a> SHOULD also implement the event mechanism of the underlying platform (such as a DOM Event or a Node.js Event).
-      </p>
-      <section data-dfn-for="EventInit"><h4>The <dfn>EventInit</dfn> dictionary</h4>
-        <pre class="idl">
-          typedef PropertyInit EventInit;
-        </pre>
-        <p>
-          The value an event is carrying is initialized as a <a>Property</a> value.
-        </p>
-      </section>
-    </section>
-
-    <section><h3>The <dfn>value-matching algorithm</dfn></h3>
-      <p>
-        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>run()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
-        <ol>
-          <li>
-            If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>DataType</a>, return <code>false</code>.
-          </li>
-          <li>
-            Otherwise, if <var>valueType.type</var> is <code>"boolean"</code>: if <var>value</var> is either <code>true</code> or <code>false</code>, then return <code>true</code>, otherwise return <code>false</code>.
-          </li>
-          <li>
-            Otherwise, if <var>valueType.type</var> is <code>"integer"</code>: if <var>value</var> is not an integer type defined by the underlying platform (such as <code>long</code> or <code>long long</code>), then return <code>false</code>, otherwise execute the following sub-steps:
-            <ol>
-              <li>
-                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                Return <code>true</code>.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Otherwise, if <var>valueType.type</var> is <code>"number"</code>, if <var>value</var> is not an integer or floating point type defined by the underlying platform (such as <code>long</code> or <code>long long</code> or <code>double</code>), then return <code>false</code>, otherwise otherwise execute the following sub-steps:
-            <ol>
-              <li>
-                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                Return <code>true</code>.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Otherwise, if <var>valueType.type</var> is <code>"string"</code>: if <var>value</var> is not a string type defined by the underlying platform, then return <code>false</code>, otherwise return <code>true</code>. In this case the algorithm expects a third parameter <var>valueType.enum</var> and runs the following sub-steps:
-            <ul>
-              <li>
-                If <var>valueType.enum</var> is an array of strings, then if <var>value</var> fully matches one of the strings defined in the array, return <var>true</var>.
-              </li>
-              <li>
-                Otherwise, return <var>false</var>.
-              </li>
-            </ul>
-          </li>
-          <li>
-            Otherwise, if <var>valueType.type</var> is <code>"array"</code>, execute the following sub-steps:
-            <ol>
-              <li>
-                If <var>valueType.minItems</var> is defined, and <var>value</var> is not an array that contains at least <var>valueType.minItems</var> elements, return <var>false</var>.
-              </li>
-              <li>
-                If <var>valueType.maxItems</var> is defined, and <var>value</var> is not an array that contains at maximum <var>valueType.maxItems</var> elements, return <var>false</var>.
-              </li>
-              <li>
-                Otherwise, if <var>value</var> is not an array, return <code>false</code>.
-              </li>
-              <li>
-                Otherwise, if <var>valueType.items</var> is <code>undefined</code>, return <code>false</code>.
-              </li>
-              <li>
-                Otherwise, if <var>valueType.items</var> is <code>null</code>, return <code>true</code> (i.e. any type is accepted as array element, including heterogenous arrays).
-              </li>
-              <li>
-                Otherwise, for each element of the array <var>value</var> run the <a>value-matching algorithm</a> against the <var>valueType.items</var> object. If any of these runs returns <code>false</code>, then return <code>false</code>.
-              </li>
-              <li>
-                Otherwise, return <code>true</code>.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Otherwise, if <var>type</var> is <code>"object"</code>, execute the following sub-steps:
-            <ol>
-              <li>
-                If <var>value</var> is not an <code>Object</code> or <code>null</code>, return <code>false</code>.
-              </li>
-              <li>
-                If <var>valueType.properties</var> is not defined or is not <code>null</code> or it is not an object, return <code>false</code>.
-              </li>
-              <li>
-                If <var>valueType.properties</var> is <code>null</code>, return <code>true</code> (i.e. accept any object value).
-              </li>
-              <li>
-                For each string in the <var>valueType.required</var> array, if it does not match a property name in the <var>value.properties</var> object or in the <var>value</var> object, then return <code>false</code>.
-              </li>
-              <li>
-                For each property with name <var>propName</var> and value <var>propDataSchema</var> found in <var>valueType.properties</var>, run the following sub-steps:
-                <ol>
-                  <li>
-                    If the result of applying the <a>value-matching algorithm</a> on the value <var>value[propName]</var> and <var>propDataSchema</var> is <var>false</var>, then return <var>false</var>.
-                  </li>
-                </ol>
-              </li>
-              <li>
-                Return <code>true</code>.
-            </ol>
-          </li>
-        </ol>
-      </p>
-    </section>
-
-  </section>
-
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
@@ -1338,6 +882,462 @@
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
+
+  <section>
+    <h2>Data types used in a <a>Thing</a></h2>
+    <p>
+      Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
+    </p>
+
+    <section data-dfn-for="Link"><h3>The <dfn>Link</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary Link {
+          required USVString href;
+          USVString mediaType;
+          DOMString rel;
+        };
+      </pre>
+      <p>
+        The <dfn>href</dfn> property is a hypertext reference that defines the <a>Link</a>.
+      </p>
+      <p>
+        The <dfn>mediaType</dfn> property represents the <a>IANA media type</a> associated with the <a>Link</a>.
+      </p>
+      <p>
+        The <dfn>rel</dfn> property represents a semantic label that specifies how to interact with the linked resource.
+      </p>
+    </section>
+
+    <section data-dfn-for="WebLink"><h3>The <dfn>WebLink</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary WebLink: Link {
+          USVString anchor;
+        };
+      </pre>
+      <p>
+        The <dfn>anchor</dfn> property represents a URI that overrides the default context of a <a>Link</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="Form"><h3>The <dfn>Form</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary Form: Link {
+          Security security;
+        };
+      </pre>
+      <p>
+        The <dfn>security</dfn> property represents the security requirements for the linked resource.
+      </p>
+    </section>
+
+    <section data-dfn-for="Interaction">
+      <h3>The <dfn>Interaction</dfn> interface</h3>
+      <p>
+        The <a>Interaction</a> interface is an abstract class to represent <a>Thing</a> interactions: <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
+      </p>
+      <p>
+        The <a>InteractionInit</a> dictionary holds the common properties of <a>PropertyInit</a>, <a>ActionInit</a> and <a>EventInit</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object.
+      </p>
+
+      <pre class="idl">
+        interface Interaction {
+          attribute DOMString label;
+          readonly attribute FrozenArray&lt;Form&gt; forms;
+        };
+        Interaction implements Observable;
+      </pre>
+      <p>
+        The <dfn>label</dfn> property represents a text label for the interaction.
+      </p>
+      <p>
+        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
+      </p>
+
+      <section data-dfn-for="InteractionInit"><h4>The <dfn>InteractionInit</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary InteractionInit {
+            DOMString label;
+          };
+        </pre>
+        <p>
+          The <dfn>label</dfn> property initializes the text label for the interaction.
+        </p>
+      </section>
+
+    </section>
+
+    <section data-dfn-for="ThingProperty">
+      <h3>The <dfn>ThingProperty</dfn> interface</h3>
+      <p>
+        The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
+      </p>
+      <p>
+        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
+      </p>
+      <pre class="idl">
+        interface ThingProperty: Interaction {
+          // getter for PropertyInit properties
+          getter any(DOMString name);
+          // get and set interface for the Property
+          Promise&lt;any&gt; get();
+          Promise set(any value);
+        };
+        ThingProperty implements PropertyInit;
+        ThingProperty implements Observable;
+      </pre>
+      <p>
+        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyInit</a> as read-only properties.
+      </p>
+      <p>
+        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>DataType</a>, then it MUST implement the corresponding <a>DataSchema</a> dictionary.
+      </p>
+      <p>
+        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
+      </p>
+      <p>
+        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
+      </p>
+      <p>
+        The <strong><em>const</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
+      </p>
+      <p>
+        The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
+      </p>
+      <p>
+        The <dfn>get()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
+      </p>
+      <p>
+        The <dfn>set()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
+      </p>
+
+      <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
+        Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
+        <pre class="idl">
+          dictionary PropertyInit: InteractionInit {
+            boolean writable = false;
+            boolean observable = false;
+            any value;  // initialization value
+          };
+          PropertyInit implements DataSchema;
+        </pre>
+      <p>
+        The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
+      </p>
+      <p>
+        The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
+      </p>
+        <p>
+          The <dfn>value</dfn> property represents the initialization value of the property. Its type should match the one defined in the <code>type</code> property. If not provided in the dictionary object, it SHOULD be initialized as <code>undefined</code>.
+        </p>
+      </section>
+    </section>
+
+    <section data-dfn-for="ThingAction">
+      <h3>The <dfn>ThingAction</dfn> interface</h3>
+      <pre class="idl">
+        interface ThingAction: Interaction {
+          readonly attribute DataSchema? input;
+          readonly attribute DataSchema? output;
+          readonly attribute DOMString description;
+          Promise&lt;any&gt; run(optional any inputValue);
+        };
+      </pre>
+      <p>
+        The <dfn>input</dfn> read-only property represents the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
+      </p>
+      <p>
+        The <dfn>output</dfn> read-only property represents the output of type <a>DataSchema</a> of the <a>ThingAction</a>. If the value is <code>null</code> or <code>undefined</code>, the action does not return any values.
+      </p>
+      <p>
+        The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
+      </p>
+      <p>
+        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
+      </p>
+
+      <section data-dfn-for="ActionInit"><h4>The <dfn>ActionInit</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary ActionInit: InteractionInit {
+            DataSchema input;
+            DataSchema? output;
+            DOMString description;
+          };
+        </pre>
+        <p>
+          The <dfn>input</dfn> property initializes the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
+        </p>
+        <p>
+          The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
+        </p>
+        <p>
+          The <dfn>description</dfn> read-only property initializes a human-readable textual description of the <a>Action</a> interaction.
+        </p>
+      </section>
+    </section>
+
+    <section><h3>The <dfn>ThingEvent</dfn> interface</h3>
+      <pre class="idl">
+        interface ThingEvent {
+        };
+        ThingEvent implements ThingProperty;
+      </pre>
+      <p>
+        The data events are carrying is represented as a <a>Property</a>. <a>ThingEvent</a> SHOULD also implement the event mechanism of the underlying platform (such as a DOM Event or a Node.js Event).
+      </p>
+      <section data-dfn-for="EventInit"><h4>The <dfn>EventInit</dfn> dictionary</h4>
+        <pre class="idl">
+          typedef PropertyInit EventInit;
+        </pre>
+        <p>
+          The value an event is carrying is initialized as a <a>Property</a> value.
+        </p>
+      </section>
+    </section>
+
+    <section><h3>Value types</h3>
+      <p>
+        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
+      </p>
+
+      <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
+        <pre class="idl">
+          enum DataType { "boolean", "integer", "number", "string", "object", "array" };
+        </pre>
+        <p>
+          Defines the types that values can take, i.e. "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
+        </p>
+      </section>
+
+      <section data-dfn-for="Number"><h4>The <dfn data-dfn-for="">Number</dfn> type</h4>
+        <pre class="idl">
+          typedef (long or unrestricted double) Number;
+        </pre>
+        <p>
+          A number is either an integer or floating point number supported by the underlying platform. A number value may have associated a permited range between a minimum and maximum value.
+        </p>
+      </section>
+
+      <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary DataSchema {
+            required DataType type;
+            boolean required = "false";
+            DOMString description;
+            boolean const;
+          };
+        </pre>
+        <p>
+          Represents the common properties of a value type definition.
+        </p>
+        <p>
+          The <dfn>type</dfn> property represents the value type enumerated in <a>DataType</a>.
+        </p>
+        <p>
+          The <dfn>required</dfn> property tells whether this value is required to be speficied.
+        </p>
+        <p>
+          The <dfn>description</dfn> property represents a textual description of the value.
+        </p>
+        <p>
+          The <dfn>const</dfn> property tells whether this value is constant.
+        </p>
+      </section>
+
+      <section data-dfn-for="NumberSchema"><h4>The <dfn>NumberSchema</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary NumberSchema: DataSchema {
+            required DOMString type;
+            Number minimum;
+            Number maximum;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have either the value <code>"number"</code> (representing a floating point number) or <code>"integer"</code> (representing an integer) as defined by the underlying platform.
+        </p>
+        <p>
+          The <dfn>minimum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the minimum value that can be used.
+        </p>
+        <p>
+          The <dfn>maximum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the maximum value that can be used.
+        </p>
+      </section>
+
+      <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary BooleanSchema: DataSchema {
+            const type = "boolean";
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"boolean"</code>.
+        </p>
+      </section>
+
+      <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary StringSchema: DataSchema {
+            const type = "string";
+            sequence&lt;DOMString&gt;? enum;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
+        </p>
+        <p>
+          The <dfn>enum</dfn> property represents the list of allowed string values as a string array.
+        </p>
+      </section>
+
+      <section data-dfn-for="ObjectSchema"><h4>The <dfn>ObjectSchema</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary ObjectSchema: DataSchema {
+            const type = "object";
+            maplike&lt;DOMString, DataSchema&gt;? properties;
+            sequence&lt;DOMString&gt; required;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
+        </p>
+        <p>
+          The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
+        </p>
+        <p>
+          The <dfn>required</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
+        </p>
+      </section>
+
+      <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary ArraySchema: DataSchema {
+            const type = "array";
+            DataSchema? items;
+            unsigned long minItems;
+            unsigned long maxItems;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"array"</code>.
+        </p>
+        <p>
+          The <dfn>items</dfn> property represents the type of the elements in the array. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is accepted.
+        </p>
+        <p>
+          The <dfn>minItems</dfn> property represents the minimum number of elements required to be in the array.
+        </p>
+        <p>
+          The <dfn>maxItems</dfn> property represents the maximum number of elements that can be specified in the array.
+        </p>
+      </section>
+    </section>
+
+    <section><h3>The <dfn>value-matching algorithm</dfn></h3>
+      <p>
+        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>run()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
+        <ol>
+          <li>
+            If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>DataType</a>, return <code>false</code>.
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"boolean"</code>: if <var>value</var> is either <code>true</code> or <code>false</code>, then return <code>true</code>, otherwise return <code>false</code>.
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"integer"</code>: if <var>value</var> is not an integer type defined by the underlying platform (such as <code>long</code> or <code>long long</code>), then return <code>false</code>, otherwise execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                Return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"number"</code>, if <var>value</var> is not an integer or floating point type defined by the underlying platform (such as <code>long</code> or <code>long long</code> or <code>double</code>), then return <code>false</code>, otherwise otherwise execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
+              </li>
+              <li>
+                Return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"string"</code>: if <var>value</var> is not a string type defined by the underlying platform, then return <code>false</code>, otherwise return <code>true</code>. In this case the algorithm expects a third parameter <var>valueType.enum</var> and runs the following sub-steps:
+            <ul>
+              <li>
+                If <var>valueType.enum</var> is an array of strings, then if <var>value</var> fully matches one of the strings defined in the array, return <var>true</var>.
+              </li>
+              <li>
+                Otherwise, return <var>false</var>.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Otherwise, if <var>valueType.type</var> is <code>"array"</code>, execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>valueType.minItems</var> is defined, and <var>value</var> is not an array that contains at least <var>valueType.minItems</var> elements, return <var>false</var>.
+              </li>
+              <li>
+                If <var>valueType.maxItems</var> is defined, and <var>value</var> is not an array that contains at maximum <var>valueType.maxItems</var> elements, return <var>false</var>.
+              </li>
+              <li>
+                Otherwise, if <var>value</var> is not an array, return <code>false</code>.
+              </li>
+              <li>
+                Otherwise, if <var>valueType.items</var> is <code>undefined</code>, return <code>false</code>.
+              </li>
+              <li>
+                Otherwise, if <var>valueType.items</var> is <code>null</code>, return <code>true</code> (i.e. any type is accepted as array element, including heterogenous arrays).
+              </li>
+              <li>
+                Otherwise, for each element of the array <var>value</var> run the <a>value-matching algorithm</a> against the <var>valueType.items</var> object. If any of these runs returns <code>false</code>, then return <code>false</code>.
+              </li>
+              <li>
+                Otherwise, return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Otherwise, if <var>type</var> is <code>"object"</code>, execute the following sub-steps:
+            <ol>
+              <li>
+                If <var>value</var> is not an <code>Object</code> or <code>null</code>, return <code>false</code>.
+              </li>
+              <li>
+                If <var>valueType.properties</var> is not defined or is not <code>null</code> or it is not an object, return <code>false</code>.
+              </li>
+              <li>
+                If <var>valueType.properties</var> is <code>null</code>, return <code>true</code> (i.e. accept any object value).
+              </li>
+              <li>
+                For each string in the <var>valueType.required</var> array, if it does not match a property name in the <var>value.properties</var> object or in the <var>value</var> object, then return <code>false</code>.
+              </li>
+              <li>
+                For each property with name <var>propName</var> and value <var>propDataSchema</var> found in <var>valueType.properties</var>, run the following sub-steps:
+                <ol>
+                  <li>
+                    If the result of applying the <a>value-matching algorithm</a> on the value <var>value[propName]</var> and <var>propDataSchema</var> is <var>false</var>, then return <var>false</var>.
+                  </li>
+                </ol>
+              </li>
+              <li>
+                Return <code>true</code>.
+            </ol>
+          </li>
+        </ol>
+      </p>
+    </section>
+
+  </section>
 
   <section data-dfn-for="Observable" class="informative">
     <h2>Observables</h2>
