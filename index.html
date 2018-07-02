@@ -528,7 +528,7 @@
                 .subscribe(function(value) {
                   console.log("Temperature + " has changed to " + value);
                 });
-              thing.actions["startMeasurement"].run({ units: "Celsius" })
+              thing.actions["startMeasurement"].invoke({ units: "Celsius" })
                 .then(() => { console.log("Temperature measurement started."); })
                 .catch(e => {
                    console.log("Error starting measurement.");
@@ -947,8 +947,8 @@
           // getter for PropertyInit properties
           getter any(DOMString name);
           // get and set interface for the Property
-          Promise&lt;any&gt; get();
-          Promise set(any value);
+          Promise&lt;any&gt; read();
+          Promise write(any value);
         };
         ThingProperty implements PropertyInit;
         ThingProperty implements Observable;
@@ -972,10 +972,10 @@
         The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
       </p>
       <p>
-        The <dfn>get()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
+        The <dfn>read()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
       </p>
       <p>
-        The <dfn>set()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
+        The <dfn>write()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
       </p>
 
       <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
@@ -1007,7 +1007,7 @@
           readonly attribute DataSchema? input;
           readonly attribute DataSchema? output;
           readonly attribute DOMString description;
-          Promise&lt;any&gt; run(optional any inputValue);
+          Promise&lt;any&gt; invoke(optional any inputValue);
         };
       </pre>
       <p>
@@ -1020,7 +1020,7 @@
         The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
       </p>
       <p>
-        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
+        The <dfn>invoke()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
       </p>
 
       <section data-dfn-for="ActionInit"><h4>The <dfn>ActionInit</dfn> dictionary</h4>
@@ -1201,7 +1201,7 @@
 
     <section><h3>The <dfn>value-matching algorithm</dfn></h3>
       <p>
-        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>run()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
+        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>invoke()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
         <ol>
           <li>
             If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>DataType</a>, return <code>false</code>.
