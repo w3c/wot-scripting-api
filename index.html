@@ -764,10 +764,9 @@
           // define Thing business logic
           setInterval( async () => {
             let mock = Math.random()*100;
-            thing.writeProperty("temperature", mock);
-            let old = await thing.readProperty("temperature");
+            let old = await thing["temperature"].read();
             if (old < mock) {
-              thing.writeProperty("temperature", mock);
+              await thing["temperature"].write(mock);
               thing.emitEvent("onchange", mock);
             }
           }, 1000);
