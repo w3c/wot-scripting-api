@@ -226,14 +226,14 @@
       // [SecureContext]
       // [NamespaceObject]
       interface WoT {
-        Observable&lt;ThingDescription&gt; discover(optional ThingFilter filter);
+        Observable discover(optional ThingFilter filter);
         Promise&lt;ThingDescription&gt; fetch(USVString url);
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
         Promise&lt;void&gt; register(USVString directory, ExposedThing thing);
         Promise&lt;void&gt; unregister(USVString directory, ExposedThing thing);
       };
-      typedef dictionary ThingTemplate;
+      typedef object ThingTemplate;
       typedef USVString ThingDescription;
       typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
     </pre>
@@ -488,14 +488,26 @@
     </p>
     <pre class="idl">
       interface ConsumedThing {
-        readonly attribute maplike&lt;DOMString, ThingProperty&gt; properties;
-        readonly attribute maplike&lt;DOMString, ThingAction&gt; actions;
-        readonly attribute maplike&lt;DOMString, ThingEvent&gt; events;
+        readonly attribute Properties properties;
+        readonly attribute Actions actions;
+        readonly attribute Events events;
         readonly attribute FrozenArray&lt;WebLink&gt; links;
         // getter for ThingTemplate properties
         getter any(DOMString name);
       };
       ConsumedThing implements Observable;  // for TD changes
+      [NoInterfaceObject]
+      interface Properties {
+        maplike&lt;DOMString, ThingProperty&gt;;
+      };
+      [NoInterfaceObject]
+      interface Actions {
+        maplike&lt;DOMString, ThingAction&gt;;
+      };
+      [NoInterfaceObject]
+      interface Events {
+        maplike&lt;DOMString, ThingEvent&gt;;
+      };
     </pre>
     <p>
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
@@ -509,10 +521,9 @@
     <p>
       The <dfn>events</dfn> property represents a dictionary of <a>ThingEvent</a> items.
     </p>
-    <li>
+    <p>
       The <dfn>links</dfn> property represents an array of <a>WebLink</a> objects.
-    </li>
-
+    </p>
     <section>
       <h2>Examples</h2>
       <p>
@@ -981,7 +992,7 @@
           getter any(DOMString name);
           // get and set interface for the Property
           Promise&lt;any&gt; read();
-          Promise write(any value);
+          Promise&lt;void&gt; write(any value);
         };
         ThingProperty implements PropertyInit;
         ThingProperty implements Observable;
@@ -999,7 +1010,7 @@
         The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
       </p>
       <p>
-        The <strong><em>const</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
+        The <strong><em>constant</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
       </p>
       <p>
         The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
@@ -1122,9 +1133,9 @@
         <pre class="idl">
           dictionary DataSchema {
             required DataType type;
-            boolean required = "false";
+            boolean mandatory = false;
             DOMString description;
-            boolean const;
+            boolean constant;
           };
         </pre>
         <p>
@@ -1134,13 +1145,13 @@
           The <dfn>type</dfn> property represents the value type enumerated in <a>DataType</a>.
         </p>
         <p>
-          The <dfn>required</dfn> property tells whether this value is required to be speficied.
+          The <dfn>mandatory</dfn> property tells whether this value is required to be speficied.
         </p>
         <p>
           The <dfn>description</dfn> property represents a textual description of the value.
         </p>
         <p>
-          The <dfn>const</dfn> property tells whether this value is constant.
+          The <dfn>constant</dfn> property tells whether this value is constant.
         </p>
       </section>
 
@@ -1166,7 +1177,7 @@
       <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary BooleanSchema: DataSchema {
-            const type = "boolean";
+            DOMString type = "boolean";
           };
         </pre>
         <p>
@@ -1177,24 +1188,28 @@
       <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary StringSchema: DataSchema {
-            const type = "string";
-            sequence&lt;DOMString&gt;? enum;
+            DOMString type = "string";
+            sequence&lt;DOMString&gt;? enumeration;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
         </p>
         <p>
-          The <dfn>enum</dfn> property represents the list of allowed string values as a string array.
+          The <dfn>enumeration</dfn> property represents the list of allowed string values as a string array.
         </p>
       </section>
 
       <section data-dfn-for="ObjectSchema"><h4>The <dfn>ObjectSchema</dfn> dictionary</h4>
         <pre class="idl">
+          [NoInterfaceObject]
+          interface SchemaProperties {
+            maplike&lt;DOMString, DataSchema&gt;;
+          };
           dictionary ObjectSchema: DataSchema {
-            const type = "object";
-            maplike&lt;DOMString, DataSchema&gt;? properties;
-            sequence&lt;DOMString&gt; required;
+            DOMString type = "object";
+            SchemaProperties? properties;
+            sequence&lt;DOMString&gt; mandatory;
           };
         </pre>
         <p>
@@ -1204,14 +1219,14 @@
           The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
         </p>
         <p>
-          The <dfn>required</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
+          The <dfn>mandatory</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
         </p>
       </section>
 
       <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ArraySchema: DataSchema {
-            const type = "array";
+            DOMString type = "array";
             DataSchema? items;
             unsigned long minItems;
             unsigned long maxItems;
@@ -1460,7 +1475,7 @@
       <h3> The <dfn data-dfn-for="">BasicSecurityScheme</dfn> dictionary</h3>
       <pre class="idl">
         dictionary BasicSecurityScheme: SecurityScheme {
-          const scheme = "basic";
+          DOMString scheme = "basic";
           DOMString in;
           DOMString pname;
         };
@@ -1480,7 +1495,7 @@
       <h3> The <dfn data-dfn-for="">DigestSecurityScheme</dfn> dictionary</h3>
       <pre class="idl">
         dictionary DigestSecurityScheme: BasicSecurityScheme {
-          const scheme = "digest";
+          DOMString scheme = "digest";
           DOMString qop = "auth";
         };
       </pre>
@@ -1496,7 +1511,7 @@
       <h3> The <dfn data-dfn-for="">BearerSecurityScheme</dfn> dictionary</h3>
       <pre class="idl">
         dictionary BearerSecurityScheme: BasicSecurityScheme {
-          const scheme = "bearer";
+          DOMString scheme = "bearer";
           USVString authorizationURL;
           DOMString alg = "ES256";
           DOMString format = "jwt";
@@ -1523,7 +1538,7 @@
       </p>
       <pre class="idl">
         dictionary PopSecurityScheme: DigestSecurityScheme {
-          const scheme = "pop";
+          DOMString scheme = "pop";
         };
       </pre>
       <p>
@@ -1538,7 +1553,7 @@
       </p>
       <pre class="idl">
         dictionary ApikeySecurityScheme: BasicSecurityScheme {
-          const scheme = "apikey";
+          DOMString scheme = "apikey";
         };
       </pre>
       <p>
@@ -1553,7 +1568,7 @@
       </p>
       <pre class="idl">
         dictionary OAuth2SecurityScheme: SecurityScheme {
-          const scheme = "oauth2";
+          DOMString scheme = "oauth2";
           USVString tokenURL;
           USVString authorizationURL;
           USVString refreshURL;
