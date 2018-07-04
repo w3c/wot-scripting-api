@@ -580,7 +580,7 @@
         ExposedThing removeAction(DOMString name);
         // define Events
         ExposedThing addEvent(DOMString name, EventInit event);
-        Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
+        void emitEvent(DOMString eventName, any payload);
         ExposedThing removeEvent(DOMString name);
       };
       callback PropertyReadHandler = Promise&lt;any&gt;();
