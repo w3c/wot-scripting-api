@@ -1368,7 +1368,7 @@
     </p>
     <pre class="idl">
       interface Observable {
-        Subscription subscribe((Observer or OnNext) next,
+        Subscription subscribe(OnNext next,
                                optional OnError error,
                                optional OnComplete complete);
       };
@@ -1376,33 +1376,25 @@
         void unsubscribe();
         readonly attribute boolean closed;
       };
-      interface Observer {
-        void next(any value);
-        void error(Error error);
-        void complete();
-      };
       callback OnNext = void (any value);
       callback OnError = void (Error error);
       callback OnComplete = void ();
     </pre>
 
-    <section data-dfn-for="Observer">
-      <h3>The <dfn>Observer</dfn> interface</h3>
-      <p>
-        The <a>Observer</a> interface defines the callbacks needed to handle an <a>Observable</a>:
+    <p>
+        The following callbacks can be provided when subscribing to an <a>Observable</a>:
+        <ul>
+          <li>
+            The <dfn>OnNext</dfn> callback takes the next sample for the data in the <code>value</code> argument.
+          </li>
+          <li>
+            The <dfn>OnError</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
+          </li>
+          <li>
+            The <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
+          </li>
+        </ul>
       </p>
-      <ul>
-        <li>
-          The <dfn>next()</dfn> function, as well as the <dfn>OnNext</dfn> callback takes the next sample for the data in the <code>value</code> argument.
-        </li>
-        <li>
-          The <dfn>error()</dfn> function, as well as the <dfn>OnError</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
-        </li>
-        <li>
-          The <dfn>complete()</dfn> function, as well as the <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
-        </li>
-      </ul>
-    </section>
 
     <section data-dfn-for="Subscription">
       <h3>The <dfn>Subscription</dfn> interface</h3>
@@ -1421,10 +1413,13 @@
       </p>
       <ul>
         <li>
-          If the <code>subscribe()</code> method is called with an <a>Observer</a> object, initialize the data, error and completion handling callbacks from that object, or throw on error.
+          Initialize the data handler callback with the first function argument.
         </li>
         <li>
-          Otherwise, if the <code>subscribe()</code> method is called with a function, initialize the data handler callback with that function. If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error. If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
+          If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error.
+        </li>
+        <li>
+          If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
         </li>
         <li>
           After callback initializations, the implementation should request the underlying platform to provide data, error and completion notifications for the supported data source.
