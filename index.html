@@ -494,6 +494,8 @@
         readonly attribute FrozenArray&lt;WebLink&gt; links;
         // getter for ThingTemplate properties
         getter any(DOMString name);
+        // event subscription
+        Observable onEvent(DOMString eventName);
       };
       ConsumedThing implements Observable;  // for TD changes
       [NoInterfaceObject]
@@ -524,6 +526,14 @@
     <p>
       The <dfn>links</dfn> property represents an array of <a>WebLink</a> objects.
     </p>
+
+    <section> <h3>The <dfn>onEvent()</dfn> method</h3>
+      <p>
+        Returns an <a>Observable</a> in order to allow subscribing to an <a>Event</a> identified by the <var>eventName</var> parameter.
+      </p>
+    </section>
+
+
     <section>
       <h2>Examples</h2>
       <p>
@@ -575,8 +585,7 @@
         ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
         ExposedThing removeProperty(DOMString name);
         // define Actions
-        ExposedThing addAction(DOMString name, ActionInit action);
-        ExposedThing setActionHandler(DOMString name, ActionHandler action);
+        ExposedThing addAction(DOMString name, ActionInit init, ActionHandler action);
         ExposedThing removeAction(DOMString name);
         // define Events
         ExposedThing addEvent(DOMString name, EventInit event);
@@ -620,7 +629,13 @@
 
     <section> <h3>The <dfn>addAction()</dfn> method</h3>
       <p>
-        Adds an <a>Action</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>action</var> argument of type <a>ActionInit</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds to the <code>actions</code> property of a <a>Thing</a> object an <a>Action</a> with name defined by the <var>name</var> argument, defines input and output data format by the <var>init</var> argument of type <a>ActionInit</a>, and adds the function provided in the <var>action</var> argument as a handler, then updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+      </p>
+      <p>
+        The provided <var>action</var> callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform. The callback will receive a <code>parameters</code> dictionary argument according to the definition in the <var>init.input</var> argument and will return a value of type defined by the <var>init.output</var> argument according to the <a>value-matching algorithm</a>.
+      </p>
+      <p>
+        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD throw a <code>TypeError</code>.
       </p>
     </section> <!-- addAction -->
 
@@ -718,17 +733,6 @@
             Otherwise, invoke the write handler associated with <var>propertyName</var> providing <var>value</var> as argument. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
           </li>
         </ol>
-      </p>
-    </section>
-    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
-      <p>
-        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-        If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform. The callback will receive a <code>parameters</code> dictionary argument.
-      </p>
-      <p>
-        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD return error if the action is invoked by any client.
       </p>
     </section>
 
@@ -1023,7 +1027,9 @@
       </p>
 
       <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
+      <p>
         Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
+      </p>
         <pre class="idl">
           dictionary PropertyInit: InteractionInit {
             boolean writable = false;
@@ -1368,16 +1374,16 @@
     </p>
     <pre class="idl">
       interface Observable {
-        Subscription subscribe(OnNext next,
-                               optional OnError error,
+        Subscription subscribe(EventHandler handler,
+                               optional ErrorHandler errorHandler,
                                optional OnComplete complete);
       };
       interface Subscription {
         void unsubscribe();
         readonly attribute boolean closed;
       };
-      callback OnNext = void (any value);
-      callback OnError = void (Error error);
+      callback EventHandler = void (any value);
+      callback ErrorHandler = void (Error error);
       callback OnComplete = void ();
     </pre>
 
@@ -1385,10 +1391,10 @@
         The following callbacks can be provided when subscribing to an <a>Observable</a>:
         <ul>
           <li>
-            The <dfn>OnNext</dfn> callback takes the next sample for the data in the <code>value</code> argument.
+            The <dfn>EventHandler</dfn> callback takes the next sample for the data in the <code>value</code> argument.
           </li>
           <li>
-            The <dfn>OnError</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
+            The <dfn>ErrorHandler</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
           </li>
           <li>
             The <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
