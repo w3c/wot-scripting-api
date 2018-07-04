@@ -359,7 +359,7 @@
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
         Starts the discovery process that will provide <code><a>ThingDescription</a></code>s that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, uses all supported discovery methods.
-        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. Errors are also signaled at the subscription object.
+        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. Errors are also signaled at the subscription object. When subscribing, the handler function provided to the Observable will receive an argument of type <code>USVString</code> representing a <a>ThingDescription</a>.
       </p>
       <p class="note">
         Note that canceling a discovery (via invoking <code>unsubscribe()</code>) may not be successful in all cases, for instance when discovery is based on open ended multicast requests. However, once <code>unsubscribe()</code> has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
@@ -580,7 +580,7 @@
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
         // define Properties
-        ExposedThing addProperty(DOMString name, PropertyInit property);
+        ExposedThing addProperty(DOMString name, PropertyInit property, optional any initValue);
         ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
         ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
         ExposedThing removeProperty(DOMString name);
@@ -617,7 +617,7 @@
 
     <section> <h3>The <dfn>addProperty()</dfn> method</h3>
       <p>
-        Adds a <a>Property</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>property</var> argument of type <a>PropertyInit</a>. It updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds a <a>Property</a> with name defined by the <var>name</var> argument, the data schema provided by the <var>property</var> argument of type <a>PropertyInit</a>, and optionally an initial value provided in the argument <var>initValue</var> whose type should match the one defined in the <code>type</code> property according to the <a>value-matching algorithm</a>. If <var>initValue</var> is not provided, it SHOULD be initialized as <code>undefined</code>. Implementations SHOULD update the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section> <!-- addProperty() -->
 
@@ -1034,7 +1034,6 @@
           dictionary PropertyInit: InteractionInit {
             boolean writable = false;
             boolean observable = false;
-            any value;  // initialization value
           };
           PropertyInit implements DataSchema;
         </pre>
@@ -1044,9 +1043,6 @@
       <p>
         The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
       </p>
-        <p>
-          The <dfn>value</dfn> property represents the initialization value of the property. Its type should match the one defined in the <code>type</code> property. If not provided in the dictionary object, it SHOULD be initialized as <code>undefined</code>.
-        </p>
       </section>
     </section>
 
