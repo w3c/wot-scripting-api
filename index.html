@@ -494,8 +494,6 @@
         readonly attribute FrozenArray&lt;WebLink&gt; links;
         // getter for ThingTemplate properties
         getter any(DOMString name);
-        // event subscription
-        Observable onEvent(DOMString eventName);
       };
       ConsumedThing implements Observable;  // for TD changes
       [NoInterfaceObject]
@@ -526,13 +524,6 @@
     <p>
       The <dfn>links</dfn> property represents an array of <a>WebLink</a> objects.
     </p>
-
-    <section> <h3>The <dfn>onEvent()</dfn> method</h3>
-      <p>
-        Returns an <a>Observable</a> in order to allow subscribing to an <a>Event</a> identified by the <var>eventName</var> parameter. When subscribing to the <a>Observable</a>, an event handler, and error handler and a completion handler can be specified and a <a>Subscription</a> object is returned that provides an <code>unsubscribe()</code> method.
-      </p>
-    </section>
-
 
     <section>
       <h2>Examples</h2>
@@ -589,7 +580,6 @@
         ExposedThing removeAction(DOMString name);
         // define Events
         ExposedThing addEvent(DOMString name, EventInit event);
-        void emitEvent(DOMString eventName, any payload);
         ExposedThing removeEvent(DOMString name);
       };
       callback PropertyReadHandler = Promise&lt;any&gt;();
@@ -606,12 +596,6 @@
     <section> <h3>The <dfn>destroy()</dfn> method</h3>
       <p>
         Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
-      <p>
-        Emits an the event initialized with the event name specified by the <code>eventName</code> argument and data specified by the <code>payload</code> argument.
       </p>
     </section>
 
@@ -1089,16 +1073,26 @@
       </section>
     </section>
 
-    <section><h3>The <dfn>ThingEvent</dfn> interface</h3>
+    <section data-dfn-for="ThingEvent"><h3>The <dfn>ThingEvent</dfn> interface</h3>
       <pre class="idl">
         interface ThingEvent {
+          void emit(any payload);
         };
         ThingEvent implements ThingProperty;
       </pre>
+      <section> <h4>The <dfn>emit()</dfn> method</h4>
+        <p>
+          Emits an event that carries data specified by the <code>payload</code> argument.
+        </p>
+      </section>
+
       <p>
-        The data events are carrying is represented as a <a>Property</a>. <a>ThingEvent</a> SHOULD also implement the event mechanism of the underlying platform (such as a DOM Event or a Node.js Event).
+        Since <a>ThingEvent</a> implements <a>Observable</a> through the <a>ThingProperty</a> interface, event subscription is done by invoking the <code>subscribe()</code> method on the event object that returns a cancelable <a>Subscription</a>.
       </p>
       <section data-dfn-for="EventInit"><h4>The <dfn>EventInit</dfn> dictionary</h4>
+        <p>
+          Event data is represented as a <a>Property</a>.
+        </p>
         <pre class="idl">
           typedef PropertyInit EventInit;
         </pre>
