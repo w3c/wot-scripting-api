@@ -233,9 +233,9 @@
         Promise&lt;void&gt; register(USVString directory, ExposedThing thing);
         Promise&lt;void&gt; unregister(USVString directory, ExposedThing thing);
       };
-      typedef object ThingTemplate;
+      typedef object ThingFragment;
       typedef USVString ThingDescription;
-      typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
+      typedef (ThingFragment or ThingDescription) ThingModel;
     </pre>
 
     <p class="ednote">
@@ -243,66 +243,8 @@
     </p>
 
     <p>
-      The <dfn>ThingModel</dfn> type represents either a <a>ThingTemplate</a>, or a <a>ThingDescription</a> or a <a>ConsumedThing</a> object.
+      The <dfn>ThingModel</dfn> type represents either a <a>ThingFragment</a>, or a <a>ThingDescription</a>.
     </p>
-
-    <section data-dfn-for="ThingDescription">
-    <h3>The <dfn>ThingDescription</dfn> type</h3>
-      <p>
-        Serialized representation of the <a>Thing Description</a> (a <a>JSON-LD</a> document).
-      </p>
-      <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingTemplate">
-      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
-      <p>
-        <a>ThingTemplate</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]], and it is also used in <a>ThingFilter</a>. The set of core properties is defined below. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
-      </p>
-      <ul>
-        <li>
-          The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>. In the <a>Thing Description</a> this attribute is mandatory, but in <a>ThingFilter</a> it is optional.
-        </li>
-        <li>
-          The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. Note that this is not the same as the <a>JSON-LD</a> <code>@id</code> attribute. Also note that the <a>WoT Runtime</a> may override this with a different value when exposing the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
-        </li>
-        <li>
-          The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>SecurityScheme</a> dictionary;
-        </li>
-        <li>
-          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyInit</a>.
-        </li>
-        <li>
-          The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionInit</a>.
-        </li>
-        <li>
-          The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventInit</a>.
-        </li>
-        <li>
-          The <strong><em>links</em></strong> optional attribute represents an array of <a>WebLink</a> objects.
-        </li>
-        <li>
-          The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
-        </li>
-        <li>
-          The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
-        </li>
-        <li>
-          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
-        </li>
-      </ul>
-      <p class="ednote">
-        Support for configuration and security metadata will be added later.
-      </p>
-    </section> <!-- ThingTemplate -->
 
     <section> <h3> The <dfn>fetch()</dfn> method</h3>
       <p>
@@ -322,7 +264,7 @@
       </p>
       <ol>
         <li>
-          from a <a>ThingTemplate</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
+          from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
         </li>
         <li>
           from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
@@ -394,10 +336,10 @@
         </p>
         <pre class="idl">
           dictionary ThingFilter {
-            DiscoveryMethod method = "any";
-            USVString url;
-            USVString query;
-            ThingTemplate template;
+            (DiscoveryMethod or DOMString) method = "any";
+            USVString? url;
+            USVString? query;
+            ThingFragment? fragment;
           };
         </pre>
         <p>
@@ -410,10 +352,7 @@
           The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
         </p>
         <p>
-          The <dfn>template</dfn> property represents a <a>ThingTemplate</a> dictionary used for matching against discovered <a>Thing</a>s.
-        </p>
-        <p class="ednote">
-          Queries and templates are experimental features. Implementations are not required to support them. The template matching algorithm will be defined later, but there are two possibilities: either direct matching (property to property) or serializing the template and matching that against <a>TD</a>s.
+          The <dfn>fragment</dfn> property represents a <a>ThingFragment</a> dictionary used for matching property by property against discovered <a>Thing</a>s.
         </p>
       </section>
       <p>
@@ -487,12 +426,12 @@
       The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
     </p>
     <pre class="idl">
-      interface ConsumedThing {
+      interface ConsumedThing: ThingFragment {
         readonly attribute Properties properties;
         readonly attribute Actions actions;
         readonly attribute Events events;
         readonly attribute FrozenArray&lt;WebLink&gt; links;
-        // getter for ThingTemplate properties
+        // getter for ThingFragment properties
         getter any(DOMString name);
       };
       ConsumedThing implements Observable;  // for TD changes
@@ -565,7 +504,7 @@
     <pre class="idl">
       ExposedThing implements ConsumedThing;
       interface ExposedThing {
-        // setter for ThingTemplate properties
+        // setter for ThingFragment properties
         setter void(DOMString name, any value);
         // define how to expose and run the Thing
         Promise&lt;void&gt; expose();
@@ -886,8 +825,84 @@
   <section>
     <h2>Data types used in a <a>Thing</a></h2>
     <p>
-      Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
+      Every <a>Thing</a> describes its metadata as defined in <a>ThingFragment</a>, and basic interactions defined as <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
     </p>
+
+    <section data-dfn-for="ThingDescription">
+    <h3>The <dfn>ThingDescription</dfn> type</h3>
+      <p>
+        Serialized representation of the <a>Thing Description</a> (a <a>JSON-LD</a> document).
+      </p>
+      <p class="note">
+        In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingFragment">
+      <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
+      <p>
+        <a>ThingFragment</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]], and it is also used in <a>ThingFilter</a>. The set of core properties is defined below. In addition, <a>ThingFragment</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
+      </p>
+      <ul>
+        <li>
+          The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>. In the <a>Thing Description</a> this attribute is mandatory, but in <a>ThingFilter</a> it is optional.
+        </li>
+        <li>
+          The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. The <a>WoT Runtime</a> might override this with a different value when exposing the <a>Thing</a>.
+        </li>
+        <li>
+          The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
+        </li>
+        <li>
+          The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
+        </li>
+        <li>
+          The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>SecurityScheme</a> dictionary;
+        </li>
+        <li>
+          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyInit</a>.
+        </li>
+        <li>
+          The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionInit</a>.
+        </li>
+        <li>
+          The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventInit</a>.
+        </li>
+        <li>
+          The <strong><em>links</em></strong> optional attribute represents an array of <a>WebLink</a> objects.
+        </li>
+        <li>
+          The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
+        </li>
+        <li>
+          The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
+        </li>
+        <li>
+          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
+        </li>
+      </ul>
+      <p class="ednote">
+        Support for configuration and security metadata will be added later.
+      </p>
+    </section> <!-- ThingFragment -->
+
+    <section data-dfn-for="InteractionInit">
+      <h3>The <dfn>InteractionInit</dfn> dictionary</h3>
+      <p>
+      </p>
+      <pre class="idl">
+        dictionary InteractionInit {
+          DOMString? label;
+          DOMString? description;
+        };
+      </pre>
+      <p>
+        The <dfn>label</dfn> property initializes the text label for the interaction.
+      </p>
+      <p>
+        The <dfn>description</dfn> property initializes the description for the interaction.
+      </p>
+    </section> <!-- InteractionInit -->
 
     <section data-dfn-for="Link"><h3>The <dfn>Link</dfn> dictionary</h3>
       <pre class="idl">
@@ -936,34 +951,19 @@
         The <a>Interaction</a> interface is an abstract class to represent <a>Thing</a> interactions: <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
       </p>
       <p>
-        The <a>InteractionInit</a> dictionary holds the common properties of <a>PropertyInit</a>, <a>ActionInit</a> and <a>EventInit</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object.
+        The <a>InteractionInit</a> dictionary holds the common properties of <a>PropertyInit</a>, <a>ActionInit</a> and <a>EventInit</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingFragment</a> dictionary used for creating an <a>ExposedThing</a> object.
       </p>
 
       <pre class="idl">
         interface Interaction {
-          attribute DOMString label;
           readonly attribute FrozenArray&lt;Form&gt; forms;
         };
+        Interaction implements InteractionInit;
         Interaction implements Observable;
       </pre>
       <p>
-        The <dfn>label</dfn> property represents a text label for the interaction.
-      </p>
-      <p>
         The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
       </p>
-
-      <section data-dfn-for="InteractionInit"><h4>The <dfn>InteractionInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary InteractionInit {
-            DOMString label;
-          };
-        </pre>
-        <p>
-          The <dfn>label</dfn> property initializes the text label for the interaction.
-        </p>
-      </section>
-
     </section>
 
     <section data-dfn-for="ThingProperty">
@@ -972,7 +972,7 @@
         The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
       </p>
       <p>
-        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
+        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingFragment</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
       </p>
       <pre class="idl">
         interface ThingProperty: Interaction {
@@ -1104,7 +1104,7 @@
 
     <section><h3>Value types</h3>
       <p>
-        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
+        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingFragment</a>. Basically correspond to a <a>JSON</a> object definition.
       </p>
 
       <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
@@ -1713,7 +1713,7 @@
     <p>
       <ul>
         <li>
-          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingTemplate</code>, data type descriptions, etc. Refined discovery filtering.
+          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingFragment</code>, data type descriptions, etc. Refined discovery filtering.
         </li>
       </ul>
     </p>
