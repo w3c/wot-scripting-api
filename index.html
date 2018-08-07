@@ -408,22 +408,22 @@
         readonly attribute DOMString id;
         readonly attribute DOMString name;
         readonly attribute DOMString? base;
-        readonly attribute Properties properties;
-        readonly attribute Actions actions;
-        readonly attribute Events events;
+        readonly attribute PropertyMap properties;
+        readonly attribute ActionMap actions;
+        readonly attribute EventMap events;
         // getter for ThingFragment properties
         getter any(DOMString name);
       };
       [NoInterfaceObject]
-      interface Properties {
+      interface PropertyMap {
         maplike&lt;DOMString, ThingProperty&gt;;
       };
       [NoInterfaceObject]
-      interface Actions {
+      interface ActionMap {
         maplike&lt;DOMString, ThingAction&gt;;
       };
       [NoInterfaceObject]
-      interface Events {
+      interface EventMap {
         maplike&lt;DOMString, ThingEvent&gt;;
       };
     </pre>
@@ -437,13 +437,13 @@
       The <dfn>base</dfn> attribute represents the base URI that is valid for all defined local interaction resources.
     </p>
     <p>
-      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items.
+      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items. The <dfn>PropertyMap</dfn> interface represents a maplike dictionary where all values are <a>ThingProperty</a> objects.
     </p>
     <p>
-      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items.
+      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items. The <dfn>ActionMap</dfn> interface represents a maplike dictionary where all values are <a>ThingAction</a> objects.
     </p>
     <p>
-      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items.
+      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items. The <dfn>EventMap</dfn> interface represents a maplike dictionary where all values are <a>ThingEvent</a> objects.
     </p>
   </section>
 
@@ -529,7 +529,7 @@
     </pre>
 
     <p>
-      The <dfn>events</dfn> attribute represents a dictionary of <a>ExposedEvent</a> items that add the <code>emit()</code> method to the <a>ThingEvent</a> definition.
+      The <dfn>events</dfn> attribute represents a dictionary of <a>ExposedEvent</a> items that add the <code>emit()</code> method to the <a>ThingEvent</a> definition. The <dfn>ExposedEvents</dfn> interface represents a maplike dictionary where all values are <a>ExposedEvent</a> objects.
     </p>
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
@@ -1030,15 +1030,6 @@
         ThingAction implements ActionFragment;
       </pre>
       <p>
-        The <dfn>input</dfn> read-only property represents the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
-      </p>
-      <p>
-        The <dfn>output</dfn> read-only property represents the output of type <a>DataSchema</a> of the <a>ThingAction</a>. If the value is <code>null</code> or <code>undefined</code>, the action does not return any values.
-      </p>
-      <p>
-        The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
-      </p>
-      <p>
         The <dfn>invoke()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
       </p>
     </section>
@@ -1213,6 +1204,9 @@
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
+        </p>
+        <p>
+          The <dfn>SchemaProperties</dfn> interface represents a maplike dictionary where all values are <a>DataSchema</a> objects.
         </p>
         <p>
           The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
