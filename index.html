@@ -97,7 +97,7 @@
 
   <section id="abstract">
     <p>
-      The overall <a>Web of Things</a> (WoT) concepts are described in the [WoT Architecture](https://w3c.github.io/wot-architecture/) document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
+      The overall <a>Web of Things</a> (WoT) concepts are described in the <a href="https://w3c.github.io/wot-architecture/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
     </p>
     <p>
       This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing Description</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
@@ -109,7 +109,7 @@
 
   <section id="sotd">
     <p>
-      Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the [repository](https://github.com/w3c/wot-scripting-api) and take part in the discussions.
+      Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the <a href="https://github.com/w3c/wot-scripting-api">repository</a> and take part in the discussions.
     </p>
     <p class="ednote" title="The W3C WoT WG is asking for feedback">
       Please contribute to this draft using the <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub Issue</a> feature of the <a href="https://github.com/w3c/wot-scripting-api/">WoT Scripting API</a> repository.
@@ -134,7 +134,7 @@
       This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
     </p>
     <p>
-      For an introduction on how scripts could be used in <a>Web of Things</a>, check the [Primer](https://w3c.github.io/wot-scripting-api/primer) document. For some background on API design decisions check the [Rationale](https://w3c.github.io/wot-scripting-api/rationale) document.
+      For an introduction on how scripts could be used in <a>Web of Things</a>, check the <a href="https://w3c.github.io/wot-scripting-api/primer">Primer</a> document. For some background on API design decisions check the <a href="https://w3c.github.io/wot-scripting-api/rationale">Rationale</a> document.
     </p>
   </section>
 
@@ -246,58 +246,6 @@
       The <dfn>ThingModel</dfn> type represents either a <a>ThingFragment</a>, or a <a>ThingDescription</a>.
     </p>
 
-    <section> <h3> The <dfn>fetch()</dfn> method</h3>
-      <p>
-        Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
-      </p>
-    </section>
-
-    <section> <h3> The <dfn>consume()</dfn> method</h3>
-      <p>
-        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
-      <p>
-        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
-      </p>
-      <ol>
-        <li>
-          from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
-        </li>
-        <li>
-          from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
-        </li>
-      </ol>
-    </section> <!-- produce() -->
-
-    <section> <h3>The <dfn>register()</dfn> method</h3>
-      <p>
-        Takes two mandatory arguments:
-        <ul>
-          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
-          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
-        </ul>
-      </p>
-      <p>
-        Generate the <a>Thing Description</a> as <var>td</var>, given the <a>Properties</a>, <a>Action</a>s and <a>Event</a>s defined for this <a>ExposedThing</a> object. Then make a request to register <var>td</var> to the given WoT <a>Thing Directory</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>unregister()</dfn> method</h3>
-      <p>
-        Takes two mandatory arguments:
-        <ul>
-          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
-          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
-        </ul>
-      </p>
-      <p>
-        Makes a request to unregister the <code>thing</code> from the given WoT <a>Thing Directory</a>.
-      </p>
-    </section>
-
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
         Starts the discovery process that will provide <code><a>ThingDescription</a></code>s that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, uses all supported discovery methods.
@@ -360,6 +308,58 @@
       </p>
     </section> <!-- Discovery -->
 
+    <section> <h3> The <dfn>fetch()</dfn> method</h3>
+      <p>
+        Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
+      </p>
+    </section>
+
+    <section> <h3> The <dfn>consume()</dfn> method</h3>
+      <p>
+        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
+      <p>
+        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
+      </p>
+      <ol>
+        <li>
+          from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
+        </li>
+        <li>
+          from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
+        </li>
+      </ol>
+    </section> <!-- produce() -->
+
+    <section> <h3>The <dfn>register()</dfn> method</h3>
+      <p>
+        Takes two mandatory arguments:
+        <ul>
+          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
+          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
+        </ul>
+      </p>
+      <p>
+        Generate the <a>Thing Description</a> as <var>td</var>, given the <a>Properties</a>, <a>Action</a>s and <a>Event</a>s defined for this <a>ExposedThing</a> object. Then make a request to register <var>td</var> to the given WoT <a>Thing Directory</a>.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>unregister()</dfn> method</h3>
+      <p>
+        Takes two mandatory arguments:
+        <ul>
+          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
+          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
+        </ul>
+      </p>
+      <p>
+        Makes a request to unregister the <code>thing</code> from the given WoT <a>Thing Directory</a>.
+      </p>
+    </section>
+
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
         let discoveryFilter = {
@@ -394,28 +394,6 @@
           error: err => { console.log("Discovery error: " + err.message); },
           complete: () => { console.log("Discovery finished successfully");}
         });
-      </pre>
-      <pre class="example" title="Discover Things exposed nearby, via Bluetooth or NFC">
-        // Use a proprietary extension of "local" discovery via "constraints"
-        let bleSub = wot.discover({
-          method: "local",
-          constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC" }]
-        }).subscribe(
-          td => { console.log("Found nearby Thing " + td.name); },
-          error => { console.log("Discovery error: " + error.message); }
-        );
-      </pre>
-      <pre class="example" title="Discover Things exposed in a proprietary way">
-        let subscription = wot.discover({
-          method: "myOwnMethod", // not standardized
-          url: myDirectoryURL,
-          // includes non-standard, app-specific property "constraints"
-          constraints: [{ account: "XYZ123", key: "..."}]
-        }).subscribe(
-          td => { console.log("Found Thing " + td.name); },
-          error => { console.log("Discovery error: " + error.message); },
-          () => { console.log("Discovery finished successfully");}
-        );
       </pre>
     </section> <!-- Examples -->
   </section> <!-- WoT API -->
@@ -495,9 +473,8 @@
             td => {
               let thing = wot.consume(td);
               console.log("Thing " + thing.name + " has been consumed.");
-              let subscription = thing.onPropertyChange("temperature")
-                .subscribe(function(value) {
-                  console.log("Temperature + " has changed to " + value);
+              let subscription = thing["temperature"].subscribe(function(value) {
+                  console.log("Temperature: " + value);
                 });
               thing.actions["startMeasurement"].invoke({ units: "Celsius" })
                 .then(() => { console.log("Temperature measurement started."); })
@@ -698,7 +675,6 @@
         try {
           var temperatureValueDefinition = {
             type: "number",
-            value: 0.0,
             minimum: -50,
             maximum: 10000
           };
@@ -725,9 +701,8 @@
             },
             links: []
           });
-          thing.expose().then(() => {
-              thing.register();
-          });
+          await thing.expose();
+          await wot.register("https://mydirectory.org", thing);
           // define Thing business logic
           setInterval( async () => {
             let mock = Math.random()*100;
@@ -772,7 +747,6 @@
             properties: {
               brightness: {
                 type: "number",
-                value: 0.0,
                 minimum: 0.0,
                 maximum: 100.0,
                 required: true,
@@ -805,7 +779,7 @@
       <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
         let thingDescription = '{ \
           "name": "mySensor", \
-          "@context": [ "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",\
+          "@context": [ "http://www.w3.org/ns/td",\
              "https://w3c.github.io/wot/w3c-wot-common-context.jsonld" ],\
           "@type": [ "Thing", "Sensor" ], \
           "geo:location": "testspace", \
@@ -959,7 +933,6 @@
         dictionary ActionFragment: InteractionFragment {
           DataSchema? input;
           DataSchema? output;
-          DOMString description;
         };
       </pre>
       <p>
@@ -967,9 +940,6 @@
       </p>
       <p>
         The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
-      </p>
-      <p>
-        The <dfn>description</dfn> read-only property initializes a human-readable textual description of the <a>Action</a> interaction.
       </p>
     </section>
 
@@ -1055,11 +1025,9 @@
       <h3>The <dfn>ThingAction</dfn> interface</h3>
       <pre class="idl">
         interface ThingAction: Interaction {
-          readonly attribute DataSchema? input;
-          readonly attribute DataSchema? output;
-          readonly attribute DOMString description;
           Promise&lt;any&gt; invoke(optional any inputValue);
         };
+        ThingAction implements ActionFragment;
       </pre>
       <p>
         The <dfn>input</dfn> read-only property represents the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
@@ -1077,8 +1045,10 @@
 
     <section data-dfn-for="ThingEvent"><h3>The <dfn>ThingEvent</dfn> interface</h3>
       <pre class="idl">
-        interface ThingEvent: ThingProperty {
+        interface ThingEvent: Interaction {
         };
+        ThingEvent implements EventFragment;
+        ThingEvent implements ThingProperty;
       </pre>
       <p>
         Since <a>ThingEvent</a> implements <a>Observable</a> through the <a>ThingProperty</a> interface, event subscription is done by invoking the <code>subscribe()</code> method on the event object that returns a cancelable <a>Subscription</a>.
@@ -1730,7 +1700,7 @@
       This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
     </p>
     <p>
-      The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes.
+      The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as <a href="https://nodejs.org/en/">Node.js</a> or small embedded runtimes.
     </p>
     <p>
       Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
@@ -1745,12 +1715,12 @@
 
   <section class="appendix" id="Changes"><h2>Changes</h2>
     <p>
-      The following is a list of major changes to the document. For a complete list of changes, see the [github change log](https://github.com/w3c/wot-scripting-api/commits/master). You can also view the [recently closed bugs](https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed).
+      The following is a list of major changes to the document. For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
     </p>
     <p>
       <ul>
         <li>
-          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingFragment</code>, data type descriptions, etc. Refined discovery filtering.
+          Synchronized the Scripting API with the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>. Defined <code>ThingDescription</code>, <code>ThingFragment</code>, data type descriptions, etc. Refined discovery filtering.
         </li>
       </ul>
     </p>
