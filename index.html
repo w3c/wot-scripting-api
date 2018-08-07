@@ -1458,10 +1458,18 @@
       <pre class="idl">
         dictionary SecurityScheme {
           required SecuritySchemeType scheme;
+          DOMString? description;
+          USVString? proxyURI;
         };
       </pre>
       <p>
         The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
+      </p>
+      <p>
+        The <dfn>description</dfn> property provides human readable information about the security scheme.
+      </p>
+      <p>
+        The <dfn>proxyURI</dfn> property represents the URI of the proxy server to which the security configuration containing the scheme provides access. If not provided, it means that the  security configuration refers directly to the endpoint.
       </p>
     </section>
 
