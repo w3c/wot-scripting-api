@@ -97,7 +97,7 @@
 
   <section id="abstract">
     <p>
-      The overall <a>Web of Things</a> (WoT) concepts are described in the [WoT Architecture](https://w3c.github.io/wot-architecture/) document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
+      The overall <a>Web of Things</a> (WoT) concepts are described in the <a href="https://w3c.github.io/wot-architecture/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
     </p>
     <p>
       This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing Description</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
@@ -109,7 +109,7 @@
 
   <section id="sotd">
     <p>
-      Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the [repository](https://github.com/w3c/wot-scripting-api) and take part in the discussions.
+      Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the <a href="https://github.com/w3c/wot-scripting-api">repository</a> and take part in the discussions.
     </p>
     <p class="ednote" title="The W3C WoT WG is asking for feedback">
       Please contribute to this draft using the <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub Issue</a> feature of the <a href="https://github.com/w3c/wot-scripting-api/">WoT Scripting API</a> repository.
@@ -134,7 +134,7 @@
       This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
     </p>
     <p>
-      For an introduction on how scripts could be used in <a>Web of Things</a>, check the [Primer](https://w3c.github.io/wot-scripting-api/primer) document. For some background on API design decisions check the [Rationale](https://w3c.github.io/wot-scripting-api/rationale) document.
+      For an introduction on how scripts could be used in <a>Web of Things</a>, check the <a href="https://w3c.github.io/wot-scripting-api/primer">Primer</a> document. For some background on API design decisions check the <a href="https://w3c.github.io/wot-scripting-api/rationale">Rationale</a> document.
     </p>
   </section>
 
@@ -226,16 +226,16 @@
       // [SecureContext]
       // [NamespaceObject]
       interface WoT {
-        Observable&lt;ThingDescription&gt; discover(optional ThingFilter filter);
+        Observable discover(optional ThingFilter filter);
         Promise&lt;ThingDescription&gt; fetch(USVString url);
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingModel model);
         Promise&lt;void&gt; register(USVString directory, ExposedThing thing);
         Promise&lt;void&gt; unregister(USVString directory, ExposedThing thing);
       };
-      typedef dictionary ThingTemplate;
+      typedef object ThingFragment;
       typedef USVString ThingDescription;
-      typedef (ThingTemplate or ThingDescription or ConsumedThing) ThingModel;
+      typedef (ThingFragment or ThingDescription) ThingModel;
     </pre>
 
     <p class="ednote">
@@ -243,123 +243,13 @@
     </p>
 
     <p>
-      The <dfn>ThingModel</dfn> type represents either a <a>ThingTemplate</a>, or a <a>ThingDescription</a> or a <a>ConsumedThing</a> object.
+      The <dfn>ThingModel</dfn> type represents either a <a>ThingFragment</a>, or a <a>ThingDescription</a>.
     </p>
-
-    <section data-dfn-for="ThingDescription">
-    <h3>The <dfn>ThingDescription</dfn> type</h3>
-      <p>
-        Serialized representation of the <a>Thing Description</a> (a <a>JSON-LD</a> document).
-      </p>
-      <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingTemplate">
-      <h3>The <dfn>ThingTemplate</dfn> dictionary</h3>
-      <p>
-        <a>ThingTemplate</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]], and it is also used in <a>ThingFilter</a>. The set of core properties is defined below. In addition, <a>ThingTemplate</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
-      </p>
-      <ul>
-        <li>
-          The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>. In the <a>Thing Description</a> this attribute is mandatory, but in <a>ThingFilter</a> it is optional.
-        </li>
-        <li>
-          The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. Note that this is not the same as the <a>JSON-LD</a> <code>@id</code> attribute. Also note that the <a>WoT Runtime</a> may override this with a different value when exposing the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
-        </li>
-        <li>
-          The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>SecurityScheme</a> dictionary;
-        </li>
-        <li>
-          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyInit</a>.
-        </li>
-        <li>
-          The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionInit</a>.
-        </li>
-        <li>
-          The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventInit</a>.
-        </li>
-        <li>
-          The <strong><em>links</em></strong> optional attribute represents an array of <a>WebLink</a> objects.
-        </li>
-        <li>
-          The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
-        </li>
-        <li>
-          The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
-        </li>
-        <li>
-          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
-        </li>
-      </ul>
-      <p class="ednote">
-        Support for configuration and security metadata will be added later.
-      </p>
-    </section> <!-- ThingTemplate -->
-
-    <section> <h3> The <dfn>fetch()</dfn> method</h3>
-      <p>
-        Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
-      </p>
-    </section>
-
-    <section> <h3> The <dfn>consume()</dfn> method</h3>
-      <p>
-        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
-      <p>
-        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
-      </p>
-      <ol>
-        <li>
-          from a <a>ThingTemplate</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
-        </li>
-        <li>
-          from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
-        </li>
-      </ol>
-    </section> <!-- produce() -->
-
-    <section> <h3>The <dfn>register()</dfn> method</h3>
-      <p>
-        Takes two mandatory arguments:
-        <ul>
-          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
-          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
-        </ul>
-      </p>
-      <p>
-        Generate the <a>Thing Description</a> as <var>td</var>, given the <a>Properties</a>, <a>Action</a>s and <a>Event</a>s defined for this <a>ExposedThing</a> object. Then make a request to register <var>td</var> to the given WoT <a>Thing Directory</a>.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>unregister()</dfn> method</h3>
-      <p>
-        Takes two mandatory arguments:
-        <ul>
-          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
-          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
-        </ul>
-      </p>
-      <p>
-        Makes a request to unregister the <code>thing</code> from the given WoT <a>Thing Directory</a>.
-      </p>
-    </section>
 
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
         Starts the discovery process that will provide <code><a>ThingDescription</a></code>s that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, uses all supported discovery methods.
-        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. Errors are also signaled at the subscription object.
+        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. Errors are also signaled at the subscription object. When subscribing, the handler function provided to the Observable will receive an argument of type <code>USVString</code> representing a <a>ThingDescription</a>.
       </p>
       <p class="note">
         Note that canceling a discovery (via invoking <code>unsubscribe()</code>) may not be successful in all cases, for instance when discovery is based on open ended multicast requests. However, once <code>unsubscribe()</code> has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
@@ -394,10 +284,10 @@
         </p>
         <pre class="idl">
           dictionary ThingFilter {
-            DiscoveryMethod method = "any";
-            USVString url;
-            USVString query;
-            ThingTemplate template;
+            (DiscoveryMethod or DOMString) method = "any";
+            USVString? url;
+            USVString? query;
+            ThingFragment? fragment;
           };
         </pre>
         <p>
@@ -410,16 +300,65 @@
           The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
         </p>
         <p>
-          The <dfn>template</dfn> property represents a <a>ThingTemplate</a> dictionary used for matching against discovered <a>Thing</a>s.
-        </p>
-        <p class="ednote">
-          Queries and templates are experimental features. Implementations are not required to support them. The template matching algorithm will be defined later, but there are two possibilities: either direct matching (property to property) or serializing the template and matching that against <a>TD</a>s.
+          The <dfn>fragment</dfn> property represents a <a>ThingFragment</a> dictionary used for matching property by property against discovered <a>Thing</a>s.
         </p>
       </section>
       <p>
         If queries are specified, but not supported, implementations should signal a <code>NotSupportedError</code> on the subscription objects. For security errors (e.g. authentication error) a <code>SecurityError</code> should be signaled. For query validation errors a <code>TypeError</code> should be signaled. For other errors an <code>Error</code> should be signaled.
       </p>
     </section> <!-- Discovery -->
+
+    <section> <h3> The <dfn>fetch()</dfn> method</h3>
+      <p>
+        Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
+      </p>
+    </section>
+
+    <section> <h3> The <dfn>consume()</dfn> method</h3>
+      <p>
+        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
+      <p>
+        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
+      </p>
+      <ol>
+        <li>
+          from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
+        </li>
+        <li>
+          from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
+        </li>
+      </ol>
+    </section> <!-- produce() -->
+
+    <section> <h3>The <dfn>register()</dfn> method</h3>
+      <p>
+        Takes two mandatory arguments:
+        <ul>
+          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
+          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
+        </ul>
+      </p>
+      <p>
+        Generate the <a>Thing Description</a> as <var>td</var>, given the <a>Properties</a>, <a>Action</a>s and <a>Event</a>s defined for this <a>ExposedThing</a> object. Then make a request to register <var>td</var> to the given WoT <a>Thing Directory</a>.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>unregister()</dfn> method</h3>
+      <p>
+        Takes two mandatory arguments:
+        <ul>
+          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
+          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
+        </ul>
+      </p>
+      <p>
+        Makes a request to unregister the <code>thing</code> from the given WoT <a>Thing Directory</a>.
+      </p>
+    </section>
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
@@ -456,30 +395,59 @@
           complete: () => { console.log("Discovery finished successfully");}
         });
       </pre>
-      <pre class="example" title="Discover Things exposed nearby, via Bluetooth or NFC">
-        // Use a proprietary extension of "local" discovery via "constraints"
-        let bleSub = wot.discover({
-          method: "local",
-          constraints: [{ protocol: "BLE-4.2" }, { protocol: "NFC" }]
-        }).subscribe(
-          td => { console.log("Found nearby Thing " + td.name); },
-          error => { console.log("Discovery error: " + error.message); }
-        );
-      </pre>
-      <pre class="example" title="Discover Things exposed in a proprietary way">
-        let subscription = wot.discover({
-          method: "myOwnMethod", // not standardized
-          url: myDirectoryURL,
-          // includes non-standard, app-specific property "constraints"
-          constraints: [{ account: "XYZ123", key: "..."}]
-        }).subscribe(
-          td => { console.log("Found Thing " + td.name); },
-          error => { console.log("Discovery error: " + error.message); },
-          () => { console.log("Discovery finished successfully");}
-        );
-      </pre>
     </section> <!-- Examples -->
   </section> <!-- WoT API -->
+
+  <section data-dfn-for="ThingInstance">
+    <h2>The <dfn>ThingInstance</dfn> interface</h2>
+    <p>
+      Represents an object that extends a <a>ThingFragment</a> with methods for interactions (reading and writing <a>Properties</a>), invoking <a>Action</a>s, subscribe and unsubscribe for <a>Property</a> changes and <a>Event</a>s.
+    </p>
+    <pre class="idl">
+      interface ThingInstance: ThingFragment {
+        readonly attribute DOMString id;
+        readonly attribute DOMString name;
+        readonly attribute DOMString? base;
+        readonly attribute PropertyMap properties;
+        readonly attribute ActionMap actions;
+        readonly attribute EventMap events;
+        // getter for ThingFragment properties
+        getter any(DOMString name);
+      };
+      [NoInterfaceObject]
+      interface PropertyMap {
+        maplike&lt;DOMString, ThingProperty&gt;;
+      };
+      [NoInterfaceObject]
+      interface ActionMap {
+        maplike&lt;DOMString, ThingAction&gt;;
+      };
+      [NoInterfaceObject]
+      interface EventMap {
+        maplike&lt;DOMString, ThingEvent&gt;;
+      };
+    </pre>
+    <p>
+      The <dfn>id</dfn> attribute represents the unique identifier of the <a>Thing</a> instance, typically a URI, IRI, or URN as <code>USVString</code>.
+    </p>
+    <p>
+      The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>.
+    </p>
+    <p>
+      The <dfn>base</dfn> attribute represents the base URI that is valid for all defined local interaction resources.
+    </p>
+    <p>
+      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items. The <dfn>PropertyMap</dfn> interface represents a maplike dictionary where all values are <a>ThingProperty</a> objects.
+    </p>
+    <p>
+      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items. The <dfn>ActionMap</dfn> interface represents a maplike dictionary where all values are <a>ThingAction</a> objects.
+    </p>
+    <p>
+      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items. The <dfn>EventMap</dfn> interface represents a maplike dictionary where all values are <a>ThingEvent</a> objects.
+    </p>
+  </section>
+
+  </section>
 
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
@@ -487,32 +455,13 @@
       The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
     </p>
     <pre class="idl">
-      interface ConsumedThing {
-        readonly attribute maplike&lt;DOMString, ThingProperty&gt; properties;
-        readonly attribute maplike&lt;DOMString, ThingAction&gt; actions;
-        readonly attribute maplike&lt;DOMString, ThingEvent&gt; events;
-        readonly attribute FrozenArray&lt;WebLink&gt; links;
-        // getter for ThingTemplate properties
-        getter any(DOMString name);
+      interface ConsumedThing: ThingInstance {
       };
       ConsumedThing implements Observable;  // for TD changes
     </pre>
     <p>
       <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
     </p>
-    <p>
-      The <dfn>properties</dfn> property represents a dictionary of <a>ThingProperty</a> items.
-    </p>
-    <p>
-      The <dfn>actions</dfn> property represents a dictionary of <a>ThingAction</a> items.
-    </p>
-    <p>
-      The <dfn>events</dfn> property represents a dictionary of <a>ThingEvent</a> items.
-    </p>
-    <li>
-      The <dfn>links</dfn> property represents an array of <a>WebLink</a> objects.
-    </li>
-
     <section>
       <h2>Examples</h2>
       <p>
@@ -524,11 +473,10 @@
             td => {
               let thing = wot.consume(td);
               console.log("Thing " + thing.name + " has been consumed.");
-              let subscription = thing.onPropertyChange("temperature")
-                .subscribe(function(value) {
-                  console.log("Temperature + " has changed to " + value);
+              let subscription = thing["temperature"].subscribe(function(value) {
+                  console.log("Temperature: " + value);
                 });
-              thing.actions["startMeasurement"].run({ units: "Celsius" })
+              thing.actions["startMeasurement"].invoke({ units: "Celsius" })
                 .then(() => { console.log("Temperature measurement started."); })
                 .catch(e => {
                    console.log("Error starting measurement.");
@@ -548,33 +496,41 @@
   <section data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
     <p>
-      The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>. It also implements the <a>ConsumedThing</a> interface. An <a>ExposedThing</a> is created by the <a href="#the-produce-method">produce()</a> method.
+      The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>. It also implements the <a>Observable</a> interface. An <a>ExposedThing</a> is created by the <a href="#the-produce-method">produce()</a> method.
     </p>
     <pre class="idl">
-      ExposedThing implements ConsumedThing;
-      interface ExposedThing {
-        // setter for ThingTemplate properties
+      interface ExposedThing: ThingInstance {
+        readonly attribute ExposedEvents events;
+        // setter for ThingInstance properties
         setter void(DOMString name, any value);
         // define how to expose and run the Thing
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
-        Promise&lt;void&gt; emitEvent(DOMString eventName, any payload);
-        // define Thing Description modifiers
-        ExposedThing addProperty(DOMString name, PropertyInit property);
-        ExposedThing removeProperty(DOMString name);
-        ExposedThing addAction(DOMString name, ActionInit action);
-        ExposedThing removeAction(DOMString name);
-        ExposedThing addEvent(DOMString name, EventInit event);
-        ExposedThing removeEvent(DOMString name);
-        // define request handlers
+        // define Properties
+        ExposedThing addProperty(DOMString name, PropertyFragment property, optional any initValue);
         ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
         ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
-        ExposedThing setActionHandler(DOMString name, ActionHandler action);
+        ExposedThing removeProperty(DOMString name);
+        // define Actions
+        ExposedThing addAction(DOMString name, ActionFragment init, ActionHandler action);
+        ExposedThing removeAction(DOMString name);
+        // define Events
+        ExposedThing addEvent(DOMString name, EventFragment event);
+        ExposedThing removeEvent(DOMString name);
+      };
+      [NoInterfaceObject]
+      interface ExposedEvents {
+        maplike&lt;DOMString, ExposedEvent&gt;;
       };
       callback PropertyReadHandler = Promise&lt;any&gt;();
       callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
       callback ActionHandler = Promise&lt;any&gt;(any parameters);
+      ExposedThing implements Observable;
     </pre>
+
+    <p>
+      The <dfn>events</dfn> attribute represents a dictionary of <a>ExposedEvent</a> items that add the <code>emit()</code> method to the <a>ThingEvent</a> definition. The <dfn>ExposedEvents</dfn> interface represents a maplike dictionary where all values are <a>ExposedEvent</a> objects.
+    </p>
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
@@ -588,15 +544,9 @@
       </p>
     </section>
 
-    <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
-      <p>
-        Emits an the event initialized with the event name specified by the <code>eventName</code> argument and data specified by the <code>payload</code> argument.
-      </p>
-    </section>
-
     <section> <h3>The <dfn>addProperty()</dfn> method</h3>
       <p>
-        Adds a <a>Property</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>property</var> argument of type <a>PropertyInit</a>. It updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds a <a>Property</a> with name defined by the <var>name</var> argument, the data schema provided by the <var>property</var> argument of type <a>PropertyFragment</a>, and optionally an initial value provided in the argument <var>initValue</var> whose type should match the one defined in the <code>type</code> property according to the <a>value-matching algorithm</a>. If <var>initValue</var> is not provided, it SHOULD be initialized as <code>undefined</code>. Implementations SHOULD update the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section> <!-- addProperty() -->
 
@@ -608,7 +558,13 @@
 
     <section> <h3>The <dfn>addAction()</dfn> method</h3>
       <p>
-        Adds an <a>Action</a> with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>action</var> argument of type <a>ActionInit</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds to the <code>actions</code> property of a <a>Thing</a> object an <a>Action</a> with name defined by the <var>name</var> argument, defines input and output data format by the <var>init</var> argument of type <a>ActionFragment</a>, and adds the function provided in the <var>action</var> argument as a handler, then updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+      </p>
+      <p>
+        The provided <var>action</var> callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform. The callback will receive a <code>parameters</code> dictionary argument according to the definition in the <var>init.input</var> argument and will return a value of type defined by the <var>init.output</var> argument according to the <a>value-matching algorithm</a>.
+      </p>
+      <p>
+        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD throw a <code>TypeError</code>.
       </p>
     </section> <!-- addAction -->
 
@@ -620,7 +576,7 @@
 
     <section> <h3>The <dfn>addEvent()</dfn> method</h3>
       <p>
-        Adds an event with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>event</var> argument of type <a>EventInit</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Adds an event with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>event</var> argument of type <a>EventFragment</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
       </p>
     </section>
 
@@ -633,17 +589,17 @@
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that returns a Promise and resolves it with the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function, or rejects with an error if the property is not found or the value cannot be retrieved.
+        A function that is called when an external request for reading a <a>Property</a> is received. It should return a Promise and resolves it with the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function, or rejects with an error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
 
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function called with <code>value</code> as argument that returns a Promise which is resolved when the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function is updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
+        A function that is called when an external request for writing a <a>Property</a> is received. It is given the requested new <code>value</code> as argument and should return a Promise which is resolved when the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function is updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
       </p>
       <p class="ednote">
-        Note that this function is invoked by implementations before the property is updated, so the code in this callback function can invoke the <code>readProperty()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this method.
+        Note that this function is invoked by implementations before the property is updated and it actually defines what to do when a write request is received. The code in this callback function can invoke the <code>read()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this function.
       </p>
     </section>
 
@@ -664,6 +620,23 @@
       <p>
         There SHOULD be at most one handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler.
       </p>
+      <p>
+        When an external request for reading <a>Property</a> <var>propertyName</var> is received, the runtime SHOULD execute the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <a>promise</a> and execute the next steps asynchronously.
+          </li>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
+          </li>
+          <li>
+            Otherwise, if no read handler has been defined for <var>propertyName</var>, resolve <var>promise</var> with the value of the <a>Property</a> named <var>propertyName</var> provided by the  runtime implementation and terminate these steps.
+          </li>
+          <li>
+            Otherwise, invoke the read handler associated with <var>propertyName</var>. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
+          </li>
+        </ol>
+      </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
@@ -673,17 +646,22 @@
       <p>
         There SHOULD be at most one write handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change.
       </p>
-    </section>
-
-    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-        If provided, this callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking a <a>Action</a> is received from the underlying platform. The callback will receive a <code>parameters</code> dictionary argument.
-      </p>
-      <p>
-        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD return error if the action is invoked by any client.
+        When an external request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, the runtime SHOULD execute the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <a>promise</a> and execute the next steps asynchronously.
+          </li>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
+          </li>
+          <li>
+            Otherwise, if no write handler has been defined for <var>propertyName</var>, the runtime implementation SHOULD update the <a>Property</a> value with <var>value</var>, resolve <var>promise</var> and terminate these steps.
+          </li>
+          <li>
+            Otherwise, invoke the write handler associated with <var>propertyName</var> providing <var>value</var> as argument. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
+          </li>
+        </ol>
       </p>
     </section>
 
@@ -697,7 +675,6 @@
         try {
           var temperatureValueDefinition = {
             type: "number",
-            value: 0.0,
             minimum: -50,
             maximum: 10000
           };
@@ -724,16 +701,14 @@
             },
             links: []
           });
-          thing.expose().then(() => {
-              thing.register();
-          });
+          await thing.expose();
+          await wot.register("https://mydirectory.org", thing);
           // define Thing business logic
           setInterval( async () => {
             let mock = Math.random()*100;
-            thing.writeProperty("temperature", mock);
-            let old = await thing.readProperty("temperature");
+            let old = await thing["temperature"].read();
             if (old < mock) {
-              thing.writeProperty("temperature", mock);
+              await thing["temperature"].write(mock);
               thing.emitEvent("onchange", mock);
             }
           }, 1000);
@@ -772,7 +747,6 @@
             properties: {
               brightness: {
                 type: "number",
-                value: 0.0,
                 minimum: 0.0,
                 maximum: 100.0,
                 required: true,
@@ -805,7 +779,7 @@
       <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
         let thingDescription = '{ \
           "name": "mySensor", \
-          "@context": [ "https://w3c.github.io/wot/w3c-wot-td-context.jsonld",\
+          "@context": [ "http://www.w3.org/ns/td",\
              "https://w3c.github.io/wot/w3c-wot-common-context.jsonld" ],\
           "@type": [ "Thing", "Sensor" ], \
           "geo:location": "testspace", \
@@ -854,8 +828,236 @@
   <section>
     <h2>Data types used in a <a>Thing</a></h2>
     <p>
-      Every <a>Thing</a> describes its metadata as defined in <a>ThingTemplate</a>, and basic interactions as defined in <a>ConsumedThing</a>: <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
+      Every <a>Thing</a> describes its metadata as defined in <a>ThingFragment</a>, and basic interactions defined as <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
     </p>
+
+    <section data-dfn-for="ThingDescription">
+    <h3>The <dfn>ThingDescription</dfn> type</h3>
+      <p>
+        Serialized representation of the <a>Thing Description</a> (a <a>JSON-LD</a> document).
+      </p>
+      <p class="note">
+        In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingFragment">
+      <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
+      <p>
+        <a>ThingFragment</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]], and it is also used in <a>ThingFilter</a>. The set of core properties is defined below. In addition, <a>ThingFragment</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
+      </p>
+      <ul>
+        <li>
+          The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. The <a>WoT Runtime</a> might override this with a different value when exposing the <a>Thing</a>.
+        </li>
+        <li>
+          The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>. In the <a>Thing Description</a> this attribute is mandatory, but in <a>ThingFilter</a> it is optional.
+        </li>
+        <li>
+          The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
+        </li>
+        <li>
+          The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
+        </li>
+        <li>
+          The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>SecurityScheme</a> dictionary;
+        </li>
+        <li>
+          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyFragment</a>.
+        </li>
+        <li>
+          The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionFragment</a>.
+        </li>
+        <li>
+          The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventFragment</a>.
+        </li>
+        <li>
+          The <strong><em>links</em></strong> optional attribute represents an array of <a>WebLink</a> objects.
+        </li>
+        <li>
+          The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
+        </li>
+        <li>
+          The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
+        </li>
+        <li>
+          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
+        </li>
+      </ul>
+      <p class="ednote">
+        Support for configuration and security metadata will be added later.
+      </p>
+    </section> <!-- ThingFragment -->
+
+    <section data-dfn-for="InteractionFragment">
+      <h3>The <dfn>InteractionFragment</dfn> dictionary</h3>
+      <p>
+      </p>
+      <pre class="idl">
+        dictionary InteractionFragment {
+          DOMString? label;
+          DOMString? description;
+        };
+      </pre>
+      <p>
+        The <dfn>label</dfn> property initializes the text label for the interaction.
+      </p>
+      <p>
+        The <dfn>description</dfn> property initializes the description for the interaction.
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyFragment">
+      <h3>The <dfn>PropertyFragment</dfn> dictionary</h3>
+      <p>
+        Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
+      </p>
+        <pre class="idl">
+          dictionary PropertyFragment: InteractionFragment {
+            boolean writable = false;
+            boolean observable = false;
+          };
+          PropertyFragment implements DataSchema;
+        </pre>
+      <p>
+        The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
+      </p>
+      <p>
+        The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
+      </p>
+    </section>
+
+    <section data-dfn-for="ActionFragment">
+      <h3>The <dfn>ActionFragment</dfn> dictionary</h3>
+      <pre class="idl">
+        dictionary ActionFragment: InteractionFragment {
+          DataSchema? input;
+          DataSchema? output;
+        };
+      </pre>
+      <p>
+        The <dfn>input</dfn> property initializes the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
+      </p>
+      <p>
+        The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="EventFragment">
+      <h3>The <dfn>EventFragment</dfn> dictionary</h3>
+      <p>
+        Event data is represented as a <a>Property</a>.
+      </p>
+      <pre class="idl">
+        typedef PropertyFragment EventFragment;
+      </pre>
+      <p>
+        The value an event is carrying is initialized as a <a>Property</a> value.
+      </p>
+    </section>
+
+    <section data-dfn-for="Interaction">
+      <h3>The <dfn>Interaction</dfn> interface</h3>
+      <p>
+        The <a>Interaction</a> interface is an abstract class to represent <a>Thing</a> interactions: <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
+      </p>
+      <p>
+        The <a>InteractionFragment</a> dictionary holds the common properties of <a>PropertyFragment</a>, <a>ActionFragment</a> and <a>EventFragment</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingFragment</a> dictionary used for creating an <a>ExposedThing</a> object.
+      </p>
+
+      <pre class="idl">
+        interface Interaction {
+          readonly attribute FrozenArray&lt;Form&gt; forms;
+        };
+        Interaction implements InteractionFragment;
+      </pre>
+      <p>
+        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingProperty">
+      <h3>The <dfn>ThingProperty</dfn> interface</h3>
+      <p>
+        The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
+      </p>
+      <p>
+        The <a>PropertyFragment</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingFragment</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
+      </p>
+      <pre class="idl">
+        interface ThingProperty: Interaction {
+          // getter for PropertyFragment properties
+          getter any(DOMString name);
+          // get and set interface for the Property
+          Promise&lt;any&gt; read();
+          Promise&lt;void&gt; write(any value);
+        };
+        ThingProperty implements PropertyFragment;
+        ThingProperty implements Observable;
+      </pre>
+      <p>
+        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyFragment</a> as read-only properties.
+      </p>
+      <p>
+        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>DataType</a>, then it MUST implement the corresponding <a>DataSchema</a> dictionary.
+      </p>
+      <p>
+        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
+      </p>
+      <p>
+        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
+      </p>
+      <p>
+        The <strong><em>constant</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
+      </p>
+      <p>
+        The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
+      </p>
+      <p>
+        The <dfn>read()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
+      </p>
+      <p>
+        The <dfn>write()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingAction">
+      <h3>The <dfn>ThingAction</dfn> interface</h3>
+      <pre class="idl">
+        interface ThingAction: Interaction {
+          Promise&lt;any&gt; invoke(optional any inputValue);
+        };
+        ThingAction implements ActionFragment;
+      </pre>
+      <p>
+        The <dfn>invoke()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingEvent"><h3>The <dfn>ThingEvent</dfn> interface</h3>
+      <pre class="idl">
+        interface ThingEvent: Interaction {
+        };
+        ThingEvent implements EventFragment;
+        ThingEvent implements ThingProperty;
+      </pre>
+      <p>
+        Since <a>ThingEvent</a> implements <a>Observable</a> through the <a>ThingProperty</a> interface, event subscription is done by invoking the <code>subscribe()</code> method on the event object that returns a cancelable <a>Subscription</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="ExposedEvent"><h3>The <dfn>ExposedEvent</dfn> interface</h3>
+      <pre class="idl">
+        interface ExposedEvent: ThingEvent {
+          void emit(any payload);
+        };
+      </pre>
+      <section> <h4>The <dfn>emit()</dfn> method</h4>
+        <p>
+          Emits an event that carries data specified by the <code>payload</code> argument.
+        </p>
+      </section>
+    </section>
 
     <section data-dfn-for="Link"><h3>The <dfn>Link</dfn> dictionary</h3>
       <pre class="idl">
@@ -898,173 +1100,9 @@
       </p>
     </section>
 
-    <section data-dfn-for="Interaction">
-      <h3>The <dfn>Interaction</dfn> interface</h3>
-      <p>
-        The <a>Interaction</a> interface is an abstract class to represent <a>Thing</a> interactions: <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
-      </p>
-      <p>
-        The <a>InteractionInit</a> dictionary holds the common properties of <a>PropertyInit</a>, <a>ActionInit</a> and <a>EventInit</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object.
-      </p>
-
-      <pre class="idl">
-        interface Interaction {
-          attribute DOMString label;
-          readonly attribute FrozenArray&lt;Form&gt; forms;
-        };
-        Interaction implements Observable;
-      </pre>
-      <p>
-        The <dfn>label</dfn> property represents a text label for the interaction.
-      </p>
-      <p>
-        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
-      </p>
-
-      <section data-dfn-for="InteractionInit"><h4>The <dfn>InteractionInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary InteractionInit {
-            DOMString label;
-          };
-        </pre>
-        <p>
-          The <dfn>label</dfn> property initializes the text label for the interaction.
-        </p>
-      </section>
-
-    </section>
-
-    <section data-dfn-for="ThingProperty">
-      <h3>The <dfn>ThingProperty</dfn> interface</h3>
-      <p>
-        The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
-      </p>
-      <p>
-        The <a>PropertyInit</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingTemplate</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
-      </p>
-      <pre class="idl">
-        interface ThingProperty: Interaction {
-          // getter for PropertyInit properties
-          getter any(DOMString name);
-          // get and set interface for the Property
-          Promise&lt;any&gt; get();
-          Promise set(any value);
-        };
-        ThingProperty implements PropertyInit;
-        ThingProperty implements Observable;
-      </pre>
-      <p>
-        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyInit</a> as read-only properties.
-      </p>
-      <p>
-        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>DataType</a>, then it MUST implement the corresponding <a>DataSchema</a> dictionary.
-      </p>
-      <p>
-        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
-      </p>
-      <p>
-        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
-      </p>
-      <p>
-        The <strong><em>const</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
-      </p>
-      <p>
-        The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
-      </p>
-      <p>
-        The <dfn>get()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
-      </p>
-      <p>
-        The <dfn>set()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
-      </p>
-
-      <section data-dfn-for="PropertyInit"><h4>The <dfn>PropertyInit</dfn> dictionary</h4>
-        Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
-        <pre class="idl">
-          dictionary PropertyInit: InteractionInit {
-            boolean writable = false;
-            boolean observable = false;
-            any value;  // initialization value
-          };
-          PropertyInit implements DataSchema;
-        </pre>
-      <p>
-        The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
-      </p>
-      <p>
-        The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
-      </p>
-        <p>
-          The <dfn>value</dfn> property represents the initialization value of the property. Its type should match the one defined in the <code>type</code> property. If not provided in the dictionary object, it SHOULD be initialized as <code>undefined</code>.
-        </p>
-      </section>
-    </section>
-
-    <section data-dfn-for="ThingAction">
-      <h3>The <dfn>ThingAction</dfn> interface</h3>
-      <pre class="idl">
-        interface ThingAction: Interaction {
-          readonly attribute DataSchema? input;
-          readonly attribute DataSchema? output;
-          readonly attribute DOMString description;
-          Promise&lt;any&gt; run(optional any inputValue);
-        };
-      </pre>
-      <p>
-        The <dfn>input</dfn> read-only property represents the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object. If the value is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided.
-      </p>
-      <p>
-        The <dfn>output</dfn> read-only property represents the output of type <a>DataSchema</a> of the <a>ThingAction</a>. If the value is <code>null</code> or <code>undefined</code>, the action does not return any values.
-      </p>
-      <p>
-        The <dfn>description</dfn> read-only property represents a human-readable textual description of the <a>Action</a> interaction.
-      </p>
-      <p>
-        The <dfn>run()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
-      </p>
-
-      <section data-dfn-for="ActionInit"><h4>The <dfn>ActionInit</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ActionInit: InteractionInit {
-            DataSchema? input;
-            DataSchema? output;
-            DOMString description;
-          };
-        </pre>
-        <p>
-          The <dfn>input</dfn> property initializes the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
-        </p>
-        <p>
-          The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
-        </p>
-        <p>
-          The <dfn>description</dfn> read-only property initializes a human-readable textual description of the <a>Action</a> interaction.
-        </p>
-      </section>
-    </section>
-
-    <section><h3>The <dfn>ThingEvent</dfn> interface</h3>
-      <pre class="idl">
-        interface ThingEvent {
-        };
-        ThingEvent implements ThingProperty;
-      </pre>
-      <p>
-        The data events are carrying is represented as a <a>Property</a>. <a>ThingEvent</a> SHOULD also implement the event mechanism of the underlying platform (such as a DOM Event or a Node.js Event).
-      </p>
-      <section data-dfn-for="EventInit"><h4>The <dfn>EventInit</dfn> dictionary</h4>
-        <pre class="idl">
-          typedef PropertyInit EventInit;
-        </pre>
-        <p>
-          The value an event is carrying is initialized as a <a>Property</a> value.
-        </p>
-      </section>
-    </section>
-
     <section><h3>Value types</h3>
       <p>
-        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingTemplate</a>. Basically correspond to a <a>JSON</a> object definition.
+        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingFragment</a>. Basically correspond to a <a>JSON</a> object definition.
       </p>
 
       <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
@@ -1089,9 +1127,8 @@
         <pre class="idl">
           dictionary DataSchema {
             required DataType type;
-            boolean required = "false";
             DOMString description;
-            boolean const;
+            boolean constant;
           };
         </pre>
         <p>
@@ -1101,13 +1138,10 @@
           The <dfn>type</dfn> property represents the value type enumerated in <a>DataType</a>.
         </p>
         <p>
-          The <dfn>required</dfn> property tells whether this value is required to be speficied.
-        </p>
-        <p>
           The <dfn>description</dfn> property represents a textual description of the value.
         </p>
         <p>
-          The <dfn>const</dfn> property tells whether this value is constant.
+          The <dfn>constant</dfn> property tells whether this value is constant.
         </p>
       </section>
 
@@ -1133,7 +1167,7 @@
       <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary BooleanSchema: DataSchema {
-            const type = "boolean";
+            DOMString type = "boolean";
           };
         </pre>
         <p>
@@ -1144,41 +1178,48 @@
       <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary StringSchema: DataSchema {
-            const type = "string";
-            sequence&lt;DOMString&gt;? enum;
+            DOMString type = "string";
+            sequence&lt;DOMString&gt;? enumeration;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
         </p>
         <p>
-          The <dfn>enum</dfn> property represents the list of allowed string values as a string array.
+          The <dfn>enumeration</dfn> property represents the list of allowed string values as a string array.
         </p>
       </section>
 
       <section data-dfn-for="ObjectSchema"><h4>The <dfn>ObjectSchema</dfn> dictionary</h4>
         <pre class="idl">
+          [NoInterfaceObject]
+          interface SchemaProperties {
+            maplike&lt;DOMString, DataSchema&gt;;
+          };
           dictionary ObjectSchema: DataSchema {
-            const type = "object";
-            maplike&lt;DOMString, DataSchema&gt;? properties;
-            sequence&lt;DOMString&gt; required;
+            DOMString type = "object";
+            SchemaProperties? properties;
+            sequence&lt;DOMString&gt; mandatory;
           };
         </pre>
         <p>
           The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
         </p>
         <p>
+          The <dfn>SchemaProperties</dfn> interface represents a maplike dictionary where all values are <a>DataSchema</a> objects.
+        </p>
+        <p>
           The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
         </p>
         <p>
-          The <dfn>required</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
+          The <dfn>mandatory</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
         </p>
       </section>
 
       <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ArraySchema: DataSchema {
-            const type = "array";
+            DOMString type = "array";
             DataSchema? items;
             unsigned long minItems;
             unsigned long maxItems;
@@ -1201,7 +1242,7 @@
 
     <section><h3>The <dfn>value-matching algorithm</dfn></h3>
       <p>
-        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyInit</a> object, or the <var>inputValue</var> parameter to the <code>run()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
+        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyFragment</a> object, or the <var>inputValue</var> parameter to the <code>invoke()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
         <ol>
           <li>
             If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>DataType</a>, return <code>false</code>.
@@ -1320,41 +1361,33 @@
     </p>
     <pre class="idl">
       interface Observable {
-        Subscription subscribe((Observer or OnNext) next,
-                               optional OnError error,
+        Subscription subscribe(EventHandler handler,
+                               optional ErrorHandler errorHandler,
                                optional OnComplete complete);
       };
       interface Subscription {
         void unsubscribe();
         readonly attribute boolean closed;
       };
-      interface Observer {
-        void next(any value);
-        void error(Error error);
-        void complete();
-      };
-      callback OnNext = void (any value);
-      callback OnError = void (Error error);
+      callback EventHandler = void (any value);
+      callback ErrorHandler = void (Error error);
       callback OnComplete = void ();
     </pre>
 
-    <section data-dfn-for="Observer">
-      <h3>The <dfn>Observer</dfn> interface</h3>
-      <p>
-        The <a>Observer</a> interface defines the callbacks needed to handle an <a>Observable</a>:
+    <p>
+        The following callbacks can be provided when subscribing to an <a>Observable</a>:
+        <ul>
+          <li>
+            The <dfn>EventHandler</dfn> callback takes the next sample for the data in the <code>value</code> argument.
+          </li>
+          <li>
+            The <dfn>ErrorHandler</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
+          </li>
+          <li>
+            The <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
+          </li>
+        </ul>
       </p>
-      <ul>
-        <li>
-          The <dfn>next()</dfn> function, as well as the <dfn>OnNext</dfn> callback takes the next sample for the data in the <code>value</code> argument.
-        </li>
-        <li>
-          The <dfn>error()</dfn> function, as well as the <dfn>OnError</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
-        </li>
-        <li>
-          The <dfn>complete()</dfn> function, as well as the <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
-        </li>
-      </ul>
-    </section>
 
     <section data-dfn-for="Subscription">
       <h3>The <dfn>Subscription</dfn> interface</h3>
@@ -1373,10 +1406,13 @@
       </p>
       <ul>
         <li>
-          If the <code>subscribe()</code> method is called with an <a>Observer</a> object, initialize the data, error and completion handling callbacks from that object, or throw on error.
+          Initialize the data handler callback with the first function argument.
         </li>
         <li>
-          Otherwise, if the <code>subscribe()</code> method is called with a function, initialize the data handler callback with that function. If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error. If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
+          If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error.
+        </li>
+        <li>
+          If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
         </li>
         <li>
           After callback initializations, the implementation should request the underlying platform to provide data, error and completion notifications for the supported data source.
@@ -1416,10 +1452,18 @@
       <pre class="idl">
         dictionary SecurityScheme {
           required SecuritySchemeType scheme;
+          DOMString? description;
+          USVString? proxyURI;
         };
       </pre>
       <p>
         The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
+      </p>
+      <p>
+        The <dfn>description</dfn> property provides human readable information about the security scheme.
+      </p>
+      <p>
+        The <dfn>proxyURI</dfn> property represents the URI of the proxy server to which the security configuration containing the scheme provides access. If not provided, it means that the  security configuration refers directly to the endpoint.
       </p>
     </section>
 
@@ -1427,7 +1471,7 @@
       <h3> The <dfn data-dfn-for="">BasicSecurityScheme</dfn> dictionary</h3>
       <pre class="idl">
         dictionary BasicSecurityScheme: SecurityScheme {
-          const scheme = "basic";
+          DOMString scheme = "basic";
           DOMString in;
           DOMString pname;
         };
@@ -1447,7 +1491,7 @@
       <h3> The <dfn data-dfn-for="">DigestSecurityScheme</dfn> dictionary</h3>
       <pre class="idl">
         dictionary DigestSecurityScheme: BasicSecurityScheme {
-          const scheme = "digest";
+          DOMString scheme = "digest";
           DOMString qop = "auth";
         };
       </pre>
@@ -1463,7 +1507,7 @@
       <h3> The <dfn data-dfn-for="">BearerSecurityScheme</dfn> dictionary</h3>
       <pre class="idl">
         dictionary BearerSecurityScheme: BasicSecurityScheme {
-          const scheme = "bearer";
+          DOMString scheme = "bearer";
           USVString authorizationURL;
           DOMString alg = "ES256";
           DOMString format = "jwt";
@@ -1490,7 +1534,7 @@
       </p>
       <pre class="idl">
         dictionary PopSecurityScheme: DigestSecurityScheme {
-          const scheme = "pop";
+          DOMString scheme = "pop";
         };
       </pre>
       <p>
@@ -1505,7 +1549,7 @@
       </p>
       <pre class="idl">
         dictionary ApikeySecurityScheme: BasicSecurityScheme {
-          const scheme = "apikey";
+          DOMString scheme = "apikey";
         };
       </pre>
       <p>
@@ -1520,7 +1564,7 @@
       </p>
       <pre class="idl">
         dictionary OAuth2SecurityScheme: SecurityScheme {
-          const scheme = "oauth2";
+          DOMString scheme = "oauth2";
           USVString tokenURL;
           USVString authorizationURL;
           USVString refreshURL;
@@ -1658,7 +1702,7 @@
       This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
     </p>
     <p>
-      The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as [Node.js](https://nodejs.org/en/) or small embedded runtimes.
+      The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as <a href="https://nodejs.org/en/">Node.js</a> or small embedded runtimes.
     </p>
     <p>
       Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
@@ -1673,12 +1717,12 @@
 
   <section class="appendix" id="Changes"><h2>Changes</h2>
     <p>
-      The following is a list of major changes to the document. For a complete list of changes, see the [github change log](https://github.com/w3c/wot-scripting-api/commits/master). You can also view the [recently closed bugs](https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed).
+      The following is a list of major changes to the document. For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
     </p>
     <p>
       <ul>
         <li>
-          Synchronized the Scripting API with the [Thing Description specification](https://w3c.github.io/wot-thing-description/). Defined <code>ThingDescription</code>, <code>ThingTemplate</code>, data type descriptions, etc. Refined discovery filtering.
+          Synchronized the Scripting API with the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>. Defined <code>ThingDescription</code>, <code>ThingFragment</code>, data type descriptions, etc. Refined discovery filtering.
         </li>
       </ul>
     </p>
