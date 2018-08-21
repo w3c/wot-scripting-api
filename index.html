@@ -312,11 +312,57 @@
       <p>
         Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
       </p>
+      <p>
+        The <code>fetch(url)</code> method must run the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <var>promise</var> and execute the next steps asynchronously.
+          </li>
+          <li>
+            If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If the argument <var>url</var> is not a URL, reject <var>promise</var> with <code>TypeError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Let <var>td</var> be the returned content.
+          </li>
+          <li>
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a>  and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+          </li>
+        </ol>
+      </p>
     </section>
 
     <section> <h3> The <dfn>consume()</dfn> method</h3>
       <p>
         Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
+      </p>
+      <p>
+        The <code>consume(td)</code> method must run the following steps:
+        <ol>
+          <li>
+            If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, throw a <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If the argument <var>td</var> is not a string, throw a <code>TypeError</code> and terminate these steps.
+          </li>
+          <li>
+            Create a <a>ConsumedThing</a> object <var>thing</var> initialized with the default values described in <a>ThingFragment</a>.
+          </li>
+          <li>
+            Parse <var>td</var> according to the <a href="https://www.w3.org/TR/json-ld/#json-ld-grammar">JSON-LD grammar description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
+          </li>
+          <li>
+            If there was an error during the parsing, throw that error and terminate these steps.
+          </li>
+          <li>
+            Otherwise return <var>thing</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
