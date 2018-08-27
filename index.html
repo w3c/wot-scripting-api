@@ -1126,7 +1126,7 @@
       <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary DataSchema {
-            required DataType type;
+            DataType type;
             DOMString description;
             boolean constant;
           };
@@ -1148,7 +1148,7 @@
       <section data-dfn-for="NumberSchema"><h4>The <dfn>NumberSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary NumberSchema: DataSchema {
-            required DOMString type;
+            DataType type = "number"; /* | "integer"*/
             Number minimum;
             Number maximum;
           };
@@ -1167,7 +1167,7 @@
       <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary BooleanSchema: DataSchema {
-            DOMString type = "boolean";
+            DataType type = "boolean";
           };
         </pre>
         <p>
@@ -1178,7 +1178,7 @@
       <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary StringSchema: DataSchema {
-            DOMString type = "string";
+            DataType type = "string";
             sequence&lt;DOMString&gt;? enumeration;
           };
         </pre>
@@ -1197,7 +1197,7 @@
             maplike&lt;DOMString, DataSchema&gt;;
           };
           dictionary ObjectSchema: DataSchema {
-            DOMString type = "object";
+            DataType type = "object";
             SchemaProperties? properties;
             sequence&lt;DOMString&gt; mandatory;
           };
@@ -1219,7 +1219,7 @@
       <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary ArraySchema: DataSchema {
-            DOMString type = "array";
+            DataType type = "array";
             DataSchema? items;
             unsigned long minItems;
             unsigned long maxItems;
