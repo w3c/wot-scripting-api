@@ -422,16 +422,16 @@
             If the argument <var>td</var> is not a string, throw a <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Create a <a>ConsumedThing</a> object <var>thing</var> initialized with the default values described in <a>ThingFragment</a>.
+            Let <var>model</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
           </li>
           <li>
-            Parse <var>td</var> according to the <a href="https://www.w3.org/TR/json-ld/#json-ld-grammar">JSON-LD grammar description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
+            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model</var> as argument.
           </li>
           <li>
-            If there was an error during the parsing, throw that error and terminate these steps.
+            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>instance</var>.
           </li>
           <li>
-            Otherwise return <var>thing</var>.
+            Return <var>thing</var>.
           </li>
         </ol>
       </p>
@@ -440,15 +440,65 @@
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
         Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
+        <ol>
+          <li>
+            from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
+          </li>
+          <li>
+            from a <a>Thing Description</a>, then adding request handlers.
+          </li>
+        </ol>
       </p>
-      <ol>
-        <li>
-          from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
-        </li>
-        <li>
-          from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
-        </li>
-      </ol>
+      <p>
+        The <code>produce(url)</code> method MUST run the following steps:
+        <ol>
+          <li>
+            If invoking <code>produce()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If the argument <var>model</var> is a string, then run the <i>TD parsing algorithm</i> with <var>model</var> passed as parameter. If it throws an error, re-throw that error and terminate this algorithm. Otherwise let <var>model</var> be the returned value.
+          </li>
+          <li>
+            If <var>model</var> is not an object, throw <code>TypeError</code> and terminate these steps.
+          </li>
+          <li>
+            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model passed as parameter.
+          </li>
+          <li>
+            Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>instance</var>.
+          </li>
+          <li>
+            Return <var>thing</var>.
+        </ol>
+      </p>
+      <p>
+        The <dfn>TD parsing algorithm</dfn> takes a string <var>td</var> as argument and runs the following steps:
+        <ol>
+          <li>
+            Parse <var>td</var> according to the <a href="https://w3c.github.io/wot-thing-description/#sec-td-serialization">WoT Thing Description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
+          </li>
+          <li>
+            If there was an error during the parsing, throw that error and terminate these steps.
+          </li>
+          <li>
+            Otherwise return <var>json</var>.
+          </li>
+        </ol>
+      </p>
+      <p>
+        The <dfn>Thing instantiation algorithm</dfn> takes an object <var>model</var> as argument and runs the following steps:
+        <ol>
+          <li>
+            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
+          </li>
+          <li>
+            Let <var>instance</var> be a <a>ThingInstance</a> object initialized with <var>model</var> properties.
+          </li>
+          <li>
+            Return <var>instance</var>.
+          </li>
+        </ol>
+      </p>
     </section> <!-- produce() -->
 
     <section> <h3>The <dfn>register()</dfn> method</h3>
@@ -1280,7 +1330,7 @@
           The <dfn>maximum</dfn> property defines the maximum value that can be used.
         </p>
       </section>
-	  
+
       <section data-dfn-for="IntegerSchema"><h4>The <dfn>IntegerSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary IntegerSchema: DataSchema {
