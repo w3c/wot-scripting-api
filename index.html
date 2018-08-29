@@ -1231,14 +1231,14 @@
         </p>
       </section>
 
-      <section data-dfn-for="Number"><h4>The <dfn data-dfn-for="">Number</dfn> type</h4>
+      <!-- <section data-dfn-for="Number"><h4>The <dfn data-dfn-for="">Number</dfn> type</h4>
         <pre class="idl">
           typedef (long or unrestricted double) Number;
         </pre>
         <p>
           A number is either an integer or floating point number supported by the underlying platform. A number value may have associated a permited range between a minimum and maximum value.
         </p>
-      </section>
+      </section> -->
 
       <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
         <pre class="idl">
@@ -1265,19 +1265,38 @@
       <section data-dfn-for="NumberSchema"><h4>The <dfn>NumberSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary NumberSchema: DataSchema {
-            DataType type = "number"; /* | "integer"*/
-            Number minimum;
-            Number maximum;
+            DataType type = "number";
+            unrestricted double minimum;
+            unrestricted double maximum;
           };
         </pre>
         <p>
-          The <dfn>type</dfn> property MUST have either the value <code>"number"</code> (representing a floating point number) or <code>"integer"</code> (representing an integer) as defined by the underlying platform.
+          The <dfn>type</dfn> property MUST have the value <code>"number"</code> (representing a floating point number) as defined by the underlying platform.
         </p>
         <p>
-          The <dfn>minimum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the minimum value that can be used.
+          The <dfn>minimum</dfn> property defines the minimum value that can be used.
         </p>
         <p>
-          The <dfn>maximum</dfn> property may be present when the value is of type <code>"number"</code> and if present, it defines the maximum value that can be used.
+          The <dfn>maximum</dfn> property defines the maximum value that can be used.
+        </p>
+      </section>
+	  
+      <section data-dfn-for="IntegerSchema"><h4>The <dfn>IntegerSchema</dfn> dictionary</h4>
+        <pre class="idl">
+          dictionary IntegerSchema: DataSchema {
+            DataType type = "integer";
+            long minimum;
+            long maximum;
+          };
+        </pre>
+        <p>
+          The <dfn>type</dfn> property MUST have the value <code>"integer"</code> (representing an integer) as defined by the underlying platform.
+        </p>
+        <p>
+          The <dfn>minimum</dfn> property defines the minimum value that can be used.
+        </p>
+        <p>
+          The <dfn>maximum</dfn> property defines the maximum value that can be used.
         </p>
       </section>
 
