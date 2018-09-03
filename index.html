@@ -378,7 +378,7 @@
         </ol>
       </p>
     </section> <!-- Discovery -->
-
+<
     <section> <h3> The <dfn>fetch()</dfn> method</h3>
       <p>
         Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
@@ -425,10 +425,16 @@
             Let <var>model</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
           </li>
           <li>
-            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model</var> as argument.
+            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
           </li>
           <li>
-            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>instance</var>.
+            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>model</var>.
+          </li>
+          <li>
+            Add the <code>read()</code> and <code>write()</code> methods to the <a>ThingProperty</a> elements so that they make requests to access the remote <a>Thing</a>s and wait for the reply, as defined by the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            Add the <code>invoke()</code> methods to the <a>ThingAction</a> elements so that they make requests to the remote <a>Thing</a> to invoke its actions, as defined by the <a>Protocol Bindings</a>.
           </li>
           <li>
             Return <var>thing</var>.
@@ -462,13 +468,36 @@
             If <var>model</var> is not an object, throw <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model passed as parameter.
+            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
           </li>
           <li>
-            Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>instance</var>.
+            Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>model</var>.
+          </li>
+          <li>
+            For each <a>ThingFragment</a> property, initialize the property based on the provided initial or default values provided to the local <a>WoT Runtime</a> implementation, for instance initialize:
+            <ol>
+              <li>
+                 the <code>id</code> property to be the final unique identifier of the <a>Thing</a>,
+              </li>
+              <li>
+                the <code>security</code> object to represent the actual security scheme andits properties as set up by the implementation,
+              </li>
+              <li>
+                the <code>properties</code> property to be an array of <a>ThingProperty</a> objects in which the <code>read()</code> and <code>write()</code> methods are provided to define local methods to get and set the <a>Property</a> values,
+              </li>
+              <li>
+                the <code>actions</code> property to be an array of <a>ThingAction</a> objects in which the <code>invoke()</code> method is provided to define a local method to run the defined <a>Action</a>s,
+              </li>
+              <li>
+                the <code>events</code> property to be an array of <a>ExposedEvent</a> objects in which the <code>emit()</code> method is provided to define a local way to trigger sending notifications to all subscribed clients,
+              </li>
+              <li>
+                and initialize the other properties as initialized from <var>model</var>.
+              </li>
           </li>
           <li>
             Return <var>thing</var>.
+          </li>
         </ol>
       </p>
       <p>
@@ -482,20 +511,6 @@
           </li>
           <li>
             Otherwise return <var>json</var>.
-          </li>
-        </ol>
-      </p>
-      <p>
-        The <dfn>Thing instantiation algorithm</dfn> takes an object <var>model</var> as argument and runs the following steps:
-        <ol>
-          <li>
-            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
-          </li>
-          <li>
-            Let <var>instance</var> be a <a>ThingInstance</a> object initialized with <var>model</var> properties.
-          </li>
-          <li>
-            Return <var>instance</var>.
           </li>
         </ol>
       </p>
@@ -565,13 +580,13 @@
     </section> <!-- Examples -->
   </section> <!-- WoT API -->
 
-  <section data-dfn-for="ThingInstance">
-    <h2>The <dfn>ThingInstance</dfn> interface</h2>
+  <section data-dfn-for="ConsumedThing">
+    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
-      Represents an object that extends a <a>ThingFragment</a> with methods for interactions (reading and writing <a>Properties</a>), invoking <a>Action</a>s, subscribe and unsubscribe for <a>Property</a> changes and <a>Event</a>s.
+      Represents an object that extends a <a>ThingFragment</a> with methods for client interactions (send request for reading and writing <a>Properties</a>), invoke <a>Action</a>s, subscribe and unsubscribe for <a>Property</a> changes and <a>Event</a>s.
     </p>
     <pre class="idl">
-      interface ThingInstance: ThingFragment {
+      interface ConsumedThing: ThingFragment {
         readonly attribute DOMString id;
         readonly attribute DOMString name;
         readonly attribute DOMString? base;
@@ -593,6 +608,7 @@
       interface EventMap {
         maplike&lt;DOMString, ThingEvent&gt;;
       };
+      ConsumedThing implements Observable;  // for TD changes
     </pre>
     <p>
       The <dfn>id</dfn> attribute represents the unique identifier of the <a>Thing</a> instance, typically a URI, IRI, or URN as <code>USVString</code>.
@@ -604,31 +620,15 @@
       The <dfn>base</dfn> attribute represents the base URI that is valid for all defined local interaction resources.
     </p>
     <p>
-      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items. The <dfn>PropertyMap</dfn> interface represents a maplike dictionary where all values are <a>ThingProperty</a> objects.
+      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items. The <dfn>PropertyMap</dfn> interface represents a maplike dictionary where all values are <a>ThingProperty</a> objects. The <code>read()</code> and <code>write()</code> methods make a request to access the <a>Properties</a> on the remote <a>Thing</a> represented by this <a>ConsumedThing</a> proxy object.
     </p>
     <p>
-      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items. The <dfn>ActionMap</dfn> interface represents a maplike dictionary where all values are <a>ThingAction</a> objects.
+      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items. The <dfn>ActionMap</dfn> interface represents a maplike dictionary where all values are <a>ThingAction</a> objects. The <code>invoke()</code> method represents a request to invoke the <a>Action</a> on the remote <a>Thing</a>.
     </p>
     <p>
-      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items. The <dfn>EventMap</dfn> interface represents a maplike dictionary where all values are <a>ThingEvent</a> objects.
+      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items. The <dfn>EventMap</dfn> interface represents a maplike dictionary where all values are <a>ThingEvent</a> objects. Subscribing to the events involves setting up an observation (subscription) mechanism on the remote object.
     </p>
-  </section>
 
-  </section>
-
-  <section data-dfn-for="ConsumedThing">
-    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
-    <p>
-      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
-    </p>
-    <pre class="idl">
-      interface ConsumedThing: ThingInstance {
-      };
-      ConsumedThing implements Observable;  // for TD changes
-    </pre>
-    <p>
-      <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
-    </p>
     <section>
       <h2>Examples</h2>
       <p>
@@ -666,9 +666,13 @@
       The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>. It also implements the <a>Observable</a> interface. An <a>ExposedThing</a> is created by the <a href="#the-produce-method">produce()</a> method.
     </p>
     <pre class="idl">
-      interface ExposedThing: ThingInstance {
+      interface ExposedThing: ThingFragment {
+        readonly attribute PropertyMap properties;
+        readonly attribute ActionMap actions;
         readonly attribute ExposedEvents events;
-        // setter for ThingInstance properties
+        // getter for ThingFragment properties
+        getter any(DOMString name);
+        // setter for ThingFragment properties
         setter void(DOMString name, any value);
         // define how to expose and run the Thing
         Promise&lt;void&gt; expose();
@@ -692,9 +696,14 @@
       callback PropertyReadHandler = Promise&lt;any&gt;();
       callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
       callback ActionHandler = Promise&lt;any&gt;(any parameters);
-      ExposedThing implements Observable;
     </pre>
 
+    <p>
+      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items in which the <code>read()</code> and <code>write()</code> methods define local methods that access the physical representations of the <a>Properties</a>.
+    </p>
+    <p>
+      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items in which the <code>invoke()</code> method represents a local method to invoke the <a>Action</a>.
+    </p>
     <p>
       The <dfn>events</dfn> attribute represents a dictionary of <a>ExposedEvent</a> items that add the <code>emit()</code> method to the <a>ThingEvent</a> definition. The <dfn>ExposedEvents</dfn> interface represents a maplike dictionary where all values are <a>ExposedEvent</a> objects.
     </p>
