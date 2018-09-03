@@ -399,7 +399,7 @@
             Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Let <var>td</var> be the returned content.
           </li>
           <li>
-            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a>  and terminate these steps.
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
@@ -712,11 +712,51 @@
       <p>
         Start serving external requests for the <a>Thing</a>, so that WoT interactions using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible.
       </p>
+      <p>
+        The <code>expose()</code> method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to create and configure serving external requests for WoT interactions, based on the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+          </li>
+        </ol>
+      </p>
     </section>
 
     <section> <h3>The <dfn>destroy()</dfn> method</h3>
       <p>
         Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method.
+      </p>
+      <p>
+        The <code>destroy()</code> method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking <code>destroy()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to stop serving external requests for WoT interactions, based on the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+          </li>
+        </ol>
       </p>
     </section>
 
