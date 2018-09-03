@@ -248,13 +248,8 @@
 
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
-        Starts the discovery process that will provide <code><a>ThingDescription</a></code>s that match the optional argument <code><a>ThingFilter</a></code>. When the argument is not provided, uses all supported discovery methods.
-        Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. Errors are also signaled at the subscription object. When subscribing, the handler function provided to the Observable will receive an argument of type <code>USVString</code> representing a <a>ThingDescription</a>.
+        Starts the discovery process that will provide <a>ThingDescription</a>s that match the optional argument <var>filter</var> of type <code><a>ThingFilter</a></code>. Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. The handler function provided to the Observable during subscription will receive an argument of type <code>USVString</code> representing a <a>ThingDescription</a>.
       </p>
-      <p class="note">
-        Note that canceling a discovery (via invoking <code>unsubscribe()</code>) may not be successful in all cases, for instance when discovery is based on open ended multicast requests. However, once <code>unsubscribe()</code> has been called,  implementations MUST suppress further event handling ( i.e. further discoveries and errors) on the Observable. Also, a discovery error may not mean the end of the discovery process. However, in order to respect Observable semantics (error always terminates processing), implementations MUST close or suppress further event handling on the Observable.
-      </p>
-
       <section data-dfn-for="DiscoveryMethod">
         <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h4>
         <pre class="idl">
@@ -304,7 +299,83 @@
         </p>
       </section>
       <p>
-        If queries are specified, but not supported, implementations should signal a <code>NotSupportedError</code> on the subscription objects. For security errors (e.g. authentication error) a <code>SecurityError</code> should be signaled. For query validation errors a <code>TypeError</code> should be signaled. For other errors an <code>Error</code> should be signaled.
+        The <code>discover(filter)</code> method MUST run the following steps:
+        <ol>
+          <li>
+            If invoking <code>discover()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Return an <code><a>Observable</a></code> <var>obs</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If <code>obs.subscribe(handler, errorHandler, complete)</code> is called, execute the following sub-steps:
+            <ol>
+              <li>
+                If the first argument <var>handler</var> is not defined or it is not a function, throw <code>TypeError</code> and terminate the algorithm. Otherwise configure <var>handler</var> to be invoked when a discovery hit happens.
+              </li>
+              <li>
+                If the second argument <var>errorHandler</var> is defined, but it is not a function, throw <code>TypeError</code> and terminate these steps. Otherwise if defined, save it to be invoked in error conditions.
+              </li>
+              <li>
+                If the third argument <var>onComplete</var> is defined, but it is not a function, throw <code>TypeError</code> and terminate these steps. Otherwise if defined, save it to be invoked when the discovery process finished for other reasons than having been canceled.
+              </li>
+              <li>
+                If <var>filter.query</var> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, implementations SHOULD throw a <code>NotSupported</code> error and terminate these steps.
+              </li>
+              <li>
+                If <var>filter.fragment</var> is defined, and if it contains other properties than the ones defined in <a>ThingFragment</a>, throw <code>TypeError</code> and terminate these steps. Otherwise save the object for matching the discovered items against it.
+              </li>
+              <li>
+                Request the underlying platform to start the discovery process, with the following parameters:
+                <ul>
+                  <li>
+                    If <var>filter.method</var> is not defined or the value is <code>"any"</code>, use the widest discovery method supported by the underlying platform.
+                  </li>
+                  <li>
+                    Otherwise if <var>filter.method</var> is <code>"local"</code>, use the local <a>Thing Directory</a> for discovery. Usually that defines <a>Thing</a>s deployed in the same device, or connected to the device in slave mode (e.g. sensors connected via Bluetooth or a serial connection).
+                  </li>
+                  <li>
+                    Otherwise if <var>filter.method</var> is <code>"directory"</code>, use the remote <a>Thing Directory</a> specified in <var>filter.url</var>.
+                  </li>
+                  <li>
+                    Otherwise if <var>filter.method</var> is <code>"multicast"</code>, use all the multicast discovery protocols supported by the underlying platform.
+                  </li>
+                </ul>
+              </li>
+            </ol>
+          </li>
+          <li>
+            Whenever a new item <var>td</var> is discovered by the underlying platform, run the following sub-steps:
+            <ol>
+              <li>
+                If <var>filter.query</var> is defined, check if <var>td</var> is a match for the query. The matching algorithm is encapsulated by implementations. If that returns <code>false</code>, discard <var>td</var> and continue the discovery process.
+              </li>
+              <li>
+                If <var>filter.fragment</var> is defined, for each property defined in it, check if that property exists in <var>td</var> and has the same value. If this is <code>false</code> in any checks, discard <var>td</var> and continue the discovery process.
+              </li>
+              <li>
+                Otherwise if <var>td</var> has not been discarded in the previous steps, invoke the <var>handler</var> function with <var>td</var> as parameter.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Whenever an error occurs during the discovery process, and if <var>errorHandler</var> is defined, invoke it with an argument of type <code>Error</code> whose <code>message</code> property is set to <code>UnknownError</code> unless there was an error code provided by the <a>Protocol Bindings</a>, in which case set it to that value.
+          </li>
+          <li>
+            When the discovery process is finished, and if <var>onComplete</var> is defined, invoke it run the <a>cancel discovery</a> steps.
+          </li>
+          <li>
+            When the <code>obs.unsubscribe()</code> method is called, run the following <dfn>cancel discovery</dfn> steps:
+            <ol>
+              <li>
+                Request the underlying platform to stop the discovery process. If this returns an error, or if it is not possible, for instance when discovery is based on open ended multicast requests, the implementation SHOULD discard subsequent discovered items.
+              </li>
+              <li>
+                 Set <var>obs.closed</var> to <code>false</code>.
+              </li>
+            </ol>
+          </li>
+        </ol>
       </p>
     </section> <!-- Discovery -->
 
@@ -312,26 +383,122 @@
       <p>
         Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
       </p>
+      <p>
+        The <code>fetch(url)</code> method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If the argument <var>url</var> is not a URL, reject <var>promise</var> with <code>TypeError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Let <var>td</var> be the returned content.
+          </li>
+          <li>
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a>  and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+          </li>
+        </ol>
+      </p>
     </section>
 
     <section> <h3> The <dfn>consume()</dfn> method</h3>
       <p>
         Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
       </p>
+      <p>
+        The <code>consume(td)</code> method must run the following steps:
+        <ol>
+          <li>
+            If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, throw a <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If the argument <var>td</var> is not a string, throw a <code>TypeError</code> and terminate these steps.
+          </li>
+          <li>
+            Let <var>model</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
+          </li>
+          <li>
+            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model</var> as argument.
+          </li>
+          <li>
+            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>instance</var>.
+          </li>
+          <li>
+            Return <var>thing</var>.
+          </li>
+        </ol>
+      </p>
     </section>
 
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
         Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
+        <ol>
+          <li>
+            from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
+          </li>
+          <li>
+            from a <a>Thing Description</a>, then adding request handlers.
+          </li>
+        </ol>
       </p>
-      <ol>
-        <li>
-          from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
-        </li>
-        <li>
-          from a <a>Thing Description</a> or a <a>ConsumedThing</a> object, then adding request handlers.
-        </li>
-      </ol>
+      <p>
+        The <code>produce(url)</code> method MUST run the following steps:
+        <ol>
+          <li>
+            If invoking <code>produce()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If the argument <var>model</var> is a string, then run the <i>TD parsing algorithm</i> with <var>model</var> passed as parameter. If it throws an error, re-throw that error and terminate this algorithm. Otherwise let <var>model</var> be the returned value.
+          </li>
+          <li>
+            If <var>model</var> is not an object, throw <code>TypeError</code> and terminate these steps.
+          </li>
+          <li>
+            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model passed as parameter.
+          </li>
+          <li>
+            Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>instance</var>.
+          </li>
+          <li>
+            Return <var>thing</var>.
+        </ol>
+      </p>
+      <p>
+        The <dfn>TD parsing algorithm</dfn> takes a string <var>td</var> as argument and runs the following steps:
+        <ol>
+          <li>
+            Parse <var>td</var> according to the <a href="https://w3c.github.io/wot-thing-description/#sec-td-serialization">WoT Thing Description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
+          </li>
+          <li>
+            If there was an error during the parsing, throw that error and terminate these steps.
+          </li>
+          <li>
+            Otherwise return <var>json</var>.
+          </li>
+        </ol>
+      </p>
+      <p>
+        The <dfn>Thing instantiation algorithm</dfn> takes an object <var>model</var> as argument and runs the following steps:
+        <ol>
+          <li>
+            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
+          </li>
+          <li>
+            Let <var>instance</var> be a <a>ThingInstance</a> object initialized with <var>model</var> properties.
+          </li>
+          <li>
+            Return <var>instance</var>.
+          </li>
+        </ol>
+      </p>
     </section> <!-- produce() -->
 
     <section> <h3>The <dfn>register()</dfn> method</h3>
@@ -624,7 +791,7 @@
         When an external request for reading <a>Property</a> <var>propertyName</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <a>promise</a> and execute the next steps asynchronously.
+            Return a <code>Promise</code> <a>promise</a> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
@@ -650,7 +817,7 @@
         When an external request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <a>promise</a> and execute the next steps asynchronously.
+            Return a <code>Promise</code> <a>promise</a> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
@@ -1163,7 +1330,7 @@
           The <dfn>maximum</dfn> property defines the maximum value that can be used.
         </p>
       </section>
-	  
+
       <section data-dfn-for="IntegerSchema"><h4>The <dfn>IntegerSchema</dfn> dictionary</h4>
         <pre class="idl">
           dictionary IntegerSchema: DataSchema {
@@ -1382,7 +1549,7 @@
       interface Observable {
         Subscription subscribe(EventHandler handler,
                                optional ErrorHandler errorHandler,
-                               optional OnComplete complete);
+                               optional OnComplete onComplete);
       };
       interface Subscription {
         void unsubscribe();
