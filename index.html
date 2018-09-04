@@ -480,7 +480,7 @@
                  the <code>id</code> property to be the final unique identifier of the <a>Thing</a>,
               </li>
               <li>
-                the <code>security</code> object to represent the actual security scheme and its properties as set up by the implementation,
+                the <code>security</code> object of type <a>SecurityScheme</a> to represent the actual security scheme and its properties as set up by the implementation,
               </li>
               <li>
                 the <code>properties</code> property to be an array of <a>ThingProperty</a> objects in which the <code>read()</code> and <code>write()</code> methods are provided to define local methods to get and set the <a>Property</a> values,
@@ -1076,7 +1076,7 @@
           The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
         </li>
         <li>
-          The <strong><em>security</em></strong> optional attribute represents security metadata defined by a dictionary object whose properties are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition">Thing Description specification</a>;
+          The <strong><em>security</em></strong> optional attribute represents security metadata defined by a dictionary object of type <a>SecurityScheme</a>;
         </li>
         <li>
           The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyFragment</a>.
@@ -1100,9 +1100,6 @@
           Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
         </li>
       </ul>
-      <p class="ednote">
-        Support for configuration and security metadata will be added later.
-      </p>
     </section> <!-- ThingFragment -->
 
     <section data-dfn-for="InteractionFragment">
@@ -1215,7 +1212,7 @@
         The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyFragment</a> as read-only properties.
       </p>
       <p>
-        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>DataType</a>, then it MUST implement the corresponding <a>DataSchema</a> dictionary.
+        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a> as a <a>DataSchema</a> dictionary object.
       </p>
       <p>
         The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
@@ -1312,15 +1309,15 @@
         };
       </pre>
       <p>
-        The <dfn>security</dfn> property represents the security requirements for the linked resource.
+        The <dfn>security</dfn> object property of type <a>SecurityScheme</a> represents the security requirements for the linked resource.
       </p>
     </section>
 
     <section><h3>Value types</h3>
       <p>
-        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingFragment</a>. Basically correspond to a <a>JSON</a> object definition.
+        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingFragment</a>, and basically correspond to a <a>JSON</a> object definition. Value types are represented as <dfn>DataSchema</dfn> dictionary objects whose properties and possible sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition">Thing Description specification</a>. One property of all <code>DataSchema</code> dictionaries is the <code>type</code> property whose value is from a set of  enumerated strings that is referred in this specification as <a href="https://w3c.github.io/wot-thing-description/#dataschema"><dfn>DataType</dfn></a>.
       </p>
-
+      <!--
       <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
         <pre class="idl">
           enum DataType { "boolean", "integer", "number", "string", "object", "array", "null" };
@@ -1464,6 +1461,7 @@
           The <dfn>maxItems</dfn> property represents the maximum number of elements that can be specified in the array.
         </p>
       </section>
+    -->
     </section>
 
     <section><h3>The <dfn>value-matching algorithm</dfn></h3>
@@ -1672,6 +1670,9 @@
           Avoid heavy functional processing in scripts without authentication.
         </li>
       </ol>
+    </p>
+    <p>
+      Security metadata is represented as dictionary objects of type <dfn>SecurityScheme</dfn> whose properties and sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition">Thing Description specification</a>.
     </p>
   </section>
 
