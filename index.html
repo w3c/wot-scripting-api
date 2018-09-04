@@ -480,7 +480,7 @@
                  the <code>id</code> property to be the final unique identifier of the <a>Thing</a>,
               </li>
               <li>
-                the <code>security</code> object to represent the actual security scheme andits properties as set up by the implementation,
+                the <code>security</code> object to represent the actual security scheme and its properties as set up by the implementation,
               </li>
               <li>
                 the <code>properties</code> property to be an array of <a>ThingProperty</a> objects in which the <code>read()</code> and <code>write()</code> methods are provided to define local methods to get and set the <a>Property</a> values,
@@ -674,7 +674,7 @@
         getter any(DOMString name);
         // setter for ThingFragment properties
         setter void(DOMString name, any value);
-        // define how to expose and run the Thing
+        // methods to expose and destroy the Thing
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
         // define Properties
@@ -1233,7 +1233,7 @@
         The <dfn>read()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
       </p>
       <p>
-        The <dfn>write()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
+        The <dfn>write()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the one specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
       </p>
     </section>
 
@@ -1329,15 +1329,6 @@
           Defines the types that values can take, i.e. "<dfn>null</dfn>" "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
         </p>
       </section>
-
-      <!-- <section data-dfn-for="Number"><h4>The <dfn data-dfn-for="">Number</dfn> type</h4>
-        <pre class="idl">
-          typedef (long or unrestricted double) Number;
-        </pre>
-        <p>
-          A number is either an integer or floating point number supported by the underlying platform. A number value may have associated a permited range between a minimum and maximum value.
-        </p>
-      </section> -->
 
       <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
         <pre class="idl">
@@ -1531,13 +1522,13 @@
             Otherwise, if <var>valueType.type</var> is <code>"array"</code>, execute the following sub-steps:
             <ol>
               <li>
-                If <var>valueType.minItems</var> is defined, and <var>value</var> is not an array that contains at least <var>valueType.minItems</var> elements, return <var>false</var>.
+                If <var>value</var> is not an array, return <code>false</code>.
               </li>
               <li>
-                If <var>valueType.maxItems</var> is defined, and <var>value</var> is not an array that contains at maximum <var>valueType.maxItems</var> elements, return <var>false</var>.
+                If <var>valueType.minItems</var> is defined, and <var>value</var> does not contain at least <var>valueType.minItems</var> elements, return <var>false</var>.
               </li>
               <li>
-                Otherwise, if <var>value</var> is not an array, return <code>false</code>.
+                If <var>valueType.maxItems</var> is defined, and <var>value</var> contains more than <var>valueType.maxItems</var> elements, return <var>false</var>.
               </li>
               <li>
                 Otherwise, if <var>valueType.items</var> is <code>undefined</code>, return <code>false</code>.
@@ -1557,10 +1548,10 @@
             Otherwise, if <var>type</var> is <code>"object"</code>, execute the following sub-steps:
             <ol>
               <li>
-                If <var>value</var> is not an <code>Object</code> or <code>null</code>, return <code>false</code>.
+                If <var>value</var> is not an <code>Object</code>, return <code>false</code>.
               </li>
               <li>
-                If <var>valueType.properties</var> is not defined or is not <code>null</code> or it is not an object, return <code>false</code>.
+                If <var>valueType.properties</var> is not defined, return <code>false</code>.
               </li>
               <li>
                 If <var>valueType.properties</var> is <code>null</code>, return <code>true</code> (i.e. accept any object value).
