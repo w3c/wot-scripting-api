@@ -128,7 +128,7 @@
       Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
     </p>
     <p class="note">
-      Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
+      Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT Interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
     </p>
     <p class="note">
       This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
@@ -234,6 +234,13 @@
         Promise&lt;void&gt; unregister(USVString directory, ExposedThing thing);
       };
       typedef object ThingFragment;
+      typedef object PropertyFragment;
+      typedef object ActionFragment;
+      typedef object EventFragment;
+      typedef object DataSchema;
+      typedef object SecurityScheme;
+      typedef object Link;
+      typedef object Form;
       typedef USVString ThingDescription;
       typedef (ThingFragment or ThingDescription) ThingModel;
     </pre>
@@ -702,7 +709,7 @@
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
-        Start serving external requests for the <a>Thing</a>, so that WoT interactions using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible.
+        Start serving external requests for the <a>Thing</a>, so that <a>WoT Interactions</a> using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible.
       </p>
       <p>
         The <code>expose()</code> method MUST run the following steps:
@@ -714,7 +721,7 @@
             If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to the underlying platform to attach protocol handlers and start serving external requests for WoT interactions (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
+            Make a request to the underlying platform to attach protocol handlers and start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
@@ -740,7 +747,7 @@
             If invoking <code>destroy()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to the underlying platform to stop serving external requests for WoT interactions, based on the <a>Protocol Bindings</a>.
+            Make a request to the underlying platform to stop serving external requests for <a>WoT Interactions</a>, based on the <a>Protocol Bindings</a>.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
@@ -1033,11 +1040,84 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section>
-    <h2>Data types used in a <a>Thing</a></h2>
+  <section data-dfn-for="TD-structures">
+    <h2>Data types and structures</h2>
     <p>
-      Every <a>Thing</a> describes its metadata as defined in <a>ThingFragment</a>, and basic interactions defined as <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
+      The [[!WOT-TD]] specification defines the <a href="https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition">WoT information model</a>, i.e. the data types and data structures used in <a>WoT Interactions</a>. In this API these definitions translate to dictionary objects that are extended with methods by the interfaces defined in this specification.
     </p>
+    <p>
+      In order to avoid duplication of definitions, references to these data types and structures is defined in this section, but for their full description please refer to the <a href="">Thing Description specification</a>.
+    </p>
+    <section data-dfn-for="ValueTypes">
+      <h3>The <dfn>DataSchema</dfn> dictionary and its subclasses</h3>
+      <p>
+        Value types basically represent types that may be used in <a>JSON</a> object definitions and are used in <a>ThingFragment</a> to define <a>Properties</a>, <a>Event</a>s and <a>Action</a> parameters. Value types are represented as dictionary objects whose properties and possible sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition">DataSchema</a> section of [[!WOT-TD]].
+      </p>
+      <p>
+        One property of all <a>DataSchema</a> dictionary is the <code>type</code> property whose value is from a set of enumerated strings defined in the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema</a> section of [[!WOT-TD]] and is referred as <dfn>DataType</dfn> in this specification.
+      </p>
+      <p>
+        Based on <code>type</code>, the following sub-classes of <a>DataSchema</a> are defined in [[!WOT-TD]]: <a href="https://w3c.github.io/wot-thing-description/#booleanschema"><dfn>BooleanSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#numberschema"><dfn>NumberSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#integerschema"><dfn>IntegerSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#stringschema"><dfn>StringSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#objectschema"><dfn>ObjectSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#arrayschema"><dfn>ArraySchema</dfn></a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="SecurityScheme">
+      <h3>The <dfn>SecurityScheme</dfn> dictionary and its subclasses</h3>
+      <p>
+        Security metadata is represented as dictionary objects whose properties and sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition">SecurityScheme</a> section of [[!WOT-TD]].
+      </p>
+      <p>
+        One property of the <a>SecurityScheme</a> dictionary is the <code>scheme</code> property whose value is from a set of enumerated strings defined in the <a href="https://w3c.github.io/wot-thing-description/#securityscheme">SecurityScheme</a> section of [[!WOT-TD]]. Based on <code>type</code>, multiple subclasses of <a>SecurityScheme</a> are defined.
+    </section>
+
+    <section data-dfn-for="Link">
+      <h3>The <dfn>Link</dfn> dictionary</h3>
+      <p>
+        Represents a <a href="https://tools.ietf.org/html/rfc8288">Web Link</a> with  properties defined in the <a href="https://w3c.github.io/wot-thing-description/#link">Link</a> section of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="Form">
+      <h3>The <dfn>Form</dfn> dictionary</h3>
+      <p>
+        Represents metadata describing service details, with  properties defined in the <a href="https://w3c.github.io/wot-thing-description/#form">Form</a> section of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="InteractionFragment">
+      <h3>The <code><dfn>InteractionFragment</dfn></code> dictionary</h3>
+      <p>
+        Represents the common properties of <a>WoT Interactions</a>, one of <a>Property</a>, <a>Action</a> or <a>Event</a>, as defined in the <a href="https://w3c.github.io/wot-thing-description/#interactionpattern">InteractionPattern</a> section of [[!WOT-TD]]. Its subclasses are referred as <a>PropertyFragment</a>, <a>ActionFragment</a> and <a>EventFragment</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyFragment">
+      <h3>The <dfn>PropertyFragment</dfn> dictionary</h3>
+      <p>
+        Represents the <a>Property</a> interaction data that initializes a <a>ThingProperty</a> object. Its properties are defined in the <a href="https://w3c.github.io/wot-thing-description/#property">Property</a> and <a href="https://w3c.github.io/wot-thing-description/#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="ActionFragment">
+      <h3>The <dfn>ActionFragment</dfn> dictionary</h3>
+      <p>
+        Represents the <a>Action</a> interaction data that initializes a <a>ThingAction</a> object. Its properties are defined in the <a href="https://w3c.github.io/wot-thing-description/#action">Action</a> and <a href="https://w3c.github.io/wot-thing-description/#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="EventFragment">
+      <h3>The <dfn>EventFragment</dfn> dictionary</h3>
+      <p>
+        Represents the <a>Event</a> interaction data that initializes a <a>ThingEvent</a> object. Its properties are defined in the <a href="https://w3c.github.io/wot-thing-description/#event">Event</a> section of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingFragment">
+      <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
+      <p>
+        The <a>ThingFragment</a> dictionary is defined as <a href="https://w3c.github.io/wot-thing-description/#thing"><b>Thing</b></a> in [[!WOT-TD]]. It is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> and its properties may be used in <a>ThingFilter</a>.
+      </p>
+    </section> <!-- ThingFragment -->
 
     <section data-dfn-for="ThingDescription">
     <h3>The <dfn>ThingDescription</dfn> type</h3>
@@ -1048,118 +1128,16 @@
         In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
       </p>
     </section>
+  </section>
 
-    <section data-dfn-for="ThingFragment">
-      <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
-      <p>
-        <a>ThingFragment</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]], and it is also used in <a>ThingFilter</a>. The set of core properties is defined below. In addition, <a>ThingFragment</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
-      </p>
-      <ul>
-        <li>
-          The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. The <a>WoT Runtime</a> might override this with a different value when exposing the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>. In the <a>Thing Description</a> this attribute is mandatory, but in <a>ThingFilter</a> it is optional.
-        </li>
-        <li>
-          The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
-        </li>
-        <li>
-          The <strong><em>security</em></strong> optional attribute represents security metadata defined by a dictionary object of type <a>SecurityScheme</a>;
-        </li>
-        <li>
-          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyFragment</a>.
-        </li>
-        <li>
-          The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionFragment</a>.
-        </li>
-        <li>
-          The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventFragment</a>.
-        </li>
-        <li>
-          The <strong><em>links</em></strong> optional attribute represents an array of <a>WebLink</a> objects.
-        </li>
-        <li>
-          The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
-        </li>
-        <li>
-          The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
-        </li>
-        <li>
-          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
-        </li>
-      </ul>
-    </section> <!-- ThingFragment -->
-
-    <section data-dfn-for="InteractionFragment">
-      <h3>The <dfn>InteractionFragment</dfn> dictionary</h3>
-      <p>
-      </p>
-      <pre class="idl">
-        dictionary InteractionFragment {
-          DOMString? label;
-          DOMString? description;
-        };
-      </pre>
-      <p>
-        The <dfn>label</dfn> property initializes the text label for the interaction.
-      </p>
-      <p>
-        The <dfn>description</dfn> property initializes the description for the interaction.
-      </p>
-    </section>
-
-    <section data-dfn-for="PropertyFragment">
-      <h3>The <dfn>PropertyFragment</dfn> dictionary</h3>
-      <p>
-        Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
-      </p>
-        <pre class="idl">
-          dictionary PropertyFragment: InteractionFragment {
-            boolean writable = false;
-            boolean observable = false;
-          };
-          PropertyFragment implements DataSchema;
-        </pre>
-      <p>
-        The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
-      </p>
-      <p>
-        The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ActionFragment">
-      <h3>The <dfn>ActionFragment</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary ActionFragment: InteractionFragment {
-          DataSchema? input;
-          DataSchema? output;
-        };
-      </pre>
-      <p>
-        The <dfn>input</dfn> property initializes the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
-      </p>
-      <p>
-        The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="EventFragment">
-      <h3>The <dfn>EventFragment</dfn> dictionary</h3>
-      <p>
-        Event data is represented as a <a>Property</a>.
-      </p>
-      <pre class="idl">
-        typedef PropertyFragment EventFragment;
-      </pre>
-      <p>
-        The value an event is carrying is initialized as a <a>Property</a> value.
-      </p>
-    </section>
+  <section>
+    <h2>Interfaces for <a>WoT Interactions</a></h2>
+    <p>
+      The data types and structures imported from [[!WOT-TD]] are extended by this specification in order to provide the interfaces for <a>WoT Interactions</a>.
+    </p>
+    <p>
+      Every <a>Thing</a> describes its metadata as defined in <a>ThingFragment</a>, and basic interactions defined as <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following interfaces are used for representing these interactions.
+    </p>
 
     <section data-dfn-for="Interaction">
       <h3>The <dfn>Interaction</dfn> interface</h3>
@@ -1172,7 +1150,7 @@
 
       <pre class="idl">
         interface Interaction {
-          readonly attribute FrozenArray&lt;Form&gt; forms;
+          readonly attribute (Form or FrozenArray&lt;Form&gt;) forms;
         };
         Interaction implements InteractionFragment;
       </pre>
@@ -1262,198 +1240,6 @@
           Emits an event that carries data specified by the <code>payload</code> argument.
         </p>
       </section>
-    </section>
-
-    <section data-dfn-for="Link"><h3>The <dfn>Link</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary Link {
-          required USVString href;
-          USVString mediaType;
-          DOMString rel;
-        };
-      </pre>
-      <p>
-        The <dfn>href</dfn> property is a hypertext reference that defines the <a>Link</a>.
-      </p>
-      <p>
-        The <dfn>mediaType</dfn> property represents the <a>IANA media type</a> associated with the <a>Link</a>.
-      </p>
-      <p>
-        The <dfn>rel</dfn> property represents a semantic label that specifies how to interact with the linked resource.
-      </p>
-    </section>
-
-    <section data-dfn-for="WebLink"><h3>The <dfn>WebLink</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary WebLink: Link {
-          USVString anchor;
-        };
-      </pre>
-      <p>
-        The <dfn>anchor</dfn> property represents a URI that overrides the default context of a <a>Link</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="Form"><h3>The <dfn>Form</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary Form: Link {
-          SecurityScheme security;
-        };
-      </pre>
-      <p>
-        The <dfn>security</dfn> object property of type <a>SecurityScheme</a> represents the security requirements for the linked resource.
-      </p>
-    </section>
-
-    <section><h3>Value types</h3>
-      <p>
-        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingFragment</a>, and basically correspond to a <a>JSON</a> object definition. Value types are represented as <dfn>DataSchema</dfn> dictionary objects whose properties and possible sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition">Thing Description specification</a>. One property of all <code>DataSchema</code> dictionaries is the <code>type</code> property whose value is from a set of  enumerated strings that is referred in this specification as <a href="https://w3c.github.io/wot-thing-description/#dataschema"><dfn>DataType</dfn></a>.
-      </p>
-      <!--
-      <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
-        <pre class="idl">
-          enum DataType { "boolean", "integer", "number", "string", "object", "array", "null" };
-        </pre>
-        <p>
-          Defines the types that values can take, i.e. "<dfn>null</dfn>" "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
-        </p>
-      </section>
-
-      <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary DataSchema {
-            DataType type;
-            DOMString description;
-            boolean constant;
-          };
-        </pre>
-        <p>
-          Represents the common properties of a value type definition.
-        </p>
-        <p>
-          The <dfn>type</dfn> property represents the value type enumerated in <a>DataType</a>.
-        </p>
-        <p>
-          The <dfn>description</dfn> property represents a textual description of the value.
-        </p>
-        <p>
-          The <dfn>constant</dfn> property tells whether this value is constant.
-        </p>
-      </section>
-
-      <section data-dfn-for="NumberSchema"><h4>The <dfn>NumberSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary NumberSchema: DataSchema {
-            DataType type = "number";
-            unrestricted double minimum;
-            unrestricted double maximum;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"number"</code> (representing a floating point number) as defined by the underlying platform.
-        </p>
-        <p>
-          The <dfn>minimum</dfn> property defines the minimum value that can be used.
-        </p>
-        <p>
-          The <dfn>maximum</dfn> property defines the maximum value that can be used.
-        </p>
-      </section>
-
-      <section data-dfn-for="IntegerSchema"><h4>The <dfn>IntegerSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary IntegerSchema: DataSchema {
-            DataType type = "integer";
-            long minimum;
-            long maximum;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"integer"</code> (representing an integer) as defined by the underlying platform.
-        </p>
-        <p>
-          The <dfn>minimum</dfn> property defines the minimum value that can be used.
-        </p>
-        <p>
-          The <dfn>maximum</dfn> property defines the maximum value that can be used.
-        </p>
-      </section>
-
-      <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary BooleanSchema: DataSchema {
-            DataType type = "boolean";
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"boolean"</code>.
-        </p>
-      </section>
-
-      <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary StringSchema: DataSchema {
-            DataType type = "string";
-            sequence&lt;DOMString&gt;? enumeration;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
-        </p>
-        <p>
-          The <dfn>enumeration</dfn> property represents the list of allowed string values as a string array.
-        </p>
-      </section>
-
-      <section data-dfn-for="ObjectSchema"><h4>The <dfn>ObjectSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          [NoInterfaceObject]
-          interface SchemaProperties {
-            maplike&lt;DOMString, DataSchema&gt;;
-          };
-          dictionary ObjectSchema: DataSchema {
-            DataType type = "object";
-            SchemaProperties? properties;
-            sequence&lt;DOMString&gt; mandatory;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
-        </p>
-        <p>
-          The <dfn>SchemaProperties</dfn> interface represents a maplike dictionary where all values are <a>DataSchema</a> objects.
-        </p>
-        <p>
-          The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
-        </p>
-        <p>
-          The <dfn>mandatory</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
-        </p>
-      </section>
-
-      <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ArraySchema: DataSchema {
-            DataType type = "array";
-            DataSchema? items;
-            unsigned long minItems;
-            unsigned long maxItems;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"array"</code>.
-        </p>
-        <p>
-          The <dfn>items</dfn> property represents the type of the elements in the array. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is accepted.
-        </p>
-        <p>
-          The <dfn>minItems</dfn> property represents the minimum number of elements required to be in the array.
-        </p>
-        <p>
-          The <dfn>maxItems</dfn> property represents the maximum number of elements that can be specified in the array.
-        </p>
-      </section>
-    -->
     </section>
 
     <section><h3>The <dfn>value-matching algorithm</dfn></h3>
@@ -1662,9 +1448,6 @@
           Avoid heavy functional processing in scripts without authentication.
         </li>
       </ol>
-    </p>
-    <p>
-      Security metadata is represented as dictionary objects of type <dfn>SecurityScheme</dfn> whose properties and sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition">Thing Description specification</a>.
     </p>
   </section>
 
