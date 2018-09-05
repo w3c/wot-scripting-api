@@ -378,7 +378,7 @@
         </ol>
       </p>
     </section> <!-- Discovery -->
-<
+
     <section> <h3> The <dfn>fetch()</dfn> method</h3>
       <p>
         Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
@@ -396,7 +396,7 @@
             If the argument <var>url</var> is not a URL, reject <var>promise</var> with <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Let <var>td</var> be the returned content.
+            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Implementations encapsulate the fetching process and the accepted media types (such as <code>application/td+json</code>), as far as a valid <a>Thing Description</a> can be obtained as defined in [[!WOT-TD]]. Let <var>td</var> be the <a>Thing Description</a> string-serialized from the returned content, as specified in the <a href="https://w3c.github.io/wot-thing-description/#sec-td-serialization">Thing Description serialization</a>.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
@@ -416,25 +416,25 @@
         The <code>consume(td)</code> method must run the following steps:
         <ol>
           <li>
-            If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, throw a <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
             If the argument <var>td</var> is not a string, throw a <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Let <var>model</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
+            Let <var>stub</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
           </li>
           <li>
-            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
+            If <var>stub</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>stub</var>.
           </li>
           <li>
-            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>model</var>.
+            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>stub</var> that implements <a>Observable</a>.
           </li>
           <li>
-            Add the <code>read()</code> and <code>write()</code> methods to the <a>ThingProperty</a> elements so that they make requests to access the remote <a>Thing</a>s and wait for the reply, as defined by the <a>Protocol Bindings</a>.
+            Add the <code>read()</code> and <code>write()</code> methods to the <a>ThingProperty</a> elements so that they make requests to access the remote <a>Thing</a>s and wait for the reply, as defined by the <a>Protocol Bindings</a>. Also, all <a>ThingProperty</a> elements SHOULD implement <a>Observable</a>, i.e. define a <code>subscribe()</code> method that should make request to observe the given <a>Properties</a> as defined by the <a>Protocol Bindings</a>.
           </li>
           <li>
             Add the <code>invoke()</code> methods to the <a>ThingAction</a> elements so that they make requests to the remote <a>Thing</a> to invoke its actions, as defined by the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            Add the <code>subscribe()</code> method to all <a>ThingEvent</a> elements so that they make requests to subscribe to the events defined by the remote <a>Thing</a>, as defined by the <a>Protocol Bindings</a>.
           </li>
           <li>
             Return <var>thing</var>.
@@ -445,18 +445,10 @@
 
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
-        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
-        <ol>
-          <li>
-            from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
-          </li>
-          <li>
-            from a <a>Thing Description</a>, then adding request handlers.
-          </li>
-        </ol>
+        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object.
       </p>
       <p>
-        The <code>produce(url)</code> method MUST run the following steps:
+        The <code>produce(model)</code> method MUST run the following steps:
         <ol>
           <li>
             If invoking <code>produce()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
@@ -474,7 +466,7 @@
             Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>model</var>.
           </li>
           <li>
-            For each <a>ThingFragment</a> property, initialize the property based on the provided initial or default values provided to the local <a>WoT Runtime</a> implementation, for instance initialize:
+            For each property of <a>ExposedThing</a> defined in <a>ThingFragment</a>, initialize the property based on the provided initial or default values provided to the local <a>WoT Runtime</a> implementation, for instance initialize:
             <ol>
               <li>
                  the <code>id</code> property to be the final unique identifier of the <a>Thing</a>,
@@ -483,13 +475,13 @@
                 the <code>security</code> object of type <a>SecurityScheme</a> to represent the actual security scheme and its properties as set up by the implementation,
               </li>
               <li>
-                the <code>properties</code> property to be an array of <a>ThingProperty</a> objects in which the <code>read()</code> and <code>write()</code> methods are provided to define local methods to get and set the <a>Property</a> values,
+                the <code>properties</code> property to be an object with all properties being <a>ThingProperty</a> objects in which the <code>read()</code> and <code>write()</code> methods are provided to define local methods to get and set the <a>Property</a> values,
               </li>
               <li>
-                the <code>actions</code> property to be an array of <a>ThingAction</a> objects in which the <code>invoke()</code> method is provided to define a local method to run the defined <a>Action</a>s,
+                the <code>actions</code> property to be an object with all properties being <a>ThingAction</a> objects in which the <code>invoke()</code> method is provided to define a local method to run the defined <a>Action</a>s,
               </li>
               <li>
-                the <code>events</code> property to be an array of <a>ExposedEvent</a> objects in which the <code>emit()</code> method is provided to define a local way to trigger sending notifications to all subscribed clients,
+                the <code>events</code> property to be an object with all properties being <a>ExposedEvent</a> objects in which the <code>emit()</code> method is provided to define a local way to trigger sending notifications to all subscribed clients,
               </li>
               <li>
                 and initialize the other properties as initialized from <var>model</var>.
@@ -722,7 +714,7 @@
             If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to the underlying platform to create and configure serving external requests for WoT interactions, based on the <a>Protocol Bindings</a>.
+            Make a request to the underlying platform to attach protocol handlers and start serving external requests for WoT interactions (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
