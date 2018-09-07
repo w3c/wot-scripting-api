@@ -128,7 +128,7 @@
       Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
     </p>
     <p class="note">
-      Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
+      Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT Interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
     </p>
     <p class="note">
       This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
@@ -234,6 +234,13 @@
         Promise&lt;void&gt; unregister(USVString directory, ExposedThing thing);
       };
       typedef object ThingFragment;
+      typedef object PropertyFragment;
+      typedef object ActionFragment;
+      typedef object EventFragment;
+      typedef object DataSchema;
+      typedef object SecurityScheme;
+      typedef object Link;
+      typedef object Form;
       typedef USVString ThingDescription;
       typedef (ThingFragment or ThingDescription) ThingModel;
     </pre>
@@ -396,10 +403,10 @@
             If the argument <var>url</var> is not a URL, reject <var>promise</var> with <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Let <var>td</var> be the returned content.
+            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Implementations encapsulate the fetching process and the accepted media types (such as <code>application/td+json</code>), as far as a valid <a>Thing Description</a> can be obtained as defined in [[!WOT-TD]]. Let <var>td</var> be the <a>Thing Description</a> string-serialized from the returned content, as specified in the <a data-cite="!WOT-TD#sec-td-serialization">Thing Description serialization</a>.
           </li>
           <li>
-            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a>  and terminate these steps.
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
@@ -416,19 +423,25 @@
         The <code>consume(td)</code> method must run the following steps:
         <ol>
           <li>
-            If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, throw a <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
             If the argument <var>td</var> is not a string, throw a <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Let <var>model</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
+            Let <var>stub</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
           </li>
           <li>
-            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model</var> as argument.
+            If <var>stub</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>stub</var>.
           </li>
           <li>
-            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>instance</var>.
+            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>stub</var> that implements <a>Observable</a>.
+          </li>
+          <li>
+            Add the <code>read()</code> and <code>write()</code> methods to the <a>ThingProperty</a> elements so that they make requests to access the remote <a>Thing</a>s and wait for the reply, as defined by the <a>Protocol Bindings</a>. Also, all <a>ThingProperty</a> elements SHOULD implement <a>Observable</a>, i.e. define a <code>subscribe()</code> method that should make request to observe the given <a>Properties</a> as defined by the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            Add the <code>invoke()</code> methods to the <a>ThingAction</a> elements so that they make requests to the remote <a>Thing</a> to invoke its actions, as defined by the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            Add the <code>subscribe()</code> method to all <a>ThingEvent</a> elements so that they make requests to subscribe to the events defined by the remote <a>Thing</a>, as defined by the <a>Protocol Bindings</a>.
           </li>
           <li>
             Return <var>thing</var>.
@@ -439,18 +452,10 @@
 
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
-        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object. An <a>ExposedThing</a> can be created in the following ways:
-        <ol>
-          <li>
-            from a <a>ThingFragment</a>, then adding <a>Properties</a>, <a>Actions</a>, <a>Events</a> and request handlers;
-          </li>
-          <li>
-            from a <a>Thing Description</a>, then adding request handlers.
-          </li>
-        </ol>
+        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object.
       </p>
       <p>
-        The <code>produce(url)</code> method MUST run the following steps:
+        The <code>produce(model)</code> method MUST run the following steps:
         <ol>
           <li>
             If invoking <code>produce()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
@@ -462,40 +467,49 @@
             If <var>model</var> is not an object, throw <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Let <var>instance</var> be the result of running the <a>Thing instantiation algorithm</a> with <var>model passed as parameter.
+            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
           </li>
           <li>
-            Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>instance</var>.
+            Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>model</var>.
+          </li>
+          <li>
+            For each property of <a>ExposedThing</a> defined in <a>ThingFragment</a>, initialize the property based on the provided initial or default values provided to the local <a>WoT Runtime</a> implementation, for instance initialize:
+            <ol>
+              <li>
+                 the <code>id</code> property to be the final unique identifier of the <a>Thing</a>,
+              </li>
+              <li>
+                the <code>security</code> object of type <a>SecurityScheme</a> to represent the actual security scheme and its properties as set up by the implementation,
+              </li>
+              <li>
+                the <code>properties</code> property to be an object with all properties being <a>ThingProperty</a> objects in which the <code>read()</code> and <code>write()</code> methods are provided to define local methods to get and set the <a>Property</a> values,
+              </li>
+              <li>
+                the <code>actions</code> property to be an object with all properties being <a>ThingAction</a> objects in which the <code>invoke()</code> method is provided to define a local method to run the defined <a>Action</a>s,
+              </li>
+              <li>
+                the <code>events</code> property to be an object with all properties being <a>ExposedEvent</a> objects in which the <code>emit()</code> method is provided to define a local way to trigger sending notifications to all subscribed clients,
+              </li>
+              <li>
+                and initialize the other properties as initialized from <var>model</var>.
+              </li>
           </li>
           <li>
             Return <var>thing</var>.
+          </li>
         </ol>
       </p>
       <p>
         The <dfn>TD parsing algorithm</dfn> takes a string <var>td</var> as argument and runs the following steps:
         <ol>
           <li>
-            Parse <var>td</var> according to the <a href="https://w3c.github.io/wot-thing-description/#sec-td-serialization">WoT Thing Description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
+            Parse <var>td</var> according to the <a data-cite="!WOT-TD#sec-td-serialization">WoT Thing Description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
           </li>
           <li>
             If there was an error during the parsing, throw that error and terminate these steps.
           </li>
           <li>
             Otherwise return <var>json</var>.
-          </li>
-        </ol>
-      </p>
-      <p>
-        The <dfn>Thing instantiation algorithm</dfn> takes an object <var>model</var> as argument and runs the following steps:
-        <ol>
-          <li>
-            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
-          </li>
-          <li>
-            Let <var>instance</var> be a <a>ThingInstance</a> object initialized with <var>model</var> properties.
-          </li>
-          <li>
-            Return <var>instance</var>.
           </li>
         </ol>
       </p>
@@ -565,13 +579,13 @@
     </section> <!-- Examples -->
   </section> <!-- WoT API -->
 
-  <section data-dfn-for="ThingInstance">
-    <h2>The <dfn>ThingInstance</dfn> interface</h2>
+  <section data-dfn-for="ConsumedThing">
+    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
-      Represents an object that extends a <a>ThingFragment</a> with methods for interactions (reading and writing <a>Properties</a>), invoking <a>Action</a>s, subscribe and unsubscribe for <a>Property</a> changes and <a>Event</a>s.
+      Represents an object that extends a <a>ThingFragment</a> with methods for client interactions (send request for reading and writing <a>Properties</a>), invoke <a>Action</a>s, subscribe and unsubscribe for <a>Property</a> changes and <a>Event</a>s.
     </p>
     <pre class="idl">
-      interface ThingInstance: ThingFragment {
+      interface ConsumedThing: ThingFragment {
         readonly attribute DOMString id;
         readonly attribute DOMString name;
         readonly attribute DOMString? base;
@@ -593,6 +607,7 @@
       interface EventMap {
         maplike&lt;DOMString, ThingEvent&gt;;
       };
+      ConsumedThing implements Observable;  // for TD changes
     </pre>
     <p>
       The <dfn>id</dfn> attribute represents the unique identifier of the <a>Thing</a> instance, typically a URI, IRI, or URN as <code>USVString</code>.
@@ -604,31 +619,15 @@
       The <dfn>base</dfn> attribute represents the base URI that is valid for all defined local interaction resources.
     </p>
     <p>
-      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items. The <dfn>PropertyMap</dfn> interface represents a maplike dictionary where all values are <a>ThingProperty</a> objects.
+      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items. The <dfn>PropertyMap</dfn> interface represents a maplike dictionary where all values are <a>ThingProperty</a> objects. The <code>read()</code> and <code>write()</code> methods make a request to access the <a>Properties</a> on the remote <a>Thing</a> represented by this <a>ConsumedThing</a> proxy object.
     </p>
     <p>
-      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items. The <dfn>ActionMap</dfn> interface represents a maplike dictionary where all values are <a>ThingAction</a> objects.
+      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items. The <dfn>ActionMap</dfn> interface represents a maplike dictionary where all values are <a>ThingAction</a> objects. The <code>invoke()</code> method represents a request to invoke the <a>Action</a> on the remote <a>Thing</a>.
     </p>
     <p>
-      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items. The <dfn>EventMap</dfn> interface represents a maplike dictionary where all values are <a>ThingEvent</a> objects.
+      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items. The <dfn>EventMap</dfn> interface represents a maplike dictionary where all values are <a>ThingEvent</a> objects. Subscribing to the events involves setting up an observation (subscription) mechanism on the remote object.
     </p>
-  </section>
 
-  </section>
-
-  <section data-dfn-for="ConsumedThing">
-    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
-    <p>
-      The <a>ConsumedThing</a> interface is a client API for sending requests to servers in order to retrieve or update <a>Properties</a>, invoke <a>Actions</a>, and observe <a>Properties</a> and <a>Events</a>.
-    </p>
-    <pre class="idl">
-      interface ConsumedThing: ThingInstance {
-      };
-      ConsumedThing implements Observable;  // for TD changes
-    </pre>
-    <p>
-      <code>ConsumedThing</code> represents a local proxy object of the remote <a>Thing</a>.
-    </p>
     <section>
       <h2>Examples</h2>
       <p>
@@ -666,11 +665,15 @@
       The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>. It also implements the <a>Observable</a> interface. An <a>ExposedThing</a> is created by the <a href="#the-produce-method">produce()</a> method.
     </p>
     <pre class="idl">
-      interface ExposedThing: ThingInstance {
+      interface ExposedThing: ThingFragment {
+        readonly attribute PropertyMap properties;
+        readonly attribute ActionMap actions;
         readonly attribute ExposedEvents events;
-        // setter for ThingInstance properties
+        // getter for ThingFragment properties
+        getter any(DOMString name);
+        // setter for ThingFragment properties
         setter void(DOMString name, any value);
-        // define how to expose and run the Thing
+        // methods to expose and destroy the Thing
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
         // define Properties
@@ -692,22 +695,67 @@
       callback PropertyReadHandler = Promise&lt;any&gt;();
       callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
       callback ActionHandler = Promise&lt;any&gt;(any parameters);
-      ExposedThing implements Observable;
     </pre>
 
+    <p>
+      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items in which the <code>read()</code> and <code>write()</code> methods define local methods that access the physical representations of the <a>Properties</a>.
+    </p>
+    <p>
+      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items in which the <code>invoke()</code> method represents a local method to invoke the <a>Action</a>.
+    </p>
     <p>
       The <dfn>events</dfn> attribute represents a dictionary of <a>ExposedEvent</a> items that add the <code>emit()</code> method to the <a>ThingEvent</a> definition. The <dfn>ExposedEvents</dfn> interface represents a maplike dictionary where all values are <a>ExposedEvent</a> objects.
     </p>
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
-        Start serving external requests for the <a>Thing</a>, so that WoT interactions using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible.
+        Start serving external requests for the <a>Thing</a>, so that <a>WoT Interactions</a> using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible.
+      </p>
+      <p>
+        The <code>expose()</code> method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to attach protocol handlers and start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+          </li>
+        </ol>
       </p>
     </section>
 
     <section> <h3>The <dfn>destroy()</dfn> method</h3>
       <p>
         Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method.
+      </p>
+      <p>
+        The <code>destroy()</code> method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking <code>destroy()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to stop serving external requests for <a>WoT Interactions</a>, based on the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+          </li>
+        </ol>
       </p>
     </section>
 
@@ -992,11 +1040,84 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section>
-    <h2>Data types used in a <a>Thing</a></h2>
+  <section data-dfn-for="TD-structures">
+    <h2>Data types and structures</h2>
     <p>
-      Every <a>Thing</a> describes its metadata as defined in <a>ThingFragment</a>, and basic interactions defined as <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following data types are used for representing these interactions, as defined in [[!WOT-TD]].
+      The [[!WOT-TD]] specification defines the <a data-cite="!WOT-TD#sec-vocabulary-definition">WoT information model</a>, i.e. the data types and data structures used in <a>WoT Interactions</a>. In this API these definitions translate to dictionary objects that are extended with methods by the interfaces defined in this specification.
     </p>
+    <p>
+      In order to avoid duplication of definitions, references to these data types and structures is defined in this section, but for their full description please refer to the <a href="">Thing Description specification</a>.
+    </p>
+    <section data-dfn-for="ValueTypes">
+      <h3>The <dfn>DataSchema</dfn> dictionary and its subclasses</h3>
+      <p>
+        Value types basically represent types that may be used in <a>JSON</a> object definitions and are used in <a>ThingFragment</a> to define <a>Properties</a>, <a>Event</a>s and <a>Action</a> parameters. Value types are represented as dictionary objects whose properties and possible sub-classes are defined in the <a data-cite="!WOT-TD#sec-data-schema-vocabulary-definition">DataSchema</a> section of [[!WOT-TD]].
+      </p>
+      <p>
+        One property of all <a>DataSchema</a> dictionary is the <code>type</code> property whose value is from a set of enumerated strings defined in the <a data-cite="!WOT-TD#dataschema">DataSchema</a> section of [[!WOT-TD]] and is referred as <dfn>DataType</dfn> in this specification.
+      </p>
+      <p>
+        Based on <code>type</code>, the following sub-classes of <a>DataSchema</a> are defined in [[!WOT-TD]]: <a data-cite="!WOT-TD#booleanschema"><dfn>BooleanSchema</dfn></a>, <a data-cite="!WOT-TD#numberschema"><dfn>NumberSchema</dfn></a>, <a data-cite="!WOT-TD#integerschema"><dfn>IntegerSchema</dfn></a>, <a data-cite="!WOT-TD#stringschema"><dfn>StringSchema</dfn></a>, <a data-cite="!WOT-TD#objectschema"><dfn>ObjectSchema</dfn></a>, <a data-cite="!WOT-TD#arrayschema"><dfn>ArraySchema</dfn></a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="SecurityScheme">
+      <h3>The <dfn>SecurityScheme</dfn> dictionary and its subclasses</h3>
+      <p>
+        Security metadata is represented as dictionary objects whose properties and sub-classes are defined in the <a data-cite="!WOT-TD#sec-security-vocabulary-definition">SecurityScheme</a> section of [[!WOT-TD]].
+      </p>
+      <p>
+        One property of the <a>SecurityScheme</a> dictionary is the <code>scheme</code> property whose value is from a set of enumerated strings defined in the <a data-cite="!WOT-TD#securityscheme">SecurityScheme</a> section of [[!WOT-TD]]. Based on <code>type</code>, multiple subclasses of <a>SecurityScheme</a> are defined.
+    </section>
+
+    <section data-dfn-for="Link">
+      <h3>The <dfn>Link</dfn> dictionary</h3>
+      <p>
+        Represents a <a href="https://tools.ietf.org/html/rfc8288">Web Link</a> with  properties defined in the <a data-cite="!WOT-TD#link">Link</a> section of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="Form">
+      <h3>The <dfn>Form</dfn> dictionary</h3>
+      <p>
+        Represents metadata describing service details, with  properties defined in the <a data-cite="!WOT-TD#form">Form</a> section of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="InteractionFragment">
+      <h3>The <code><dfn>InteractionFragment</dfn></code> dictionary</h3>
+      <p>
+        Represents the common properties of <a>WoT Interactions</a>, one of <a>Property</a>, <a>Action</a> or <a>Event</a>, as defined in the <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> section of [[!WOT-TD]]. Its subclasses are referred as <a>PropertyFragment</a>, <a>ActionFragment</a> and <a>EventFragment</a>.
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyFragment">
+      <h3>The <dfn>PropertyFragment</dfn> dictionary</h3>
+      <p>
+        Represents the <a>Property</a> interaction data that initializes a <a>ThingProperty</a> object. Its properties are defined in the <a data-cite="!WOT-TD#property">Property</a> and <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="ActionFragment">
+      <h3>The <dfn>ActionFragment</dfn> dictionary</h3>
+      <p>
+        Represents the <a>Action</a> interaction data that initializes a <a>ThingAction</a> object. Its properties are defined in the <a data-cite="!WOT-TD#action">Action</a> and <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="EventFragment">
+      <h3>The <dfn>EventFragment</dfn> dictionary</h3>
+      <p>
+        Represents the <a>Event</a> interaction data that initializes a <a>ThingEvent</a> object. Its properties are defined in the <a data-cite="!WOT-TD#event">Event</a> section of [[!WOT-TD]].
+      </p>
+    </section>
+
+    <section data-dfn-for="ThingFragment">
+      <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
+      <p>
+        The <a>ThingFragment</a> dictionary is defined as <a data-cite="!WOT-TD#thing"><b>Thing</b></a> in [[!WOT-TD]]. It is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> and its properties may be used in <a>ThingFilter</a>.
+      </p>
+    </section> <!-- ThingFragment -->
 
     <section data-dfn-for="ThingDescription">
     <h3>The <dfn>ThingDescription</dfn> type</h3>
@@ -1007,121 +1128,16 @@
         In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
       </p>
     </section>
+  </section>
 
-    <section data-dfn-for="ThingFragment">
-      <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
-      <p>
-        <a>ThingFragment</a> is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> as defined in [[!WOT-TD]], and it is also used in <a>ThingFilter</a>. The set of core properties is defined below. In addition, <a>ThingFragment</a> may contain other properties as well as defined in the <a>Thing Description</a> from which the <a>Thing</a> object is created.
-      </p>
-      <ul>
-        <li>
-          The <dfn>id</dfn> optional attribute represents an application provided hint for the unique identifier of the <a>Thing</a>, typically a URI, IRI, or URN as <code>USVString</code>. The <a>WoT Runtime</a> might override this with a different value when exposing the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>. In the <a>Thing Description</a> this attribute is mandatory, but in <a>ThingFilter</a> it is optional.
-        </li>
-        <li>
-          The <dfn>description</dfn> optional attribute of type <code>DOMString</code> represents a human readable description of the <a>Thing</a>.
-        </li>
-        <li>
-          The <dfn>support</dfn> optional attribute of type <code>DOMString</code> represents human readable information about the <a>TD</a> maintainer.
-        </li>
-        <li>
-          The <strong><em>security</em></strong> optional attribute represents security metadata defined by the <a>SecurityScheme</a> dictionary;
-        </li>
-        <li>
-          The <strong><em>properties</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Property</a> names and values of type <a>PropertyFragment</a>.
-        </li>
-        <li>
-          The <strong><em>actions</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Action</a> names and values of type <a>ActionFragment</a>.
-        </li>
-        <li>
-          The <strong><em>events</em></strong> optional attribute represents a dictionary with keys that correspond to <a>Event</a> names and values of type <a>EventFragment</a>.
-        </li>
-        <li>
-          The <strong><em>links</em></strong> optional attribute represents an array of <a>WebLink</a> objects.
-        </li>
-        <li>
-          The <dfn>@context</dfn> optional attribute represents a semantic context as <code>USVString</code>.
-        </li>
-        <li>
-          The <dfn>@type</dfn> optional attribute represents a semantic type as <code>USVString</code>.
-        </li>
-        <li>
-          Apart from the core properties defined above, others may also be defined on a <a>Thing</a>, for instance <code>"@id"</code>, <code>"gms:COVParams"</code> (with namespace definition), or <code>"iotschema:unit"</code> etc.
-        </li>
-      </ul>
-      <p class="ednote">
-        Support for configuration and security metadata will be added later.
-      </p>
-    </section> <!-- ThingFragment -->
-
-    <section data-dfn-for="InteractionFragment">
-      <h3>The <dfn>InteractionFragment</dfn> dictionary</h3>
-      <p>
-      </p>
-      <pre class="idl">
-        dictionary InteractionFragment {
-          DOMString? label;
-          DOMString? description;
-        };
-      </pre>
-      <p>
-        The <dfn>label</dfn> property initializes the text label for the interaction.
-      </p>
-      <p>
-        The <dfn>description</dfn> property initializes the description for the interaction.
-      </p>
-    </section>
-
-    <section data-dfn-for="PropertyFragment">
-      <h3>The <dfn>PropertyFragment</dfn> dictionary</h3>
-      <p>
-        Defines the standardized part of the dictionary that initializes a <a>ThingProperty</a> object.
-      </p>
-        <pre class="idl">
-          dictionary PropertyFragment: InteractionFragment {
-            boolean writable = false;
-            boolean observable = false;
-          };
-          PropertyFragment implements DataSchema;
-        </pre>
-      <p>
-        The <dfn>writable</dfn> property initializes access to the <a>Property</a> value. The default value is <code>false</code>.
-      </p>
-      <p>
-        The <dfn>observable</dfn> property initializes observability access to the <a>Property</a>. The default value is <code>false</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ActionFragment">
-      <h3>The <dfn>ActionFragment</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary ActionFragment: InteractionFragment {
-          DataSchema? input;
-          DataSchema? output;
-        };
-      </pre>
-      <p>
-        The <dfn>input</dfn> property initializes the input of type <a>DataSchema</a> to the <a>ThingAction</a>. Multiple arguments can be provided by applications as an array or as an object.
-      </p>
-      <p>
-        The <dfn>output</dfn> property initializes the output of type <a>DataSchema</a> of the <a>ThingAction</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="EventFragment">
-      <h3>The <dfn>EventFragment</dfn> dictionary</h3>
-      <p>
-        Event data is represented as a <a>Property</a>.
-      </p>
-      <pre class="idl">
-        typedef PropertyFragment EventFragment;
-      </pre>
-      <p>
-        The value an event is carrying is initialized as a <a>Property</a> value.
-      </p>
-    </section>
+  <section>
+    <h2>Interfaces for <a>WoT Interactions</a></h2>
+    <p>
+      The data types and structures imported from [[!WOT-TD]] are extended by this specification in order to provide the interfaces for <a>WoT Interactions</a>.
+    </p>
+    <p>
+      Every <a>Thing</a> describes its metadata as defined in <a>ThingFragment</a>, and basic interactions defined as <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following interfaces are used for representing these interactions.
+    </p>
 
     <section data-dfn-for="Interaction">
       <h3>The <dfn>Interaction</dfn> interface</h3>
@@ -1134,7 +1150,7 @@
 
       <pre class="idl">
         interface Interaction {
-          readonly attribute FrozenArray&lt;Form&gt; forms;
+          readonly attribute (Form or FrozenArray&lt;Form&gt;) forms;
         };
         Interaction implements InteractionFragment;
       </pre>
@@ -1166,7 +1182,7 @@
         The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyFragment</a> as read-only properties.
       </p>
       <p>
-        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a>. If it matches a <a>DataType</a>, then it MUST implement the corresponding <a>DataSchema</a> dictionary.
+        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a> as a <a>DataSchema</a> dictionary object.
       </p>
       <p>
         The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
@@ -1184,7 +1200,7 @@
         The <dfn>read()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
       </p>
       <p>
-        The <dfn>write()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the o9ne specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
+        The <dfn>write()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the one specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
       </p>
     </section>
 
@@ -1222,206 +1238,6 @@
       <section> <h4>The <dfn>emit()</dfn> method</h4>
         <p>
           Emits an event that carries data specified by the <code>payload</code> argument.
-        </p>
-      </section>
-    </section>
-
-    <section data-dfn-for="Link"><h3>The <dfn>Link</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary Link {
-          required USVString href;
-          USVString mediaType;
-          DOMString rel;
-        };
-      </pre>
-      <p>
-        The <dfn>href</dfn> property is a hypertext reference that defines the <a>Link</a>.
-      </p>
-      <p>
-        The <dfn>mediaType</dfn> property represents the <a>IANA media type</a> associated with the <a>Link</a>.
-      </p>
-      <p>
-        The <dfn>rel</dfn> property represents a semantic label that specifies how to interact with the linked resource.
-      </p>
-    </section>
-
-    <section data-dfn-for="WebLink"><h3>The <dfn>WebLink</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary WebLink: Link {
-          USVString anchor;
-        };
-      </pre>
-      <p>
-        The <dfn>anchor</dfn> property represents a URI that overrides the default context of a <a>Link</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="Form"><h3>The <dfn>Form</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary Form: Link {
-          SecurityScheme security;
-        };
-      </pre>
-      <p>
-        The <dfn>security</dfn> property represents the security requirements for the linked resource.
-      </p>
-    </section>
-
-    <section><h3>Value types</h3>
-      <p>
-        Value types are used in <a>Property</a>, <a>Event</a> and <a>Action</a> parameter definitions in a <a>ThingFragment</a>. Basically correspond to a <a>JSON</a> object definition.
-      </p>
-
-      <section data-dfn-for="DataType"><h4>The <dfn>DataType</dfn> enumeration type</h4>
-        <pre class="idl">
-          enum DataType { "boolean", "integer", "number", "string", "object", "array", "null" };
-        </pre>
-        <p>
-          Defines the types that values can take, i.e. "<dfn>null</dfn>" "<dfn>boolean</dfn>", "<dfn>integer</dfn>", "<dfn>number</dfn>", "<dfn>string</dfn>", "<dfn>object</dfn>" and "<dfn>array</dfn>".
-        </p>
-      </section>
-
-      <!-- <section data-dfn-for="Number"><h4>The <dfn data-dfn-for="">Number</dfn> type</h4>
-        <pre class="idl">
-          typedef (long or unrestricted double) Number;
-        </pre>
-        <p>
-          A number is either an integer or floating point number supported by the underlying platform. A number value may have associated a permited range between a minimum and maximum value.
-        </p>
-      </section> -->
-
-      <section data-dfn-for="DataSchema"><h4>The <dfn>DataSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary DataSchema {
-            DataType type;
-            DOMString description;
-            boolean constant;
-          };
-        </pre>
-        <p>
-          Represents the common properties of a value type definition.
-        </p>
-        <p>
-          The <dfn>type</dfn> property represents the value type enumerated in <a>DataType</a>.
-        </p>
-        <p>
-          The <dfn>description</dfn> property represents a textual description of the value.
-        </p>
-        <p>
-          The <dfn>constant</dfn> property tells whether this value is constant.
-        </p>
-      </section>
-
-      <section data-dfn-for="NumberSchema"><h4>The <dfn>NumberSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary NumberSchema: DataSchema {
-            DataType type = "number";
-            unrestricted double minimum;
-            unrestricted double maximum;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"number"</code> (representing a floating point number) as defined by the underlying platform.
-        </p>
-        <p>
-          The <dfn>minimum</dfn> property defines the minimum value that can be used.
-        </p>
-        <p>
-          The <dfn>maximum</dfn> property defines the maximum value that can be used.
-        </p>
-      </section>
-
-      <section data-dfn-for="IntegerSchema"><h4>The <dfn>IntegerSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary IntegerSchema: DataSchema {
-            DataType type = "integer";
-            long minimum;
-            long maximum;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"integer"</code> (representing an integer) as defined by the underlying platform.
-        </p>
-        <p>
-          The <dfn>minimum</dfn> property defines the minimum value that can be used.
-        </p>
-        <p>
-          The <dfn>maximum</dfn> property defines the maximum value that can be used.
-        </p>
-      </section>
-
-      <section data-dfn-for="BooleanSchema"><h4>The <dfn>BooleanSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary BooleanSchema: DataSchema {
-            DataType type = "boolean";
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"boolean"</code>.
-        </p>
-      </section>
-
-      <section data-dfn-for="StringSchema"><h4>The <dfn>StringSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary StringSchema: DataSchema {
-            DataType type = "string";
-            sequence&lt;DOMString&gt;? enumeration;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"string"</code>.
-        </p>
-        <p>
-          The <dfn>enumeration</dfn> property represents the list of allowed string values as a string array.
-        </p>
-      </section>
-
-      <section data-dfn-for="ObjectSchema"><h4>The <dfn>ObjectSchema</dfn> dictionary</h4>
-        <pre class="idl">
-          [NoInterfaceObject]
-          interface SchemaProperties {
-            maplike&lt;DOMString, DataSchema&gt;;
-          };
-          dictionary ObjectSchema: DataSchema {
-            DataType type = "object";
-            SchemaProperties? properties;
-            sequence&lt;DOMString&gt; mandatory;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"object"</code>.
-        </p>
-        <p>
-          The <dfn>SchemaProperties</dfn> interface represents a maplike dictionary where all values are <a>DataSchema</a> objects.
-        </p>
-        <p>
-          The <dfn>properties</dfn> property is a dictionary that contains the names and types of each of the object properties. If not provided in the dictionary object, it SHOULD be initialized to <code>undefined</code>. The value <code>null</code> is accepted, as well as an empty object.
-        </p>
-        <p>
-          The <dfn>mandatory</dfn> property is a string array that containes the names that are mandatory to be present from the object properties. If not provided, it SHOULD be initialized to <code>undefined</code>. An empty array is accepted.
-        </p>
-      </section>
-
-      <section data-dfn-for="ArraySchema"><h4>The <dfn>ArraySchema</dfn> dictionary</h4>
-        <pre class="idl">
-          dictionary ArraySchema: DataSchema {
-            DataType type = "array";
-            DataSchema? items;
-            unsigned long minItems;
-            unsigned long maxItems;
-          };
-        </pre>
-        <p>
-          The <dfn>type</dfn> property MUST have the value <code>"array"</code>.
-        </p>
-        <p>
-          The <dfn>items</dfn> property represents the type of the elements in the array. If not provided in the dictionary object, it SHOULD be initialized to <code>"undefined"</code>. The value <code>null</code> is accepted.
-        </p>
-        <p>
-          The <dfn>minItems</dfn> property represents the minimum number of elements required to be in the array.
-        </p>
-        <p>
-          The <dfn>maxItems</dfn> property represents the maximum number of elements that can be specified in the array.
         </p>
       </section>
     </section>
@@ -1482,13 +1298,13 @@
             Otherwise, if <var>valueType.type</var> is <code>"array"</code>, execute the following sub-steps:
             <ol>
               <li>
-                If <var>valueType.minItems</var> is defined, and <var>value</var> is not an array that contains at least <var>valueType.minItems</var> elements, return <var>false</var>.
+                If <var>value</var> is not an array, return <code>false</code>.
               </li>
               <li>
-                If <var>valueType.maxItems</var> is defined, and <var>value</var> is not an array that contains at maximum <var>valueType.maxItems</var> elements, return <var>false</var>.
+                If <var>valueType.minItems</var> is defined, and <var>value</var> does not contain at least <var>valueType.minItems</var> elements, return <var>false</var>.
               </li>
               <li>
-                Otherwise, if <var>value</var> is not an array, return <code>false</code>.
+                If <var>valueType.maxItems</var> is defined, and <var>value</var> contains more than <var>valueType.maxItems</var> elements, return <var>false</var>.
               </li>
               <li>
                 Otherwise, if <var>valueType.items</var> is <code>undefined</code>, return <code>false</code>.
@@ -1508,10 +1324,10 @@
             Otherwise, if <var>type</var> is <code>"object"</code>, execute the following sub-steps:
             <ol>
               <li>
-                If <var>value</var> is not an <code>Object</code> or <code>null</code>, return <code>false</code>.
+                If <var>value</var> is not an <code>Object</code>, return <code>false</code>.
               </li>
               <li>
-                If <var>valueType.properties</var> is not defined or is not <code>null</code> or it is not an object, return <code>false</code>.
+                If <var>valueType.properties</var> is not defined, return <code>false</code>.
               </li>
               <li>
                 If <var>valueType.properties</var> is <code>null</code>, return <code>true</code> (i.e. accept any object value).
@@ -1611,175 +1427,28 @@
     <p class="ednote">
      Please see the <a href="https://github.com/w3c/wot-security/">WoT Security and Privacy</a> repository for work in progress regarding threat models, assets, risks, recommended mitigations, and best practices for security and privacy for systems using the Web of Things. Once complete, security and privacy considerations relevant to the Scripting API will be summarized in this section.
     </p>
-
-    <section data-dfn-for="SecuritySchemeType"><h4>The <dfn>SecuritySchemeType</dfn> enumeration type</h4>
-      <pre class="idl">
-        enum SecuritySchemeType { "basic", "digest", "bearer", "pop", "oauth2", "apikey" };
-      </pre>
-      <p>
-        Defines the supported security schemes, i.e. "<dfn>basic</dfn>", "<dfn>digest</dfn>", "<dfn>bearer</dfn>", "<dfn>pop</dfn>", "<dfn>oauth2</dfn>" and "<dfn>apikey</dfn>".
-      </p>
-    </section>
-
-    <section data-dfn-for="AuthenticationType"><h4>The <dfn>AuthenticationType</dfn> enumeration type</h4>
-      <pre class="idl">
-        enum AuthenticationType { "header", "body", "query", "cookie" };
-      </pre>
-      <p>
-        Defines the  location of the authentication information, i.e. "<dfn>header</dfn>", "<dfn>body</dfn>", "<dfn>query</dfn>" and "<dfn>cookie</dfn>".
-      </p>
-    </section>
-
-    <section data-dfn-for="SecurityScheme" >
-      <h3> The <dfn data-dfn-for="">SecurityScheme</dfn> dictionary</h3>
-      <p>
-        Represents the base class for security related configuration. One of the subclasses (differentiated by <code>scheme</code>) SHOULD be used.
-      </p>
-      <pre class="idl">
-        dictionary SecurityScheme {
-          required SecuritySchemeType scheme;
-          DOMString? description;
-          USVString? proxyURI;
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
-      </p>
-      <p>
-        The <dfn>description</dfn> property provides human readable information about the security scheme.
-      </p>
-      <p>
-        The <dfn>proxyURI</dfn> property represents the URI of the proxy server to which the security configuration containing the scheme provides access. If not provided, it means that the  security configuration refers directly to the endpoint.
-      </p>
-    </section>
-
-    <section data-dfn-for="BasicSecurityScheme" >
-      <h3> The <dfn data-dfn-for="">BasicSecurityScheme</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary BasicSecurityScheme: SecurityScheme {
-          DOMString scheme = "basic";
-          DOMString in;
-          DOMString pname;
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme to be used for the <a>Thing</a>.
-      </p>
-      <p>
-        The <dfn>in</dfn> property of type <a>AuthenticationType</a> represents represents the location of the authentication information.
-      </p>
-      <p>
-        The <dfn>pname</dfn> property represents the authentication parameter name.
-      </p>
-    </section>
-
-    <section data-dfn-for="DigestSecurityScheme" >
-      <h3> The <dfn data-dfn-for="">DigestSecurityScheme</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary DigestSecurityScheme: BasicSecurityScheme {
-          DOMString scheme = "digest";
-          DOMString qop = "auth";
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"digest"</code>.
-      </p>
-      <p>
-        The <dfn>qop</dfn> property represents the quality of protection. The default value is <code>"auth"</code>. The other accepted value is <code>"auth-int"</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="BearerSecurityScheme" >
-      <h3> The <dfn data-dfn-for="">BearerSecurityScheme</dfn> dictionary</h3>
-      <pre class="idl">
-        dictionary BearerSecurityScheme: BasicSecurityScheme {
-          DOMString scheme = "bearer";
-          USVString authorizationURL;
-          DOMString alg = "ES256";
-          DOMString format = "jwt";
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"bearer"</code>.
-      </p>
-      <p>
-        The <dfn>authorizationURL</dfn> property represents the authorization server URL.
-      </p>
-      <p>
-        The <dfn>alg</dfn> property represents the encoding, encryption or digest algorithm. Accepted values include <code>"MD5"</code>, <code>"ES256"</code>, <code>"ES512-256"</code>. The default value is <code>"ES256"</code>.
-      </p>
-      <p>
-        The <dfn>format</dfn> property represents the format of the authentication information. Accepted values are <code>"jwt"</code> (the default value), <code>"jwe"</code> and <code>"jws"</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="PopSecurityScheme" >
-      <h3> The <dfn data-dfn-for="">PopSecurityScheme</dfn> dictionary</h3>
-      <p>
-        Represents the proof-of-possession token authentication security configuration.
-      </p>
-      <pre class="idl">
-        dictionary PopSecurityScheme: DigestSecurityScheme {
-          DOMString scheme = "pop";
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"pop"</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ApikeySecurityScheme" >
-      <h3> The <dfn data-dfn-for="">ApikeySecurityScheme</dfn> dictionary</h3>
-      <p>
-        Represents the API key authentication security configuration, where the access token is opaque and is not using a standard token format.
-      </p>
-      <pre class="idl">
-        dictionary ApikeySecurityScheme: BasicSecurityScheme {
-          DOMString scheme = "apikey";
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"apikey"</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="OAuth2SecurityScheme" >
-      <h3> The <dfn data-dfn-for="">OAuth2SecurityScheme</dfn> dictionary</h3>
-      <p>
-        Represents the OAuth2 authentication security configuration.
-      </p>
-      <pre class="idl">
-        dictionary OAuth2SecurityScheme: SecurityScheme {
-          DOMString scheme = "oauth2";
-          USVString tokenURL;
-          USVString authorizationURL;
-          USVString refreshURL;
-          sequence&lt;DOMString&gt; scopes;
-          DOMString flow = "implicit";
-        };
-      </pre>
-      <p>
-        The <dfn>scheme</dfn> property represents the identification of the security scheme and MUST be <code>"oauth2"</code>.
-      </p>
-      <p>
-        The <dfn>tokenURL</dfn> property represents the URL of the token server.
-      </p>
-      <p>
-        The <dfn>authorizationURL</dfn> property represents the URL of the authorization server.
-      </p>
-      <p>
-        The <dfn>refreshURL</dfn> property represents the URL of the refresh server.
-      </p>
-      <p>
-        The <dfn>scopes</dfn> property represents the authorization scope identifiers as an array of strings.
-      </p>
-      <p>
-        The <dfn>flow</dfn> property represents the authorization flow of type. Accepted values are: <code>"implicit"</code> (the default value), <code>"password"</code>, <code>"client"</code>, or <code>"code"</code>.
-      </p>
-      <p>
-         For the <code>"implicit"</code> flow the <code>authorizationURL</code> and <code>scopes</code> properties are required. For the <code>"password"</code> and <code>"client"</code> flows the <code>tokenURL</code> and <code>scopes</code> properties are required. For the <code>"code"</code> flow the <code>authorizationURL</code>, <code>tokenURL</code> and <code>scopes</code> properties are required.
-      </p>
-    </section>
+    <p>
+      In general, implementations SHOULD consider the following guidelines:
+      <ol>
+        <li>
+          Perform isolation of script instances (where applicable).
+        </li>
+        <li>
+          Perform security validation on all script inputs, including <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a>.
+        </li>
+      </ol>
+    </p>
+    <p>
+      Script developers SHOULD consider the following guidelines:
+      <ol>
+        <li>
+          Minimize scripts functionality and complexity.
+        </li>
+        <li>
+          Avoid heavy functional processing in scripts without authentication.
+        </li>
+      </ol>
+    </p>
   </section>
 
   <section> <h2>Terminology and conventions</h2>
@@ -1908,7 +1577,7 @@
     <p>
       <ul>
         <li>
-          Synchronized the Scripting API with the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>. Defined <code>ThingDescription</code>, <code>ThingFragment</code>, data type descriptions, etc. Refined discovery filtering.
+          Make the Scripting API refer to (rather then locally re-define) the data structures defined in the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>.
         </li>
       </ul>
     </p>
