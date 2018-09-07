@@ -403,7 +403,7 @@
             If the argument <var>url</var> is not a URL, reject <var>promise</var> with <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Implementations encapsulate the fetching process and the accepted media types (such as <code>application/td+json</code>), as far as a valid <a>Thing Description</a> can be obtained as defined in [[!WOT-TD]]. Let <var>td</var> be the <a>Thing Description</a> string-serialized from the returned content, as specified in the <a href="https://w3c.github.io/wot-thing-description/#sec-td-serialization">Thing Description serialization</a>.
+            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Implementations encapsulate the fetching process and the accepted media types (such as <code>application/td+json</code>), as far as a valid <a>Thing Description</a> can be obtained as defined in [[!WOT-TD]]. Let <var>td</var> be the <a>Thing Description</a> string-serialized from the returned content, as specified in the <a data-cite="!WOT-TD#sec-td-serialization">Thing Description serialization</a>.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
@@ -503,7 +503,7 @@
         The <dfn>TD parsing algorithm</dfn> takes a string <var>td</var> as argument and runs the following steps:
         <ol>
           <li>
-            Parse <var>td</var> according to the <a href="https://w3c.github.io/wot-thing-description/#sec-td-serialization">WoT Thing Description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
+            Parse <var>td</var> according to the <a data-cite="!WOT-TD#sec-td-serialization">WoT Thing Description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
           </li>
           <li>
             If there was an error during the parsing, throw that error and terminate these steps.
@@ -1043,7 +1043,7 @@
   <section data-dfn-for="TD-structures">
     <h2>Data types and structures</h2>
     <p>
-      The [[!WOT-TD]] specification defines the <a href="https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition">WoT information model</a>, i.e. the data types and data structures used in <a>WoT Interactions</a>. In this API these definitions translate to dictionary objects that are extended with methods by the interfaces defined in this specification.
+      The [[!WOT-TD]] specification defines the <a data-cite="!WOT-TD#sec-vocabulary-definition">WoT information model</a>, i.e. the data types and data structures used in <a>WoT Interactions</a>. In this API these definitions translate to dictionary objects that are extended with methods by the interfaces defined in this specification.
     </p>
     <p>
       In order to avoid duplication of definitions, references to these data types and structures is defined in this section, but for their full description please refer to the <a href="">Thing Description specification</a>.
@@ -1051,71 +1051,71 @@
     <section data-dfn-for="ValueTypes">
       <h3>The <dfn>DataSchema</dfn> dictionary and its subclasses</h3>
       <p>
-        Value types basically represent types that may be used in <a>JSON</a> object definitions and are used in <a>ThingFragment</a> to define <a>Properties</a>, <a>Event</a>s and <a>Action</a> parameters. Value types are represented as dictionary objects whose properties and possible sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition">DataSchema</a> section of [[!WOT-TD]].
+        Value types basically represent types that may be used in <a>JSON</a> object definitions and are used in <a>ThingFragment</a> to define <a>Properties</a>, <a>Event</a>s and <a>Action</a> parameters. Value types are represented as dictionary objects whose properties and possible sub-classes are defined in the <a data-cite="!WOT-TD#sec-data-schema-vocabulary-definition">DataSchema</a> section of [[!WOT-TD]].
       </p>
       <p>
-        One property of all <a>DataSchema</a> dictionary is the <code>type</code> property whose value is from a set of enumerated strings defined in the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema</a> section of [[!WOT-TD]] and is referred as <dfn>DataType</dfn> in this specification.
+        One property of all <a>DataSchema</a> dictionary is the <code>type</code> property whose value is from a set of enumerated strings defined in the <a data-cite="!WOT-TD#dataschema">DataSchema</a> section of [[!WOT-TD]] and is referred as <dfn>DataType</dfn> in this specification.
       </p>
       <p>
-        Based on <code>type</code>, the following sub-classes of <a>DataSchema</a> are defined in [[!WOT-TD]]: <a href="https://w3c.github.io/wot-thing-description/#booleanschema"><dfn>BooleanSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#numberschema"><dfn>NumberSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#integerschema"><dfn>IntegerSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#stringschema"><dfn>StringSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#objectschema"><dfn>ObjectSchema</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#arrayschema"><dfn>ArraySchema</dfn></a>.
+        Based on <code>type</code>, the following sub-classes of <a>DataSchema</a> are defined in [[!WOT-TD]]: <a data-cite="!WOT-TD#booleanschema"><dfn>BooleanSchema</dfn></a>, <a data-cite="!WOT-TD#numberschema"><dfn>NumberSchema</dfn></a>, <a data-cite="!WOT-TD#integerschema"><dfn>IntegerSchema</dfn></a>, <a data-cite="!WOT-TD#stringschema"><dfn>StringSchema</dfn></a>, <a data-cite="!WOT-TD#objectschema"><dfn>ObjectSchema</dfn></a>, <a data-cite="!WOT-TD#arrayschema"><dfn>ArraySchema</dfn></a>.
       </p>
     </section>
 
     <section data-dfn-for="SecurityScheme">
       <h3>The <dfn>SecurityScheme</dfn> dictionary and its subclasses</h3>
       <p>
-        Security metadata is represented as dictionary objects whose properties and sub-classes are defined in the <a href="https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition">SecurityScheme</a> section of [[!WOT-TD]].
+        Security metadata is represented as dictionary objects whose properties and sub-classes are defined in the <a data-cite="!WOT-TD#sec-security-vocabulary-definition">SecurityScheme</a> section of [[!WOT-TD]].
       </p>
       <p>
-        One property of the <a>SecurityScheme</a> dictionary is the <code>scheme</code> property whose value is from a set of enumerated strings defined in the <a href="https://w3c.github.io/wot-thing-description/#securityscheme">SecurityScheme</a> section of [[!WOT-TD]]. Based on <code>type</code>, multiple subclasses of <a>SecurityScheme</a> are defined.
+        One property of the <a>SecurityScheme</a> dictionary is the <code>scheme</code> property whose value is from a set of enumerated strings defined in the <a data-cite="!WOT-TD#securityscheme">SecurityScheme</a> section of [[!WOT-TD]]. Based on <code>type</code>, multiple subclasses of <a>SecurityScheme</a> are defined.
     </section>
 
     <section data-dfn-for="Link">
       <h3>The <dfn>Link</dfn> dictionary</h3>
       <p>
-        Represents a <a href="https://tools.ietf.org/html/rfc8288">Web Link</a> with  properties defined in the <a href="https://w3c.github.io/wot-thing-description/#link">Link</a> section of [[!WOT-TD]].
+        Represents a <a href="https://tools.ietf.org/html/rfc8288">Web Link</a> with  properties defined in the <a data-cite="!WOT-TD#link">Link</a> section of [[!WOT-TD]].
       </p>
     </section>
 
     <section data-dfn-for="Form">
       <h3>The <dfn>Form</dfn> dictionary</h3>
       <p>
-        Represents metadata describing service details, with  properties defined in the <a href="https://w3c.github.io/wot-thing-description/#form">Form</a> section of [[!WOT-TD]].
+        Represents metadata describing service details, with  properties defined in the <a data-cite="!WOT-TD#form">Form</a> section of [[!WOT-TD]].
       </p>
     </section>
 
     <section data-dfn-for="InteractionFragment">
       <h3>The <code><dfn>InteractionFragment</dfn></code> dictionary</h3>
       <p>
-        Represents the common properties of <a>WoT Interactions</a>, one of <a>Property</a>, <a>Action</a> or <a>Event</a>, as defined in the <a href="https://w3c.github.io/wot-thing-description/#interactionpattern">InteractionPattern</a> section of [[!WOT-TD]]. Its subclasses are referred as <a>PropertyFragment</a>, <a>ActionFragment</a> and <a>EventFragment</a>.
+        Represents the common properties of <a>WoT Interactions</a>, one of <a>Property</a>, <a>Action</a> or <a>Event</a>, as defined in the <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> section of [[!WOT-TD]]. Its subclasses are referred as <a>PropertyFragment</a>, <a>ActionFragment</a> and <a>EventFragment</a>.
       </p>
     </section>
 
     <section data-dfn-for="PropertyFragment">
       <h3>The <dfn>PropertyFragment</dfn> dictionary</h3>
       <p>
-        Represents the <a>Property</a> interaction data that initializes a <a>ThingProperty</a> object. Its properties are defined in the <a href="https://w3c.github.io/wot-thing-description/#property">Property</a> and <a href="https://w3c.github.io/wot-thing-description/#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
+        Represents the <a>Property</a> interaction data that initializes a <a>ThingProperty</a> object. Its properties are defined in the <a data-cite="!WOT-TD#property">Property</a> and <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
       </p>
     </section>
 
     <section data-dfn-for="ActionFragment">
       <h3>The <dfn>ActionFragment</dfn> dictionary</h3>
       <p>
-        Represents the <a>Action</a> interaction data that initializes a <a>ThingAction</a> object. Its properties are defined in the <a href="https://w3c.github.io/wot-thing-description/#action">Action</a> and <a href="https://w3c.github.io/wot-thing-description/#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
+        Represents the <a>Action</a> interaction data that initializes a <a>ThingAction</a> object. Its properties are defined in the <a data-cite="!WOT-TD#action">Action</a> and <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
       </p>
     </section>
 
     <section data-dfn-for="EventFragment">
       <h3>The <dfn>EventFragment</dfn> dictionary</h3>
       <p>
-        Represents the <a>Event</a> interaction data that initializes a <a>ThingEvent</a> object. Its properties are defined in the <a href="https://w3c.github.io/wot-thing-description/#event">Event</a> section of [[!WOT-TD]].
+        Represents the <a>Event</a> interaction data that initializes a <a>ThingEvent</a> object. Its properties are defined in the <a data-cite="!WOT-TD#event">Event</a> section of [[!WOT-TD]].
       </p>
     </section>
 
     <section data-dfn-for="ThingFragment">
       <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
       <p>
-        The <a>ThingFragment</a> dictionary is defined as <a href="https://w3c.github.io/wot-thing-description/#thing"><b>Thing</b></a> in [[!WOT-TD]]. It is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> and its properties may be used in <a>ThingFilter</a>.
+        The <a>ThingFragment</a> dictionary is defined as <a data-cite="!WOT-TD#thing"><b>Thing</b></a> in [[!WOT-TD]]. It is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> and its properties may be used in <a>ThingFilter</a>.
       </p>
     </section> <!-- ThingFragment -->
 
@@ -1577,7 +1577,7 @@
     <p>
       <ul>
         <li>
-          Synchronized the Scripting API with the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>. Defined <code>ThingDescription</code>, <code>ThingFragment</code>, data type descriptions, etc. Refined discovery filtering.
+          Make the Scripting API refer to (rather then locally re-define) the data structures defined in the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>.
         </li>
       </ul>
     </p>
