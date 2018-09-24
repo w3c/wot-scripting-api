@@ -684,6 +684,7 @@
         // define Actions
         ExposedThing addAction(DOMString name, ActionFragment init, ActionHandler action);
         ExposedThing removeAction(DOMString name);
+        ExposedThing setActionHandler(DOMString name, ActionHandler action);
         // define Events
         ExposedThing addEvent(DOMString name, EventFragment event);
         ExposedThing removeEvent(DOMString name);
@@ -875,6 +876,35 @@
           </li>
           <li>
             Otherwise, invoke the write handler associated with <var>propertyName</var> providing <var>value</var> as argument. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
+      <p>
+        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
+      </p>
+      <p>
+         The <code>action</code> callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
+      </p>
+      <p>
+        There SHOULD be at most one handler for any given <a>Action</a> and newly added handlers replace the old handlers.
+      </p>
+      <p>
+        When an external request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
+        <ol>
+          <li>
+            Return a <code>Promise</code> <a>promise</a> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If an <a>Action</a> identified by <var>name</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
+          </li>
+          <li>
+            Otherwise, if no action handler has been defined for <var>name</var>, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
+          </li>
+          <li>
+            Otherwise, invoke the <a>Action</a> handler associated with <var>name</var>. If it rejects with <var>error</var>, then reject <var>promise</var> with the same <var>error</var>, otherwise if it resolves with <var>value</var>, then resolve <a>promise</a> with the same <var>value</var>.
           </li>
         </ol>
       </p>
