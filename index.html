@@ -812,7 +812,7 @@
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for writing a <a>Property</a> is received. It is given the requested new <code>value</code> as argument and should return a Promise which is resolved when the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function is updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
+        A function that is called when an external request for writing a <a>Property</a> is received. It is given the requested new <code>value</code> as argument and should return a Promise which is resolved when the value of the <a>Property</a> that matches the <code>name</code> argument has been updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
       </p>
       <p class="ednote">
         Note that this function is invoked by implementations before the property is updated and it actually defines what to do when a write request is received. The code in this callback function can invoke the <code>read()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this function.
