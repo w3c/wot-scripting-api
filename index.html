@@ -79,19 +79,19 @@
           },
           "WOT-SECURITY-CONSIDERATIONS" : {
             href: "https://w3c.github.io/wot-security/",
-            title: "Web of Things Security and Privacy Considerations", 
+            title: "Web of Things Security and Privacy Considerations",
             publisher: "W3C",
             date: "28 August 2017"
-          }, 
+          },
           "WOT-SECURITY-BEST-PRACTICES" : {
             href: "https://github.com/w3c/wot-security/blob/master/wot-security-best-practices.md",
-            title: "Web of Things Security and Privacy Best Practices (WIP)", 
+            title: "Web of Things Security and Privacy Best Practices (WIP)",
             publisher: "W3C",
             date: "WIP"
           },
           "WOT-SECURITY-TESTING" : {
             href: "https://github.com/w3c/wot-security/blob/master/wot-security-testing.md",
-            title: "Web of Things Security Testing and Validation", 
+            title: "Web of Things Security Testing and Validation",
             publisher: "W3C",
             date: "WIP"
           },
@@ -615,17 +615,17 @@
       };
       [NoInterfaceObject]
       interface PropertyMap {
-        maplike&lt;DOMString, ThingProperty&gt;;
+        readonly maplike&lt;DOMString, ThingProperty&gt;;
       };
       [NoInterfaceObject]
       interface ActionMap {
-        maplike&lt;DOMString, ThingAction&gt;;
+        readonly maplike&lt;DOMString, ThingAction&gt;;
       };
       [NoInterfaceObject]
       interface EventMap {
-        maplike&lt;DOMString, ThingEvent&gt;;
+        readonly maplike&lt;DOMString, ThingEvent&gt;;
       };
-      ConsumedThing implements Observable;  // for TD changes
+      ConsumedThing includes Observable;  // for TD changes
     </pre>
     <p>
       The <dfn>id</dfn> attribute represents the unique identifier of the <a>Thing</a> instance, typically a URI, IRI, or URN as <code>USVString</code>.
@@ -1200,7 +1200,7 @@
         interface Interaction {
           readonly attribute (Form or FrozenArray&lt;Form&gt;) forms;
         };
-        Interaction implements InteractionFragment;
+        Interaction includes InteractionFragment;
       </pre>
       <p>
         The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
@@ -1223,8 +1223,8 @@
           Promise&lt;any&gt; read();
           Promise&lt;void&gt; write(any value);
         };
-        ThingProperty implements PropertyFragment;
-        ThingProperty implements Observable;
+        ThingProperty includes PropertyFragment;
+        ThingProperty includes Observable;
       </pre>
       <p>
         The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyFragment</a> as read-only properties.
@@ -1258,7 +1258,7 @@
         interface ThingAction: Interaction {
           Promise&lt;any&gt; invoke(optional any inputValue);
         };
-        ThingAction implements ActionFragment;
+        ThingAction includes ActionFragment;
       </pre>
       <p>
         The <dfn>invoke()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
@@ -1269,8 +1269,8 @@
       <pre class="idl">
         interface ThingEvent: Interaction {
         };
-        ThingEvent implements EventFragment;
-        ThingEvent implements ThingProperty;
+        ThingEvent includes EventFragment;
+        ThingEvent includes ThingProperty;
       </pre>
       <p>
         Since <a>ThingEvent</a> implements <a>Observable</a> through the <a>ThingProperty</a> interface, event subscription is done by invoking the <code>subscribe()</code> method on the event object that returns a cancelable <a>Subscription</a>.
@@ -1472,14 +1472,14 @@
   </section> <!-- Observables -->
 
 <section> <h2 id="security">Security and Privacy</h2>
- 
+
 <p>
-  In general the security measures taken to protect a WoT 
+  In general the security measures taken to protect a WoT
   system will depend on the threats and attackers that system
   may face and the value of the assets needs to protect.
   A detailed discussion of security and privacy considerations for the Web of Things,
   including a threat model that can be adapted to various circumstances, is
-  presented in the informative document [[!WOT-SECURITY-CONSIDERATIONS]].  
+  presented in the informative document [[!WOT-SECURITY-CONSIDERATIONS]].
   This section includes only normative recommendations relevant to
   the WoT Thing Description.
   </p>
@@ -1489,7 +1489,7 @@
   we have documented a set of best practices
   in [[!WOT-SECURITY-BEST-PRACTICES]] that SHOULD be followed.</span>
   This best-practices document may be updated as security measures evolve.
-  Following these practices does not guarantee security, 
+  Following these practices does not guarantee security,
   but it at least will help to avoid common known vulnerabilities and pitfalls.
   </p>
 
@@ -1499,11 +1499,11 @@
       <li>In basic WoT setups, all scripts running inside the WoT runtime are considered trusted, and
       therefore there is no strong need to perform strict isolation between each running script instance.
       However, depending on device capabilities and deployment use case scenario risk level it might be
-      desirable to do so. 
+      desirable to do so.
       <ul>
       <li>For example, if one script handles sensitive privacy-related data and well-audited,
       it might be desirable to separate it from the rest of the script instances to minimize the risk of data
-      exposure in case some other script inside WoT gets compromised during the runtime. 
+      exposure in case some other script inside WoT gets compromised during the runtime.
           <span class="rfc2119-assertion" id="scripting-sec-isolation-scripts">
               Therefore the WoT runtime SHOULD perform isolation of script instances and their data in cases
               when scripts handle privacy-related or other critical security data.
@@ -1511,7 +1511,7 @@
       </li>
       <li>
       Another example is mutual co-existence of different tenants on a single WoT device. In this case each
-      WoT runtime instance will be hosting a different tenant, and isolation between them is required. 
+      WoT runtime instance will be hosting a different tenant, and isolation between them is required.
           <span class="rfc2119-assertion" id="scripting-sec-isolation-runtimes">
               Therefore the WoT runtime SHOULD perform isolation of WoT runtime instances and their data if
               a WoT device has more than one tenant.
@@ -1525,7 +1525,7 @@
 
       <li>WoT scripts are using WoT Scripting API to implement the functionality and logic for WoT Things.
           In addition to providing the isolation between script and runtime instances, the WoT runtime needs
-          to protect the underlying physical device from potentially misbehaving WoT scripts. 
+          to protect the underlying physical device from potentially misbehaving WoT scripts.
             <span class="rfc2119-assertion" id="scripting-sec-native">
               Therefore the WoT Runtime SHOULD avoid directly exposing the native device interfaces
               to the script developers.
@@ -1533,16 +1533,16 @@
           Instead a WoT Runtime should provide a hardware abstraction layer for accessing the native device
           interfaces. Additionally, in order to reduce the damage to a physical WoT device in cases a WoT
           script gets compromised, it is important to minimize the number of interfaces that are exposed or
-          accessible to a particular WoT script based on its functionality.  
+          accessible to a particular WoT script based on its functionality.
           <span class="rfc2119-assertion" id="scripting-sec-interface-min">
               Therefore the WoT Runtime SHOULD only expose a minimal set of interfaces to a WoT script based
                on its intended functionality.
-          </span>            
+          </span>
       </li>
       <li>If the WoT runtime supports post-manufacturing provisioning or update of WoT scripts, WoT runtime
           or any related data (including security credentials), it can be a major attack vector. An attacker
           can try to modify any above described part during the update or provisioning process or simply
-          provision attacker's code and data directly. 
+          provision attacker's code and data directly.
           <span class="rfc2119-assertion" id="scripting-sec-update">
               Therefore, if WoT Runtime supports post-manufacturing provisioning or update of WoT scripts, WoT
               runtime or any related data, such operations SHOULD be done in a secure fashion.
@@ -1551,21 +1551,21 @@
           [[!WOT-SECURITY-BEST-PRACTICES]].
       </li>
       <li>Typically the WoT runtime needs to store the security credentials that are provisioned to a WoT
-      device to operate in WoT network. The confidentiality or integrity of these credentials should not 
-      be compromised. 
+      device to operate in WoT network. The confidentiality or integrity of these credentials should not
+      be compromised.
           <span class="rfc2119-assertion" id="scripting-sec-creds1">
               Therefore the WoT runtime SHOULD securely store the provisioned security credentials,
-              guaranteeing their integrity and confidentiality. 
+              guaranteeing their integrity and confidentiality.
           </span>
           <span class="rfc2119-assertion" id="scripting-sec-creds2">
-            In case there are more than one tenant on a single WoT-enabled device, a WoT Runtime SHOULD 
-            guarantee isolation of each tenant provisioned security credentials. 
+            In case there are more than one tenant on a single WoT-enabled device, a WoT Runtime SHOULD
+            guarantee isolation of each tenant provisioned security credentials.
           </span>
           Additionally, in order to minimize a risk that provisioned security credentials get compromised,
           the WoT runtime should not have any way for WoT scripts to query these credentials.
           <span class="rfc2119-assertion" id="scripting-sec-creds3">
             Therefore, the WoT Runtime SHOULD NOT expose any API for WoT scripts to query the provisioned
-            security credentials. 
+            security credentials.
           </span>
       </li>
    </ul>
@@ -1574,23 +1574,23 @@
  <p>Some additional specific recommendations relevant for WoT script developers:
   <ul>
         <li>A typical way to compromise any process is to send it a corrupted input via one of the exposed
-           interfaces. 
+           interfaces.
           <span class="rfc2119-assertion" id="scripting-sec-inputs">
-           Therefore developers SHOULD perform validation on all WoT script inputs, including 
+           Therefore developers SHOULD perform validation on all WoT script inputs, including
            <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a>.
           </span>
-            There are many tool and techniques in existence to do such validation. 
+            There are many tool and techniques in existence to do such validation.
             More details can be found in [[!WOT-SECURITY-TESTING]].
 
       </li>
       <li>As any software, complex scripts with a lot of functionality presents a higher risk of
-          development mistakes. Such scripts are also hard to verify and test appropriately.  
+          development mistakes. Such scripts are also hard to verify and test appropriately.
           <span class="rfc2119-assertion" id="scripting-sec-complexity">
-            Therefore developers SHOUD minimize the functionality and complexity of WoT scripts. 
+            Therefore developers SHOUD minimize the functionality and complexity of WoT scripts.
           </span>
       </li>
       <li>If a WoT script performs a heavy functional processing on received requests before the request
-       is authenticated, it presents a great risk for Denial-Of-Service (DOS) attacks.  
+       is authenticated, it presents a great risk for Denial-Of-Service (DOS) attacks.
           <span class="rfc2119-assertion" id="scripting-sec-dos">
             Therefore WoT scripts SHOULD avoid heavy functional processing without prior successful
             authentication of requestor.
@@ -1598,10 +1598,10 @@
           The set of recommended authentication mechanisms can be found in [[!WOT-SECURITY-BEST-PRACTICES]].
       </li>
       <li>WoT developers should remember that a content of a TD can change, including its identified, id,
-      which is not an immutable identifier. 
+      which is not an immutable identifier.
           <span class="rfc2119-assertion" id="scripting-sec-id">
             Therefore WoT scripts SHOULD use the provided WoT script API to subscribe for notifications
-             on TD changes. 
+             on TD changes.
           </span>
       </li>
    </ul>
