@@ -1,5 +1,10 @@
- {
-    "group":      ["95969"]
-,   "contacts":   ["ashimura"]
-,   "shortName":  "wot-scripting-api"
+{
+  "group": [
+    "95969"
+  ],
+  "contacts": [
+    "ashimura"
+  ],
+  "shortName": "wot-scripting-api",
+  "repo-type": "rec-track"
 }
