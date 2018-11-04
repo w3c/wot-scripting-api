@@ -302,7 +302,7 @@ export interface Form {
     href: USVString;
     subprotocol?: USVString;
     op?: USVString | Array<USVString>;
-    contenttype?: USVString; // media type + parameter(s), e.g., text/plain;charset=utf8
+    contentType?: USVString; // media type + parameter(s), e.g., text/plain;charset=utf8
     security?: Security;
 }
 
@@ -366,37 +366,37 @@ export interface NoSecurityScheme extends SecurityScheme {
 
 export interface BasicSecurityScheme extends SecurityScheme {
     scheme: "basic";
-    in: string;
-    pname?: string;
+    in?: string;
+    name?: string;
 }
 
 export interface DigestSecurityScheme extends SecurityScheme {
     scheme: "digest";
-    in: string;
-    qop: string;
-    pname?: string;
+    qop?: string;
+    in?: string;
+    name?: string;
 }
 
 export interface BearerSecurityScheme extends SecurityScheme {
     scheme: "bearer";
-    alg: string;
-    format: string;
-    in: string;
-    pname?: string;
+    alg?: string;
+    format?: string;
+    in?: string;
+    name?: string;
 }
 
 export interface PopSecurityScheme extends SecurityScheme {
     scheme: "pop";
-    alg: string;
-    format: string;
-    in: string;
-    pname?: string;
+    alg?: string;
+    format?: string;
+    in?: string;
+    name?: string;
 }
 
 export interface ApikeySecurityScheme extends SecurityScheme {
     scheme: "apikey";
     in: string;
-    pname?: string;
+    name?: string;
 }
 
 export interface OAuth2SecurityScheme extends SecurityScheme {
