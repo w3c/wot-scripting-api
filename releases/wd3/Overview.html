@@ -884,7 +884,7 @@
   "shortName": "wot-scripting-api",
   "copyrightStart": 2017,
   "noLegacyStyle": true,
-  "publishDate": "2018-11-13",
+  "publishDate": "2018-11-19",
   "previousPublishDate": "2018-04-05",
   "previousMaturity": "",
   "edDraftURI": "https://w3c.github.io/wot-scripting-api/",
@@ -1005,8 +1005,8 @@
       "id": "webappsec"
     }
   },
-  "publishISODate": "2018-11-13T00:00:00.000Z",
-  "generatedSubtitle": "Workign Draft 13 November 2018"
+  "publishISODate": "2018-11-19T00:00:00.000Z",
+  "generatedSubtitle": "Workign Draft 19 November 2018"
   }
   </script>
   <meta name="description" content=
@@ -1020,14 +1020,14 @@
     <h1 id="title" class="title p-name">Web of Things (WoT)
     Scripting API</h1>
     <h2><abbr title="World Wide Web Consortium">W3C</abbr> Working
-    Draft <time class="dt-published" datetime="2018-11-13">13
+    Draft <time class="dt-published" datetime="2018-11-19">19
     November 2018</time></h2>
     <dl>
       <dt>This version:</dt>
       <dd>
         <a class="u-url" href=
-           "https://www.w3.org/TR/2018/WD-wot-scripting-api-20181113/">
-          https://www.w3.org/TR/2018/WD-wot-scripting-api-20181113/</a>
+           "https://www.w3.org/TR/2018/WD-wot-scripting-api-20181119/">
+          https://www.w3.org/TR/2018/WD-wot-scripting-api-20181119/</a>
       </dd>
       <dt>Latest published version:</dt>
       <dd>
@@ -2506,7 +2506,7 @@ data-link-type="dfn"><code>fragment</code></a></span>;</span>
           "internalDFN" data-link-type="dfn">Thing Description</a>
           string-serialized from the returned content, as specified
           in the <a href=
-          "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-td-serialization">
+          "https://w3c.github.io/wot-thing-description/#sec-td-serialization">
           Thing Description serialization</a>.
         </li>
         <li>If there was an error during the request, reject <var>
@@ -2694,7 +2694,7 @@ data-link-type="dfn"><code>fragment</code></a></span>;</span>
           following steps:</p>
           <ol>
             <li>Parse <var>td</var> according to the <a href=
-            "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-td-serialization">
+            "https://w3c.github.io/wot-thing-description/#sec-td-serialization">
               WoT Thing Description</a> in order to produce a
               <a href=
               "https://www.w3.org/TR/json-ld/#dfn-json-object">JSON
@@ -4215,7 +4215,7 @@ WoT.fetch(<span class=
     <p>The [<cite><a class="bibref" href=
     "#bib-wot-td">WOT-TD</a></cite>] specification defines the
     <a href=
-    "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-vocabulary-definition">
+    "https://w3c.github.io/wot-thing-description/#sec-vocabulary-definition">
     WoT information model</a>, i.e. the data types and data
     structures used in <a href="#dfn-wot-interactions" class=
     "internalDFN" data-link-type="dfn">WoT Interactions</a>. In
@@ -4247,7 +4247,7 @@ WoT.fetch(<span class=
       "dfn">Action</a> parameters. Value types are represented as
       dictionary objects whose properties and possible sub-classes
       are defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-data-schema-vocabulary-definition">
+      "https://w3c.github.io/wot-thing-description/#sec-data-schema-vocabulary-definition">
       DataSchema</a> section of [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>].</p>
       <p>One property of all <a href="#dom-dataschema" class=
@@ -4255,7 +4255,7 @@ WoT.fetch(<span class=
       "dfn"><code>DataSchema</code></a> dictionary is the
       <code>type</code> property whose value is from a set of
       enumerated strings defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#dataschema">DataSchema</a>
+      "https://w3c.github.io/wot-thing-description/#dataschema">DataSchema</a>
       section of [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>] and is referred as
       <dfn data-dfn-type="dfn" id="dfn-datatype">DataType</dfn> in
@@ -4265,17 +4265,17 @@ WoT.fetch(<span class=
       "dfn"><code>DataSchema</code></a> are defined in
       [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>]: <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#booleanschema"><dfn data-dfn-type="dfn"
+      "https://w3c.github.io/wot-thing-description/#booleanschema"><dfn data-dfn-type="dfn"
       id="dfn-booleanschema">BooleanSchema</dfn></a>, <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#numberschema"><dfn data-dfn-type="dfn"
+      "https://w3c.github.io/wot-thing-description/#numberschema"><dfn data-dfn-type="dfn"
       id="dfn-numberschema">NumberSchema</dfn></a>, <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#integerschema"><dfn data-dfn-type="dfn"
+      "https://w3c.github.io/wot-thing-description/#integerschema"><dfn data-dfn-type="dfn"
       id="dfn-integerschema">IntegerSchema</dfn></a>, <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#stringschema"><dfn data-dfn-type="dfn"
+      "https://w3c.github.io/wot-thing-description/#stringschema"><dfn data-dfn-type="dfn"
       id="dfn-stringschema">StringSchema</dfn></a>, <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#objectschema"><dfn data-dfn-type="dfn"
+      "https://w3c.github.io/wot-thing-description/#objectschema"><dfn data-dfn-type="dfn"
       id="dfn-objectschema">ObjectSchema</dfn></a>, <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#arrayschema"><dfn data-dfn-type="dfn"
+      "https://w3c.github.io/wot-thing-description/#arrayschema"><dfn data-dfn-type="dfn"
       id="dfn-arrayschema">ArraySchema</dfn></a>.</p>
     </section>
     <section data-dfn-for="SecurityScheme" id=
@@ -4290,7 +4290,7 @@ WoT.fetch(<span class=
       "#the-securityscheme-dictionary-and-its-subclasses"></a></h3>
       <p>Security metadata is represented as dictionary objects
       whose properties and sub-classes are defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-security-vocabulary-definition">
+      "https://w3c.github.io/wot-thing-description/#sec-security-vocabulary-definition">
       SecurityScheme</a> section of [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>].</p>
       <p>One property of the <a href="#dom-securityscheme" class=
@@ -4298,7 +4298,7 @@ WoT.fetch(<span class=
       "dfn"><code>SecurityScheme</code></a> dictionary is the
       <code>scheme</code> property whose value is from a set of
       enumerated strings defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#securityscheme">
+      "https://w3c.github.io/wot-thing-description/#securityscheme">
       SecurityScheme</a> section of [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>]. Based on <code>type</code>,
       multiple subclasses of <a href="#dom-securityscheme" class=
@@ -4314,7 +4314,7 @@ WoT.fetch(<span class=
       <p>Represents a <a href=
       "https://tools.ietf.org/html/rfc8288">Web Link</a> with
       properties defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#link">Link</a>
+      "https://w3c.github.io/wot-thing-description/#link">Link</a>
       section of [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>].</p>
     </section>
@@ -4326,7 +4326,7 @@ WoT.fetch(<span class=
       aria-label="§" href="#the-form-dictionary"></a></h3>
       <p>Represents metadata describing service details, with
       properties defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#form">Form</a>
+      "https://w3c.github.io/wot-thing-description/#form">Form</a>
       section of [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>].</p>
     </section>
@@ -4344,7 +4344,7 @@ WoT.fetch(<span class=
       <a href="#dfn-actions" class="internalDFN" data-link-type=
       "dfn">Action</a> or <a href="#dfn-events" class="internalDFN"
       data-link-type="dfn">Event</a>, as defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#interactionpattern">
+      "https://w3c.github.io/wot-thing-description/#interactionpattern">
       InteractionPattern</a> section of [<cite><a class="bibref"
       href="#bib-wot-td">WOT-TD</a></cite>]. Its subclasses are
       referred as <a href="#dom-propertyfragment" class=
@@ -4369,9 +4369,9 @@ WoT.fetch(<span class=
       "internalDFN" data-link-type=
       "dfn"><code>ThingProperty</code></a> object. Its properties
       are defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#property">Property</a>
+      "https://w3c.github.io/wot-thing-description/#property">Property</a>
       and <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#interactionpattern">
+      "https://w3c.github.io/wot-thing-description/#interactionpattern">
       InteractionPattern</a> sections of [<cite><a class="bibref"
       href="#bib-wot-td">WOT-TD</a></cite>].</p>
     </section>
@@ -4388,9 +4388,9 @@ WoT.fetch(<span class=
       initializes a <a href="#dom-thingaction" class="internalDFN"
       data-link-type="dfn"><code>ThingAction</code></a> object. Its
       properties are defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#action">Action</a>
+      "https://w3c.github.io/wot-thing-description/#action">Action</a>
       and <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#interactionpattern">
+      "https://w3c.github.io/wot-thing-description/#interactionpattern">
       InteractionPattern</a> sections of [<cite><a class="bibref"
       href="#bib-wot-td">WOT-TD</a></cite>].</p>
     </section>
@@ -4407,7 +4407,7 @@ WoT.fetch(<span class=
       initializes a <a href="#dom-thingevent" class="internalDFN"
       data-link-type="dfn"><code>ThingEvent</code></a> object. Its
       properties are defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#event">Event</a>
+      "https://w3c.github.io/wot-thing-description/#event">Event</a>
       section of [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>].</p>
     </section>
@@ -4422,7 +4422,7 @@ WoT.fetch(<span class=
       <p>The <a href="#dom-thingfragment" class="internalDFN"
       data-link-type="dfn"><code>ThingFragment</code></a>
       dictionary is defined as <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#thing"><b>Thing</b></a>
+      "https://w3c.github.io/wot-thing-description/#thing"><b>Thing</b></a>
       in [<cite><a class="bibref" href=
       "#bib-wot-td">WOT-TD</a></cite>]. It is a dictionary that
       contains properties representing semantic metadata and
@@ -5534,7 +5534,7 @@ data-link-for="" data-lt="" href="#dom-oncomplete" class=
     <ul>
       <li>Make the Scripting API refer to (rather then locally
       re-define) the data structures defined in the <a href=
-      "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/">Thing
+      "https://w3c.github.io/wot-thing-description/">Thing
       Description specification</a>.
       </li>
     </ul>
