@@ -2807,14 +2807,15 @@ The
 </code>
 </span>
 <del class="diff-old">method
-5.19
-Examples
 </del>
 <ins class="diff-chg">interface
 </ins>
 </a>
 </li>
-<del class="diff-old">6.
+<li class="tocline">
+<del class="diff-old">5.19
+Examples
+6.
 Experimental
 extensions
 to
@@ -2822,7 +2823,6 @@ the
 ConsumedThing
 interface
 </del>
-<li class="tocline">
 <a href="#the-thingevent-interface" class= "tocxref">
 <span class="secno">
 <del class="diff-old">6.1
@@ -2909,9 +2909,9 @@ algorithm
 </ins>
 </span>
 <del class="diff-old">The
-TDLink
 </del>
-<del class="diff-old">dictionary
+<del class="diff-old">TDLink
+dictionary
 </del>
 </a>
 </li>
@@ -10751,19 +10751,19 @@ observed
 <ins class="diff-chg">with
 name
 defined
+</ins>
 by
-the
-</ins><var><ins class="diff-chg">
+<ins class="diff-new">the
+</ins><var><ins class="diff-new">
 name
-</ins></var><ins class="diff-chg">
+</ins></var><ins class="diff-new">
 argument,
 the
 data
 schema
 provided
-</ins>
 by
-<ins class="diff-new">the
+the
 </ins><var><ins class="diff-new">
 property
 </ins></var><ins class="diff-new">
@@ -12715,21 +12715,21 @@ If
 it
 rejects
 with
-</ins><var>
+</ins><var><ins class="diff-chg">
 error
-</var>,
-<ins class="diff-new">then
+</ins></var>,<ins class="diff-chg">
+then
 reject
-</ins><var><ins class="diff-new">
+</ins><var><ins class="diff-chg">
 promise
-</ins></var><ins class="diff-new">
+</ins></var><ins class="diff-chg">
 with
 the
 same
-</ins><var><ins class="diff-new">
+</ins><var>
 error
-</ins></var>,<ins class="diff-new">
-otherwise
+</var>,
+<ins class="diff-new">otherwise
 </ins>
 if
 <ins class="diff-new">it
@@ -13543,16 +13543,15 @@ Description
 </del>
 <a href= "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-security-vocabulary-definition">
 <ins class="diff-chg">SecurityScheme
-</ins></a><ins class="diff-chg">
-section
-of
-[
-</ins><cite><a class="bibref" href= "#bib-wot-td"><ins class="diff-chg">
-WOT-TD
 </ins>
 </a>
-</cite>
-<ins class="diff-new">].
+<ins class="diff-new">section
+of
+[
+</ins><cite><a class="bibref" href= "#bib-wot-td"><ins class="diff-new">
+WOT-TD
+</ins></a></cite><ins class="diff-new">
+].
 </ins></p><p><ins class="diff-new">
 One
 property
@@ -14100,8 +14099,9 @@ the
 </ins><a href= "#dfn-thing-descriptions" class="internalDFN" data-link-type= "dfn">
 Thing
 <ins class="diff-new">Description
-</ins></a><ins class="diff-new">
-s
+</ins>
+</a>
+<ins class="diff-new">s
 are
 represented
 as
@@ -14135,10 +14135,8 @@ from
 [
 </ins><cite><a class= "bibref" href="#bib-wot-td"><ins class="diff-new">
 WOT-TD
-</ins>
-</a>
-</cite>
-<ins class="diff-new">]
+</ins></a></cite><ins class="diff-new">
+]
 are
 extended
 by
@@ -14546,20 +14544,20 @@ The
 <del class="diff-old">href
 </del>
 <ins class="diff-chg">ThingProperty
-</ins></code></a><ins class="diff-chg">
-interface
+</ins>
+</code>
+</a>
+<ins class="diff-new">interface
 contains
 all
 the
 properties
 defined
 on
-</ins><a href= "#dom-propertyfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
+</ins><a href= "#dom-propertyfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
 PropertyFragment
-</ins>
-</code>
-</a>
-<ins class="diff-new">as
+</ins></code></a><ins class="diff-new">
+as
 read-only
 properties.
 </ins></p><p><ins class="diff-new">
@@ -14930,31 +14928,30 @@ arguments
 provided.
 Otherwise
 the
-</ins>
 type
-<ins class="diff-new">of
-</ins><var><ins class="diff-new">
+of
+</ins><var><ins class="diff-chg">
 inputValue
-</ins></var><em class="rfc2119" title="SHOULD"><ins class="diff-new">
+</ins></var><em class="rfc2119" title="SHOULD"><ins class="diff-chg">
 SHOULD
-</ins></em><ins class="diff-new">
+</ins></em><ins class="diff-chg">
 match
 the
-</ins><a href= "#dom-dataschema" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
+</ins><a href= "#dom-dataschema" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
 DataSchema
-</ins></code></a><ins class="diff-new">
+</ins></code></a><ins class="diff-chg">
 definition
 in
 the
-</ins><code><ins class="diff-new">
+</ins><code><ins class="diff-chg">
 input
-</ins></code><ins class="diff-new">
+</ins></code><ins class="diff-chg">
 property.
 Returns
 a
-</ins><a href="#dfn-promise" class="internalDFN" data-link-type="dfn"><ins class="diff-new">
+</ins><a href="#dfn-promise" class="internalDFN" data-link-type="dfn"><ins class="diff-chg">
 Promise
-</ins></a><ins class="diff-new">
+</ins></a><ins class="diff-chg">
 that
 will
 reject
@@ -14968,8 +14965,9 @@ with
 a
 value
 of
+</ins>
 type
-defined
+<ins class="diff-new">defined
 by
 the
 </ins><code><ins class="diff-new">
@@ -17772,11 +17770,8 @@ defined
 in
 [
 <cite>
-<del class="diff-old">HTML52
-</del>
-<a class="bibref" href="#bib-html5">
-<ins class="diff-chg">HTML5
-</ins>
+<a class="bibref" href="#bib-html52">
+HTML52
 </a>
 </cite>
 ]
@@ -18163,11 +18158,8 @@ defined
 in
 [
 <cite>
-<del class="diff-old">HTML52
-</del>
-<a class="bibref" href= "#bib-html5">
-<ins class="diff-chg">HTML5
-</ins>
+<a class="bibref" href= "#bib-html52">
+HTML52
 </a>
 </cite>
 ]
@@ -18804,67 +18796,42 @@ URL:
 https://www.w3.org/TR/encoding/
 </a>
 </dd>
-<del class="diff-old">[HTML52]
-</del>
-<dt id="bib-html5">
-<ins class="diff-chg">[HTML5]
-</ins>
+<dt id="bib-HTML52">
+[HTML52]
 </dt>
 <dd>
-<a href="https://www.w3.org/TR/html5/">
+<a href="https://www.w3.org/TR/html52/">
 <cite>
-<del class="diff-old">HTML
+HTML
 5.2
-</del>
-<ins class="diff-chg">HTML5
-</ins>
 </cite>
 </a>.
-<ins class="diff-new">Ian
-Hickson;
-Robin
-Berjon;
-</ins>
 Steve
 Faulkner;
-<del class="diff-old">Arron
+Arron
 Eicholz;
-</del>
 Travis
 Leithead;
-<del class="diff-old">Alex
+Alex
 Danilo;
 Sangwhan
 Moon;
-</del>
 Erika
 Doyle
 Navara;
 Theresa
 O'Connor;
-<del class="diff-old">Robin
+Robin
 Berjon.
-</del>
-<ins class="diff-chg">Silvia
-Pfeiffer.
-</ins>
 W3C.
-<del class="diff-old">14
+14
 December
 2017.
-</del>
-<ins class="diff-chg">27
-March
-2018.
-</ins>
 W3C
 Recommendation.
 URL:
-<del class="diff-old">https://www.w3.org/TR/html52/
-</del>
-<a href= "https://www.w3.org/TR/html5/">
-<ins class="diff-chg">https://www.w3.org/TR/html5/
-</ins>
+<a href= "https://www.w3.org/TR/html52/">
+https://www.w3.org/TR/html52/
 </a>
 </dd>
 <dt id="bib-json-ld">
