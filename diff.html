@@ -1124,42 +1124,42 @@ version:
 <dt>
 Editors:
 </dt>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="57789">
 <span class="p-name fn">
 Zoltan
 Kis
 </span>
 (
-<a class="p-org org h-org h-card" href= "https://www.intel.com/">
+<a class= "p-org org h-org h-card" href= "https://www.intel.com/">
 Intel
 </a>
 )
 </dd>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="59208">
 <span class="p-name fn">
 Kazuaki
 Nimura
 </span>
 (
-<a class="p-org org h-org h-card" href= "https://www.fujitsu.com/">
+<a class= "p-org org h-org h-card" href="https://www.fujitsu.com/">
 Fujitsu
 Ltd.
 </a>
 )
 </dd>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="39497">
 <span class="p-name fn">
 Daniel
 Peintner
 </span>
 (
-<a class="p-org org h-org h-card" href= "https://www.siemens.com/">
+<a class= "p-org org h-org h-card" href="https://www.siemens.com/">
 Siemens
 AG
 </a>
 )
 </dd>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="74472">
 <span class="p-name fn">
 Johannes
 Hund
@@ -5749,26 +5749,26 @@ represent
 <ins class="diff-chg">previous
 steps,
 invoke
+</ins>
 the
-</ins><var><ins class="diff-chg">
-handler
-</ins></var><ins class="diff-chg">
+<var>
+<ins class="diff-new">handler
+</ins></var><ins class="diff-new">
 function
 with
-</ins><var><ins class="diff-chg">
+</ins><var><ins class="diff-new">
 td
-</ins></var><ins class="diff-chg">
+</ins></var><ins class="diff-new">
 as
 parameter.
-</ins></li></ol></li><li><ins class="diff-chg">
+</ins></li></ol></li><li><ins class="diff-new">
 Whenever
 an
 error
 occurs
 during
-</ins>
 the
-<ins class="diff-new">discovery
+discovery
 process,
 and
 if
@@ -10748,19 +10748,19 @@ observed
 <ins class="diff-chg">with
 name
 defined
-</ins>
 by
-<ins class="diff-new">the
-</ins><var><ins class="diff-new">
+the
+</ins><var><ins class="diff-chg">
 name
-</ins></var><ins class="diff-new">
+</ins></var><ins class="diff-chg">
 argument,
 the
 data
 schema
 provided
+</ins>
 by
-the
+<ins class="diff-new">the
 </ins><var><ins class="diff-new">
 property
 </ins></var><ins class="diff-new">
@@ -12712,21 +12712,21 @@ If
 it
 rejects
 with
-</ins><var>
+</ins><var><ins class="diff-chg">
 error
-</var>,
-<ins class="diff-new">then
+</ins></var>,<ins class="diff-chg">
+then
 reject
-</ins><var><ins class="diff-new">
+</ins><var><ins class="diff-chg">
 promise
-</ins></var><ins class="diff-new">
+</ins></var><ins class="diff-chg">
 with
 the
 same
-</ins><var><ins class="diff-new">
+</ins><var>
 error
-</ins></var>,<ins class="diff-new">
-otherwise
+</var>,
+<ins class="diff-new">otherwise
 </ins>
 if
 <ins class="diff-new">it
@@ -13247,13 +13247,24 @@ The
 <del class="diff-old">ThingDescription
 </del>
 <ins class="diff-chg">DataSchema
-</ins></code></dfn><ins class="diff-chg">
-dictionary
+</ins>
+</code>
+</dfn>
+<ins class="diff-new">dictionary
 and
 its
 subclasses
-</ins><a class="self-link" aria-label="§" href= "#the-dataschema-dictionary-and-its-subclasses"></a></h3><p><ins class="diff-chg">
-Value
+</ins><a class="self-link" aria-label="§" href= "#the-dataschema-dictionary-and-its-subclasses">
+</a>
+<del class="diff-old">related
+functionality,
+such
+as
+enumerating
+</del>
+</h3>
+<p>
+<ins class="diff-chg">Value
 types
 basically
 represent
@@ -13274,16 +13285,8 @@ used
 in
 </ins><a href= "#dom-thingfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
 ThingFragment
-</ins>
-</code>
-</a>
-<del class="diff-old">related
-functionality,
-such
-as
-enumerating
-</del>
-<ins class="diff-chg">to
+</ins></code></a><ins class="diff-chg">
+to
 define
 </ins><a href= "#dfn-properties" class="internalDFN" data-link-type= "dfn">
 Properties
@@ -13537,16 +13540,15 @@ Description
 </del>
 <a href= "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-security-vocabulary-definition">
 <ins class="diff-chg">SecurityScheme
-</ins></a><ins class="diff-chg">
-section
-of
-[
-</ins><cite><a class="bibref" href= "#bib-wot-td"><ins class="diff-chg">
-WOT-TD
 </ins>
 </a>
-</cite>
-<ins class="diff-new">].
+<ins class="diff-new">section
+of
+[
+</ins><cite><a class="bibref" href= "#bib-wot-td"><ins class="diff-new">
+WOT-TD
+</ins></a></cite><ins class="diff-new">
+].
 </ins></p><p><ins class="diff-new">
 One
 property
@@ -14118,8 +14120,13 @@ for
 </ins><a href="#dfn-wot-interactions" class="internalDFN" data-link-type="dfn"><ins class="diff-new">
 WoT
 Interactions
-</ins></a><a class="self-link" aria-label="§" href= "#interfaces-for-wot-interactions"></a></h2><p><ins class="diff-new">
-The
+</ins>
+</a>
+<a class="self-link" aria-label="§" href= "#interfaces-for-wot-interactions">
+</a>
+</h2>
+<p>
+<ins class="diff-new">The
 data
 types
 and
@@ -14129,10 +14136,8 @@ from
 [
 </ins><cite><a class= "bibref" href="#bib-wot-td"><ins class="diff-new">
 WOT-TD
-</ins>
-</a>
-</cite>
-<ins class="diff-new">]
+</ins></a></cite><ins class="diff-new">
+]
 are
 extended
 by
@@ -14254,30 +14259,29 @@ interactions:
 Properties
 </ins></a>,<a href="#dfn-actions" class="internalDFN" data-link-type="dfn"><ins class="diff-chg">
 Actions
-</ins></a><ins class="diff-chg">
+</ins></a>
 and
-</ins><a href="#dfn-events" class= "internalDFN" data-link-type="dfn"><ins class="diff-chg">
-Events
-</ins></a>.</p><p><ins class="diff-chg">
+<a href="#dfn-events" class= "internalDFN" data-link-type="dfn">
+<ins class="diff-new">Events
+</ins></a>.</p><p><ins class="diff-new">
 The
-</ins><a href="#dfn-interactionfragment" class="internalDFN" data-link-type="dfn"><code><ins class="diff-chg">
+</ins><a href="#dfn-interactionfragment" class="internalDFN" data-link-type="dfn"><code><ins class="diff-new">
 InteractionFragment
-</ins></code></a><ins class="diff-chg">
+</ins></code></a><ins class="diff-new">
 dictionary
 holds
 the
 common
 properties
 of
-</ins><a href= "#dom-propertyfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
+</ins><a href= "#dom-propertyfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
 PropertyFragment
-</ins></code></a>,<a href= "#dom-actionfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
+</ins></code></a>,<a href= "#dom-actionfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
 ActionFragment
-</ins></code></a>
+</ins></code></a><ins class="diff-new">
 and
-<a href= "#dom-eventfragment" class="internalDFN" data-link-type= "dfn">
-<code>
-<ins class="diff-new">EventFragment
+</ins><a href= "#dom-eventfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
+EventFragment
 </ins></code></a><ins class="diff-new">
 dictionaries
 used
