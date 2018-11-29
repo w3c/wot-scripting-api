@@ -2807,15 +2807,14 @@ The
 </code>
 </span>
 <del class="diff-old">method
+5.19
+Examples
 </del>
 <ins class="diff-chg">interface
 </ins>
 </a>
 </li>
-<li class="tocline">
-<del class="diff-old">5.19
-Examples
-6.
+<del class="diff-old">6.
 Experimental
 extensions
 to
@@ -2823,6 +2822,7 @@ the
 ConsumedThing
 interface
 </del>
+<li class="tocline">
 <a href="#the-thingevent-interface" class= "tocxref">
 <span class="secno">
 <del class="diff-old">6.1
@@ -2900,17 +2900,17 @@ method
 </span>
 The
 <del class="diff-old">getLinks()
-method
-6.4.1
 </del>
 <span data-dfn-type= "dfn">
 <ins class="diff-chg">value-matching
 algorithm
 </ins>
 </span>
-<del class="diff-old">The
+<del class="diff-old">method
 </del>
-<del class="diff-old">TDLink
+<del class="diff-old">6.4.1
+The
+TDLink
 dictionary
 </del>
 </a>
@@ -5752,26 +5752,26 @@ represent
 <ins class="diff-chg">previous
 steps,
 invoke
-</ins>
 the
-<var>
-<ins class="diff-new">handler
-</ins></var><ins class="diff-new">
+</ins><var><ins class="diff-chg">
+handler
+</ins></var><ins class="diff-chg">
 function
 with
-</ins><var><ins class="diff-new">
+</ins><var><ins class="diff-chg">
 td
-</ins></var><ins class="diff-new">
+</ins></var><ins class="diff-chg">
 as
 parameter.
-</ins></li></ol></li><li><ins class="diff-new">
+</ins></li></ol></li><li><ins class="diff-chg">
 Whenever
 an
 error
 occurs
 during
+</ins>
 the
-discovery
+<ins class="diff-new">discovery
 process,
 and
 if
@@ -10751,19 +10751,19 @@ observed
 <ins class="diff-chg">with
 name
 defined
-</ins>
 by
-<ins class="diff-new">the
-</ins><var><ins class="diff-new">
+the
+</ins><var><ins class="diff-chg">
 name
-</ins></var><ins class="diff-new">
+</ins></var><ins class="diff-chg">
 argument,
 the
 data
 schema
 provided
+</ins>
 by
-the
+<ins class="diff-new">the
 </ins><var><ins class="diff-new">
 property
 </ins></var><ins class="diff-new">
@@ -12715,21 +12715,21 @@ If
 it
 rejects
 with
-</ins><var><ins class="diff-chg">
-error
-</ins></var>,<ins class="diff-chg">
-then
-reject
-</ins><var><ins class="diff-chg">
-promise
-</ins></var><ins class="diff-chg">
-with
-the
-same
 </ins><var>
 error
 </var>,
-<ins class="diff-new">otherwise
+<ins class="diff-new">then
+reject
+</ins><var><ins class="diff-new">
+promise
+</ins></var><ins class="diff-new">
+with
+the
+same
+</ins><var><ins class="diff-new">
+error
+</ins></var>,<ins class="diff-new">
+otherwise
 </ins>
 if
 <ins class="diff-new">it
@@ -13250,24 +13250,13 @@ The
 <del class="diff-old">ThingDescription
 </del>
 <ins class="diff-chg">DataSchema
-</ins>
-</code>
-</dfn>
-<ins class="diff-new">dictionary
+</ins></code></dfn><ins class="diff-chg">
+dictionary
 and
 its
 subclasses
-</ins><a class="self-link" aria-label="§" href= "#the-dataschema-dictionary-and-its-subclasses">
-</a>
-<del class="diff-old">related
-functionality,
-such
-as
-enumerating
-</del>
-</h3>
-<p>
-<ins class="diff-chg">Value
+</ins><a class="self-link" aria-label="§" href= "#the-dataschema-dictionary-and-its-subclasses"></a></h3><p><ins class="diff-chg">
+Value
 types
 basically
 represent
@@ -13288,8 +13277,16 @@ used
 in
 </ins><a href= "#dom-thingfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
 ThingFragment
-</ins></code></a><ins class="diff-chg">
-to
+</ins>
+</code>
+</a>
+<del class="diff-old">related
+functionality,
+such
+as
+enumerating
+</del>
+<ins class="diff-chg">to
 define
 </ins><a href= "#dfn-properties" class="internalDFN" data-link-type= "dfn">
 Properties
@@ -13543,15 +13540,16 @@ Description
 </del>
 <a href= "https://www.w3.org/TR/2018/WD-wot-thing-description-20181021/#sec-security-vocabulary-definition">
 <ins class="diff-chg">SecurityScheme
-</ins>
-</a>
-<ins class="diff-new">section
+</ins></a><ins class="diff-chg">
+section
 of
 [
-</ins><cite><a class="bibref" href= "#bib-wot-td"><ins class="diff-new">
+</ins><cite><a class="bibref" href= "#bib-wot-td"><ins class="diff-chg">
 WOT-TD
-</ins></a></cite><ins class="diff-new">
-].
+</ins>
+</a>
+</cite>
+<ins class="diff-new">].
 </ins></p><p><ins class="diff-new">
 One
 property
@@ -14099,9 +14097,8 @@ the
 </ins><a href= "#dfn-thing-descriptions" class="internalDFN" data-link-type= "dfn">
 Thing
 <ins class="diff-new">Description
-</ins>
-</a>
-<ins class="diff-new">s
+</ins></a><ins class="diff-new">
+s
 are
 represented
 as
@@ -14135,8 +14132,10 @@ from
 [
 </ins><cite><a class= "bibref" href="#bib-wot-td"><ins class="diff-new">
 WOT-TD
-</ins></a></cite><ins class="diff-new">
-]
+</ins>
+</a>
+</cite>
+<ins class="diff-new">]
 are
 extended
 by
@@ -14277,24 +14276,24 @@ of
 PropertyFragment
 </ins></code></a>,<a href= "#dom-actionfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
 ActionFragment
-</ins></code></a><ins class="diff-chg">
+</ins></code></a>
 and
-</ins><a href= "#dom-eventfragment" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
-EventFragment
-</ins></code></a><ins class="diff-chg">
+<a href= "#dom-eventfragment" class="internalDFN" data-link-type= "dfn">
+<code>
+<ins class="diff-new">EventFragment
+</ins></code></a><ins class="diff-new">
 dictionaries
 used
 for
 initializing
-</ins><a href="#dom-thingproperty" class="internalDFN" data-link-type="dfn"><code><ins class="diff-chg">
+</ins><a href="#dom-thingproperty" class="internalDFN" data-link-type="dfn"><code><ins class="diff-new">
 ThingProperty
-</ins></code></a>,<a href= "#dom-thingaction" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-chg">
+</ins></code></a>,<a href= "#dom-thingaction" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
 ThingAction
-</ins></code></a>
+</ins></code></a><ins class="diff-new">
 and
-<a href="#dom-thingevent" class="internalDFN" data-link-type= "dfn">
-<code>
-<ins class="diff-new">ThingEvent
+</ins><a href="#dom-thingevent" class="internalDFN" data-link-type= "dfn"><code><ins class="diff-new">
+ThingEvent
 </ins></code></a><ins class="diff-new">
 objects
 in
@@ -16011,7 +16010,7 @@ class="internalDFN" data-link-type=
 "dfn"&gt; or &lt;a href="#dom-onnext" class=
 </del>
 <ins class="diff-chg">"idlParam"><span class="idlParamType"><a href=
-"https://html.spec.whatwg.org/multipage/#eventhandler">EventHandler</a></span> <span class="idlParamName">handler</span></span>,<span class="idlParam">
+"https://www.w3.org/TR/html52/single-page.html#typedefdef-eventhandler">EventHandler</a></span> <span class="idlParamName">handler</span></span>,<span class="idlParam">
                          optional<span class=
 "idlParamType"> <a data-link-for="" href="#dom-errorhandler" class=
 "internalDFN" data-link-type=
@@ -17784,60 +17783,60 @@ context
 of
 browser
 implementations:
-<a href= "https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
+<a href= "https://www.w3.org/TR/html52/single-page.html#browsing-context">
 <dfn data-dfn-type="dfn" id="dfn-browsing-context">
 browsing
 context
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#top-level-browsing-context">
-<dfn data-dfn-type="dfn" id="dfn-top-level-browsing-context">
+<a href= "https://www.w3.org/TR/html52/single-page.html#top-level-browsing-context">
+<dfn data-dfn-type="dfn" id= "dfn-top-level-browsing-context">
 top-level
 browsing
 context
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/multipage/webappapis.html#global-object">
+<a href= "https://www.w3.org/TR/html52/single-page.html#global-object">
 <dfn data-dfn-type="dfn" id="dfn-global-object">
 global
 object
 </dfn>
 </a>,
-<a href= "http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
+<a href= "https://www.w3.org/TR/html52/single-page.html#incumbent-settings-object">
 <dfn data-dfn-type="dfn" id= "dfn-incumbent-settings-object">
 incumbent
 settings
 object
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#document">
+<a href= "https://www.w3.org/TR/html52/single-page.html#document">
 <dfn data-dfn-type="dfn" id="dfn-document">
 Document
 </dfn>
 </a>,
-<a href= "http://www.w3.org/TR/2011/WD-html5-20110113/urls.html#document-base-url">
+<a href= "https://www.w3.org/TR/html52/single-page.html#document-base-url">
 <dfn data-dfn-type="dfn" id="dfn-document-base-url">
 document
 base
 URL
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#window">
-<dfn data-dfn-type="dfn" id= "dfn-window">
+<a href= "https://www.w3.org/TR/html52/single-page.html#window">
+<dfn data-dfn-type="dfn" id="dfn-window">
 Window
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#windowproxy">
-<dfn data-dfn-type= "dfn" id="dfn-windowproxy">
+<a href= "https://www.w3.org/TR/html52/single-page.html#windowproxy">
+<dfn data-dfn-type="dfn" id="dfn-windowproxy">
 WindowProxy
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#origin">
-<dfn data-dfn-type="dfn" id= "dfn-origin">
+<a href= "https://www.w3.org/TR/html52/single-page.html#section-origin">
+<dfn data-dfn-type="dfn" id="dfn-origin">
 origin
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#ascii-serialisation-of-an-origin">
+<a href= "https://www.w3.org/TR/html52/single-page.html#ascii-serialization-of-an-origin">
 <dfn data-dfn-type="dfn" id="dfn-ascii-serialized-origin">
 ASCII
 serialized
@@ -17846,32 +17845,32 @@ origin
 </a>,
 executing
 algorithms
-<a href= "https://html.spec.whatwg.org/#in-parallel">
-<dfn data-dfn-type= "dfn" id="dfn-in-parallel">
+<a href= "https://www.w3.org/TR/html52/single-page.html#in-parallel">
+<dfn data-dfn-type="dfn" id="dfn-in-parallel">
 in
 parallel
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#queue-a-task">
-<dfn data-dfn-type= "dfn" id="dfn-queue-a-task">
+<a href= "https://www.w3.org/TR/html52/single-page.html#queuing">
+<dfn data-dfn-type="dfn" id="dfn-queue-a-task">
 queue
 a
 task
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#task-source">
-<dfn data-dfn-type= "dfn" id="dfn-task-source">
+<a href= "https://www.w3.org/TR/html52/single-page.html#task-source">
+<dfn data-dfn-type="dfn" id="dfn-task-source">
 task
 source
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#the-iframe-element">
+<a href= "https://www.w3.org/TR/html52/single-page.html#the-iframe-element">
 <dfn data-dfn-type="dfn" id="dfn-iframe">
 iframe
 </dfn>
 </a>,
-<a href= "https://html.spec.whatwg.org/#valid-mime-type">
-<dfn data-dfn-type= "dfn" id="dfn-valid-mime-type">
+<a href= "https://www.w3.org/TR/html52/single-page.html#valid-mime-type">
+<dfn data-dfn-type="dfn" id="dfn-valid-mime-type">
 valid
 MIME
 type
