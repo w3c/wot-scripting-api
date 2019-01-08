@@ -94,6 +94,8 @@ export interface ThingFragment {
     name?: string;
     /** A human-readable description of the Thing */
     description?: string;
+    /** Human-readable descriptions in different languages */
+    descriptions?: MultiLanguage;
     /** Information about the Thing maintainer, e.g., author or contact URI */
     support?: string;
 
@@ -122,8 +124,12 @@ export declare type ThingModel = (ThingDescription | ThingFragment);
 export interface InteractionFragment {
     /** A human-readable title for the Interaction, e.g., for UIs */
     title?: string;
+    /** Human-readable titles for the Interaction, in different languages */
+    titles?: MultiLanguage;
     /** A human-readable description of the Interaction */
     description?: string;
+    /** Human-readable descriptions in different languages */
+    descriptions?: MultiLanguage;
     /**
      * A collection of predicate terms that reference values of any type,
      * e.g., @type, or other terms from the vocabulary defined in @context.
@@ -132,14 +138,15 @@ export interface InteractionFragment {
 }
 
 /** Represents a Thing Property description */
-export interface PropertyFragment extends InteractionFragment {
-    writable?: boolean;
+export interface PropertyFragment extends InteractionFragment, BaseSchema {
     observable?: boolean;
 }
 /** Represents a Thing Action description */
 export interface ActionFragment extends InteractionFragment {
     input?: DataSchema;
     output?: DataSchema;
+    safe?: boolean;
+    idempotent?: boolean;
 }
 /** Represents a Thing Event description */
 export interface EventFragment extends InteractionFragment {
@@ -306,10 +313,20 @@ export interface Form {
     security?: Security;
 }
 
+export declare type MultiLanguage = any; // object?
+
 export type DataSchema = BooleanSchema | IntegerSchema | NumberSchema | StringSchema | ObjectSchema | ArraySchema | NullSchema;
 
 export interface BaseSchema {
     type?: string;
+    title?: string;
+    titles?: MultiLanguage;
+    description?: string;
+    descriptions?: MultiLanguage;
+    writeOnly?: boolean;
+    readOnly?: boolean;
+    oneOf?: Array<DataSchema>;
+    unit?: string;
     const?: any;
     enum?: Array<any>;
 }
@@ -336,7 +353,7 @@ export interface StringSchema extends BaseSchema {
 
 export interface ObjectSchema extends BaseSchema {
     type: "object";
-    properties: { [key:string]: DataSchema };
+    properties: { [key: string]: DataSchema };
     required?: Array<string>;
 }
 
@@ -351,7 +368,7 @@ export interface NullSchema extends BaseSchema {
     type: "null";
 }
 
-export type Security = NoSecurityScheme | BasicSecurityScheme | DigestSecurityScheme | BearerSecurityScheme | CertSecurityScheme | PoPSecurityScheme |  APIKeySecurityScheme | OAuth2SecurityScheme | PSKSecurityScheme | PublicSecurityScheme;
+export type Security = NoSecurityScheme | BasicSecurityScheme | DigestSecurityScheme | BearerSecurityScheme | CertSecurityScheme | PoPSecurityScheme | APIKeySecurityScheme | OAuth2SecurityScheme | PSKSecurityScheme | PublicSecurityScheme;
 
 
 export interface SecurityScheme {
