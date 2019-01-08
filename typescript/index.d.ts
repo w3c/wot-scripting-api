@@ -19,7 +19,7 @@ export interface WoTFactory {
      * Accepts an url argument and returns a Promise of a ThingDescription
      * @param url URL of a thing description
      */
-    fetch(url: USVString): Promise<ThingDescription>;
+    fetch(url: string): Promise<ThingDescription>;
 
     /**
      * Accepts a ThingDescription and returns a ConsumedThing
@@ -37,11 +37,11 @@ export interface WoTFactory {
     /**
      * Make a request to register td to the given WoT Thing Directory..
      */
-    register(directory: USVString, thing: ExposedThing): Promise<void>;
+    register(directory: string, thing: ExposedThing): Promise<void>;
 
     /**
      * Makes a request to unregister the thing from the given WoT Thing Directory. */
-    unregister(directory: USVString, thing: ExposedThing): Promise<void>;
+    unregister(directory: string, thing: ExposedThing): Promise<void>;
 }
 
 /**
@@ -55,11 +55,11 @@ export interface ThingFilter {
     /**
      * The url field represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a Thing Directory or a Thing.
      */
-    url?: USVString;
+    url?: string;
     /**
      * The query field represents a query string accepted by the implementation, for instance a SPARQL query. 
      */
-    query?: USVString;
+    query?: string;
     /**
      * The fragment field represents a ThingFragment dictionary used for matching against discovered Things.
      */
@@ -82,7 +82,7 @@ export declare enum DiscoveryMethod {
  * WoT provides a unified representation for data exchange between Things, standardized in the Wot Things Description specification.
  * In this version of the API, Thing Descriptions are represented as opaque strings, denoting a serialized form, for instance JSON or JSON-LD
  */
-export declare type ThingDescription = USVString;
+export declare type ThingDescription = string;
 
 /**
  * The ThingFragment dictionary contains fields to initialize a Thing or to match during discovery
@@ -292,17 +292,17 @@ export declare type PropertyWriteHandler = (value: any) => Promise<any>;
 export declare type ActionHandler = (parameters: any) => Promise<any>;
 
 export interface Link {
-    href: USVString;
-    rel?: USVString | Array<USVString>;
-    type?: USVString; // media type hint, no media type parameters
-    anchor?: USVString;
+    href: string;
+    rel?: string | Array<string>;
+    type?: string; // media type hint, no media type parameters
+    anchor?: string;
 }
 
 export interface Form {
-    href: USVString;
-    subprotocol?: USVString;
-    op?: USVString | Array<USVString>;
-    contentType?: USVString; // media type + parameter(s), e.g., text/plain;charset=utf8
+    href: string;
+    subprotocol?: string;
+    op?: string | Array<string>;
+    contentType?: string; // media type + parameter(s), e.g., text/plain;charset=utf8
     security?: Security;
 }
 
