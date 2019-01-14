@@ -305,12 +305,18 @@ export interface Link {
     anchor?: string;
 }
 
+export interface ExpectedResponse {
+    contentType?: string;
+}
+
 export interface Form {
     href: string;
     subprotocol?: string;
     op?: string | Array<string>;
     contentType?: string; // media type + parameter(s), e.g., text/plain;charset=utf8
-    security?: Security;
+    security?: Array<string>; // Set of security definition names, chosen from those defined in securityDefinitions  // Security;
+    scopes?: Array<string>;
+    response?: ExpectedResponse;
 }
 
 export declare type MultiLanguage = any; // object?
