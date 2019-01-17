@@ -84,6 +84,11 @@ export declare enum DiscoveryMethod {
  */
 export declare type ThingDescription = string;
 
+/** Carries version information about the TD instance. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended here. */
+export interface Versioning {
+    instance?: string;
+}
+
 /**
  * The ThingFragment dictionary contains fields to initialize a Thing or to match during discovery
  */
@@ -92,15 +97,25 @@ export interface ThingFragment {
     id?: string;
     /** The name attribute represents the user given name of the Thing */
     name?: string;
+    /** Define the base URI that is valid for all defined local interaction resources */
+    base?: string;
     /** A human-readable description of the Thing */
     description?: string;
     /** Human-readable descriptions in different languages */
     descriptions?: MultiLanguage;
     /** Information about the Thing maintainer, e.g., author or contact URI */
     support?: string;
+    /** Provides information when the TD instance was last modified */
+    lastModified?: string;
+    /** Provides information when the TD instance was created */
+    created?: string;
+    /** Provides version information */
+    version?: Versioning;
 
-    /** A list of security schemas used by the Thing */
-    security?: Array<Security>;
+    /** Set of named security configurations (definitions only). Not actually applied unless names are used in a security section */
+    securityDefinitions?: { [key: string]: Security }
+    /** Set of security definition names, chosen from those defined in securityDefinitions.  */
+    security?: Array<String>;
 
     /** A map of PropertyFragments with decriptions only */
     properties?: { [key: string]: PropertyFragment }
@@ -110,6 +125,8 @@ export interface ThingFragment {
     events?: { [key: string]: EventFragment }
     /** A list of Web links to other Things or metadata */
     links?: Array<Link>;
+    /** Indicates one or more endpoints at which operation(s) on this resource are accessible */
+    forms?: Array<Form>;
     /**
      * A collection of predicate terms that reference values of any type,
      * e.g., @context, @type, or other terms from the vocabulary defined in @context.
