@@ -147,6 +147,13 @@ export interface InteractionFragment {
     description?: string;
     /** Human-readable descriptions in different languages */
     descriptions?: MultiLanguage;
+    /** Set of authorization scope identifiers */
+    scopes?: Array<string>;
+    /** URI template variables */
+    uriVariables?: DataSchema;
+    /** Set of security definition names */
+    security?: Array<string>;
+
     /**
      * A collection of predicate terms that reference values of any type,
      * e.g., @type, or other terms from the vocabulary defined in @context.
