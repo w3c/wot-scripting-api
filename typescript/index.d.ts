@@ -314,13 +314,13 @@ export interface ExposedThing extends ThingInstance {
 
 // TODO: Decide if decorator (with 'internal') or replacement (without 'internal') for get()
 // For now decorator in node-wot
-export declare type PropertyReadHandler = (internal?: any) => Promise<any>;
+export declare type PropertyReadHandler = (internal?: any, options?: any) => Promise<any>;
 
 // TODO: Decide if decorator (return any) or replacement (return void) for set()
 // For now decorator in node-wot
-export declare type PropertyWriteHandler = (value: any) => Promise<any>;
+export declare type PropertyWriteHandler = (value: any, options?: any) => Promise<any>;
 
-export declare type ActionHandler = (parameters: any) => Promise<any>;
+export declare type ActionHandler = (parameters: any, options?: any) => Promise<any>;
 
 export interface Link {
     href: string;
