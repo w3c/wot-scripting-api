@@ -150,7 +150,7 @@ export interface InteractionFragment {
     /** Set of authorization scope identifiers */
     scopes?: Array<string>;
     /** URI template variables */
-    uriVariables?: DataSchema;
+    uriVariables?: { [key: string]: DataSchema };
     /** Set of security definition names */
     security?: Array<string>;
 
