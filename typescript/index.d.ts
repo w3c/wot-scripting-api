@@ -209,13 +209,13 @@ export interface ThingInteraction extends InteractionFragment {
 /** Represents an interactable Thing Property */
 export interface ThingProperty extends ThingInteraction, PropertyFragment //, Observable<any>
 {
-    read(): Promise<any>;
-    write(value: any): Promise<void>;
+    read(options?: any): Promise<any>;
+    write(value: any, options?: any): Promise<void>;
     subscribe(next?: (value: any) => void, error?: (error: any) => void, complete?: () => void): Subscription;
 }
 /** Represents an interactable Thing Action */
 export interface ThingAction extends ThingInteraction, ActionFragment {
-    invoke(parameter?: any): Promise<any>;
+    invoke(parameter?: any, options?: any): Promise<any>;
 }
 
 /** Represents an interactable Thing Event */
