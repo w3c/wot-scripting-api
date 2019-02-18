@@ -1393,12 +1393,12 @@
               </li>
               <li>
                 Return <code>true</code>.
+              </li>
             </ol>
           </li>
         </ol>
       </p>
     </section>
-
   </section>
 
   <section data-dfn-for="Observable" class="informative">
@@ -1473,182 +1473,161 @@
 
 <section> <h2 id="security">Security and Privacy</h2>
 
-<p>
-  In general the security measures taken to protect a WoT
-  system will depend on the threats and attackers that system
-  may face and the value of the assets needs to protect.
-  A detailed discussion of security and privacy considerations for the Web of Things,
-  including a threat model that can be adapted to various circumstances, is
-  presented in the informative document [[!WOT-SECURITY-CONSIDERATIONS]].
-  This section discusses only security and privacy risks and possible mitigations
-  directly relevant to the scripts and WoT Scripting API.
-</p>
-
   <p>
-  When designing new devices and services for use with the WoT,
-  we have documented a suggested set of best practices
-  in [[!WOT-SECURITY-BEST-PRACTICES]] to improve security.
-  This best-practices document may be updated as security measures evolve.
-  Following these practices does not guarantee security,
-  but it at least will help to avoid common known vulnerabilities and pitfalls.
+    A detailed discussion of security and privacy considerations for the Web of Things, including a threat model that can be adapted to various circumstances, is
+    presented in the informative document [[!WOT-SECURITY-CONSIDERATIONS]].
+    This section discusses only security and privacy risks and possible mitigations
+    directly relevant to the scripts and WoT Scripting API.
   </p>
 
   <p>
-  In addition to describing security and privacy risks relevant for
-  script developers in <a href="sec-security-consideration-script">
-  Scripts Security and Privacy Risks</a>, <a href="sec-security-consideration-runtime">
-  WoT Scripting Runtime Security and Privacy Risks</a> also presets the risks relevant
-  for the WoT Scripting Runtime itself, since both are important to take into
-  consideration while building an overall WoT software stack.
-  A suggested mitigation for each risk is also proposed.
+    A suggested set of best practices to improve security for WoT devices and
+    services has been documented in [[!WOT-SECURITY-BEST-PRACTICES]].
+    That document may be updated as security measures evolve.
+    Following these practices does not guarantee security,
+    but it might help avoid common known vulnerabilities.
   </p>
 
- <section id="sec-security-consideration-script"> <h3>Scripts Security and Privacy Risks</h3>
-  <p>This section contains specific risks relevant for script developers.
+  <p>
+    The WoT security risks and possible mitigations are concerning the following groups:
+    <ul>
+      <li>
+        Implementors of WoT Runtimes that do not implement a Scripting Runtime.
+        The [[!WOT-ARCHITECTURE]] document provides generic security guidelines
+        for this group.
+      </li>
+      <li>
+        Implementors of the WoT Scripting API in a WoT Scripting Runtime. This is the main scope and is covered in the
+        <a href="#sec-security-consideration-runtime">
+        Scripting Runtime Security and Privacy Risks</a> sub-section that
+        contains normative text regarding security.
+      </li>
+      <li>
+        WoT script developers, covered in the
+        <a href="#sec-security-consideration-script">
+        Script Security and Privacy Risks</a> sub-section that contains
+        informative recommendations concerning security.
+      </li>
+    </ul>
   </p>
 
-  <section id="sec-security-consideration-script-input">
-   <h5>Corrupted Input Security and Privacy Risk</h5>
-   <p>
-      A typical way to compromise any process is to send it a corrupted input via one of the exposed
-      interfaces. This can be done to a script instance using WoT interface it exposes.
+  <section id="sec-security-consideration-runtime">
+    <h3>Scripting Runtime Security and Privacy Risks</h3>
+    <p>
+      This section is normative and contains specific risks relevant for the WoT Scripting Runtime.
     </p>
-    <dl><dt>Mitigation:</dt><dd>
-        Developers should perform validation on all script inputs.
-        In addition to input validation,
-        <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used
-        to verify that the input processing is done correctly.
-        There are many tools and techniques in existence to do such validation.
-        More details can be found in [[!WOT-SECURITY-TESTING]].
-    </dd></dl>
+
+    <section id="sec-security-consideration-input">
+     <h4>Corrupted Input Security and Privacy Risk</h4>
+     <p>
+        A typical way to compromise any process is to send it a corrupted input
+        via one of the exposed interfaces. This can be done to a script instance
+        using WoT interface it exposes.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Implementors of this API SHOULD perform validation on all script inputs.
+          In addition to input validation,
+          <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used
+          to verify that the input processing is done correctly.
+          There are many tools and techniques in existence to do such validation.
+          More details can be found in [[!WOT-SECURITY-TESTING]].
+      </dd></dl>
+    </section>
+
+
+    <section id="sec-security-consideration-device-direct-access">
+     <h4>Physical Device Direct Access Security and Privacy Risk</h4>
+     <p>
+        In case a script is compromised or misbehaving, the underlying physical device
+        (and potentially surrounded environment) can be damaged if a script can use directly exposed native device interfaces. If such interfaces lack safety checks on their inputs, they might bring the underlying physical device (or environment) to an unsafe state (i.e. device overheats and explodes).
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+         The WoT Scripting Runtime SHOULD avoid directly exposing the native device interfaces to the script developers. Instead, a WoT Scripting Runtime should provide a hardware abstraction layer for accessing the native device interfaces. Such hardware abstraction layer should refuse to execute commands that might put the device (or environment) to an unsafe state.
+         Additionally, in order to reduce the damage to a physical WoT device in cases a script gets compromised, it is important to minimize the number of interfaces that are exposed or accessible to a particular script based on its functionality.
+      </dd></dl>
+    </section>
+
+    <section id="sec-security-consideration-update-provisioning">
+     <h4>Provisioning and Update Security Risk</h4>
+     <p>
+        If the WoT Scripting Runtime supports post-manufacturing provisioning
+        or updates of scripts, WoT Scripting Runtime or any related data
+        (including security credentials), it can be a major attack vector.
+        An attacker can try to modify any above described element
+        during the update or provisioning process or simply
+        provision attacker's code and data directly.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Post-manufacturing provisioning or update of scripts,
+          WoT Scripting Runtime or any related data should be done in a secure fashion.
+          A set of recommendations for secure update and post-manufacturing
+          provisioning can be found in [[!WOT-SECURITY-CONSIDERATIONS]].
+       </dd></dl>
+    </section>
+
+   <section id="sec-security-consideration-credentials-storage">
+     <h4>Security Credentials Storage Security and Privacy Risk</h4>
+     <p>
+        Typically the WoT Scripting Runtime needs to store the security credentials that are provisioned to a WoT device to operate in WoT network. If an attacker can compromise the confidentiality or integrity of these credentials, then it can obtain access to the WoT assets, impersonate WoT things or devices or create Denial-Of-Service (DoS) attacks.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          The WoT Scripting Runtime should securely store the provisioned security credentials, guaranteeing their integrity and confidentiality.
+          In case there are more than one tenant on a single WoT-enabled device, a WoT Scripting Runtime should guarantee isolation of each tenant provisioned security credentials.
+          Additionally, in order to minimize a risk that provisioned security credentials get compromised, the WoT Scripting Runtime should not expose any API for scripts to query the provisioned security credentials.
+      </dd></dl>
+    </section>
   </section>
 
-  <section id="sec-security-consideration-script-processing">
-   <h5>Denial Of Service Security Risk</h5>
-   <p>
-      If a script performs a heavy functional processing on received requests before the request
-      is authenticated, it presents a great risk for Denial-Of-Service (DOS) attacks.
-   </p>
-   <dl><dt>Mitigation:</dt><dd>
-      Scripts should avoid heavy functional processing without prior successful
-      authentication of requestor. The set of recommended authentication mechanisms
-      can be found in [[!WOT-SECURITY-BEST-PRACTICES]].
-    </dd></dl>
-  </section>
-
-  <section id="sec-security-consideration-script-stale-td">
-   <h5>Stale TD Security Risk</h5>
-   <p>
-      During the lifetime of a WoT network, a content of a TD can change.
-      This includes its identifier,
-      id, which may not be an immutable one and updated periodically.
-   </p>
-   <dl><dt>Mitigation:</dt><dd>
-      Scripts should use the provided script API to subscribe for notifications
-      on TD changes and do not rely on TD values to remain persistent.
-   </dd></dl>
-    <p class="ednote">
-      While stale TDs can present a potential problem for WoT network operation,
-      it might not be a security risk.
+  <section id="sec-security-consideration-script" class="informative">
+    <h3>Script Security and Privacy Risks</h3>
+    <p>
+      This section describes specific risks relevant for script developers.
     </p>
-  </section>
-</section>
 
-<section id="sec-security-consideration-runtime"> <h3>WoT Scripting Runtime Security and Privacy Risks</h3>
-  <p>This section contains specific risks relevant for the WoT Scripting Runtime itself.
-  While the following risks are strictly speaking out of the scope
-  for the WoT Scripting API, a script needs a secure runtime to
-  execute and therefore we present these risks and recommended mitigations here.
-  </p>
+    <section id="sec-security-consideration-script-input">
+     <h4>Corrupted Script Input Security and Privacy Risk</h4>
+     <p>
+        A script instance may receive data formats defined by the TD, or data formats defined by the applications. While the WoT Scripting Runtime SHOULD perform validation on all input fields defined by the TD, scripts may be still exploited by input data.
+      </p>
+      <dl><dt>Mitigation:</dt><dd>
+          Script developers should perform validation on all application defined script inputs. In addition to input validation,
+          <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used
+          to verify that the input processing is done correctly.
+          There are many tools and techniques in existence to do such validation.
+          More details can be found in [[!WOT-SECURITY-TESTING]].
+      </dd></dl>
+    </section>
 
-  <section id="sec-security-consideration-cross-script">
-   <h5>Cross-Script Security and Privacy Risk</h5>
-   <p>
-      In basic WoT setups, all scripts running inside the WoT Scripting Runtime
-      are considered trusted, and therefore there is no strong need to
-      perform strict isolation between each running script instance.
-      However, depending on device capabilities and deployment use case
-      scenario risk level it might be desirable to do so.
-      For example, if one script handles sensitive privacy-related
-      data and well-audited, it might be desirable to separate it
-      from the rest of the script instances to minimize the risk of data
-      exposure in case some other script inside WoT gets compromised during runtime.
-      Another example is mutual co-existence of different tenants on a
-      single WoT device. In this case each WoT Scripting Runtime instance will
-      be hosting a different tenant, and isolation between them is required.
-    </p>
-    <dl><dt>Mitigation:</dt><dd>
-      The WoT Scripting Runtime should perform isolation of script instances and
-      their data in cases when scripts handle privacy-related or other
-      critical security data. Similarly, the WoT Scripting Runtime
-      should perform isolation of WoT Scripting Runtime instances and their data
-      if a WoT device has more than one tenant.
-      Such isolation can be performed within the WoT Scripting Runtime using
-      platform security mechanisms available on the device. For more
-      information see Sections "WoT Servient Single-Tenant" and
-      "WoT Servient Multi-Tenant" of [[!WOT-SECURITY-CONSIDERATIONS]].
-    </dd></dl>
-  </section>
+    <section id="sec-security-consideration-script-processing">
+     <h4>Denial Of Service Security Risk</h4>
+     <p>
+        If a script performs a heavy functional processing on received requests before the request is authenticated, it presents a great risk for Denial-Of-Service (DOS) attacks.
+     </p>
+     <dl><dt>Mitigation:</dt><dd>
+        Scripts should avoid heavy functional processing without prior successful
+        authentication of requestor. The set of recommended authentication mechanisms
+        can be found in [[!WOT-SECURITY-BEST-PRACTICES]].
+      </dd></dl>
+    </section>
 
-  <section id="sec-security-consideration-device-direct-access">
-   <h5>Physical Device Direct Access Security and Privacy Risk</h5>
-   <p>
-      In case a script is compromised or misbehaving, the underlying physical device
-      (and potentially surrounded environment) can be damaged if a script can use directly exposed
-      native device interfaces. If such interfaces lack safety checks on their inputs, they might
-      bring the underlying physical device (or environment) to an unsafe state
-      (i.e. device overheats and explodes).
-    </p>
-    <dl><dt>Mitigation:</dt><dd>
-       The WoT Scripting Runtime should avoid directly exposing the native device interfaces
-       to the script developers. Instead a WoT Scripting Runtime should provide a hardware abstraction
-       layer for accessing the native device interfaces. Such hardware abstraction layer should
-       refuse to execute commands that might put the device (or environment) to an unsafe state.
-       Additionally, in order to reduce the damage to a physical WoT device in cases a script
-       gets compromised, it is important to minimize the number of interfaces that are exposed
-       or accessible to a particular script based on its functionality.
-    </dd></dl>
-  </section>
-
-  <section id="sec-security-consideration-update-provisioning">
-   <h5>Provisioning and Update Security Risk</h5>
-   <p>
-      If the WoT Scripting Runtime supports post-manufacturing provisioning
-      or updates of scripts, WoT Scripting Runtime or any related data
-      (including security credentials), it can be a major attack vector.
-      An attacker can try to modify any above described element
-      during the update or provisioning process or simply
-      provision attacker's code and data directly.
-    </p>
-    <dl><dt>Mitigation:</dt><dd>
-        Post-manufacturing provisioning or update of scripts,
-        WoT Scripting Runtime or any related data should be done in a secure fashion.
-        A set of recommendations for secure update and post-manufacturing
-        provisioning can be found in [[!WOT-SECURITY-CONSIDERATIONS]].
+    <section id="sec-security-consideration-script-stale-td">
+     <h4>Stale TD Security Risk</h4>
+     <p>
+        During the lifetime of a WoT network, a content of a TD can change.
+        This includes its identifier, which might not be an immutable one and might be updated periodically.
+     </p>
+     <dl><dt>Mitigation:</dt><dd>
+        Scripts should use this API to subscribe for notifications
+        on TD changes and do not rely on TD values to remain persistent.
      </dd></dl>
+      <p class="ednote">
+        While stale TDs can present a potential problem for WoT network operation,
+        it might not be a security risk.
+      </p>
+    </section>
   </section>
 
- <section id="sec-security-consideration-credentials-storage">
-   <h5>Security Credentials Storage Security and Privacy Risk</h5>
-   <p>
-      Typically the WoT Scripting Runtime needs to store the security credentials that are provisioned to a WoT
-      device to operate in WoT network. If an attacker can compromise the confidentiality or integrity
-      of these credentials, then it can obtain access to the WoT assets, impersonate WoT things or devices
-      or create Denial-Of-Service (DoS) attacks.
-    </p>
-    <dl><dt>Mitigation:</dt><dd>
-        The WoT Scripting Runtime should securely store the provisioned security credentials,
-        guaranteeing their integrity and confidentiality.
-        In case there are more than one tenant on a single WoT-enabled device, a WoT Scripting Runtime should
-        guarantee isolation of each tenant provisioned security credentials.
-        Additionally, in order to minimize a risk that provisioned security credentials get compromised,
-        the WoT Scripting Runtime should not expose any API for scripts to query the provisioned
-        security credentials.
-    </dd></dl>
-  </section>
 </section>
-</section>
-
 
 
   <section> <h2>Terminology and conventions</h2>
