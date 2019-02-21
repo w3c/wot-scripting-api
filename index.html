@@ -178,17 +178,18 @@
     <ul>
       <li>
         Fetch a <a>Thing Description</a> of a <a>Thing</a> given its URL.
+        <p class="note">
+          This use case can be fulfilled using a HTTP library or polyfill or the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> available on the platform.
+        </p>
       </li>
       <li>
-        <a>Consume a TD</a> of a <a>Thing</a>, including parsing the <a>TD</a> and generating the protocol bindings in order to access lower level functionality.
-      </li>
-      <li>On a consumed <a>Thing</a>,
+        <a>Consume a TD</a>, i.e. create a programmatic object from a <a>Thing Description</a> that exposes <a>WoT Interactions</a>:
         <ul>
-          <li>Read the value of a <a>Property</a> or set of properties.</li>
+          <li>Read the value of a <a>Property</a> or a set of properties.</li>
           <li>Set the value of a <a>Property</a> or a set of properties.</li>
           <li>Observe value changes of a <a>Property</a>.</li>
           <li>Invoke an <a>Action</a>.</li>
-          <li>Observe <a>Events</a> emitted by the <a>Thing</a>.</li>
+          <li>Observe WoT <a>Events</a> emitted by the <a>Thing</a>.</li>
           <li>Observe changes to the <a>Thing Description</a> of the <a>Thing</a>.</li>
           <li>Get the <a>Thing Description</a>.</li>
           <li>Get the list of linked resources based on the <a>Thing Description</a>.</li>
@@ -202,30 +203,52 @@
         Exposing the <a>Thing</a> includes generating the protocol bindings in order to access lower level functionality.
       </li>
       <li>
-        Create a local <a>ExposedThing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of a template or an existing <a>ConsumedThing</a> object.</li>
+        Create a local <a>Thing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of an existing <a>Thing</a> object.
+      </li>
+<!--
+  The add/remove use cases are being disputed, since add too much complexity to the spec.
+  The use cases can be solved by the use case above, edit the TD by other means,
+  then instantiate an ExposedThing.
+-->
       <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
+      <li>Remove a <a>Property</a> definition from the <a>Thing</a>.</li>
       <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
-      <li>Add an <a>Event</a> definition to the <a>Thing</a>.</li>
-      <li>Attach semantic information to the <a>Thing</a>.</li>
-      <li>Attach semantic information to a <a>Property</a>.</li>
-      <li>Attach semantic information to an <a>Action</a>.</li>
-      <li>Attach semantic information to an <a>Event</a>.</li>
+      <li>Remove an <a>Action</a> definition from the <a>Thing</a>.</li>
+      <li>Add a WoT <a>Event</a> definition to the <a>Thing</a>.</li>
+      <li>Remove a WoT <a>Event</a> definition from the <a>Thing</a>.</li>
+<!--
+//      <li>Attach semantic information to the <a>Thing</a>.</li>
+//      <li>Attach semantic information to a <a>Property</a>.</li>
+//      <li>Attach semantic information to an <a>Action</a>.</li>
+//      <li>Attach semantic information to an <a>Event</a>.</li>
+// These should be included in adding an interaction.
+-->
       <li>
-        Emit an <a>Event</a>, i.e. notify all listeners subscribed to that <a>Event</a>.
+        Emit a WoT <a>Event</a>, i.e. notify all subscribed listeners.
       </li>
       <li>
         Provide notifications for <a>TD</a> changes to clients subscribed to that.
+        <p class="note">
+          This use case could be fulfilled by the <a>TD</a> specifying an event for TD change.
+        </p>
       </li>
-      <li>Mark/unmark the Thing to be discoverable.</li>
-      <li>Mark/unmark the Thing to be consumable.</li>
-      <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
-      <li>Stop the exposed <a>Thing</a>.</li>
-      <li>Register handlers for external requests:
+<!--
+//      <li>Mark/unmark the Thing to be discoverable.</li>
+// This is done by registering the Thing to a directory.
+
+//      <li>Mark/unmark the Thing to be consumable.</li>
+// This is default behavior if a Thing is exposed. To stop this, need to stop the Thing.
+
+//      <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
+//      <li>Stop the exposed <a>Thing</a>.</li>
+// There are opinions we don't need start and stop functionality. Applying Occam.
+-->
+      <li>Register service handlers for external requests:
         <ul>
           <li>to retrieve a <a>Property</a> value;</li>
           <li>to update a <a>Property</a> value;</li>
           <li>
-            to run an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
+            to invoke an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
           </li>
         </ul>
       </li>
@@ -412,7 +435,7 @@
         The <code>fetch(url)</code> method MUST run the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
@@ -734,7 +757,7 @@
         The <code>expose()</code> method MUST run the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
@@ -760,7 +783,7 @@
         The <code>destroy()</code> method MUST run the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <var>promise</var> and execute the next steps <a>in parallel</a>.
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If invoking <code>destroy()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
@@ -823,14 +846,14 @@
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for reading a <a>Property</a> is received. It should return a Promise and resolves it with the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function, or rejects with an error if the property is not found or the value cannot be retrieved.
+        A function that is called when an external request for reading a <a>Property</a> is received. It should return a <a>Promise</a> and resolves it with the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function, or rejects with an error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
 
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for writing a <a>Property</a> is received. It is given the requested new <code>value</code> as argument and should return a Promise which is resolved when the value of the <a>Property</a> that matches the <code>name</code> argument has been updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
+        A function that is called when an external request for writing a <a>Property</a> is received. It is given the requested new <code>value</code> as argument and should return a <a>Promise</a> which is resolved when the value of the <a>Property</a> that matches the <code>name</code> argument has been updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
       </p>
       <p class="ednote">
         Note that this function is invoked by implementations before the property is updated and it actually defines what to do when a write request is received. The code in this callback function can invoke the <code>read()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this function.
@@ -840,7 +863,7 @@
     <section data-dfn-for="ActionHandler">
       <h3>The <dfn>ActionHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>parameters</code> dictionary argument assembled by the <a>WoT runtime</a> based on the <a>Thing Description</a> and the external client request. It returns a Promise that rejects with an error or resolves if the action is successful or ongoing (may also resolve with a control object such as an <a>Observable</a> for actions that need progress notifications or that can be canceled).
+        A function called with a <code>parameters</code> dictionary argument assembled by the <a>WoT runtime</a> based on the <a>Thing Description</a> and the external client request. It returns a <a>Promise</a> that rejects with an error or resolves if the action is successful or ongoing (may also resolve with a control object such as an <a>Observable</a> for actions that need progress notifications or that can be canceled).
       </p>
     </section>
 
@@ -858,7 +881,7 @@
         When an external request for reading <a>Property</a> <var>propertyName</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <a>promise</a> and execute the next steps <a>in parallel</a>.
+            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
@@ -884,7 +907,7 @@
         When an external request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <a>promise</a> and execute the next steps <a>in parallel</a>.
+            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
@@ -913,7 +936,7 @@
         When an external request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
-            Return a <code>Promise</code> <a>promise</a> and execute the next steps <a>in parallel</a>.
+            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If an <a>Action</a> identified by <var>name</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
@@ -1411,7 +1434,7 @@
     </p>
     <pre class="idl">
       interface Observable {
-        Subscription subscribe(EventHandler handler,
+        Subscription subscribe(ObserverHandler handler,
                                optional ErrorHandler errorHandler,
                                optional OnComplete onComplete);
       };
@@ -1419,7 +1442,7 @@
         void unsubscribe();
         readonly attribute boolean closed;
       };
-      callback EventHandler = void (any value);
+      callback ObserverHandler = void (any value);
       callback ErrorHandler = void (Error error);
       callback OnComplete = void ();
     </pre>
@@ -1428,7 +1451,7 @@
         The following callbacks can be provided when subscribing to an <a>Observable</a>:
         <ul>
           <li>
-            The <dfn>EventHandler</dfn> callback takes the next sample for the data in the <code>value</code> argument.
+            The <dfn>ObserverHandler</dfn> callback takes the next sample for the data in the <code>value</code> argument.
           </li>
           <li>
             The <dfn>ErrorHandler</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
@@ -1638,52 +1661,115 @@
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
     </p>
     <p>
-      The terms <a href="http://www.w3.org/TR/url-1/"><dfn>URL</dfn></a> and
-      <a href="https://url.spec.whatwg.org/#concept-url-path">
-      <dfn>URL path</dfn></a> are defined in [[!URL]].
+      The terms
+      <dfn data-cite="!URL#concept-url">URL</dfn>,
+      <dfn data-cite="!URL#concept-url-scheme">URL scheme</dfn>,
+      <dfn data-cite="!URL#concept-url-host">URL host</dfn>,
+      <dfn data-cite="!URL#concept-url-path">URL path</dfn>,
+      <dfn data-cite="!URL#concept-url">URL record</dfn>,
+      <dfn data-cite="!URL#parse-a-url">parse a URL</dfn>,
+      <dfn data-cite="!URL#absolute-url-string">absolute-URL string</dfn>,
+      <dfn data-cite="!URL#path-absolute-url-string">path-absolute-URL string</dfn>,
+      <dfn data-cite="!URL#concept-basic-url-parser">basic URL parser</dfn>
+      are defined in [[!URL]].
     </p>
     <p>
-      The following terms are defined in [[!HTML5]] and are used in the context of browser implementations:
-      <a href="https://html.spec.whatwg.org/multipage/browsers.html#browsing-context">
-      <dfn>browsing context</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#top-level-browsing-context">
-      <dfn>top-level browsing context</dfn></a>,
-      <a href="https://html.spec.whatwg.org/multipage/webappapis.html#global-object">
-      <dfn>global object</dfn></a>,
-      <a href="http://www.w3.org/TR/html5/webappapis.html#incumbent-settings-object">
-      <dfn>incumbent settings object</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#document">
-      <dfn>Document</dfn></a>,
-      <a href="http://www.w3.org/TR/2011/WD-html5-20110113/urls.html#document-base-url">
-      <dfn>document base URL</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#window">
-      <dfn>Window</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#windowproxy">
-      <dfn>WindowProxy</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#origin">
-      <dfn>origin</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#ascii-serialisation-of-an-origin">
-      <dfn>ASCII serialized origin</dfn></a>,
-      executing algorithms <a href="https://html.spec.whatwg.org/#in-parallel">
-      <dfn>in parallel</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#queue-a-task">
-      <dfn>queue a task</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#task-source">
-      <dfn>task source</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#the-iframe-element">
-      <dfn>iframe</dfn></a>,
-      <a href="https://html.spec.whatwg.org/#valid-mime-type">
-      <dfn>valid MIME type</dfn></a>.
+      The terms
+      <dfn data-cite="!MIMESNIFF#mime-type">MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#parsing-a-mime-type">Parsing a MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#serializing-a-mime-type">Serializing a MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#valid-mime-type">valid MIME type string</dfn>,
+      <dfn data-cite="!MIMESNIFF#json-mime-type">JSON MIME type</dfn>
+      are defined in [[!MIMESNIFF]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!ENCODING#utf-8">UTF-8 encoding</dfn>,
+      <dfn data-cite="!ENCODING#utf-8-decode">UTF-8 decode</dfn>,
+      <dfn data-cite="!ENCODING#encode">encode</dfn>,
+      <dfn data-cite="!ENCODING#decode">decode</dfn>
+      are defined in [[!ENCODING]].
+    </p>
+    <p>
+      <dfn data-cite="!INFRA#ascii-decode">ASCII decode</dfn>,
+      <dfn data-cite="!INFRA#ascii-lowercase">ASCII lowercase</dfn>,
+      <dfn data-cite="!INFRA#string">string</dfn>,
+      <dfn data-cite="!INFRA#byte">byte</dfn>,
+      <dfn data-cite="!INFRA#byte-sequence">byte sequence</dfn>,
+      <dfn data-cite="!INFRA#ordered-set">set</dfn>,
+      <dfn data-cite="!INFRA#map-exists">exists</dfn>,
+      <dfn data-cite="!INFRA#list">list</dfn>,
+      <dfn data-cite="!INFRA#list-iterate">for each</dfn>,
+      <dfn data-cite="!INFRA#iteration-continue">continue</dfn>,
+      <dfn data-cite="!INFRA#list-is-empty">is empty</dfn>,
+      <dfn data-cite="!INFRA#list-is-not-empty">is not empty</dfn>,
+      <dfn data-cite="!INFRA#list-append" data-lt="list-append">append</dfn>,
+      <dfn data-cite="!INFRA#list-contain" data-lt="list-contain">contains</dfn>,
+      <dfn data-cite="!INFRA#parse-json-from-bytes">parse JSON from bytes</dfn> and
+      <dfn data-cite="!INFRA#serialize-json-to-bytes">serialize JSON to bytes</dfn>,
+      are defined in [[!INFRA]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!WEBIDL#dfn-throw"><code>throw</code></dfn>,
+      <dfn data-cite="!WEBIDL#dfn-create-exception"><code>creating</code></dfn>,
+      <dfn data-cite="!WEBIDL#idl-DOMString"><code>DOMString</code></dfn>,
+      <dfn data-cite="!WEBIDL#idl-dictionary"><code>Dictionary</code></dfn>,
+      <dfn data-cite="!WEBIDL#idl-ArrayBuffer"><code>ArrayBuffer</code></dfn>,
+      <dfn data-cite="!WEBIDL#common-BufferSource"><code>BufferSource</code></dfn>,
+      <dfn data-cite="!WEBIDL#idl-any"><code>any</code></dfn>,
+      <dfn data-cite="!WEBIDL#dfn-present">not present</dfn>,
+      <dfn data-cite="!WEBIDL#idl-DOMException"><code>DOMException</code></dfn>,
+      <dfn data-cite="!WEBIDL#aborterror"><code>AbortError</code></dfn>,
+      <dfn data-cite="!WEBIDL#syntaxerror"><code>SyntaxError</code></dfn>,
+      <dfn data-cite="!WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
+      <dfn data-cite="!WEBIDL#networkerror"><code>NetworkError</code></dfn>,
+      <dfn data-cite="!WEBIDL#exceptiondef-typeerror"><code>TypeError</code></dfn>,
+      <dfn data-cite="!WEBIDL#notreadableerror"><code>NotReadableError</code></dfn>,
+      <dfn data-cite="!WEBIDL#timeouterror"><code>TimeoutError</code></dfn>,
+      <dfn data-cite="!WEBIDL#nomodificationallowederror"><code>NoModificationAllowedError</code></dfn>,
+      <dfn data-cite="!WEBIDL#securityerror"><code>SecurityError</code></dfn>,
+      are defined in [[!WEBIDL]].
+    </p>
+    <p>
+      <dfn data-cite="!ECMASCRIPT#sec-promise-objects"><a>Promise</a></dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json-object">JSON</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json.parse">JSON.parse</dfn> and
+      <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slots</dfn>
+      are defined in [[!ECMASCRIPT]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
+      <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing context</dfn>,
+      <dfn data-cite="!HTML#global-object">global object</dfn>,
+      <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
+      <dfn data-cite="!HTML#document">Document</dfn>,
+      <dfn data-cite="!HTML#document-base-url">document base URL</dfn>,
+      <dfn data-cite="!HTML#window"><code>Window</code></dfn>,
+      <dfn data-cite="!HTML#windowproxy"><code>WindowProxy</code></dfn>,
+      <dfn data-cite="!HTML#origin">origin</dfn>,
+      <dfn data-cite="!HTML#ascii-serialisation-of-an-origin">serialized origin</dfn>,
+      executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>,
+      <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>,
+      <dfn data-cite="!HTML#task-source">task source</dfn>,
+      <dfn data-cite="!HTML#the-iframe-element">iframe</dfn>,
+      <dfn data-cite="!HTML#relevant-settings-object">relevant settings object</dfn>,
+      <dfn data-cite="!HTML#active-document">active document</dfn>,
+      <dfn data-cite="!HTML#environment-settings-object">environment settings object</dfn>,
+      <dfn data-cite="!HTML#eventhandler">EventHandler</dfn>,
+       are defined in [[!HTML5]] and are used in the context of browser implementations.
     </p>
     <p>
       A <a>browsing context</a> refers to the environment in which
       <a>Document</a> objects are presented to the user. A given
-      <a>browsing context</a> has a single <code><a>WindowProxy</a></code> object,
-      but it can have many <code><a>Document</a></code> objects, with their associated
-      <code><a>Window</a></code> objects. The <a>script execution context</a>
-      associated with the <i>browsing context</i> identifies the entity which
-      invokes this API, which can be a <i>web app</i>, a <i>web page</i>, or an
-      <a>iframe</a>.
+      <a>browsing context</a> has a single <code><a>WindowProxy</a></code>
+      object, but it can have many <code>Document</code> objects, with their
+      associated <code><a>Window</a></code> objects.
+      The script execution context which invokes this API is associated with the
+      <a>browsing context</a>, which can be a <i>web app</i>, a <i>web page</i>,
+      or an <a>iframe</a>.
     </p>
     <p>
       The term
@@ -1691,33 +1777,11 @@
       <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
     </p>
     <p>
-      <a href="https://tc39.github.io/ecma262/#sec-error-objects">
-      <dfn>Error</dfn>, <dfn>EvalError</dfn>, <dfn>RangeError</dfn>, <dfn>ReferenceError</dfn>, <dfn>SyntaxError</dfn>, <dfn>TypeError</dfn>, <dfn>URIError</dfn>
-      </a>,
-      <a href="https://tc39.github.io/ecma262/#sec-execution-contexts">
-        <dfn>script execution context</dfn></a>,
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-promise-objects">
-        <dfn>Promise</dfn></a>,
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json-object">
-        <dfn>JSON</dfn></a>,
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.stringify">
-        <dfn>JSON.stringify</dfn></a> and
-      <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-json.parse">
-        <dfn>JSON.parse</dfn></a>
-      are defined in [[!ECMASCRIPT]].
-    </p>
-    <p>
-      <a href="http://heycam.github.io/webidl/#idl-DOMString"><dfn>DOMString</dfn></a>,
-      <a href="https://heycam.github.io/webidl/#idl-USVString"><dfn>USVString</dfn></a>,
-      <a href="http://heycam.github.io/webidl/#idl-ArrayBuffer"><dfn>ArrayBuffer</dfn></a>,
-      <a href="http://heycam.github.io/webidl/#common-BufferSource"><dfn>BufferSource</dfn></a> and
-      <a href="http://heycam.github.io/webidl/#idl-any"><dfn>any</dfn></a> are defined in [[!WEBIDL]].
-    </p>
-    <p>
-      The algorithms <a href="http://www.w3.org/TR/encoding/#utf-8-encode">
-      <dfn>utf-8 encode</dfn></a>, and
-      <a href="http://www.w3.org/TR/encoding/#utf-8-decode">
-      <dfn>utf-8 decode</dfn></a> are defined in [[!ENCODING]].
+      <dfn data-cite="!DOM#concept-event-fire">fire an event</dfn>,
+      <dfn data-cite="!DOM#abortsignal">AbortSignal</dfn>,
+      <dfn data-cite="!DOM#abortsignal-aborted-flag">aborted flag</dfn>, and
+      <dfn data-cite="!DOM#abortsignal-add">add the following abort steps</dfn>
+      are defined in [[!DOM]].
     </p>
     <p>
       <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
