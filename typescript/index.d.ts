@@ -202,7 +202,7 @@ export interface ThingInstance extends ThingFragment {
     // XXX add additional 'options' field to allow for uriVariables et cetera
     readProperty(propertyName: string): Promise<any>;
     readAllProperties(): Promise<object>;
-    readMultipleProperties(propertyNames: [string]): Promise<object>;
+    readMultipleProperties(propertyNames: string[]): Promise<object>;
     // XXX add more
 }
 
