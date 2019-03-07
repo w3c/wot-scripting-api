@@ -228,7 +228,11 @@ export interface ThingEvent extends ThingInteraction, EventFragment {
 
 /** Represents a client API object to consume Things and their Properties, Actions, and Events */
 export interface ConsumedThing extends ThingInstance {
-    // no additional functions defined
+    // TODO add additional 'options' field to allow for uriVariables et cetera
+    readProperty(propertyName: string): Promise<any>;
+    readAllProperties(): Promise<object>;
+    readMultipleProperties(propertyNames: [string]): Promise<object>;
+    // XXX add more
 }
 
 /** Represents a server API object to expose Things and their Properties, Actions, and Events */
