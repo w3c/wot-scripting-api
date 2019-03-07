@@ -197,6 +197,13 @@ export interface ThingInstance extends ThingFragment {
     actions: { [key: string]: ThingAction };
     /** A map of ThingEvents (EventFragment plus mandatory binding metadata (forms)) */
     events: { [key: string]: ThingEvent };
+
+    // next API
+    // XXX add additional 'options' field to allow for uriVariables et cetera
+    readProperty(propertyName: string): Promise<any>;
+    readAllProperties(): Promise<object>;
+    readMultipleProperties(propertyNames: [string]): Promise<object>;
+    // XXX add more
 }
 
 /**
@@ -228,11 +235,6 @@ export interface ThingEvent extends ThingInteraction, EventFragment {
 
 /** Represents a client API object to consume Things and their Properties, Actions, and Events */
 export interface ConsumedThing extends ThingInstance {
-    // TODO add additional 'options' field to allow for uriVariables et cetera
-    readProperty(propertyName: string): Promise<any>;
-    readAllProperties(): Promise<object>;
-    readMultipleProperties(propertyNames: [string]): Promise<object>;
-    // XXX add more
 }
 
 /** Represents a server API object to expose Things and their Properties, Actions, and Events */
