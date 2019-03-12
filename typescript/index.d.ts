@@ -203,6 +203,8 @@ export interface ThingInstance extends ThingFragment {
     readProperty(propertyName: string): Promise<any>;
     readAllProperties(): Promise<object>;
     readMultipleProperties(propertyNames: string[]): Promise<object>;
+    writeProperty(propertyName: string, value: any): Promise<void>;
+    writeMultipleProperties(valueMap: { [key: string]: any }): Promise<void>;
     // XXX add more
 }
 
