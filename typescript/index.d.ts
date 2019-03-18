@@ -205,6 +205,8 @@ export interface ThingInstance extends ThingFragment {
     readMultipleProperties(propertyNames: string[]): Promise<object>;
     writeProperty(propertyName: string, value: any): Promise<void>;
     writeMultipleProperties(valueMap: { [key: string]: any }): Promise<void>;
+
+    invokeAction(actionName: string, parameter?: any): Promise<any>;
     // XXX add more
 }
 

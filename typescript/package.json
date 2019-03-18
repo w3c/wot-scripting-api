@@ -1,6 +1,6 @@
 {
   "name": "wot-typescript-definitions",
-  "version": "0.7.0-NEXT-SNAPSHOT.4",
+  "version": "0.7.0-NEXT-SNAPSHOT.5",
   "description": "TypeScript definitions for the W3C WoT Scripting API",
   "author": "W3C Web of Things Working Group",
   "license": "W3C-20150513",
