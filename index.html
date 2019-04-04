@@ -21,9 +21,9 @@
         format:               'markdown',
         editors: [
           { name: "Zoltan Kis", company: "Intel", companyURL: "https://www.intel.com/" },
-          { name: "Kazuaki Nimura", company: "Fujitsu Ltd.", companyURL: "https://www.fujitsu.com/" },
           { name: "Daniel Peintner", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
           { name: "Johannes Hund", note: "Former Editor, when at Siemens AG" },
+          { name: "Kazuaki Nimura", note: "Former Editor, at Fujitsu Ltd." },
         ],
         wg:           "Web of Things Working Group",
         wgURI:        "https://www.w3.org/WoT/WG/",
@@ -32,23 +32,23 @@
         githubAPI: "https://api.github.com/repos/w3c/wot-scripting-api",
         otherLinks: [
           {
-            key: "Contributors",
-            data: [
-                {
-                  value: "In the GitHub repository",
-                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
-                }
-            ]
-          },
-          {
             key: "Repository",
             data: [{
-                  value: "We are on GitHub",
+                  value: "On GitHub",
                   href: "https://github.com/w3c/wot-scripting-api"
               }, {
                   value: "File a bug",
                   href: "https://github.com/w3c/wot-scripting-api/issues"
               },
+            ]
+          },
+          {
+            key: "Contributors",
+            data: [
+                {
+                  value: "Contributors on GitHub",
+                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
+                }
             ]
           },
         ],
@@ -115,13 +115,16 @@
 
   <section id="abstract">
     <p>
-      The overall <a>Web of Things</a> (WoT) concepts are described in the <a href="https://w3c.github.io/wot-architecture/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
-    </p>
-    <p>
-      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing Description</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
+      The key <a>Web of Things</a> (WoT) concepts are described in the <a href="https://w3c.github.io/wot-architecture/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
     </p>
     <p>
       Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
+    </p>
+    <p>
+      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing Description</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script. It deliberately follows the [[!WOT-TD]] specification closely. It is possible to implement simpler APIs on top of this API, or inspired directly by [[!WOT-TD]] and implementing the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+    </p>
+    <p class="ednote">
+      This specification is implemented at least by the <a href="http://www.thingweb.io/">ThingWeb</a> project, which is considered the reference open source implementation at the moment. Check the <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot">examples</a>. Other, currently closed source implementations have been made by some of the WG member companies and tested against <a href="">node-wot</a> in plug-fests.
     </p>
   </section>
 
@@ -179,7 +182,7 @@
       <li>
         Fetch a <a>Thing Description</a> of a <a>Thing</a> given its URL.
         <p class="note">
-          This use case can be fulfilled using a HTTP library or polyfill or the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> available on the platform.
+          This use case has been "outsourced" to be fulfilled using a HTTP library or polyfill or the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> available on the platform. We provide example code, but don't any more support a WoT-specific <code>fetch()</code> API.
         </p>
       </li>
       <li>
