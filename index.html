@@ -709,7 +709,7 @@
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a> given by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If the request fails, return the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
             Let <var>value</var> be the result of the request.
@@ -721,14 +721,11 @@
                 Based on the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.instance.properties[</code><var>propertyName</var><code>]</code>.
               </li>
               <li>
-                If this fails, return <code>SyntaxError</code> and terminate these steps.
-              </li>
-              <li>
-                Return <var>value</var>.
+                If this fails, throw <code>SyntaxError</code>, otherwise return <var>value</var>.
             </li>
           </ol>
           <li>
-            If these steps returned an error, reject <var>promise</var> with that error and terminate these steps.
+            If these above steps failed, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var> with <var>value</var>.
@@ -785,42 +782,177 @@
     <section>
       <h4>The <dfn>writeProperty()</dfn> method</h4>
       <p>
+        Writes a single <a>Property</a>. Takes the following arguments: a string <var>propertyName</var>, a value <var>value</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. It runs the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Run the <a>validate Property value</a> steps on <var>value</var>. If that fails, reject <a>promise</a> with <code>SyntaxError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to write <var>value</var> to the <a>Property</a> given by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
     <section>
       <h4>The <dfn>writeMultipleProperties()</dfn> method</h4>
       <p>
-      </p>
-    </section>
-
-    <section>
-      <h4>The <dfn>invokeAction()</dfn> method</h4>
-      <p>
+        Writes a multiple <a>Property</a> values with one request. Takes the following arguments: an object <var>properties</var> with keys as <a>Property</a> names and values as <a>Property</a> values and an optional argument <var>options</var> of type <a>InteractionOptions</a>. It returns success or failure. It runs the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            For each key <var>name</var> on <var>properties</var>, take its value as <var>value</var> and run the <a>validate Property value</a> steps on <var>value</var>. If that fails in for any <var>name</var>, reject <a>promise</a> with <code>SyntaxError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a single request to the underlying platform (via the <a>Protocol Bindings</a>) to write the each <a>Property</a> given in <var>properties</var> with optional URI templates given in <var>options.uriVariables</var>. If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with <code>NotSupportedError</code> and terminate these steps.
+          </li>
+          <li>
+            If the request fails, return the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
     <section>
       <h4>The <dfn>subscribeProperty()</dfn> method</h4>
       <p>
+        Makes a request for <a>Property</a> value change notifications. Takes the following arguments: a string <var>propertyName</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. It runs the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by <var>propertyName</var>, with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
     <section>
       <h4>The <dfn>unsubscribeProperty()</dfn> method</h4>
       <p>
+        Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes the following arguments: a string <var>propertyName</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. It runs the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by <var>propertyName</var>, with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h4>The <dfn>invokeAction()</dfn> method</h4>
+      <p>
+        Makes a request for invoking an <a>Action</a> and return the result. Takes the following arguments: a string <var>actionName</var>, an optional arguments <var>parameters</var> of type <code>any</code> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns the result of the <a>Action</a> or an error. It runs the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by <var>actionName</var>, given <var>params</var> and optional URI templates in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails locally or returns an error over the network, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise let <var>value</var> be the result returned in the reply and run the <a>validate Property value</a> steps on it. If that fails, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
+          </li>
+          <li>
+            Reject <var>promise</var> with <var>value</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
     <section>
       <h4>The <dfn>subscribeEvent()</dfn> method</h4>
       <p>
+        Makes a request for subscribing to <a>Event</a> notifications. Takes the following arguments: a string <var>eventName</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. It runs the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by <var>eventName</var>, with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
     <section>
       <h4>The <dfn>unsubscribeEvent()</dfn> method</h4>
       <p>
+        Makes a request for unsubscribing from <a>Event</a> notifications. Takes the following arguments: a string <var>eventName</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. It runs the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by <var>eventName</var>, with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
