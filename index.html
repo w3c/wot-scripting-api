@@ -276,7 +276,7 @@
         A <dfn>ThingDescription</dfn> is expected to be either a string representing a JSON-serialized object as described in the <a href="https://w3c.github.io/wot-thing-description/#sec-td-serialization">TD specification</a>, or a JSON object representing a <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">valid TD</a>.
       </p>
       <p>
-        To <dfn>parse a TD</dfn> denoted as <var>td</var>, run the following steps:
+        To <dfn>parse a TD</dfn> (Thing Description) denoted as <var>td</var>, run the following steps:
         <ol>
           <li>
             If <var>td</var> is not a string, throw <code>TypeError</code> and terminate these steps.
@@ -299,13 +299,22 @@
             If the <var>td</var> is not a string or an object, throw <code>TypeError</code> and terminate these steps.
           </li>
           <li>
-            If <var>td</var> is an object, let <var>instance</var> be <var>td</var>.
+            If <var>td</var> is a string, let <var>json</var> be the result of running the <a>parse a TD</a> steps on <var>td</var>. If that throws an error, re-throw the error and terminate these steps.
           </li>
           <li>
-            Otherwise, if <var>td</var> is a string, let <var>instance</var> be the result of running the <a>parse a TD</a> steps on <var>td</var>. If that fails by throwing an error, re-throw the error and terminate these steps.
+            If <var>td</var> is an object, let <var>json</var> be <var>td</var>.
           </li>
           <li>
-            Validate <var>instance</var> according to the <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">TD instance validation</a>. If that fails, throw <code>SyntaxError</code> and terminate these steps.
+            Let <var>instance</var> be an object with properties and default values defined in <a href="https://w3c.github.io/wot-thing-description/#thing">TD Thing</a>.
+            <p class="note">
+              As the <a href="https://w3c.github.io/wot-thing-description/#thing">TD specification</a> owns the structure, validation and serialization of these objects, please refer to that specification on what properties need to be on the <var>instance</var> object. In this specification, <var>instance</var> is considered implementation-internal metadata, exposed for introspection.
+            </p>
+          </li>
+          <li>
+            Update the properties of <var>instance</var> also defined in <var>json</var> with the values defined in <var>json</var>.
+            <p class="note">
+              When more efficient, implementations MAY reverse the last two steps, i.e. let <var>instance</var> be the result of adding <var>json</var> the missing properties with default values as defined in <a href="https://w3c.github.io/wot-thing-description/#thing">TD specification</a>.
+            </p>
           </li>
           <li>
             Update <var>instance</var> with the <a>WoT Runtime</a> local settings.
@@ -317,9 +326,12 @@
                 Initialize <var>instance.security</var> to the actual security scheme used by the <a>WoT Runtime</a>.
               </li>
               <li>
-                Update <var>instance.forms</var> with local settings specific to the <a>WoT Runtime</a>.
+                Update <var>instance.forms</var> with local settings specific to the <a>WoT Runtime</a>. Also, update the runtime-specific parts (if any) for the <var>forms</var> array of all elements in <var>instance.properties</var>, <var>instance.actions</var> and <var>instance.events</var>.
               </li>
             </ol>
+          </li>
+          <li>
+            Validate <var>instance</var> according to the <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">TD instance validation</a>. If that fails, throw <code>SyntaxError</code> and terminate these steps.
           </li>
           <li>
             Return <var>instance</var>.
@@ -362,7 +374,10 @@
             Let <var>instance</var> be the result of running the <a>instantiate a TD</a> steps on <var>td</var>. If that throws, re-throw the error and terminate these steps.
           </li>
           <li>
-            Let <var>thing</var> be a new <a>ExposedThing</a> object with <var>thing.instance</var> initialized with <var>instance</var>.
+            Let <var>thing</var> be a new <a>ExposedThing</a> object initialized with <var>instance</var>. The internal properties of <var>thing.instance</var> SHOULD be used for setting up the <a>WoT Interactions</a> based on the <a>Thing Description</a> as explained in [[!WOT-TD]]. This part is private to the implementations.
+          </li>
+          <li>
+            For each <a>Property</a> definition in <var>thing.instance.properties</var> initialize an <dfn>internal slot for observers</dfn> in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
             Return <var>thing</var>.
@@ -868,118 +883,158 @@
       };
     </pre>
     <section>
-      <h4>Constructing <code>ExposedThing</code></h4>
+      <h3>Constructing <code>ExposedThing</code></h3>
       <p>
-        The <code>ExposedThing</code> interface extends <a>ConsumedThing</a>.
+        The <code>ExposedThing</code> interface extends <a>ConsumedThing</a> and is constructed from a <a>ThingInstance</a> object.
       </p>
       <p>
-        The <code>ExposedThing</code> objects SHOULD only be created by the <code><a href="#the-produce-method">produce()</a></code> method which internally uses the <code>ExposedThing</code> constructor by providing a <a>ThingInstance</a>. This specification currently does not provide an API to expose a standalone <a>ThingInstance</a> produced by the <a>instantiate a TD</a> steps. A <a>ThingInstance</a> is exposed only on <code>ConsumedThing</code> and <a>ExposedThing</a> objects. However, an existing <a>ThingInstance</a> can be used or modified and used for constructing another <a>ExposedThing</a> object. This is the current way of adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions as also illustrated in the <a href="#examples-1">examples</a>.
+        The <code>ExposedThing</code> objects SHOULD only be created by the <code><a href="#the-produce-method">produce()</a></code> method which internally uses the <code>ExposedThing</code> constructor with a <a>ThingInstance</a> object obtained either directly or by parsing a <a>ThingDescription</a>.
+      </p>
+      <p class="note">
+         This specification currently does not provide an API to expose a standalone <a>ThingInstance</a>, as the <a>instantiate a TD</a> steps are private. A <a>ThingInstance</a> object is exposed only on <code>ConsumedThing</code> and <a>ExposedThing</a>. However, an existing <a>ThingInstance</a> object can be optionally modified (for instance by adding or removing elements on its <var>properties</var>, <var>actions</var> and <var>events</var> internal properties) and the resulting object can used for constructing another <a>ExposedThing</a> object. This is the current way of adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions, and later adding the service handler functions. This is illustrated in the <a href="#examples-1">examples</a>.
       </p>
     </section>
 
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for reading a <a>Property</a> is received. It should return a <a>Promise</a> and resolves it with the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function, or rejects with an error if the property is not found or the value cannot be retrieved.
+        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a <a>Promise</a> and resolves it when the value of the <a>Property</a> matching the <code>name</code> argument is obtained, or rejects with an error if the property is not found or the value cannot be retrieved.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
+      <p>
+        Takes <code>name</code> as string argument and <code>readHandler</code> as argument of type <a>PropertyReadHandler</a>. Sets the service handler for reading the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
+      </p>
+      <p>
+         The <code>readHandler</code> callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations MAY implement a default property read handler based on the <a>Thing Description</a>.
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> read requests</h3>
+      <p>
+        When a network request for reading <a>Property</a> <var>propertyName</var> is received by the implementation, run the following steps:
+        <ol>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+          </li>
+          <li>
+            If there is a user provided read handler registered with <code>setPropertyReadHandler()</code>, invoke that wih <var>propertyName</var>, return the value with the reply and terminate these steps.
+          </li>
+          <li>
+            Otherwise, if there is a default read handler provided by the implementation, invoke it with <var>propertyName</var>, return the value with the reply and terminate these steps.
+          </li>
+          <li>
+            if there is no default handler defined by the implementation, return <a>NotSupportedError</a> with the reply and terminate these steps.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> observe requests</h3>
+      <p>
+        When a network request for observing a <a>Property</a> <var>propertyName</var> is received by the implementation, run the following steps:
+        <ol>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+          </li>
+          <li>
+            Save the request sender information to the <a>Property</a>'s <a>internal slot for observers</a> in order to be able to notify about <a>Property</a> value changes.
+          </li>
+        </ol>
       </p>
     </section>
 
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for writing a <a>Property</a> is received. It is given the requested new <code>value</code> as argument and should return a <a>Promise</a> which is resolved when the value of the <a>Property</a> that matches the <code>name</code> argument has been updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
+        A function that is called when an external request for writing a <a>Property</a> is received and defines what to do with such requests. It expects the requested new <code>value</code> as argument and returns a <a>Promise</a> which is resolved when the value of the <a>Property</a> that matches the <code>name</code> argument has been updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
       </p>
       <p class="ednote">
-        Note that this function is invoked by implementations before the property is updated and it actually defines what to do when a write request is received. The code in this callback function can invoke the <code>read()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this function.
+        Note that the code in this callback function can read the property before updating it in order to find out the old value, if needed. Therefore the old value is not provided to this function.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
+      <p>
+        Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the service handler  for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
+      </p>
+      <p>
+        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations MAY implement default property update and notifying observers on change, based on the <a>Thing Description</a>.
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> write requests</h3>
+      <p>
+        When a network request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, implementations SHOULD run the following <dfn>update property steps</dfn>, given <var>propertyName</var>, <var>value</var> and <var>mode</var> set to <code>"single"</code>:
+        <ol>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+          </li>
+          <li>
+            If there is a user provided write handler registered with <code>setPropertyWriteHandler()</code>, or if there is a default write handler,
+            <ol>
+              <li>
+                Invoke the handler with <var>propertyName</var>. If it fails, return the error in the reply and terminate these steps.
+              </li>
+              <li>
+                Otherwise, if <var>mode</var> is <code>"single"</code>, reply to the request with the new value, following to the <a>Protocol Bindings</a>.
+              </li>
+              <li>
+                For each item stored in the <a>internal slot for observers</a> of the <a>Property</a> with <var>propertyName</var>, send an observe reply with the new value attached.
+              </li>
+          </li>
+          <li>
+            If there is no handler to handle the request, return <a>NotSupportedError</a> in the reply and terminate these steps.
+          </li>
+        </ol>
+      </p>
+      <p>
+        When a network request for writing multiple <a>Properties</a> given in an object <var>propertyNames</var> is received, run the following steps:
+        <ol>
+          <li>
+            For each property with key <var>name</var> and value <var>value</var> defined in <var>propertyNames</var>, run the <a>update property steps</a> with <var>name</var>, <var>value</var> and <var>mode</var> set to <code>"multiple"</code>.
+          </li>
+          <li>
+            Reply to the request (by sending a single or multiple replies) according to the <a>Protocol Bindings</a> defined for the <a>Property</a>.
+          </li>
       </p>
     </section>
 
     <section data-dfn-for="ActionHandler">
       <h3>The <dfn>ActionHandler</dfn> callback</h3>
       <p>
-        A function called with a <code>parameters</code> dictionary argument assembled by the <a>WoT runtime</a> based on the <a>Thing Description</a> and the external client request. It returns a <a>Promise</a> that rejects with an error or resolves if the action is successful.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
-      <p>
-        Takes <code>name</code> as string argument and <code>readHandler</code> as argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-         The <code>readHandler</code> callback function will implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
-      </p>
-      <p>
-        There SHOULD be at most one handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler.
-      </p>
-      <p>
-        When an external request for reading <a>Property</a> <var>propertyName</var> is received, the runtime SHOULD execute the following steps:
-        <ol>
-          <li>
-            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, if no read handler has been defined for <var>propertyName</var>, resolve <var>promise</var> with the value of the <a>Property</a> named <var>propertyName</var> provided by the  runtime implementation and terminate these steps.
-          </li>
-          <li>
-            Otherwise, invoke the read handler associated with <var>propertyName</var>. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
-          </li>
-        </ol>
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
-      <p>
-        Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-        There SHOULD be at most one write handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change.
-      </p>
-      <p>
-        When an external request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, the runtime SHOULD execute the following steps:
-        <ol>
-          <li>
-            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, if no write handler has been defined for <var>propertyName</var>, the runtime implementation SHOULD update the <a>Property</a> value with <var>value</var>, resolve <var>promise</var> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, invoke the write handler associated with <var>propertyName</var> providing <var>value</var> as argument. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
-          </li>
-        </ol>
+        A function that is called when an external request for invoking an <a>Action</a> is received and defines what to do with such requests. It expects a <code>parameters</code> dictionary argument compiled by the implementation (based on the <a>Thing Description</a> and the external client request). It returns a <a>Promise</a> that rejects with an error or resolves if the action is successful.
       </p>
     </section>
 
     <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
+        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
       </p>
       <p>
          The <code>action</code> callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
       </p>
       <p>
-        There SHOULD be at most one handler for any given <a>Action</a> and newly added handlers replace the old handlers.
+        There MUST be at most one handler for any given <a>Action</a>, so newly added handlers MUST replace the previous handlers.
       </p>
+    </section>
+
+    <section> <h3>Handling <a>Action</a> requests</h3>
       <p>
-        When an external request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
+        When a network request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
-            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
+            If an <a>Action</a> identified by <var>name</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
           </li>
           <li>
-            If an <a>Action</a> identified by <var>name</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
+            If there is a user provided action handler registered with <code>setActionHandler()</code>, invoke that wih <var>name</var>, return the resulting value with the reply and terminate these steps.
           </li>
           <li>
-            Otherwise, if no action handler has been defined for <var>name</var>, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, invoke the <a>Action</a> handler associated with <var>name</var>. If it rejects with <var>error</var>, then reject <var>promise</var> with the same <var>error</var>, otherwise if it resolves with <var>value</var>, then resolve <a>promise</a> with the same <var>value</var>.
+            Otherwise return <a>NotSupportedError</a> with the reply and terminate these steps.
           </li>
         </ol>
       </p>
@@ -987,7 +1042,21 @@
 
     <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
       <p>
-        void emitEvent(DOMString name, any data);
+        Takes <var>name</var> as string argument denoting an <a>Event</a> name, and a <var>data</var> argument of <code>any</code> type.
+      </p>
+      <p>
+        The <code>emitEvent()</code> method runs the following steps:
+        <ol>
+          <li>
+            If invoking the method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If an <a>Event</a> with the name <var>name</var> is not found in <var>this.instance.events</var>, throw <code>NotFoundError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to send an <a>Event</a> with <var>data</var> attached as property, using the <a>Protocol Bindings</a>, then terminate these steps.
+          </li>
+        </ol>
       </p>
     </section>
 
@@ -1005,7 +1074,7 @@
             If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to the underlying platform to attach protocol handlers and start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
+            Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
@@ -1049,18 +1118,14 @@
         Below some <code><a>ExposedThing</a></code> interface examples are given.
       </p>
 
-      <pre class="example highlight" title="Create a new exposed Thing with a simple property">
+      <pre class="example highlight" title="Create ExposedThing with a simple Property">
         try {
-          var temperatureValueDefinition = {
+          let temperaturePropertyDefinition = {
             type: "number",
             minimum: -50,
             maximum: 10000
           };
-          var temperaturePropertyDefinition = temperatureValueDefinition;
-          // add the 'forms' property
-          temperaturePropertyDefinition.forms = [ ... ];
-          var thing = WOT.produce({
-            name: "tempSensor",
+          let tdFragment = {
             properties: {
               temperature: temperaturePropertyDefinition
             },
@@ -1076,18 +1141,17 @@
             },
             events: {
               onchange: temperatureValueDefinition
-            },
-            links: []
-          });
-          await thing.expose();
-          await wot.register("https://mydirectory.org", thing);
+            }
+          };
+          let thing1 = WOT.produce(tdFragment);
+          // TODO: add service handlers
+          await thing1.expose();
           // define Thing business logic
           setInterval( async () => {
             let mock = Math.random()*100;
-            let old = await thing["temperature"].read();
+            let old = await thing1.readProperty("temperature");
             if (old < mock) {
-              await thing["temperature"].write(mock);
-              thing.emitEvent("onchange", mock);
+              await thing1.writeProperty("temperature", mock);
             }
           }, 1000);
         } catch (err) {
@@ -1095,9 +1159,11 @@
         }
       </pre>
 
-      <pre class="example highlight" title="Create a new exposed Thing with object property">
+      <pre class="example highlight" title="Add an object Property">
         try {
-          var statusValueDefinition = {
+          // create a deep copy of thing1 instance
+          let instance = JSON.parse(JSON.stringify(thing1.instance));
+          const statusValueDefinition = {
             type: "object",
             properties: {
               brightness: {
@@ -1117,44 +1183,35 @@
                 }
               }
           };
-          var statusPropertyDefinition = statusValueDefinition;
-          // add the 'forms' property
-          statusPropertyDefinition["forms"] = [];
-          var thing = WOT.produce({
-            name: "mySensor",
-            properties: {
-              brightness: {
-                type: "number",
-                minimum: 0.0,
-                maximum: 100.0,
-                required: true,
-              },
-              status: statusPropertyDefinition
+          instance["name"] = "mySensor";
+          instance.properties["brightness"] = {
+            type: "number",
+            minimum: 0.0,
+            maximum: 100.0,
+            required: true,
+          };
+          instance.properties["status"] = statusValueDefinition;
+          instance.actions["getStatus"] = {
+            description: "Get status object",
+            input: null,
+            output: {
+              status : statusValueDefinition;
             },
-            actions: {
-              status: {
-                description: "Get status object",
-                input: null,
-                output: {
-                  status : statusValueDefinition;
-                },
-                forms: []
-              },
-            },
-            events: {
-              onstatuschange: statusValueDefinition;
-            },
-            links: []
-          });
-          thing.expose().then(() => {
-              thing.register();
+            forms: [...]
+          };
+          instance.events["onstatuschange"] = statusValueDefinition;
+          instance.forms = [...];  // update
+          var thing2 = WOT.produce(instance);
+          // TODO: add service handlers
+          await thing2.expose();
           });
         } catch (err) {
            console.log("Error creating ExposedThing: " + err);
         }
       </pre>
 
-      <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
+      <pre class="example highlight" title="Create ExposedThing from a TD">
+        // Typically a TD is obtained from somewhere, but let's write it now.
         let thingDescription = '{ \
           "name": "mySensor", \
           "@context": [ "http://www.w3.org/ns/td",\
@@ -1168,14 +1225,12 @@
               "saref:TemperatureUnit": "degree_Celsius" \
           } } }';
         try {
-          // note that produce() fails if thingDescription contains error
+          // note that produce() fails if the TD contains an error
           let thing = WOT.produce(thingDescription);
           // Interactions were added from TD
           // WoT adds generic handler for reading any property
-          // define a specific handler for one property
-          let name = "examplePropertyName";
-          thing.setPropertyReadHandler(name, () => {
-            console.log("Handling read request for " + name);
+          // Define a specific handler for a Property
+          thing.setPropertyReadHandler("prop1", () => {
             return new Promise((resolve, reject) => {
                 let examplePropertyValue = 5;
                 resolve(examplePropertyValue);
@@ -1184,21 +1239,10 @@
                 console.log("Error");
               });
           });
-          thing.expose();
+          await thing.expose();
         } catch(err) {
            console.log("Error creating ExposedThing: " + err);
         }
-      </pre>
-
-      <pre class="example highlight" title="Create a new exposed Thing from a TD URI">
-        // fetch an external TD, e.g., to set up a proxy for that Thing
-        WOT.fetch("http://myservice.org/mySensor/description").then(td => {
-          // WOT.produce() ignores instance-specific metadata (security, form)
-          let thing = WOT.produce(td);
-          // Interactions were added from TD
-          // add server functionality
-          // ...
-        });
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
@@ -1523,14 +1567,42 @@
 
   <section class="appendix" id="Changes"><h2>Changes</h2>
     <p>
-      The following is a list of major changes to the document. For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
-    </p>
-    <p>
+      The following is a list of major changes to the document. Major versions of this specification are the following:
       <ul>
         <li>
-          Make the Scripting API refer to (rather then locally re-define) the data structures defined in the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>.
+          First Public Working Draft <a href="https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/">September 2017</a>.
+        </li>
+        <li>
+          Working Draft <a href="https://www.w3.org/TR/2018/WD-wot-scripting-api-20180405/">April 2018</a>.
+        </li>
+        <li>
+          Working Draft <a href="https://www.w3.org/TR/2018/WD-wot-scripting-api-20181129/">November 2018</a>.
+        </li>
+        <li>
+          This version, introducing the following major changes:
+          <ul>
+            <li>
+              Remove <code>fetch()</code> for fetching a <a>TD</a> (delegated to external API).
+            </li>
+            <li>
+              Remove <code>Observer</code> and use <a href="https://w3ctag.github.io/design-principles/">W3C TAG recommended design patterns</a>.
+            </li>
+            <li>
+              Align the discovery API to other similar APIs (such as <a href="https://www.w3.org/TR/generic-sensor/#the-sensor-interface">W3C Generic Sensor API</a>).
+            </li>
+            <li>
+              Introduce <a>ThingInstance</a> for a simpler way to instrospect, add and remove <a>WoT Interactions</a> on <a>Thing</a>s.
+            </li>
+            <li>
+              Remove the large data definition API for constructing <a>TD</a>s and leverage using <a>ThingInstance</a> instead.
+            </li>
+            <li>
+              Add missing algorithms and rework most existing ones.
+            </li>
+          </ul>
         </li>
       </ul>
+      For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
     </p>
   </section>
 
@@ -1539,6 +1611,12 @@
       The following problems are being discussed and need most attention:
     </p>
       <ul>
+        <li>
+          The API for adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions on <a>ExposedThing</a>.
+        </li>
+        <li>
+          Provide an API that is compatible with the Web Platform (browser implementations) and is efficient to implement in constrained runtimes.
+        </li>
         <li>
           Security related metadata (https://github.com/w3c/wot-scripting-api/issues/91).
         </li>
@@ -1555,7 +1633,7 @@
 
   <section> <h2>Acknowledgements</h2>
     <p>
-      Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) and Kazuaki Nimura (until December 2018) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Elena Reshetova and Michael McCool for their comments, contributions and guidance.
+      Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) and Kazuaki Nimura (until December 2018) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Elena Reshetova, Michael McCool as well as the other WoT WG members for their comments, contributions and guidance.
     </p>
   </section>
 
