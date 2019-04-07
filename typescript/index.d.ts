@@ -383,13 +383,13 @@ export interface StringSchema extends BaseSchema {
 
 export interface ObjectSchema extends BaseSchema {
     type: "object";
-    properties: { [key: string]: DataSchema };
+    properties?: { [key: string]: DataSchema };
     required?: Array<string>;
 }
 
 export interface ArraySchema extends BaseSchema {
     type: "array";
-    items: DataSchema;
+    items?: DataSchema;
     minItems?: number;
     maxItems?: number;
 }
