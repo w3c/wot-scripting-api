@@ -248,7 +248,7 @@
       interface WOT {
         ConsumedThing consume(ThingDescription td);
         ExposedThing produce(ThingDescription td);
-        void discover(ThingDiscovery discovery);
+        ThingDiscovery discover(optional ThingFilter filter);
       };
       typedef (USVString or object) ThingDescription;
       typedef object ThingInstance;
@@ -345,7 +345,7 @@
 
     <section> <h3> The <dfn>consume()</dfn> method</h3>
       <p>
-        Accepts an <var>td</var> argument and returns a <a>ConsumedThing</a> object that represents a client interface to operate with the <a>Thing</a>. It MUST run the following steps:
+        Accepts an <var>td</var> argument and returns a <a>ConsumedThing</a> object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
         <ol>
           <li>
             Let <var>instance</var> be the result of running the <a>instantiate a TD</a> steps on <var>td</var>. If that throws, re-throw the error and terminate these steps.
@@ -368,10 +368,10 @@
 
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
-        Accepts a <code>td</code> argument and returns an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. It MUST run the following steps:
+        Accepts a <code>td</code> argument and returns an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
         <ol>
           <li>
-            If invoking <code>produce()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
             Let <var>instance</var> be the result of running the <a>instantiate a TD</a> steps on <var>td</var>. If that throws, re-throw the error and terminate these steps.
@@ -380,7 +380,7 @@
             Let <var>thing</var> be a new <a>ExposedThing</a> object <a href="#constructing-exposedthing">constructed</a>  with <var>instance</var>. The internal properties of <var>thing.instance</var> SHOULD be used for setting up the <a>WoT Interactions</a> based on the <a>Thing Description</a> as explained in [[!WOT-TD]]. This part is private to the implementations.
           </li>
           <li>
-            For each <a>Property</a> definition in <var>thing.instance.properties</var> initialize an <dfn>internal slot for observers</dfn> in order to store observe request data needed to notify the observers on value changes.
+            For each <a>Property</a> definition in <var>thing.instance.properties</var> initialize an <dfn>internal observer list</dfn> in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
             Return <var>thing</var>.
@@ -389,212 +389,221 @@
       </p>
     </section> <!-- produce() -->
 
-    <section> <h3>Discovering Things</h3>
-      <p>
-        Discovery is making a request to retrieve a list of <a>Thing Description</a>s that match an optional filter. There are two equivalent ways to make discovery with this API:
-        <ul>
-          <li>
-            By creating a <a>ThingDiscovery</a> object and invoking its <code><a href="">start()</a></code> method.
-          </li>
-          <li>
-            By creating a <a>ThingDiscovery</a> object and invoking the <code><a href="">WOT.discover()</a></code> method on it.
-            <p class="ednote">
-              This is provided for consistency with the factory methods <code><a href="#the-consume-method">WOT.consume()</a></code> and <code><a href="#the-produce-method">WOT.produce()</a></code>.
-            </p>
-          </li>
-        </ul>
-
-        The discovery implementation will <a href="#dfn-fire-an-event">fire an event</a> with a <a href="#dfn-parse-a-td">parsed</a> <a>ThingDescription</a> object for each matching TD found, another event if the discovery process is known to have completed, and will <a href="#dfn-fire-an-event">fire</a> an error event on errors.
-      </p>
-
-      <section data-dfn-for="DiscoveryMethod">
-        <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h4>
-        <pre class="idl">
-          typedef DOMString DiscoveryMethod;
-        </pre>
-        <p>
-          <a>DiscoveryMethod</a> represents the discovery type to be used:
-        </p>
-        <ul>
-          <li><dfn>"any"</dfn> does not provide any restriction</li>
-          <li>
-            <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
-          </li>
-          <li>
-            <dfn>"directory"</dfn> for discovery based on a service provided by a <a>Thing Directory</a>.
-          </li>
-          <li>
-            <dfn>"multicast"</dfn> for discovering <a>Thing</a>s in the device's network by using a supported multicast protocol.
-          </li>
-        </ul>
-      </section>
-
-      <section data-dfn-for="ThingFilter">
-        <h4>The <dfn>ThingFilter</dfn> dictionary</h4>
-        <p>
-          The <a>ThingFilter</a> dictionary that represents the constraints for discovering <a>Thing</a>s as key-value pairs.
-        </p>
-        <pre class="idl">
-          dictionary ThingFilter {
-            (DiscoveryMethod or DOMString) method = "any";
-            USVString? url;
-            USVString? query;
-            object? fragment;
-          };
-        </pre>
-        <p>
-          The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that MAY be extended by string values defined by solutions (with no guarantee of interoperability).
-        </p>
-        <p>
-          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or that of a <a>Thing</a> (otherwise).
-        </p>
-        <p>
-          The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
-        </p>
-        <p>
-          The <dfn>fragment</dfn> property represents a template object used for matching property by property against discovered <a>Thing</a>s.
-        </p>
-      </section>
-
-      <section data-dfn-for="ThingDiscovery">
-        <h4>The <dfn>ThingDiscovery</dfn> interface</h4>
-        <p>
-          Constructed given a filter and provides the events and methods controlling the discovery process.
-        </p>
-        <pre class="idl">
-          [Constructor(optional ThingFilter filter), SecureContext, Exposed=(Window,Worker)]
-          interface ThingDiscovery: EventTarget {
-            readonly attribute ThingFilter? filter;
-            readonly attribute boolean active;
-            void start();
-            void stop();
-            attribute EventHandler onfound;
-            attribute EventHandler onerror;
-            attribute EventHandler oncomplete;
-          };
-          interface ThingDescriptionEvent: Event {
-            readonly attribute object td;
-          };
-        </pre>
-        <p>
-          The <dfn>filter</dfn> property represents the discovery filter of type <a>ThingFilter</a> specified for the discovery.
-        </p>
-        <p>
-          The <dfn>active</dfn> property represents whether the discovery is actively ongoing or not (i.e. it has either been completed or stopped).
-        </p>
-        <p>
-          The <dfn>start()</dfn> method starts the discovery process, or if the discovery is already active, does nothing.
-        </p>
-        <p>
-          The <dfn>stop()</dfn> method stops or suppresses the discovery process. It might not be supported by all discovery methods and endpoints, however, any further discovery results or errors will be discarded and the discovery is marked inactive.
-        </p>
-        <p>
-          The <dfn>onfound</dfn> event of type <dfn data-dfn-for="ThingDescriptionEvent">ThingDescriptionEvent</dfn> is fired when a <a>Thing Description</a> has been discovered. It contains a JSON object <dfn data-dfn-for="ThingDescriptionEvent">td</dfn> representing a parsed, but not yet instantiated <a>Thing Description</a>.
-        </p>
-        <p>
-          The <dfn>onerror</dfn> is of type <code>ErrorEvent</code> and is fired when the discovery process reports an error. It might not be supported by all discovery methods and endpoints.
-        </p>
-        <p>
-          The <dfn>oncomplete</dfn> simple event is fired when the discovery process is completed, i.e. there are no more <a>Thing Description</a>s to discover. It might not be supported by all discovery methods (e.g. multicast discovery) and endpoints.
-        </p>
-
-        <p>
-          The <code>start()</code> method MUST run the following steps:
-          <ol>
-            <li>
-              If <var>this.filter</var> is defined,
-              <ul>
-                <li>
-                  Let <var>filter</var> denote <var>this.filter</var>.
-                </li>
-                <li>
-                  If <var>filter.query</var> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, implementations SHOULD throw a <code>NotSupported</code> error and terminate these steps.
-                </li>
-              </ul>
-            </li>
-            <li>
-              Request the underlying platform to start the discovery process, with the following parameters:
-              <ul>
-                <li>
-                  If <var>filter.method</var> is not defined or the value is <code>"any"</code>, use the widest discovery method supported by the underlying platform.
-                </li>
-                <li>
-                  Otherwise if <var>filter.method</var> is <code>"local"</code>, use the local <a>Thing Directory</a> for discovery. Usually that defines <a>Thing</a>s deployed in the same device, or connected to the device in slave mode (e.g. sensors connected via Bluetooth or a serial connection).
-                </li>
-                <li>
-                  Otherwise if <var>filter.method</var> is <code>"directory"</code>, use the remote <a>Thing Directory</a> specified in <var>filter.url</var>.
-                </li>
-                <li>
-                  Otherwise if <var>filter.method</var> is <code>"multicast"</code>, use all the multicast discovery protocols supported by the underlying platform.
-                </li>
-              </ul>
-            </li>
-            <li>
-              When the underlying platform has started the discovery process, set the <code>active</code> property to <code>true</code>.
-            </li>
-            <li>
-              Whenever a new <a>Thing Description</a> <var>td</var> is discovered by the underlying platform, run the following sub-steps:
-              <ol>
-                <li>
-                  Fetch the <var>td</var>.
-                </li>
-                <li>
-                   Let <var>json</var> be the result of running the <a>parse a TD</a> steps on <var>td</var>. If that fails, <a href="#dfn-fire-an-event">fire</a> an <code>onerror</code> event with that error, discard <var>td</var> and continue the discovery process.
-                </li>
-                <li>
-                  If <var>filter.query</var> is defined, check if <var>json</var> is a match for the query. The matching algorithm is encapsulated by implementations. If that returns <code>false</code>, discard <var>td</var> and continue the discovery process.
-                </li>
-                <li>
-                  If <var>filter.fragment</var> is defined, for each property defined in it, check if that property exists in <var>json.properties</var> and has the same value. If this is <code>false</code> in any checks, discard <var>td</var> and continue the discovery process.
-                </li>
-                <li>
-                  Otherwise if <var>td</var> has not been discarded in the previous steps, <a href="#dfn-fire-an-event">fire</a> an <code>onfound</code> event with its <var>td</var> property set to <var>json</var>.
-                </li>
-              </ol>
-            </li>
-            <li>
-              Whenever an error occurs during the discovery process, <a href="#dfn-fire-an-event">fire</a> an <code>onerror</code> event, whose <code>message</code> property is set to <code>DiscoveryError</code> unless there was an error code provided by the <a>Protocol Bindings</a>, in which case set it to that value.
-            </li>
-            <li>
-              When the discovery process is completed, <a href="#dfn-fire-an-event">fire</a> the <code>oncomplete</code> event, remove all event listeners and set the <code>this.active</code> property to <code>false</code>.
-            </li>
-          </ol>
-        </p>
-
-        <p>
-          The <code>stop()</code> MUST run the following steps:
-          <ol>
-            <li>
-              Request the underlying platform to stop the discovery process. If this returns an error, or if it is not possible, for instance when discovery is based on open ended multicast requests, the implementation SHOULD discard subsequent discovered items.
-            </li>
-            <li>
-              Remove all event listeners.
-            </li>
-            <li>
-              Set the <code>this.active</code> property to <code>false</code>.
-            </li>
-          </ol>
-        </p>
-      </section> <!-- ThingDiscovery -->
-    </section>
-
     <section> <h3>The <dfn>discover()</dfn> method</h3>
       <p>
-        Starts the discovery process that will look for <a>Thing Description</a>s that match an optional filter which can specify the discovery method and match a specific source URL, a query and a template object. Check the  <a href="#example-2-discover-things-via-directory">example code</a>. Fires an event with a fetchable <a>Thing Description</a> URL whenever a matching <a>Thing Description</a> is found. It MUST run the following steps:
+        Starts the discovery process that will provide <a href="#dfn-parse-a-td">parsed</a> <a>ThingDescription</a> objects for <a>Thing Description</a>s that match an optional <var>filter</var> argument which can specify the discovery method and match a specific source URL, a query and a template object. Check the  <a href="#example-2-discover-things-via-directory">example code</a>. The method MUST run the following steps:
         <ol>
           <li>
-            If invoking <code>discover()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            If the argument <var>discovery</var> is not defined or it is not an instance of <a>ThingDiscovery</a>,  throw <code>TypeError</code> and terminate these steps.
+            Construct a <a>ThingDiscovery</a> object <var>discovery</var> with <var>filter</var>.
           </li>
           <li>
-            Invoke the <code>discovery.start()</code> method.
+            Invoke the <a href="#the-start-method">discovery.start()</a> method.
+          </li>
+          <li>
+            Return <var>discovery</var>.
           </li>
         </ol>
       </p>
-
     </section> <!-- discover() method -->
+  </section> <!-- WoT API -->
+
+  <section data-dfn-for="ThingDiscovery">
+    <h4>The <dfn>ThingDiscovery</dfn> interface</h4>
+    <p>
+      Constructed given a filter and provides the events and methods controlling the discovery process.
+    </p>
+    <pre class="idl">
+      [Constructor(optional ThingFilter filter), SecureContext, Exposed=(Window,Worker)]
+      interface ThingDiscovery {
+        readonly attribute ThingFilter? filter;
+        readonly attribute boolean active;
+        readonly attribute boolean completed;
+        readonly attribute Error? error;
+        void start();
+        Promise&lt;object&gt; next();
+        void stop();
+      };
+    </pre>
+    <p>
+      The <dfn>filter</dfn> property represents the discovery filter of type <a>ThingFilter</a> specified for the discovery.
+    </p>
+    <p>
+      The <dfn>active</dfn> property represents whether the discovery is actively ongoing or not (i.e. it has either been completed or stopped).
+    </p>
+    <p>
+      The <dfn>completed</dfn> property represents whether the discovery has been known to have been completed with no more <a>Thing Description</a>s to be discovered with the optionally given filter.
+    </p>
+    <p>
+      The <dfn>error</dfn> property represents an error that occured during the discovery process.
+    </p>
+
+    <section> <h4>The <dfn>start()</dfn> method</h4>
+    <p>
+      Starts the discovery process. The method MUST run the following steps:
+      <ol>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+        </li>
+        <li>
+          Create an <dfn>internal discovery queue</dfn> for storing discovered <a>ThingDescription</a>s.
+        </li>
+        <li>
+          If <var>this.filter</var> is defined,
+          <ul>
+            <li>
+              Let <var>filter</var> denote <var>this.filter</var>.
+            </li>
+            <li>
+              If <var>filter.query</var> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, implementations SHOULD throw a <code>NotSupported</code> error and terminate these steps.
+            </li>
+          </ul>
+        </li>
+        <li>
+          Request the underlying platform to start the discovery process, with the following parameters:
+          <ul>
+            <li>
+              If <var>filter.method</var> is not defined or the value is <code>"any"</code>, use the widest discovery method supported by the underlying platform.
+            </li>
+            <li>
+              Otherwise if <var>filter.method</var> is <code>"local"</code>, use the local <a>Thing Directory</a> for discovery. Usually that defines <a>Thing</a>s deployed in the same device, or connected to the device in slave mode (e.g. sensors connected via Bluetooth or a serial connection).
+            </li>
+            <li>
+              Otherwise if <var>filter.method</var> is <code>"directory"</code>, use the remote <a>Thing Directory</a> specified in <var>filter.url</var>.
+            </li>
+            <li>
+              Otherwise if <var>filter.method</var> is <code>"multicast"</code>, use all the multicast discovery protocols supported by the underlying platform.
+            </li>
+          </ul>
+        </li>
+        <li>
+          When the underlying platform has started the discovery process, set the <code>active</code> property to <code>true</code>.
+        </li>
+        <li>
+          Whenever a new <a>Thing Description</a> <var>td</var> is discovered by the underlying platform, run the following sub-steps:
+          <ol>
+            <li>
+              Fetch <var>td</var>.
+            </li>
+            <li>
+               Let <var>json</var> be the result of running the <a>parse a TD</a> steps on <var>td</var>. If that fails, <a href="#dfn-fire-an-event">fire</a> an <code>onerror</code> event with that error, discard <var>td</var> and continue the discovery process.
+            </li>
+            <li>
+              If <var>filter.query</var> is defined, check if <var>json</var> is a match for the query. The matching algorithm is encapsulated by implementations. If that returns <code>false</code>, discard <var>td</var> and continue the discovery process.
+            </li>
+            <li>
+              If <var>filter.fragment</var> is defined, for each property defined in it, check if that property exists in <var>json.properties</var> and has the same value. If this is <code>false</code> in any checks, discard <var>td</var> and continue the discovery process.
+            </li>
+            <li>
+              Otherwise if <var>td</var> has not been discarded in the previous steps, add it to the internal queue.
+            </li>
+            <li>
+              Set <var>this.error</var> to <code>null</code>.
+            </li>
+          </ol>
+        </li>
+        <li>
+          Whenever an error occurs during the discovery process,
+          <ol>
+            <li>
+              Set <var>this.error</var> to a new <code>Error</code> object whose <code>message</code> property is set to <code>'DiscoveryError'</code>, unless there was an error message provided by the <a>Protocol Bindings</a>, in which case set it to that value.
+            </li>
+            <li>
+              If the error is irrecoverable and discovery cannot continue, set <code>this.active</code> to <code>false</code>.
+            </li>
+          </ol>
+        </li>
+        <li>
+          When the discovery process has completed, set <var>this.completed</var> to <code>true</code> and set <code>this.active</code> to <code>false</code>.
+        </li>
+      </ol>
+    </p>
+    </section>
+
+    <section> <h4>The <dfn>next()</dfn> method</h4>
+    <p>
+      Resolves with the next <a>ThingDescription</a> that is discovered, or rejects with an error. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+        </li>
+        <li>
+          If <var>this.active</var> is <code>false</code>, invoke <a href="the-start-method">start()</a>.
+        </li>
+        <li>
+          Wait until the <a>internal discovery queue</a> is not empty.
+        </li>
+        <li>
+          Remove the first item from the <a>internal discovery queue</a> denoted by <var>td</var>. Resolve <var>promise</var> with <var>td</var> and terminate these steps.
+        </li>
+      </ol>
+    </p>
+    </section>
+
+    <section> <h4>The <dfn>stop()</dfn> method</h4>
+    <p>
+      Stops or suppresses the discovery process. It might not be supported by all discovery methods and endpoints, however, any further discovery results or errors will be discarded and the discovery is marked inactive. The method MUST run the following steps:
+      <ol>
+        <li>
+          Request the underlying platform to stop the discovery process. If this returns an error, or if it is not possible, for instance when discovery is based on open ended multicast requests, the implementation SHOULD discard subsequent discovered items.
+        </li>
+        <li>
+          Set <code>this.active</code> to <code>false</code>.
+        </li>
+      </ol>
+    </p>
+    </section>
+
+    <section data-dfn-for="DiscoveryMethod">
+      <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h4>
+      <pre class="idl">
+        typedef DOMString DiscoveryMethod;
+      </pre>
+      <p>
+        Represents the discovery type to be used:
+      </p>
+      <ul>
+        <li><dfn>"any"</dfn> does not provide any restriction</li>
+        <li>
+          <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
+        </li>
+        <li>
+          <dfn>"directory"</dfn> for discovery based on a service provided by a <a>Thing Directory</a>.
+        </li>
+        <li>
+          <dfn>"multicast"</dfn> for discovering <a>Thing</a>s in the device's network by using a supported multicast protocol.
+        </li>
+      </ul>
+    </section>
+
+    <section data-dfn-for="ThingFilter">
+      <h4>The <dfn>ThingFilter</dfn> dictionary</h4>
+      <p>
+        Represents an object containing the constraints for discovering <a>Thing</a>s as key-value pairs.
+      </p>
+      <pre class="idl">
+        dictionary ThingFilter {
+          (DiscoveryMethod or DOMString) method = "any";
+          USVString? url;
+          USVString? query;
+          object? fragment;
+        };
+      </pre>
+      <p>
+        The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that MAY be extended by string values defined by solutions (with no guarantee of interoperability).
+      </p>
+      <p>
+        The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or that of a <a>Thing</a> (otherwise).
+      </p>
+      <p>
+        The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
+      </p>
+      <p>
+        The <dfn>fragment</dfn> property represents a template object used for matching property by property against discovered <a>Thing</a>s.
+      </p>
+    </section>
 
     <section> <h3>Examples</h3>
       <pre class="example" title="Discover Things via directory">
@@ -602,42 +611,31 @@
           method: "directory",
           url: "http://directory.wotservice.org"
         };
-        let discovery = new ThingDiscovery(discoveryFilter);
-        discovery.onfound = event => {
-          let td = event.td;
-          console.log("Found Thing Description for " + td.name);
-          let thing = WOT.consume(td);
-          console.log("Thing name: " + thing.instance.name);
-        });
-        discovery.onerror = error => {
-          console.log("Discovery error" + error.message);
-        });
-        discovery.oncomplete = event => {
-          console.log("Discovery finished successfully";
-        });
+        let discovery = WOT.discover(discoveryFilter);
         discovery.start();
         setTimeout( () => {
             discovery.stop();
             console.log("Discovery timeout");
           },
           5000);
-      </pre>
-      <pre class="example" title="Discover Things exposed by local hardware">
-        let discovery = new ThingDiscovery({ method: "local" });
-        discovery.onfound = event => {
-          let td = event.td;
+        do {
+          let td = await discovery.next();
           console.log("Found Thing Description for " + td.name);
           let thing = WOT.consume(td);
           console.log("Thing name: " + thing.instance.name);
-        };
-        discovery.onerror = error =>
-          console.log("Discovery error" + error.message);
-        discovery.oncomplete = event =>
-          console.log("Discovery finished successfully";
-        discovery.start();
+        } while (discovery.active && !discovery.completed);
+      </pre>
+      <pre class="example" title="Discover Things exposed by local hardware">
+        let discovery = WOT.discover({ method: "local" });
+        do {
+          let td = await discovery.next();  // also starts, if needed
+          console.log("Found Thing Description for " + td.name);
+          let thing = WOT.consume(td);
+          console.log("Thing name: " + thing.instance.name);
+        } while (discovery.active);
       </pre>
     </section> <!-- Examples -->
-  </section> <!-- WoT API -->
+  </section> <!-- ThingDiscovery -->
 
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
@@ -723,7 +721,7 @@
     <section>
       <h4>The <dfn>readProperty()</dfn> method</h4>
       <p>
-        Reads a <a>Property</a> value. Takes the following arguments: a string <var>propertyName</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns a <a>Property</a> value represented as <code>any</code> type. It MUST run the following steps:
+        Reads a <a>Property</a> value. Takes the following arguments: a string <var>propertyName</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns a <a>Property</a> value represented as <code>any</code> type. The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
@@ -1103,7 +1101,7 @@
             If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
           </li>
           <li>
-            Save the request sender information to the <a>Property</a>'s <a>internal slot for observers</a> in order to be able to notify about <a>Property</a> value changes.
+            Save the request sender information to the <a>Property</a>'s <a>internal observer list</a> in order to be able to notify about <a>Property</a> value changes.
           </li>
         </ol>
       </p>
@@ -1145,7 +1143,7 @@
                 Otherwise, if <var>mode</var> is <code>"single"</code>, reply to the request with the new value, following to the <a>Protocol Bindings</a>.
               </li>
               <li>
-                For each item stored in the <a>internal slot for observers</a> of the <a>Property</a> with <var>propertyName</var>, send an observe reply with the new value attached.
+                For each item stored in the <a>internal observer list</a> of the <a>Property</a> with <var>propertyName</var>, send an observe reply with the new value attached.
               </li>
           </li>
           <li>
@@ -1206,7 +1204,7 @@
         Takes <var>name</var> as string argument denoting an <a>Event</a> name, and a <var>data</var> argument of <code>any</code> type. The method MUST run the following steps:
         <ol>
           <li>
-            If invoking the method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
             If an <a>Event</a> with the name <var>name</var> is not found in <var>this.instance.events</var>, throw <code>NotFoundError</code> and terminate these steps.
@@ -1226,7 +1224,7 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
             Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
@@ -1249,7 +1247,7 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking <code>destroy()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
             Make a request to the underlying platform to stop serving external requests for <a>WoT Interactions</a>, based on the <a>Protocol Bindings</a>.
