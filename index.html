@@ -127,7 +127,7 @@
       The specification deliberately follows the <a href="https://w3c.github.io/wot-thing-description">WoT Thing Description specification</a> closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
     </p>
     <p class="ednote">
-      This specification is implemented at least by the <a href="http://www.thingweb.io/">ThingWeb</a> project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot">examples</a>. Other, closed source implementations have been made by WG member companies and tested against <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a> in plug-fests.
+      This specification is implemented at least by the <a href="http://www.thingweb.io/">Thingweb</a> project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot">examples</a>. Other, closed source implementations have been made by WG member companies and tested against <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a> in plug-fests.
     </p>
   </section>
 
@@ -179,20 +179,6 @@
     <p>
       The following scripting use cases are supported in this specification:
     </p>
-    <section><h4>Discovery</h4>
-    <ul>
-      <li>Discover <a>Thing</a>s in a network by sending a broadcast request.</li>
-      <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
-      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth.</li>
-      <li>Discover <a>Thing</a>s by sending a discovery request to a given registry.</li>
-      <li>Discover <a>Thing</a>s filtered by filters defined on <a>Thing Description</a>s</li>
-      <li>Discover <a>Thing</a>s filtered by semantic queries.</li>
-      <li>Stop or suppress an ongoing discovery process.</li>
-      <li>
-          Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
-      </li>
-    </ul>
-    </section>
     <section><h4>Consuming a Thing</h4>
     <ul>
       <li>
@@ -210,6 +196,7 @@
       </li>
     </ul>
     </section>
+
     <section><h4>Exposing a Thing</h4>
     <ul>
       <li>
@@ -251,12 +238,27 @@
       </li>
     </ul>
     </section>
+
+    <section><h4>Discovery</h4>
+    <ul>
+      <li>Discover <a>Thing</a>s in a network by sending a broadcast request.</li>
+      <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
+      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth.</li>
+      <li>Discover <a>Thing</a>s by sending a discovery request to a given registry.</li>
+      <li>Discover <a>Thing</a>s filtered by filters defined on <a>Thing Description</a>s</li>
+      <li>Discover <a>Thing</a>s filtered by semantic queries.</li>
+      <li>Stop or suppress an ongoing discovery process.</li>
+      <li>
+          Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
+      </li>
+    </ul>
+    </section>
   </section>
 
   <section data-dfn-for="WOT">
     <h2>The <dfn>WOT</dfn> object</h2>
     <p>
-      Defines the API entry point exposed as a singleton and contains the API methods for discovering, consuming and producing a <a>Thing</a> based on <a>Thing Description</a>s.
+      Defines the API entry point exposed as a singleton and contains the API methods for <a href="#consuming-a-thing">consuming</a> and <a href="#exposing-a-thing">producing a <a>Thing</a> based on <a>Thing Description</a>s, together with a generic <a href="#discovery-0">discovery</a> <a href="#discovery-1">API</a>.
     </p>
     <p class="note">
        Browser implementations should use a namespace object such as <code>navigator.wot</code>. Standalone runtimes may expose the API object through mechanisms like <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a>.
