@@ -420,8 +420,8 @@
         Promise&lt;void&gt; writeProperty(DOMString propertyName, any value);
         Promise&lt;void&gt; writeMultipleProperties(object valueMap);
         Promise&lt;any&gt; invokeAction(DOMString actionName, optional any params);
-        Promise&lt;void&gt; subscribeProperty(DOMString name, WotListener listener);
-        Promise&lt;void&gt; unsubscribeProperty(DOMString name);
+        Promise&lt;void&gt; observeProperty(DOMString name, WotListener listener);
+        Promise&lt;void&gt; unobserveProperty(DOMString name);
         Promise&lt;void&gt; subscribeEvent(DOMString name, WotListener listener);
         Promise&lt;void&gt; unsubscribeEvent(DOMString name);
         readonly attribute ThingInstance instance;
@@ -600,7 +600,7 @@
     </section>
 
     <section>
-      <h4>The <dfn>subscribeProperty()</dfn> method</h4>
+      <h4>The <dfn>observeProperty()</dfn> method</h4>
       <p>
         Makes a request for <a>Property</a> value change notifications. Takes a string argument <var>propertyName</var> and returns success or failure. The method MUST run the following steps:
         <ol>
@@ -624,7 +624,7 @@
     </section>
 
     <section>
-      <h4>The <dfn>unsubscribeProperty()</dfn> method</h4>
+      <h4>The <dfn>unobserveProperty()</dfn> method</h4>
       <p>
         Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes a string argument <var>propertyName</var> and returns success or failure. The method MUST run the following steps:
         <ol>
@@ -738,7 +738,7 @@
         };
         try {
           // subscribe to property change for “temperature”
-          await thing.subscribeProperty("temperature", value => {
+          await thing.observeProperty("temperature", value => {
             console.log("Temperature changed to: " + value);
           });
           // subscribe to the “ready” event defined in the TD
