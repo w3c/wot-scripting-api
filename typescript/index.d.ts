@@ -207,8 +207,18 @@ export interface ThingInstance extends ThingFragment {
     writeMultipleProperties(valueMap: { [key: string]: any }): Promise<void>;
 
     invokeAction(actionName: string, parameter?: any): Promise<any>;
+
+    observeProperty(name: string, listener: WotListener): Promise<void>;
+    unobserveProperty(name: string): Promise<void>;
+
+    subscribeEvent(name: string, listener: WotListener): Promise<void>;
+    unsubscribeEvent(name: string): Promise<void>;
+
     // XXX add more
+    // e.g., readonly attribute ThingInstance instance;
 }
+
+export declare type WotListener = (data: any) => void;
 
 /**
  * The Interaction interface is an abstract class to represent Thing interactions: Properties, Actions and Events.
