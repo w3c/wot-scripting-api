@@ -188,8 +188,8 @@ export interface EventFragment extends InteractionFragment {
 export interface ThingInstance extends ThingFragment {
     /** id becomes mandatory for Thing instances */
     id: string;
-    /** name becomes mandatory for Thing instances */
-    name: string;
+    /** title becomes mandatory for Thing instances */
+    title: string;
     /** base becomes available for Thing instances (part of binding metadata) */
     base?: string;
 
