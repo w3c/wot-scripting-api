@@ -85,7 +85,7 @@ export declare enum DiscoveryMethod {
 export declare type ThingDescription = string;
 
 /** Carries version information about the TD instance. If required, additional version information such as firmware and hardware version (term definitions outside of the TD namespace) can be extended here. */
-export interface Versioning {
+export interface VersionInfo {
     instance?: string;
 }
 
@@ -95,22 +95,24 @@ export interface Versioning {
 export interface ThingFragment {
     /** A hint to gernerate the identifier for the Thing */
     id?: string;
-    /** The name attribute represents the user given name of the Thing */
-    name?: string;
+    /** The title attribute provides a human-readable title */
+    title?: string;
+    /** Provides multi-language human-readable titles */
+    titles?: MultiLanguage;
     /** Define the base URI that is valid for all defined local interaction resources */
-    base?: string;
+    base?: string; // anyURI
     /** A human-readable description of the Thing */
     description?: string;
     /** Human-readable descriptions in different languages */
     descriptions?: MultiLanguage;
     /** Information about the Thing maintainer, e.g., author or contact URI */
-    support?: string;
+    support?: string; // anyURI
     /** Provides information when the TD instance was last modified */
-    lastModified?: string;
+    modified?: string; // dateTime
     /** Provides information when the TD instance was created */
-    created?: string;
+    created?: string; // dateTime
     /** Provides version information */
-    version?: Versioning;
+    version?: VersionInfo;
 
     /** Set of named security configurations (definitions only). Not actually applied unless names are used in a security section */
     securityDefinitions?: { [key: string]: Security }
