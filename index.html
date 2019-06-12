@@ -165,7 +165,7 @@
       This specification describes how to expose and consume <a>Thing</a>s by a script.
     </p>
     <p class="note">
-      Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT Interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
+      Typically scripts are meant to be used on bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s and have means to handle (e.g. install, uninstall, update etc.) and run scripts.
     </p>
     <p class="note">
       This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
@@ -189,9 +189,9 @@
           <li>Observe value changes of a <a>Property</a>.</li>
           <li>Invoke an <a>Action</a>.</li>
           <li>Observe WoT <a>Events</a> emitted by the <a>Thing</a>.</li>
-          <li>Observe changes to the <a>Thing Description</a> of the <a>Thing</a>.</li>
-          <li>Get the <a>Thing Description</a>.</li>
-          <li>Get the list of linked resources based on the <a>Thing Description</a>.</li>
+          <li>
+            Introspect the <a>Thing Description</a>, including the list of linked resources based on the <a>Thing Description</a>.
+          </li>
         </ul>
       </li>
     </ul>
@@ -255,19 +255,18 @@
     </section>
   </section>
 
-  <section data-dfn-for="WOT">
-    <h2>The <dfn>WOT</dfn> object</h2>
+  <section data-dfn-for="ThingClient">
+    <h2>The <dfn>ThingClient</dfn> API object</h2>
     <p>
-      Defines the API entry point exposed as a singleton and contains the API methods for <a href="#consuming-a-thing">consuming</a> and <a href="#exposing-a-thing">producing a <a>Thing</a> based on <a>Thing Description</a>s, together with a generic <a href="#discovery-0">discovery</a> <a href="#discovery-1">API</a>.
+      Defines the WoT client API entry point exposed as a singleton and contains the API method for <a href="#consuming-a-thing">consuming</a> a <a>Thing</a> based on <a>Thing Description</a>.
     </p>
     <p class="note">
        Browser implementations should use a namespace object such as <code>navigator.wot</code>. Standalone runtimes may expose the API object through mechanisms like <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a>.
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
-      interface WOT {
+      interface ThingClient {
         ConsumedThing consume(ThingDescription td);
-        ExposedThing produce(ThingDescription td);
       };
       typedef (USVString or object) ThingDescription;
       typedef object ThingInstance;
@@ -382,6 +381,23 @@
       </p>
     </section>
 
+  </section> <!-- ThingClient API -->
+
+  <section data-dfn-for="ThingServer">
+    <h2>The <dfn>ThingServer</dfn> API object</h2>
+    <p>
+      Defines the WoT server API entry point exposed as a singleton and contains the API method for <a href="#exposing-a-thing">producing a <a>Thing</a> based on <a>Thing Description</a>s.
+    </p>
+    <p class="note">
+       Browser implementations should use a namespace object such as <code>navigator.wot</code>. Standalone runtimes may expose the API object through mechanisms like <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a>.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ThingServer {
+        ExposedThing produce(ThingDescription td);
+      };
+    </pre>
+
     <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
       <p>
         Accepts a <code>td</code> argument and returns an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
@@ -404,7 +420,7 @@
         </ol>
       </p>
     </section> <!-- produce() -->
-  </section> <!-- WoT API -->
+  </section> <!-- ThingServer API -->
 
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
@@ -1139,39 +1155,11 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section  data-dfn-for="WOT">
+  <section>
     <h2 id="discovery">Discovery</h2>
     <p>
       Discovery is basically a distributed application that requires provisioning and support from participating network nodes (clients, servers, directory services). This API models the client side of typical discovery schemes supported by various IoT deployments.
     </p>
-    <pre class="idl">
-      partial interface WOT {
-        ThingDiscovery discover(optional ThingFilter filter);
-      };
-    </pre>
-
-    <section> <h3>The <dfn>discover()</dfn> method</h3>
-      <p>
-        Starts the discovery process that will provide <a>ThingDescription object</a>s of <a>Thing Description</a>s that match an optional <var>filter</var> argument which can specify the discovery method and match a specific source URL, a query and a template object. Check the  <a href="#discovery-examples">examples</a>. The method MUST run the following steps:
-        <ol>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
-            If this method is not supported by the implementation, throw <code>NotSupportedError</code> and terminate these steps.
-          </li>
-          <li>
-            Construct a <a>ThingDiscovery</a> object <var>discovery</var> using <var>filter</var>.
-          </li>
-          <li>
-            Invoke the <a href="#the-start-method">discovery.start()</a> method.
-          </li>
-          <li>
-            Return <var>discovery</var>.
-          </li>
-        </ol>
-      </p>
-    </section> <!-- discover() method -->
 
     <section data-dfn-for="ThingDiscovery">
       <h3>The <dfn>ThingDiscovery</dfn> interface</h3>
