@@ -306,7 +306,7 @@
           // ... additional checks possible on res.headers
           let td = await res.json();  // could also be res.text()
           let thing = WOT.consume(td);
-          console.log("Thing name: " + thing.instance.name);
+          console.log("Thing name: " + thing.instance.title);
         } catch (err) {
           console.log("Fetching TD failed", err.message);
         }
@@ -732,7 +732,7 @@
           let res = await fetch("https://tds.mythings.org/sensor11");
           let td = res.json();
           let thing = new ConsumedThing(td);
-          console.log("Thing " + thing.instance.name + " consumed.");
+          console.log("Thing " + thing.instance.title + " consumed.");
         } catch(e) {
           console.log("TD fetch error: " + e.message); },
         };
@@ -1392,9 +1392,9 @@
         let discovery = WOT.discover({ method: "local" });
         do {
           let td = await discovery.next();
-          console.log("Found Thing Description for " + td.name);
+          console.log("Found Thing Description for " + td.title);
           let thing = WOT.consume(td);
-          console.log("Thing name: " + thing.instance.name);
+          console.log("Thing name: " + thing.instance.title);
         } while (!discovery.done);
       </pre>
       <p>
@@ -1413,9 +1413,9 @@
           3000);
         do {
           let td = await discovery.next();
-          console.log("Found Thing Description for " + td.name);
+          console.log("Found Thing Description for " + td.title);
           let thing = WOT.consume(td);
-          console.log("Thing name: " + thing.instance.name);
+          console.log("Thing name: " + thing.instance.title);
         } while (!discovery.done);
         if (discovery.error) {
           console.log("Discovery stopped because of an error: " + error.message);
@@ -1434,7 +1434,7 @@
         do {
           let td = await discovery.next();
           let thing = WOT.consume(td);
-          console.log("Thing name: " + thing.instance.name);
+          console.log("Thing name: " + thing.instance.title);
         } while (!discovery.done);
       </pre>
     </section> <!-- Examples -->
