@@ -162,7 +162,7 @@
         </li>
       </ul>
 
-      This specification describes how to expose and consume <a>Thing</a>s by a script.
+      This specification describes how to expose and consume <a>Thing</a>s by a script. Also, it defines a generic API for <a>Thing</a> discovery.
     </p>
     <p class="note">
       Typically scripts are meant to be used on bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s and have means to handle (e.g. install, uninstall, update etc.) and run scripts.
@@ -170,9 +170,11 @@
     <p class="note">
       This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
     </p>
+    <!--
     <p>
       For an introduction on how scripts could be used in <a>Web of Things</a>, check the <a href="https://w3c.github.io/wot-scripting-api/primer">Primer</a> document. For some background on API design decisions check the <a href="https://w3c.github.io/wot-scripting-api/rationale">Rationale</a> document.
     </p>
+    -->
   </section>
 
   <section class="informative"> <h3>Use Cases</h3>
@@ -255,33 +257,18 @@
     </section>
   </section>
 
-  <section data-dfn-for="ThingClient">
-    <h2>The <dfn>ThingClient</dfn> API object</h2>
-    <p>
-      Defines the WoT client API entry point exposed as a singleton and contains the API method for <a href="#consuming-a-thing">consuming</a> a <a>Thing</a> based on <a>Thing Description</a>.
-    </p>
-    <p class="note">
-       Browser implementations should use a namespace object such as <code>navigator.wot</code>. Standalone runtimes may expose the API object through mechanisms like <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a>.
-    </p>
+  <section>
+    <h2>The <dfn>ThingDescription</dfn> type</h2>
     <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface ThingClient {
-        ConsumedThing consume(ThingDescription td);
-      };
       typedef object ThingDescription;
     </pre>
 
-    <section> <h3>The <dfn>ThingDescription</dfn> type</h3>
-      <p>
-        Represents a <a>Thing Description</a> (<a>TD</a>). It is expected to be
-        a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> validated using <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation)</a>.
-      </p>
-    </section>
+    <p>
+      Represents a <a>Thing Description</a> (<a>TD</a>). It is expected to be
+      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation</a>.
+    </p>
 
     <section> <h3> Fetching a Thing Description</h3>
-      <p>
-        This API works with <a>Thing Description</a>s that can be obtained either by direct fetch or by discovery.
-      </p>
       <p>
         The <code>fetch(url)</code> method has been part of this API in earlier versions. However, now fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details.
       </p>
@@ -290,115 +277,14 @@
           let res = await fetch('https://tds.mythings.biz/sensor11');
           // ... additional checks possible on res.headers
           let td = await res.json();
-          let thing = ThingClient.consume(td);
+          let thing = new ConsumedThing(td);
           console.log("Thing name: " + thing.td.title);
         } catch (err) {
           console.log("Fetching TD failed", err.message);
         }
       </pre>
     </section>
-
-    <section> <h3> The <dfn>consume()</dfn> method</h3>
-      <p>
-        Expects an <var>td</var> argument and returns a <a>ConsumedThing</a> object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
-        <ol>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
-            Let <var>thing</var> be a new <a>ConsumedThing</a> object.
-          </li>
-          <li>
-            Let <var>thing.td</var> be the result of running the <a>instantiate a TD</a> steps on <var>td</var>. If that throws, re-throw the error and terminate these steps.
-          </li>
-          <li>
-            Return <var>thing</var>.
-          </li>
-        </ol>
-      </p>
-      <p>
-        After constructing a <a>ConsumedThing</a>, its <a>Thing Description</a> <a>td</a> needs to be <dfn>instantiated</dfn>, i.e. initialized with specific values provided by the underlying platform.
-        To <dfn>instantiate a TD</dfn>, given <var>td</var>, run the following steps:
-        <ol>
-          <li>
-            Let <var>instance</var> be an object with properties and default values defined in <a href="https://w3c.github.io/wot-thing-description/#thing">TD Thing</a>.
-            <p class="note">
-              As the <a href="https://w3c.github.io/wot-thing-description/#thing">TD specification</a> owns the structure, validation and serialization of these objects, please refer to that specification on what properties need to be on the <var>instance</var> object. In this specification, <var>instance</var> is considered implementation-internal metadata, exposed for introspection.
-            </p>
-          </li>
-          <li>
-            Update the properties of <var>instance</var> also defined in <var>td</var> with the values defined in <var>td</var>.
-            <p class="note">
-              When more efficient, implementations MAY reverse the last two steps, i.e. let <var>instance</var> be the result of adding <var>td</var> the missing properties with default values as defined in <a href="https://w3c.github.io/wot-thing-description/#thing">TD specification</a>.
-            </p>
-          </li>
-          <li>
-            Update <var>instance</var> with the <a>WoT Runtime</a> local settings.
-            <ol>
-              <li>
-                Initialize <var>instance.id</var> to be the final unique identifier of the <a>Thing</a> instance.
-              </li>
-              <li>
-                Initialize <var>instance.security</var> to the actual security scheme used by the <a>WoT Runtime</a>.
-              </li>
-              <li>
-                Update <var>instance.forms</var> with local settings specific to the <a>WoT Runtime</a>. Also, update the runtime-specific parts (if any) for the <var>forms</var> array of all elements in <var>instance.properties</var>, <var>instance.actions</var> and <var>instance.events</var>.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Validate <var>instance</var> according to the <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">TD instance validation</a>. If that fails, throw <code>SyntaxError</code> and terminate these steps.
-          </li>
-          <li>
-            Return <var>instance</var>.
-          </li>
-        </ol>
-      </p>
-    </section>
-
-  </section> <!-- ThingClient API -->
-
-  <section data-dfn-for="ThingServer">
-    <h2>The <dfn>ThingServer</dfn> API object</h2>
-    <p>
-      Defines the WoT server API entry point exposed as a singleton and contains the API method for <a href="#exposing-a-thing">producing a <a>Thing</a> based on <a>Thing Description</a>s.
-    </p>
-    <p class="note">
-       Browser implementations should use a namespace object such as <code>navigator.wot</code>. Standalone runtimes may expose the API object through mechanisms like <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a>.
-    </p>
-    <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface ThingServer {
-        ExposedThing produce(ThingDescription td);
-      };
-    </pre>
-
-    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
-      <p>
-        Expects a <code>td</code> argument and returns an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
-        <ol>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
-            Let <var>thing</var> be a new <a>ExposedThing</a> object.
-          </li>
-          <li>
-            Let <var>thing.td</var> be the result of running the <a>instantiate a TD</a> steps on <var>td</var>. If that throws, re-throw the error and terminate these steps.
-            <p class="note">
-              Implementations should use <var>thing.td</var> for setting up the <a>WoT Interactions</a> based on the <a>Thing Description</a> as explained in [[WOT-TD]] and [[WOT-PROTOCOL-BINDINGS]]. This is private to the implementations and out of scope of this specification.
-            </p>
-          </li>
-          <li>
-            For each <a>Property</a> definition in <var>thing.td.properties</var> initialize an <dfn>internal observer list</dfn> in order to store observe request data needed to notify the observers on value changes.
-          </li>
-          <li>
-            Return <var>thing</var>.
-          </li>
-        </ol>
-      </p>
-    </section> <!-- produce() -->
-  </section> <!-- ThingServer API -->
+  </section>
 
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
@@ -406,6 +292,7 @@
       Represents a client API to operate a <a>Thing</a>.
     </p>
     <pre class="idl">
+      [Constructor(ThingDescription td), SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
         Promise&lt;any&gt; readProperty(DOMString propertyName);
         Promise&lt;object&gt; readAllProperties();
@@ -425,14 +312,93 @@
     <section>
       <h3>The <dfn>td</dfn> property</h3>
       <p>
-        Represents the <a>instantiated</a> <a>Thing Description</a> of this <a>Thing</a>.
+        Represents the <a>Thing Description</a> of the <a>ConsumedThing</a>.
+      </p>
+      <p>
+        Note that [[WOT-TD]] allows using a shortened <a>Thing Description</a>
+        by the means of <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in
+        [[WOT-TD]] for the properties that are not explicitly defined in a given
+        <a>TD</a>.
+      </p>
+      <p>
+        Therefore, when getting the <a>td</a> property, implementations SHOULD
+        provide the default values for all the sub-properties that have a default value specified in [[!WOT-TD]] in the <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">TD default values</a> table,
+        even if they are not defined in the <a>td</a> object.
+      </p>
+      <p>
+        Implementations MAY optimize this step by creating an expanded
+        <a>ThingDescription</a> object as an internal slot or by adding the
+        missing properties with default values to <a>td</a> when they are first
+        read from <a>td</a>. The resulting <a>td</a> is equivalent with the one
+        provided to the <a>ConsumedThing</a> constructor.
+      </p>
+      <p>
+        To <dfn>validate a TD</dfn> given <var>td</var>, run the following steps:
+        <ol>
+          <li>
+            If <var>td</var> is not an object, throw <code>"TypeError"</code>
+            and terminate these steps.
+          </li>
+          <li>
+            If any of the mandatory properties defined in [[!WOT-TD]] for
+            <a href="https://w3c.github.io/wot-thing-description/#thing">Thing</a>
+            that don't have <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">default definitions</a>
+            are missing from <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
+          </li>
+        </ol>
+      </p>
+      <p>
+        To <dfn>fully validate a TD</dfn> given <var>td</var> according to
+        [[!WOT-TD]], run the following steps:
+        <ol>
+          <li>
+            If running the <a>validate a TD</a> steps on <var>td</var> throws, re-throw and terminate these steps.
+          </li>
+          <li>
+            In addition, if <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation</a> fails on <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
+          </li>
+        </ol>
+      </p>
+      <p>
+        Since <a>TD</a> validation is defined in [[!WOT-TD]], this API expects
+        the <a>ThingDescription</a> objects be validated before given to the
+        <a>ConsumedThing</a> or <a>ExposedThing</a> constructors. However, implementations SHOULD make basic validation of <a>TD</a> parameters as
+        defined in <a>validate a TD</a> steps.
       </p>
     </section>
 
     <section>
-      <h3>The <dfn>WotListener</dfn> callback</h3>
+      <h4>Constructing <code>ConsumedThing</code></h4>
       <p>
-        User provided callback that takes <code>any</code> argument and is used for <a>Property</a> change and <a>Event</a> subscriptions. As subscriptions are WoT interactions, they are not modelled with software events.
+        After <a href="#fetching-a-thing-description">fetching</a> a
+        <a>Thing Description</a> as a JSON object, one can create a
+        <a>ConsumedThing</a> object.
+      </p>
+      <p>
+        To create <a>ConsumedThing</a> with the <a>ThingDescription</a>
+        <var>td</var>, run the following steps:
+        <ol>
+          <li>
+            If running <a>validate a TD</a> on <var>td</var> fails, throw
+            <code>"TypeError"</code> and terminate these steps.
+            <p class="note">
+              This represents very basic and fast validation that checks the
+              presence of a very few mandatory properties required by [[WOT-TD]].
+            </p>
+          </li>
+          <li>
+            Let <var>thing</var> be a new <a>ConsumedThing</a> object and
+            let <var>thing.td</var> be <var>td</var>.
+          </li>
+          <li>
+            For each <a>Property</a> definition in <var>thing.td.properties</var> initialize an <code><dfn>internal observer list</dfn></code>
+            internal slot in order to store observe request data needed to
+            notify the observers on value changes.
+          </li>
+          <li>
+            Return <var>thing</var>.
+          </li>
+        </ol>
       </p>
     </section>
 
@@ -576,15 +542,29 @@
     </section>
 
     <section>
+      <h3>The <dfn>WotListener</dfn> callback</h3>
+      <p>
+        User provided callback that takes <code>any</code> argument and is used
+        for observing <a>Property</a> changes and handling <a>Event</a> notifications. Since subscribing to these are WoT interactions, they are not modelled with software events.
+      </p>
+    </section>
+
+    <section>
       <h3>The <dfn>observeProperty()</dfn> method</h3>
       <p>
-        Makes a request for <a>Property</a> value change notifications. Takes a string argument <var>propertyName</var> and returns success or failure. The method MUST run the following steps:
+        Makes a request for <a>Property</a> value change notifications. Takes a string argument <var>propertyName</var> and a <a>WotListener</a>
+        callback function <var>listener</var>. It returns success or failure.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If <var>listener</var> is not a function, reject <var>promise</var>
+            with <code>"TypeError"</code> and terminate these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by <var>propertyName</var>.
@@ -594,6 +574,18 @@
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
+          </li>
+          <li>
+            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value <var>value</var>, run
+            the following sub-steps:
+            <ul>
+              <li>
+                If running the <a>validate Property value</a> steps on <var>value</var> fails, terminate these steps.
+              </li>
+              <li>
+                Invoke <var>listener</var> with <var>value</var> as parameter.
+              </li>
+            </ul>
           </li>
         </ol>
       </p>
@@ -653,13 +645,19 @@
     <section>
       <h3>The <dfn>subscribeEvent()</dfn> method</h3>
       <p>
-        Makes a request for subscribing to <a>Event</a> notifications. Takes a string argument <var>eventName</var> and returns success or failure. The method MUST run the following steps:
+        Makes a request for subscribing to <a>Event</a> notifications. Takes a string argument <var>eventName</var> and a <a>WotListener</a>
+        callback function <var>listener</var>. It returns success or failure.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If <var>listener</var> is not a function, reject <var>promise</var>
+            with <code>"TypeError"</code> and terminate these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by <var>eventName</var>.
@@ -669,6 +667,11 @@
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
+          </li>
+          <li>
+            Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
+            <var>listener</var>, giving the data provided with the <a>Event</a>
+            as parameter.
           </li>
         </ol>
       </p>
@@ -707,7 +710,7 @@
         try {
           let res = await fetch("https://tds.mythings.org/sensor11");
           let td = res.json();
-          let thing = ThingClient.consume(td);
+          let thing = new ConsumedThing(td);
           console.log("Thing " + thing.td.title + " consumed.");
         } catch(e) {
           console.log("TD fetch error: " + e.message); },
@@ -755,6 +758,43 @@
       callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
       callback ActionHandler = Promise&lt;any&gt;(any parameters);
     </pre>
+
+    <section>
+      <h3>Constructing <code>ExposedThing</code></h3>
+      <p>
+        The <code>ExposedThing</code> interface extends <a>ConsumedThing</a>. It
+        is constructed from a full or partial <a>ThingDescription</a> object.
+      </p>
+      <p class="note">
+         Note that an existing <a>ThingDescription</a> object can be optionally modified (for instance by adding or removing elements on its <var>properties</var>, <var>actions</var> and <var>events</var> internal properties) and the resulting object can used for constructing an
+         <a>ExposedThing</a> object. This is the current way of adding and
+         removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions,
+         and later adding the service handler functions.
+         This is illustrated in the <a href="#exposedthing-examples">examples</a>.
+      </p>
+      <p>
+        To construct an <a>ExposedThing</a> with the <a>ThingDescription</a>
+        <var>td</var>, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If <var>td</var> is not a an object, throw <code>TypeError</code>
+            and terminate these steps.
+          </li>
+          <li>
+            Let <var>thing</var> be a new <a>ExposedThing</a> object.
+          </li>
+          <li>
+            Let <var>thing.td</var> be <var>td</var>.
+          </li>
+          <li>
+            Return <var>thing</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
 
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
@@ -929,13 +969,24 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
+            If running the <a>fully validate a TD</a> on <var>this.td</var> fails,
+            reject <var>promise</var> with <code>"TypeError"</code> and terminate
+            these steps.
+          </li>
+          <li>
+            For each <a>Property</a> definition in <var>this.instance.properties</var> initialize an <code>internal observer list</code> internal slot
+            in order to store observe request data needed to notify the observers on value changes.
+          </li>
+          <li>
+            Set up the <a>WoT Interactions</a> based on introspecting <a>td</a>
+            as explained in [[!WOT-TD]].
             Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
-            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+            Otherwise resolve <var>promise</var> and terminate these steps.
           </li>
         </ol>
       </p>
@@ -958,7 +1009,7 @@
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
-            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+            Otherwise resolve <var>promise</var> and terminate these steps.
           </li>
         </ol>
       </p>
@@ -995,7 +1046,7 @@
               onchange: temperatureValueDefinition
             }
           };
-          let thing1 = ThingServer.produce(tdFragment);
+          let thing1 = new ExposedThing(tdFragment);
           // TODO: add service handlers
           await thing1.expose();
           // define Thing business logic
@@ -1053,7 +1104,7 @@
           };
           instance.events["onstatuschange"] = statusValueDefinition;
           instance.forms = [...];  // update
-          var thing2 = ThingServer.produce(instance);
+          var thing2 = new ExposedThing(instance);
           // TODO: add service handlers
           await thing2.expose();
           });
@@ -1287,7 +1338,7 @@
         do {
           let td = await discovery.next();
           console.log("Found Thing Description for " + td.title);
-          let thing = ThinClient.consume(td);
+          let thing = new ConsumedThing(td);
           console.log("Thing name: " + thing.td.title);
         } while (!discovery.done);
       </pre>
@@ -1308,7 +1359,7 @@
         do {
           let td = await discovery.next();
           console.log("Found Thing Description for " + td.title);
-          let thing = ThingClient.consume(td);
+          let thing = new ConsumedThing(td);
           console.log("Thing name: " + thing.td.title);
         } while (!discovery.done);
         if (discovery.error) {
@@ -1327,7 +1378,7 @@
           10000);
         do {
           let td = await discovery.next();
-          let thing = ThingClient.consume(td);
+          let thing = new ConsumedThing(td);
           console.log("Thing name: " + thing.td.title);
         } while (!discovery.done);
       </pre>
