@@ -267,7 +267,7 @@
     </p>
     <dl>
       <dt>
-        <dfn>WoT Client User Agent</dfn>
+        <dfn>WoT Consumer</dfn> <a>UA</a>
       </dt>
       <dd>
         <p>
@@ -275,7 +275,7 @@
         </p>
       </dd>
       <dt>
-        <dfn>WoT Server User Agent</dfn>
+        <dfn>WoT Producer</dfn> <a>UA</a>
       </dt>
       <dd>
         <p>
@@ -283,7 +283,7 @@
         </p>
       </dd>
       <dt>
-        <dfn>WoT Discovery User Agent</dfn>
+        <dfn>WoT Discovery</dfn> <a>UA</a>
       </dt>
       <dd>
         <p>
@@ -402,7 +402,7 @@
       };
     </pre>
     <p>
-      Belongs to the <a>WoT Client user agent</a> conformance class. Expects an <var>td</var> argument and returns a <a>Promise</a> that resolves with a <a>ConsumedThing</a> object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
+      Belongs to the <a>WoT Consumer</a> conformance class. Expects an <var>td</var> argument and returns a <a>Promise</a> that resolves with a <a>ConsumedThing</a> object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
       <ol>
         <li>
           Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
@@ -433,7 +433,7 @@
       };
     </pre>
     <p>
-      Belongs to the <a>WoT Server user agent</a> conformance class. Expects a <code>td</code> argument and returns a <a>Promise</a> that resolves with an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
+      Belongs to the <a>WoT Producer</a> conformance class. Expects a <code>td</code> argument and returns a <a>Promise</a> that resolves with an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
       <ol>
         <li>
           Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
@@ -464,7 +464,7 @@
       };
     </pre>
     <p>
-      Belongs to the <a>WoT Discovery user agent</a> conformance class. Starts the discovery process that will provide <a>ThingDescription</a> objects for <a>Thing Description</a>s that match an optional <var>filter</var> argument. The method MUST run the following steps:
+      Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that will provide <a>ThingDescription</a> objects for <a>Thing Description</a>s that match an optional <var>filter</var> argument. The method MUST run the following steps:
       <ol>
         <li>
           If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
@@ -491,7 +491,7 @@
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
       Represents a client API to operate a <a>Thing</a>. Belongs to the
-      <a>WoT Client user agent</a> conformance class.
+      <a>WoT Consumer</a> conformance class.
     </p>
     <pre class="idl">
       [Constructor(ThingDescription td), SecureContext, Exposed=(Window,Worker)]
