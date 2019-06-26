@@ -417,7 +417,8 @@
           Let <var>thing</var> be a new <a>ConsumedThing</a> object constructed from <var>td</var>.
         </li>
         <li>
-          Use <var>td</var> to initialize <a>WoT Interactions</a> based on it as specified in [[WOT-TD]] and [[WOT-PROTOCOL-BINDINGS]]. The details are private to the implementations and out of scope of this specification.
+          Set up the <a>WoT Interactions</a> based on introspecting <a>td</a> as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]]. Make a request to the underlying platform to initialize the <a>Protocol Bindings</a>.
+          The details are private to the implementations and out of scope of this specification.
         </li>
         <li>
           Resolve <var>promise</var> with <var>thing</var>.
@@ -933,7 +934,7 @@
             Let <var>thing</var> be a new <a>ExposedThing</a> object.
           </li>
           <li>
-            Let <var>thing.td</var> be <var>td</var>.
+            Let <var>thing.td</var> be <var>td</var>. There is no validation or any transformation done on <var>td</var> at this stage.
           </li>
           <li>
             Return <var>thing</var>.
@@ -1128,8 +1129,8 @@
           </li>
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting <a>td</a>
-            as explained in [[!WOT-TD]].
-            Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
+            as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
+            Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>. The details are private to the implementations and out of scope of this specification.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
@@ -1707,7 +1708,6 @@
     </section>
   </section>
 
-
   <section> <h2>Terminology and conventions</h2>
     <p>
       The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> (same as <dfn>WoT network interface</dfn>), <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
@@ -1805,7 +1805,7 @@
     </p>
   </section>
 
-  <section class="informative">
+  <section class="appendix">
     <h2>API design rationale</h2>
     <p>
       API rationale usually belongs to a separate document, but in the WoT case
@@ -1967,9 +1967,17 @@
             <li>
               Add missing algorithms and rework most existing ones.
             </li>
+            <li>
+              Allow constructors for <a>ConsumedThing</a> and <a>ExposedThing</a>.
+            </li>
+            <li>
+              Add API rationale as an appendix to this document.
+            </li>
           </ul>
         </li>
       </ul>
+    </p>
+    <p>
       For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
     </p>
   </section>
@@ -1980,18 +1988,11 @@
     </p>
       <ul>
         <li>
-          The API for adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions on <a>ExposedThing</a>.
+          Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/)
         </li>
         <li>
-          Provide an API that is compatible with the Web Platform (browser implementations) and is efficient to implement in constrained runtimes.
+          An explicit API for adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions on <a>ExposedThing</a> (it was present in earlier versions, but removed for complexity and a simpler way to do it.
         </li>
-        <li>
-          Security related metadata (https://github.com/w3c/wot-scripting-api/issues/91).
-        </li>
-        <li>
-          Providing Protocol Binding for <a>ExposedThing</a> (https://github.com/w3c/wot-scripting-api/issues/45).
-        </li>
-        <li> Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/) </li>
       </ul>
   </section>
 
