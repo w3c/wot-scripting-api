@@ -95,8 +95,8 @@ export interface VersionInfo {
 export interface ThingFragment {
     /** A hint to gernerate the identifier for the Thing */
     id?: string;
-    /** The name attribute represents the user given name of the Thing */
-    name?: string;
+    /** The title attribute represents the user given name of the Thing */
+    title?: string;
     /** Define the base URI that is valid for all defined local interaction resources */
     base?: string;
     /** A human-readable description of the Thing */
@@ -186,8 +186,8 @@ export interface EventFragment extends InteractionFragment {
 export interface ThingInstance extends ThingFragment {
     /** id becomes mandatory for Thing instances */
     id: string;
-    /** name becomes mandatory for Thing instances */
-    name: string;
+    /** title becomes mandatory for Thing instances */
+    title: string;
     /** base becomes available for Thing instances (part of binding metadata) */
     base?: string;
 
