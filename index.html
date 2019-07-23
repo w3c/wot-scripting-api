@@ -461,7 +461,7 @@
   <section> <h3>The <dfn>discover()</dfn> method</h3>
     <pre class="idl">
       partial interface WOT {
-        ThingDiscovery discover(optional ThingFilter filter);
+        ThingDiscovery discover(optional ThingFilter filter = null);
       };
     </pre>
     <p>
@@ -893,6 +893,7 @@
       The <a>ExposedThing</a> interface is the server API to operate the <a>Thing</a> that allows defining request handlers, <a>Property</a>, <a>Action</a>, and <a>Event</a> interactions.
     </p>
     <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
       interface ExposedThing: ConsumedThing {
         ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
         ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
@@ -1276,7 +1277,7 @@
       The <a>ThingDiscovery</a> object is constructed given a filter and provides the properties and methods controlling the discovery process.
     </p>
     <pre class="idl">
-      [Constructor(optional ThingFilter filter), SecureContext, Exposed=(Window,Worker)]
+      [Constructor(optional ThingFilter filter = null), SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscovery {
         readonly attribute ThingFilter? filter;
         readonly attribute boolean active;
@@ -1287,6 +1288,9 @@
         void stop();
       };
     </pre>
+    <p class="ednote">
+      The <a>ThingDiscovery</a> interface has a <code>next()</code> method and a <code>done</code> property, but it is not an <a href="">Iterable</a>. Look into <a href="https://github.com/w3c/wot-scripting-api/issues/177">Issue 177</a> for rationale.
+    </p>
     <p>
       The <dfn>discovery results</dfn> internal slot is an internal queue for temporarily storing the found <a>ThingDescription</a> objects until they are consumed by the application using the <a href="the-next-method">next()</a> method. Implementations MAY optimize the size of this queue based on e.g. the available resources and the frequency of invoking the <a href="the-next-method">next()</a> method.
     </p>
