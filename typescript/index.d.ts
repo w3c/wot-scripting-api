@@ -4,18 +4,19 @@ import { Subscription } from 'rxjs/Subscription';
 export as namespace WoT;
 
 /**
- * The WoTFactory (usually instantiated as "WoT" object) is the main API entry point
- * and it is exposed by an implementation of the WoT Runtime.
+ * The WoT interface defines the API entry point exposed as a singleton and contains the API methods.
  */
-export interface WoTFactory {
+export interface WoT {
     /**
      * Starts the discovery process that will provide ConsumedThing 
      * 
      * @param filter represents the constraints for discovering Things as key-value pairs
      */
-    discover(filter?: ThingFilter): Observable<ConsumedThing>;
+    discover(filter?: ThingFilter): ThingDiscovery;
+
 
     /**
+     * TODO REMOVE
      * Accepts an url argument and returns a Promise of a ThingDescription
      * @param url URL of a thing description
      */
@@ -23,25 +24,16 @@ export interface WoTFactory {
 
     /**
      * Accepts a ThingDescription and returns a ConsumedThing
-     * @param url URL of a thing description
+     * @param td thing description
      */
-    consume(td: ThingDescription): ConsumedThing;
+    consume(td: ThingDescription): Promise<ConsumedThing>;
 
     /**
      * Accepts a model argument of type ThingModel and returns an ExposedThing object
      * 
      * @param model can be either a ThingTemplate, or a ThingDescription. 
      */
-    produce(model: ThingModel): ExposedThing;
-
-    /**
-     * Make a request to register td to the given WoT Thing Directory..
-     */
-    register(directory: string, thing: ExposedThing): Promise<void>;
-
-    /**
-     * Makes a request to unregister the thing from the given WoT Thing Directory. */
-    unregister(directory: string, thing: ExposedThing): Promise<void>;
+    produce(model: ThingModel): Promise<ExposedThing>;
 }
 
 /**
@@ -77,6 +69,21 @@ export declare enum DiscoveryMethod {
     /** for discovering Things in the same/reachable network by using a supported multicast protocol */
     "multicast"
 }
+
+/**
+ * The ThingDiscovery object is constructed given a filter and provides the properties and methods
+ * controlling the discovery process. 
+ */
+export interface ThingDiscovery {
+    filter?: ThingFilter;
+    active: boolean;
+    done: boolean;
+    error?: Error;
+    start(): void;
+    next(): Promise<ThingDescription>;
+    stop(): void;
+}
+
 
 /**
  * WoT provides a unified representation for data exchange between Things, standardized in the Wot Things Description specification.
