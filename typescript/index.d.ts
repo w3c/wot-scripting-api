@@ -14,14 +14,6 @@ export interface WoT {
      */
     discover(filter?: ThingFilter): ThingDiscovery;
 
-
-    /**
-     * TODO REMOVE
-     * Accepts an url argument and returns a Promise of a ThingDescription
-     * @param url URL of a thing description
-     */
-    fetch(url: string): Promise<ThingDescription>;
-
     /**
      * Accepts a ThingDescription and returns a ConsumedThing
      * @param td thing description
@@ -29,11 +21,11 @@ export interface WoT {
     consume(td: ThingDescription): Promise<ConsumedThing>;
 
     /**
-     * Accepts a model argument of type ThingModel and returns an ExposedThing object
+     * Accepts a ThingDescription and returns a ExposedThing
      * 
-     * @param model can be either a ThingTemplate, or a ThingDescription. 
+     * @param td thing description 
      */
-    produce(model: ThingModel): Promise<ExposedThing>;
+    produce(td: ThingDescription): Promise<ExposedThing>;
 }
 
 /**
@@ -140,9 +132,6 @@ export interface ThingFragment {
      */
     [key: string]: any;
 }
-
-/** A Thing model is used for producing a new ExposedThing and can be either a ThingTemplate, or a ThingDescription.  */
-export declare type ThingModel = (ThingDescription | ThingFragment);
 
 /** Base for representing Thing Interaction descriptions */
 export interface InteractionFragment {
