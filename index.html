@@ -329,7 +329,7 @@
           // ... additional checks possible on res.headers
           let td = await res.json();
           let thing = new ConsumedThing(td);
-          console.log("Thing name: " + thing.td.title);
+          console.log("Thing name: " + thing.getThingDescription().title);
         } catch (err) {
           console.log("Fetching TD failed", err.message);
         }
@@ -446,12 +446,6 @@
           Let <var>thing</var> be a new <a>ExposedThing</a> object constructed with <var>td</var>.
         </li>
         <li>
-          Run the <a>validate a TD</a> steps on <var>td</var>. If that throws, reject <a>promise</a> with the error and terminate these steps.
-        </li>
-        <li>
-          Let <var>thing.td</var> be <var>td</var>.
-        </li>
-        <li>
           Resolve <var>promise</var> with <var>thing</var>.
         </li>
       </ol>
@@ -507,7 +501,7 @@
         Promise&lt;void&gt; unobserveProperty(DOMString subscriptionId);
         Promise&lt;DOMString&gt; subscribeEvent(DOMString name, WotListener listener);
         Promise&lt;void&gt; unsubscribeEvent(DOMString subscriptionId);
-        readonly attribute ThingDescription td;
+        ThingDescription getThingDescription();
       };
       callback WotListener = void(any data);
     </pre>
@@ -524,15 +518,13 @@
         <var>td</var>, run the following steps:
         <ol>
           <li>
-            If <var>td</var> is not an object, throw <code>"TypeError"</code>
-            and terminate these steps.
+            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-throw the error and terminate these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on <var>td</var>.
+            Let <var>thing</var> be a new <a>ConsumedThing</a> object.
           </li>
           <li>
-            Let <var>thing</var> be a new <a>ConsumedThing</a> object and
-            let <var>thing.td</var> be <var>td</var>.
+            Let ||td|| be an internal slot of <var>thing</var> and let <var>td</var> be its value.
           </li>
           <li>
             Return <var>thing</var>.
@@ -542,10 +534,10 @@
     </section>
 
     <section>
-      <h3>The <dfn>td</dfn> property</h3>
+      <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        Represents the <a>Thing Description</a> of the <a>ConsumedThing</a>.
-        Applications may consult the <a>Thing</a> metadata stored in <a>td</a> in order to introspect its capabilities before interacting with it.
+        Returns the internal slot ||td|| of the <a>ConsumedThing</a> object that represents the <a>Thing Description</a> of the <a>ConsumedThing</a>.
+        Applications may consult the <a>Thing</a> metadata stored in ||td|| in order to introspect its capabilities before interacting with it.
       </p>
     </section>
 
@@ -573,7 +565,7 @@
             Run the <dfn>validate Property value</dfn> sub-steps on <var>value</var>:
             <ol>
               <li>
-                Based on the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.td.properties[</code><var>propertyName</var><code>]</code>.
+                Based on the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getTD().properties[</code><var>propertyName</var><code>]</code>.
               </li>
               <li>
                 If this fails, throw <code>SyntaxError</code>, otherwise return <var>value</var>.
@@ -622,7 +614,7 @@
         Reads all properties of the <a>Thing</a> with one or multiple requests. Takes no arguments. It returns an object with keys from <a>Property</a> names and values returned by this algorithm. The method MUST run the following steps:
         <ol>
           <li>
-            Let <var>propertyNames</var> be a sequence created from all the <a>Property</a> names of this <a>Thing</a> as found in <var>this.td.properties</var>.
+            Let <var>propertyNames</var> be a sequence created from all the <a>Property</a> names of this <a>Thing</a> as found in <var>this.getThingDescription().properties</var>.
           </li>
           <li>
             Let <var>result</var> be the result of running the <a href="#the-readmultipleproperties-method">readMultipleProperties()</a> steps on <var>propertyNames</var>. If that fails, reject <var>promise</var> with that error and terminate these steps.
@@ -858,7 +850,7 @@
           let res = await fetch("https://tds.mythings.org/sensor11");
           let td = res.json();
           let thing = new ConsumedThing(td);
-          console.log("Thing " + thing.td.title + " consumed.");
+          console.log("Thing " + thing.getThingDescription().title + " consumed.");
         } catch(e) {
           console.log("TD fetch error: " + e.message); },
         };
@@ -928,14 +920,13 @@
             If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            If <var>td</var> is not a an object, throw <code>TypeError</code>
-            and terminate these steps.
+            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-throw the error and terminate these steps.
           </li>
           <li>
             Let <var>thing</var> be a new <a>ExposedThing</a> object.
           </li>
           <li>
-            Let <var>thing.td</var> be <var>td</var>. There is no validation or any transformation done on <var>td</var> at this stage.
+            Let ||td|| be an internal slot of <var>thing</var> and let <var>td</var> be its value.
           </li>
           <li>
             Return <var>thing</var>.
@@ -1097,7 +1088,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            If an <a>Event</a> with the name <var>name</var> is not found in <var>this.td.events</var>, throw <code>NotFoundError</code> and terminate these steps.
+            If an <a>Event</a> with the name <var>name</var> is not found in <var>this.getThingDescription().events</var>, throw <code>NotFoundError</code> and terminate these steps.
           </li>
           <li>
             Make a request to the underlying platform to send an <a>Event</a> with <var>data</var> attached as property, using the <a>Protocol Bindings</a>, then terminate these steps.
@@ -1117,15 +1108,15 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on <var>this.td</var>.
+            Run the <a>expand a TD</a> steps on the internal slot ||td||.
           </li>
           <li>
-            Run the <a>validate a TD</a> on <var>this.td</var>. If that fails,
+            Run the <a>validate a TD</a> on ||td||. If that fails,
             reject <var>promise</var> with <code>"TypeError"</code> and terminate
             these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in <var>this.instance.properties</var> initialize an <dfn>internal observer list</dfn> internal slot
+            For each <a>Property</a> definition in <var>this.instance.properties</var> initialize an |<dfn>internal observer list</dfn>| internal slot
             in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
@@ -1523,7 +1514,7 @@
           let td = await discovery.next();
           console.log("Found Thing Description for " + td.title);
           let thing = new ConsumedThing(td);
-          console.log("Thing name: " + thing.td.title);
+          console.log("Thing name: " + thing.getThingDescription().title);
         } while (!discovery.done);
       </pre>
       <p>
@@ -1544,7 +1535,7 @@
           let td = await discovery.next();
           console.log("Found Thing Description for " + td.title);
           let thing = new ConsumedThing(td);
-          console.log("Thing name: " + thing.td.title);
+          console.log("Thing name: " + thing.getThingDescription().title);
         } while (!discovery.done);
         if (discovery.error) {
           console.log("Discovery stopped because of an error: " + error.message);
@@ -1563,7 +1554,7 @@
         do {
           let td = await discovery.next();
           let thing = new ConsumedThing(td);
-          console.log("Thing name: " + thing.td.title);
+          console.log("Thing name: " + thing.getThingDescription().title);
         } while (!discovery.done);
       </pre>
     </section> <!-- Examples -->
