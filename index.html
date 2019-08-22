@@ -980,9 +980,10 @@
       <p class="note">
          Note that an existing <a>ThingDescription</a> object can be optionally modified (for instance by adding or removing elements on its <var>properties</var>, <var>actions</var> and <var>events</var> internal properties) and the resulting object can used for constructing an
          <a>ExposedThing</a> object. This is the current way of adding and
-         removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions,
-         and later adding the service handler functions.
-         This is illustrated in the <a href="#exposedthing-examples">examples</a>.
+         removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions, as illustrated in the <a href="#exposedthing-examples">examples</a>.
+      </p>
+      <p class="note">
+        Before invoking <a href="#dom-exposedthing-expose">expose()</a>, the <a>ExposedThing</a> object does not serve any requests. This allows first constructing <a>ExposedThing</a> and then initialize its <a>Properties</a> and service handlers before starting serving requests.
       </p>
       <p>
         To construct an <a>ExposedThing</a> with the <a>ThingDescription</a>
@@ -1260,16 +1261,14 @@
             }
           };
           let thing1 = await WOT.produce(tdFragment);
-          // TODO: add service handlers
+          // initialize Properties
+          await thing1.writeProperty("temperature", 0);
+          // add service handlers
+          thing1.setPropertyReadHandler("temperature", () => {
+             return readLocalTemperatureSensor();  // Promise
+          });
+          // start serving requests
           await thing1.expose();
-          // define Thing business logic
-          setInterval( async () => {
-            let mock = Math.random()*100;
-            let old = await thing1.readProperty("temperature");
-            if (old < mock) {
-              await thing1.writeProperty("temperature", mock);
-            }
-          }, 1000);
         } catch (err) {
            console.log("Error creating ExposedThing: " + err);
         }
