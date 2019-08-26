@@ -491,7 +491,8 @@
     <pre class="idl">
       [Constructor(ThingDescription td), SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
-        Promise&lt;any&gt; readProperty(DOMString propertyName,
+        Promise&lt;any&gt; readProperty(
+            DOMString propertyName,
             optional InteractionOptions options = null
         );
         Promise&lt;object&gt; readAllProperties(
@@ -501,7 +502,8 @@
             sequence&lt;DOMString&gt; propertyNames,
             optional InteractionOptions options = null
         );
-        Promise&lt;void&gt; writeProperty(DOMString propertyName,
+        Promise&lt;void&gt; writeProperty(
+            DOMString propertyName,
             any value,
             optional InteractionOptions options = null
         );
@@ -514,7 +516,8 @@
             optional any params = null,
             optional InteractionOptions options = null
         );
-        Promise&lt;DOMString&gt; observeProperty(DOMString name,
+        Promise&lt;DOMString&gt; observeProperty(
+            DOMString name,
             WotListener listener,
             optional InteractionOptions options = null
         );
@@ -575,7 +578,7 @@
         Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>. In this version of the specification only URI template variables are used, represented as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON objects</a> defined in [[!WOT-TD]].
       </p>
       <p class="ednote">
-        The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a>.
+        The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the <var>options</var> parameter could be dismissed from the methods exposed by this API.
       </p>
     </section>
 
@@ -613,7 +616,7 @@
             Run the <dfn>validate Property value</dfn> sub-steps on <var>value</var>:
             <ol>
               <li>
-                Based on the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getTD().properties[</code><var>propertyName</var><code>]</code>.
+                Based on the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getThingDescription().properties[</code><var>propertyName</var><code>]</code>.
               </li>
               <li>
                 If this fails, throw <code>SyntaxError</code>, otherwise return <var>value</var>.
@@ -1007,6 +1010,18 @@
         </ol>
       </p>
     </section>
+    <section>
+      <h3>Methods inherited from <a>ConsumedThing</a></h3>
+      <p>
+        The <code>readProperty()</code>, <code>readMultipleProperties()</code>, <code>readAllProperties()</code>, <code>writeProperty()</code>, <code>writeMultipleProperties()</code>, <code>writeAllProperties()</code> methods have the same algorithmic steps as described in <a href="#the-consumedthing-interface"><code>ConsumedThing</code></a>, with the difference that making a request to the underlying platform MAY be implemented with local methods or libraries and don't necessarily need to involve network operations.
+      </p>
+      <p>
+        The implementation of <a>ConsumedThing</a> interface in an <a>ExposedThing</a> provide the <i>default</i> methods to interact with the <a>ExposedThing</a>.
+      </p>
+      <p>
+        After constructing an <a>ExposedThing</a>, a script can initialize its <a>Properties</a> and can set up the optional read, write and action request handlers (the default ones are provided by the implementation). The script provided handlers MAY use the default handlers, thereby extending the default behavior, but they can also bypass them, overriding the default behavior. Finally, the script would call <a href="#the-expose-method"><code>expose()</code></a> on the <a>ExposedThing</a> in order to start serving external requests.
+      </p>
+    </section>
 
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
@@ -1023,7 +1038,7 @@
          The <code>readHandler</code> callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations MAY implement a default property read handler based on the <a>Thing Description</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
       </p>
     </section>
 
@@ -1076,7 +1091,7 @@
         Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the service handler  for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
       </p>
       <p>
-        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations MAY implement default property update and notifying observers on change, based on the <a>Thing Description</a>.
+        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change, based on the <a>Thing Description</a>.
       </p>
     </section>
 
