@@ -495,10 +495,10 @@
             DOMString propertyName,
             optional InteractionOptions options = null
         );
-        Promise&lt;object&gt; readAllProperties(
+        Promise&lt;PropertyMap&gt; readAllProperties(
             optional InteractionOptions options = null
         );
-        Promise&lt;object&gt; readMultipleProperties(
+        Promise&lt;PropertyMap&gt; readMultipleProperties(
             sequence&lt;DOMString&gt; propertyNames,
             optional InteractionOptions options = null
         );
@@ -508,7 +508,7 @@
             optional InteractionOptions options = null
         );
         Promise&lt;void&gt; writeMultipleProperties(
-            PropertyValueMap valueMap,
+            PropertyMap valueMap,
             optional InteractionOptions options = null
         );
         Promise&lt;any&gt; invokeAction(
@@ -533,7 +533,7 @@
       dictionary InteractionOptions {
         object uriVariables;
       };
-      typedef object PropertyValueMap;
+      typedef object PropertyMap;
       callback WotListener = void(any data);
     </pre>
 
@@ -583,7 +583,7 @@
     </section>
 
     <section>
-      <h3>The <dfn>PropertyValueMap</dfn> type</h3>
+      <h3>The <dfn>PropertyMap</dfn> type</h3>
       <p>
         Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
       </p>
