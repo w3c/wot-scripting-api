@@ -86,7 +86,7 @@ export declare type ThingDescription = object | { [key: string]: any; };
  */
 export interface ConsumedThing {
     readProperty(propertyName: string, options?: InteractionOptions): Promise<any>;
-    readAllProperties(options?: InteractionOptions): Promise<object>;
+    readAllProperties(options?: InteractionOptions): Promise<PropertyValueMap>;
     readMultipleProperties(propertyNames: string[], options?: InteractionOptions): Promise<PropertyValueMap>;
     writeProperty(propertyName: string, value: any, options?: InteractionOptions): Promise<void>;
     writeMultipleProperties(valueMap: PropertyValueMap, options?: InteractionOptions): Promise<void>;
