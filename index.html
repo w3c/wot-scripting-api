@@ -489,44 +489,30 @@
       <a>WoT Consumer</a> conformance class.
     </p>
     <pre class="idl">
-      [Constructor(ThingDescription td), SecureContext, Exposed=(Window,Worker)]
+      [SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
-        Promise&lt;any&gt; readProperty(
-            DOMString propertyName,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;PropertyMap&gt; readAllProperties(
-            optional InteractionOptions options = null
-        );
+        constructor(ThingDescription td);
+        Promise&lt;any&gt; readProperty(DOMString propertyName,
+                                  optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readMultipleProperties(
-            sequence&lt;DOMString&gt; propertyNames,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;void&gt; writeProperty(
-            DOMString propertyName,
-            any value,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;void&gt; writeMultipleProperties(
-            PropertyMap valueMap,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;any&gt; invokeAction(
-            DOMString actionName,
-            optional any params = null,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;DOMString&gt; observeProperty(
-            DOMString name,
-            WotListener listener,
-            optional InteractionOptions options = null
-        );
+                                  sequence&lt;DOMString&gt; propertyNames,
+                                  optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeProperty(DOMString propertyName,
+                                    any value,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);
+        Promise&lt;any&gt; invokeAction(DOMString actionName,
+                                    optional any params = null,
+                                    optional InteractionOptions options = null);
+        Promise&lt;DOMString&gt; observeProperty(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
         Promise&lt;void&gt; unobserveProperty(DOMString subscriptionId);
-        Promise&lt;DOMString&gt; subscribeEvent(
-            DOMString name,
-            WotListener listener,
-            optional InteractionOptions options = null
-        );
+        Promise&lt;DOMString&gt; subscribeEvent(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
         Promise&lt;void&gt; unsubscribeEvent(DOMString subscriptionId);
         ThingDescription getThingDescription();
       };
@@ -962,16 +948,21 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ExposedThing: ConsumedThing {
-        ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
-        ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
+        ExposedThing setPropertyReadHandler(DOMString name,
+                PropertyReadHandler readHandler);
+        ExposedThing setPropertyWriteHandler(DOMString name,
+                PropertyWriteHandler writeHandler);
         ExposedThing setActionHandler(DOMString name, ActionHandler action);
         void emitEvent(DOMString name, any data);
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
       };
-      callback PropertyReadHandler = Promise&lt;any&gt;();
-      callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
-      callback ActionHandler = Promise&lt;any&gt;(any parameters);
+      callback PropertyReadHandler = Promise&lt;any&gt;(
+              optional InteractionOptions options = null);
+      callback PropertyWriteHandler = Promise&lt;void&gt;(any value,
+              optional InteractionOptions options = null);
+      callback ActionHandler = Promise&lt;any&gt;(any parameters,
+              optional InteractionOptions options = null);
     </pre>
 
     <section>
@@ -1354,8 +1345,9 @@
       The <a>ThingDiscovery</a> object is constructed given a filter and provides the properties and methods controlling the discovery process.
     </p>
     <pre class="idl">
-      [Constructor(optional ThingFilter filter = null), SecureContext, Exposed=(Window,Worker)]
+      [SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscovery {
+        constructor(optional ThingFilter filter = null);
         readonly attribute ThingFilter? filter;
         readonly attribute boolean active;
         readonly attribute boolean done;
