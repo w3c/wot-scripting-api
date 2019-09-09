@@ -489,44 +489,30 @@
       <a>WoT Consumer</a> conformance class.
     </p>
     <pre class="idl">
-      [Constructor(ThingDescription td), SecureContext, Exposed=(Window,Worker)]
+      [SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
-        Promise&lt;any&gt; readProperty(
-            DOMString propertyName,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;PropertyMap&gt; readAllProperties(
-            optional InteractionOptions options = null
-        );
+        constructor(ThingDescription td);
+        Promise&lt;any&gt; readProperty(DOMString propertyName,
+                                  optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readMultipleProperties(
-            sequence&lt;DOMString&gt; propertyNames,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;void&gt; writeProperty(
-            DOMString propertyName,
-            any value,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;void&gt; writeMultipleProperties(
-            PropertyMap valueMap,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;any&gt; invokeAction(
-            DOMString actionName,
-            optional any params = null,
-            optional InteractionOptions options = null
-        );
-        Promise&lt;DOMString&gt; observeProperty(
-            DOMString name,
-            WotListener listener,
-            optional InteractionOptions options = null
-        );
+                                  sequence&lt;DOMString&gt; propertyNames,
+                                  optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeProperty(DOMString propertyName,
+                                    any value,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);
+        Promise&lt;any&gt; invokeAction(DOMString actionName,
+                                    optional any params = null,
+                                    optional InteractionOptions options = null);
+        Promise&lt;DOMString&gt; observeProperty(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
         Promise&lt;void&gt; unobserveProperty(DOMString subscriptionId);
-        Promise&lt;DOMString&gt; subscribeEvent(
-            DOMString name,
-            WotListener listener,
-            optional InteractionOptions options = null
-        );
+        Promise&lt;DOMString&gt; subscribeEvent(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
         Promise&lt;void&gt; unsubscribeEvent(DOMString subscriptionId);
         ThingDescription getThingDescription();
       };
@@ -832,7 +818,7 @@
     <section>
       <h3>The <dfn>invokeAction()</dfn> method</h3>
       <p>
-        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument <var>actionName</var>, an optional argument <var>parameters</var> of type <code>any</code> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
+        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument <var>actionName</var>, an optional argument <var>params</var> of type <code>any</code> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
@@ -962,16 +948,21 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ExposedThing: ConsumedThing {
-        ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
-        ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
+        ExposedThing setPropertyReadHandler(DOMString name,
+                PropertyReadHandler readHandler);
+        ExposedThing setPropertyWriteHandler(DOMString name,
+                PropertyWriteHandler writeHandler);
         ExposedThing setActionHandler(DOMString name, ActionHandler action);
         void emitEvent(DOMString name, any data);
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
       };
-      callback PropertyReadHandler = Promise&lt;any&gt;();
-      callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
-      callback ActionHandler = Promise&lt;any&gt;(any parameters);
+      callback PropertyReadHandler = Promise&lt;any&gt;(
+              optional InteractionOptions options = null);
+      callback PropertyWriteHandler = Promise&lt;void&gt;(any value,
+              optional InteractionOptions options = null);
+      callback ActionHandler = Promise&lt;any&gt;(any params,
+              optional InteractionOptions options = null);
     </pre>
 
     <section>
@@ -1135,7 +1126,11 @@
     <section data-dfn-for="ActionHandler">
       <h3>The <dfn>ActionHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for invoking an <a>Action</a> is received and defines what to do with such requests. It expects a <code>parameters</code> dictionary argument compiled by the implementation (based on the <a>Thing Description</a> and the external client request). It returns a <a>Promise</a> that rejects with an error or resolves if the action is successful.
+        A function that is called when an external request for invoking an
+        <a>Action</a> is received and defines what to do with such requests.
+        It is invoked with a <code>params</code> dictionary argument.
+        It returns a <a>Promise</a> that rejects with an error or resolves if
+        the action is successful.
       </p>
     </section>
 
@@ -1354,8 +1349,9 @@
       The <a>ThingDiscovery</a> object is constructed given a filter and provides the properties and methods controlling the discovery process.
     </p>
     <pre class="idl">
-      [Constructor(optional ThingFilter filter = null), SecureContext, Exposed=(Window,Worker)]
+      [SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscovery {
+        constructor(optional ThingFilter filter = null);
         readonly attribute ThingFilter? filter;
         readonly attribute boolean active;
         readonly attribute boolean done;
