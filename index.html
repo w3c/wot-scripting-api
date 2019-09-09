@@ -818,7 +818,7 @@
     <section>
       <h3>The <dfn>invokeAction()</dfn> method</h3>
       <p>
-        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument <var>actionName</var>, an optional argument <var>parameters</var> of type <code>any</code> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
+        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument <var>actionName</var>, an optional argument <var>params</var> of type <code>any</code> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
@@ -961,7 +961,7 @@
               optional InteractionOptions options = null);
       callback PropertyWriteHandler = Promise&lt;void&gt;(any value,
               optional InteractionOptions options = null);
-      callback ActionHandler = Promise&lt;any&gt;(any parameters,
+      callback ActionHandler = Promise&lt;any&gt;(any params,
               optional InteractionOptions options = null);
     </pre>
 
@@ -1126,7 +1126,11 @@
     <section data-dfn-for="ActionHandler">
       <h3>The <dfn>ActionHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for invoking an <a>Action</a> is received and defines what to do with such requests. It expects a <code>parameters</code> dictionary argument compiled by the implementation (based on the <a>Thing Description</a> and the external client request). It returns a <a>Promise</a> that rejects with an error or resolves if the action is successful.
+        A function that is called when an external request for invoking an
+        <a>Action</a> is received and defines what to do with such requests.
+        It is invoked with a <code>params</code> dictionary argument.
+        It returns a <a>Promise</a> that rejects with an error or resolves if
+        the action is successful.
       </p>
     </section>
 
