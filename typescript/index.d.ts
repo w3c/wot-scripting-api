@@ -91,7 +91,7 @@ export interface ConsumedThing {
     writeProperty(propertyName: string, value: any, options?: InteractionOptions): Promise<void>;
     writeMultipleProperties(valueMap: PropertyValueMap, options?: InteractionOptions): Promise<void>;
 
-    invokeAction(actionName: string, parameter?: any, options?: InteractionOptions): Promise<any>;
+    invokeAction(actionName: string, params?: any, options?: InteractionOptions): Promise<any>;
 
     observeProperty(name: string, listener: WotListener, options?: InteractionOptions): Promise<string>;
     unobserveProperty(subscriptionId: string): Promise<void>;
@@ -152,8 +152,8 @@ export interface ExposedThing extends ConsumedThing {
     emitEvent(name: string, data: any): void;
 }
 
-export declare type PropertyReadHandler = (internal?: any, options?: any) => Promise<any>;
+export declare type PropertyReadHandler = (options?: InteractionOptions) => Promise<any>;
 
-export declare type PropertyWriteHandler = (value: any, options?: any) => Promise<any>;
+export declare type PropertyWriteHandler = (value: any, options?: InteractionOptions) => Promise<any>;
 
-export declare type ActionHandler = (parameters: any, options?: any) => Promise<any>;
+export declare type ActionHandler = (params: any, options?: InteractionOptions) => Promise<any>;
