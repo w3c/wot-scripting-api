@@ -93,11 +93,11 @@ export interface ConsumedThing {
 
     invokeAction(actionName: string, params?: any, options?: InteractionOptions): Promise<any>;
 
-    observeProperty(name: string, listener: WotListener, options?: InteractionOptions): Promise<string>;
-    unobserveProperty(subscriptionId: string): Promise<void>;
+    observeProperty(name: string, listener: WotListener, options?: InteractionOptions): Promise<void>;
+    unobserveProperty(name: string): Promise<void>;
 
-    subscribeEvent(name: string, listener: WotListener, options?: InteractionOptions): Promise<string>;
-    unsubscribeEvent(subscriptionId: string): Promise<void>;
+    subscribeEvent(name: string, listener: WotListener, options?: InteractionOptions): Promise<void>;
+    unsubscribeEvent(name: string): Promise<void>;
 
     getThingDescription(): ThingDescription;
 }
