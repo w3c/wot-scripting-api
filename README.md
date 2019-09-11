@@ -17,7 +17,7 @@ To make contributions, please refer to [https://github.com/w3c/wotwg#contributin
 
 ## TypeScript Definitions
 
-The specification uses WebIDL definitions. TypeScript definititions are also available (see https://github.com/thingweb/wot-typescript-definitions/blob/master/index.d.ts).
+The specification uses WebIDL definitions. TypeScript definititions are also available (see https://github.com/w3c/wot-scripting-api/blob/master/typescript/index.d.ts).
 
 Due to different implementation progress the definitions might be out of sync. However, there are regular sync points usually based on publication releases.
 Note: For future releases we plan to use TypeScript instead of WebIDL in the specification.

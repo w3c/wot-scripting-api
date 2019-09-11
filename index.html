@@ -21,9 +21,9 @@
         format:               'markdown',
         editors: [
           { name: "Zoltan Kis", company: "Intel", companyURL: "https://www.intel.com/" },
-          { name: "Kazuaki Nimura", company: "Fujitsu Ltd.", companyURL: "https://www.fujitsu.com/" },
           { name: "Daniel Peintner", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
           { name: "Johannes Hund", note: "Former Editor, when at Siemens AG" },
+          { name: "Kazuaki Nimura", note: "Former Editor, at Fujitsu Ltd." },
         ],
         wg:           "Web of Things Working Group",
         wgURI:        "https://www.w3.org/WoT/WG/",
@@ -32,23 +32,23 @@
         githubAPI: "https://api.github.com/repos/w3c/wot-scripting-api",
         otherLinks: [
           {
-            key: "Contributors",
-            data: [
-                {
-                  value: "In the GitHub repository",
-                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
-                }
-            ]
-          },
-          {
             key: "Repository",
             data: [{
-                  value: "We are on GitHub",
+                  value: "On GitHub",
                   href: "https://github.com/w3c/wot-scripting-api"
               }, {
                   value: "File a bug",
                   href: "https://github.com/w3c/wot-scripting-api/issues"
               },
+            ]
+          },
+          {
+            key: "Contributors",
+            data: [
+                {
+                  value: "Contributors on GitHub",
+                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
+                }
             ]
           },
         ],
@@ -77,15 +77,15 @@
             publisher: "W3C",
             date: "6 February 2017"
           },
-          "WOT-SECURITY-CONSIDERATIONS" : {
+          "WOT-SECURITY-GUIDELINES" : {
             href: "https://w3c.github.io/wot-security/",
-            title: "Web of Things Security and Privacy Considerations",
+            title: "Web of Things Security and Privacy Guidelines",
             publisher: "W3C",
             date: "28 August 2017"
           },
           "WOT-SECURITY-BEST-PRACTICES" : {
             href: "https://github.com/w3c/wot-security/blob/master/wot-security-best-practices.md",
-            title: "Web of Things Security and Privacy Best Practices (WIP)",
+            title: "Web of Things Security and Privacy Best Practices",
             publisher: "W3C",
             date: "WIP"
           },
@@ -115,13 +115,19 @@
 
   <section id="abstract">
     <p>
-      The overall <a>Web of Things</a> (WoT) concepts are described in the <a href="https://w3c.github.io/wot-architecture/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable format, the <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> for reading and writing values, <a>Action</a>s to execute remote procedures with or without return values and <a>Event</a>s for signaling notifications.
+      The main <a>Web of Things</a> (WoT) concepts are described in the <a href="https://w3c.github.io/wot-architecture/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
     </p>
     <p>
-      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts run on a <a>Thing</a> to discover and consume (retrieve) other <a>Thing Description</a>s and to expose <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
+      Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
     </p>
     <p>
-      Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications like <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
+      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
+    </p>
+    <p>
+      The specification deliberately follows the <a href="https://w3c.github.io/wot-thing-description">WoT Thing Description specification</a> closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+    </p>
+    <p class="ednote">
+      This specification is implemented at least by the <a href="http://www.thingweb.io/">Thingweb</a> project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot">examples</a>. Other, closed source implementations have been made by WG member companies and tested against <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a> in plug-fests.
     </p>
   </section>
 
@@ -137,51 +143,47 @@
 
   <section id="introduction"> <h2>Introduction</h2>
     <p>
-      WoT provides layered interoperability based on how <a>Thing</a>s are modeled: as being "consumed" and "exposed".
+      WoT provides layered interoperability based on how <a>Thing</a>s are used:
+      "consumed" and "exposed", as <a href="https://w3c.github.io/wot-architecture/#terminology">defined</a> in [[WOT-ARCHITECTURE]].
     </p>
     <p>
-      By <a>consuming a TD</a>, a client <a>Thing</a> creates a runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the  server <a>Thing</a> exposed on a remote device.
+      By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
     </p>
     <p>
-      Exposing a <a>Thing</a> requires defining a <a>Thing Description</a> (TD) and instantiating a software stack to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>. This specification describes how to expose and consume <a>Thing</a>s by a script.
+      Exposing a <a>Thing</a> requires
+      <ul>
+        <li>
+          defining a <a>Thing Description</a> (TD),
+        </li>
+        <li>
+          then instantiating a software stack that implements the <a>WoT Interface</a> specified by the <a>TD</a> in order to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>,
+        </li>
+        <li>
+           then eventually publishing the <a>Thing Description</a> (for instance to a <a>Thing Directory</a> directory for easier discovery).
+        </li>
+      </ul>
+
+      This specification describes how to expose and consume <a>Thing</a>s by a script. Also, it defines a generic API for <a>Thing</a> discovery.
     </p>
     <p class="note">
-      Typically scripts are meant to be used on devices able to provide resources (with a <a>WoT Interface</a>) for managing (installing, updating, running) scripts, such as bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s.
+      Typically scripts are meant to be used on bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s and have means to handle (e.g. install, uninstall, update etc.) and run scripts.
     </p>
     <p class="note">
       This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
     </p>
+    <!--
     <p>
       For an introduction on how scripts could be used in <a>Web of Things</a>, check the <a href="https://w3c.github.io/wot-scripting-api/primer">Primer</a> document. For some background on API design decisions check the <a href="https://w3c.github.io/wot-scripting-api/rationale">Rationale</a> document.
     </p>
+    -->
   </section>
 
   <section class="informative"> <h3>Use Cases</h3>
     <p>
       The following scripting use cases are supported in this specification:
     </p>
-    <section><h4>Discovery</h4>
-    <ul>
-      <li>Discover all <a>Thing</a>s in the WoT network by sending a broadcast request.</li>
-      <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
-      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth.</li>
-      <li>Discover <a>Thing</a>s by sending a discovery request to a given registry.</li>
-      <li>Discover <a>Thing</a>s by filters defined on <a>Thing Description</a>s</li>
-      <li>Discover <a>Thing</a>s by semantic queries.</li>
-      <li>Stop or suppress an ongoing discovery process.</li>
-      <li>
-          Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
-      </li>
-    </ul>
-    </section>
     <section><h4>Consuming a Thing</h4>
     <ul>
-      <li>
-        Fetch a <a>Thing Description</a> of a <a>Thing</a> given its URL.
-        <p class="note">
-          This use case can be fulfilled using a HTTP library or polyfill or the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> available on the platform.
-        </p>
-      </li>
       <li>
         <a>Consume a TD</a>, i.e. create a programmatic object from a <a>Thing Description</a> that exposes <a>WoT Interactions</a>:
         <ul>
@@ -190,13 +192,14 @@
           <li>Observe value changes of a <a>Property</a>.</li>
           <li>Invoke an <a>Action</a>.</li>
           <li>Observe WoT <a>Events</a> emitted by the <a>Thing</a>.</li>
-          <li>Observe changes to the <a>Thing Description</a> of the <a>Thing</a>.</li>
-          <li>Get the <a>Thing Description</a>.</li>
-          <li>Get the list of linked resources based on the <a>Thing Description</a>.</li>
+          <li>
+            Introspect the <a>Thing Description</a>, including the list of linked resources based on the <a>Thing Description</a>.
+          </li>
         </ul>
       </li>
     </ul>
     </section>
+
     <section><h4>Exposing a Thing</h4>
     <ul>
       <li>
@@ -216,32 +219,16 @@
       <li>Remove an <a>Action</a> definition from the <a>Thing</a>.</li>
       <li>Add a WoT <a>Event</a> definition to the <a>Thing</a>.</li>
       <li>Remove a WoT <a>Event</a> definition from the <a>Thing</a>.</li>
-<!--
-//      <li>Attach semantic information to the <a>Thing</a>.</li>
-//      <li>Attach semantic information to a <a>Property</a>.</li>
-//      <li>Attach semantic information to an <a>Action</a>.</li>
-//      <li>Attach semantic information to an <a>Event</a>.</li>
-// These should be included in adding an interaction.
--->
       <li>
         Emit a WoT <a>Event</a>, i.e. notify all subscribed listeners.
       </li>
+<!--
       <li>
         Provide notifications for <a>TD</a> changes to clients subscribed to that.
         <p class="note">
           This use case could be fulfilled by the <a>TD</a> specifying an event for TD change.
         </p>
       </li>
-<!--
-//      <li>Mark/unmark the Thing to be discoverable.</li>
-// This is done by registering the Thing to a directory.
-
-//      <li>Mark/unmark the Thing to be consumable.</li>
-// This is default behavior if a Thing is exposed. To stop this, need to stop the Thing.
-
-//      <li>Start the exposed <a>Thing</a> in order to process external requests.</li>
-//      <li>Stop the exposed <a>Thing</a>.</li>
-// There are opinions we don't need start and stop functionality. Applying Occam.
 -->
       <li>Register service handlers for external requests:
         <ul>
@@ -254,448 +241,701 @@
       </li>
     </ul>
     </section>
+
+    <section><h4>Discovery</h4>
+    <ul>
+      <li>Discover <a>Thing</a>s in a network by sending a broadcast request.</li>
+      <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
+      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth.</li>
+      <li>Discover <a>Thing</a>s by sending a discovery request to a given registry.</li>
+      <li>Discover <a>Thing</a>s filtered by filters defined on <a>Thing Description</a>s</li>
+      <li>Discover <a>Thing</a>s filtered by semantic queries.</li>
+      <li>Stop or suppress an ongoing discovery process.</li>
+      <li>
+          Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
+      </li>
+    </ul>
+    </section>
   </section>
 
-  <section data-dfn-for="WoT">
-    <h2>The <dfn>WoT</dfn> object</h2>
-    <p>The WoT object is the API entry point and it is exposed by an implementation of the <a>WoT Runtime</a>. The <dfn>WoT object</dfn> does not expose properties, only methods for discovering, consuming and exposing a <a>Thing</a>.
+  <section id="conformance">
+    <p>
+      This specification describes the conformance criteria for the following classes of <dfn>user agent</dfn> (<dfn>UA</dfn>).
     </p>
-    <p class="note">
-       Browser implementations SHOULD use a namespace object such as <code>navigator.wot</code>. <a href="https://nodejs.org/en/">Node.js</a>-like runtimes MAY provide the API object through the <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a> mechanism.
+    <p>
+      Due to requirements of small embedded implementations, splitting WoT client and server interfaces was needed. Then, discovery is a distributed application, but typical scenarios have been covered by a generic discovery API in this specification. This resulted in using 3 conformance classes for a <a>UA</a> that implements this API, one for client, one for server, and one for discovery. An application that uses this API can introspect for the presence of the <code>consume()</code>, <code>produce()</code> and <code>discover()</code> methods on the <a>WoT API object</a> in order to determine which conformance class the <a>UA</a> implements.
     </p>
+    <dl>
+      <dt>
+        <dfn>WoT Consumer</dfn> <a>UA</a>
+      </dt>
+      <dd>
+        <p>
+          Implementations of this conformance class MUST implement the <code><a>ConsumedThing</a></code> interface and the <code>consume()</code> method on the <a>WoT API object</a>.
+        </p>
+      </dd>
+      <dt>
+        <dfn>WoT Producer</dfn> <a>UA</a>
+      </dt>
+      <dd>
+        <p>
+          Implementations of this conformance class MUST implement <code><a>ExposedThing</a></code> interface and the <code>produce()</code> method on the <a>WoT API object</a>.
+        </p>
+      </dd>
+      <dt>
+        <dfn>WoT Discovery</dfn> <a>UA</a>
+      </dt>
+      <dd>
+        <p>
+          Implementations of this conformance class MUST implement the <code><a>ThingDiscovery</a></code> interface and the <code>discover()</code> method on the <a>WoT API object</a>.
+        </p>
+      </dd>
+    </dl>
+    <p>
+      These conformance classes MAY be implemented in a single <a>UA</a>.
+    </p>
+    <p>
+      This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
+    </p>
+    <p>
+      The <a>UA</a> may be implemented in the browser, or in a separate runtime environment, such as <a href="https://nodejs.org/en/">Node.js</a> or in small embedded runtimes.
+    </p>
+    <p>
+      Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
+    </p>
+    <p>
+      Implementations that use TypeScript or ECMAScript in a runtime to implement the APIs defined in this document MUST implement them in a manner consistent with the TypeScript Bindings defined in the TypeScript specification [[!TYPESCRIPT]].
+    </p>
+  </section>
+
+  <section>
+    <h2>The <dfn>ThingDescription</dfn> type</h2>
     <pre class="idl">
-      // [SecureContext]
-      // [NamespaceObject]
-      interface WoT {
-        Observable discover(optional ThingFilter filter);
-        Promise&lt;ThingDescription&gt; fetch(USVString url);
-        ConsumedThing consume(ThingDescription td);
-        ExposedThing produce(ThingModel model);
-        Promise&lt;void&gt; register(USVString directory, ExposedThing thing);
-        Promise&lt;void&gt; unregister(USVString directory, ExposedThing thing);
-      };
-      typedef object ThingFragment;
-      typedef object PropertyFragment;
-      typedef object ActionFragment;
-      typedef object EventFragment;
-      typedef object DataSchema;
-      typedef object SecurityScheme;
-      typedef object Link;
-      typedef object Form;
-      typedef USVString ThingDescription;
-      typedef (ThingFragment or ThingDescription) ThingModel;
+      typedef object ThingDescription;
     </pre>
 
-    <p class="ednote">
-      The algorithms for the WoT methods will be specified later, including error handling and security considerations.
-    </p>
-
     <p>
-      The <dfn>ThingModel</dfn> type represents either a <a>ThingFragment</a>, or a <a>ThingDescription</a>.
+      Represents a <a>Thing Description</a> (<a>TD</a>) as defined in [[!WOT-TD]]. It is expected to be
+      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation</a>.
     </p>
 
-    <section> <h3>The <dfn>discover()</dfn> method</h3>
+    <section> <h3> Fetching a Thing Description</h3>
       <p>
-        Starts the discovery process that will provide <a>ThingDescription</a>s that match the optional argument <var>filter</var> of type <code><a>ThingFilter</a></code>. Returns an [<code>Observable</code>](https://github.com/tc39/proposal-observable) object that can be subscribed to and unsubscribed from. The handler function provided to the Observable during subscription will receive an argument of type <code>USVString</code> representing a <a>ThingDescription</a>.
+        Fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details.
       </p>
-      <section data-dfn-for="DiscoveryMethod">
-        <h4>The <dfn>DiscoveryMethod</dfn> enumeration</h4>
-        <pre class="idl">
-          typedef DOMString DiscoveryMethod;
-        </pre>
-        <p>
-          <a>DiscoveryMethod</a> represents the discovery type to be used:
-        </p>
-        <ul>
-          <li><dfn>"any"</dfn> does not provide any restriction</li>
-          <li>
-            <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
-          </li>
-          <li>
-            <dfn>"directory"</dfn> for discovery based on a service provided by a <a>Thing Directory</a>.
-          </li>
-          <li>
-            <dfn>"multicast"</dfn> for discovering <a>Thing</a>s in the device's network by using a supported multicast protocol.
-          </li>
-        </ul>
-      </section>
+      <pre class="example" title="Fetching a Thing Description">
+        try {
+          let res = await fetch('https://tds.mythings.biz/sensor11');
+          // ... additional checks possible on res.headers
+          let td = await res.json();
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } catch (err) {
+          console.log("Fetching TD failed", err.message);
+        }
+      </pre>
+    </section>
 
-      <section data-dfn-for="ThingFilter">
-        <h4>The <dfn>ThingFilter</dfn> dictionary</h4>
-        <p>
-          The <a>ThingFilter</a> dictionary that represents the constraints for discovering <a>Thing</a>s as key-value pairs.
-        </p>
-        <pre class="idl">
-          dictionary ThingFilter {
-            (DiscoveryMethod or DOMString) method = "any";
-            USVString? url;
-            USVString? query;
-            ThingFragment? fragment;
-          };
-        </pre>
-        <p>
-          The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that MAY be extended by string values defined by solutions (with no guarantee of interoperability).
-        </p>
-        <p>
-          The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or a Thing (otherwise).
-        </p>
-        <p>
-          The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
-        </p>
-        <p>
-          The <dfn>fragment</dfn> property represents a <a>ThingFragment</a> dictionary used for matching property by property against discovered <a>Thing</a>s.
-        </p>
-      </section>
+    <section> <h3>Expanding a Thing Description</h3>
       <p>
-        The <code>discover(filter)</code> method MUST run the following steps:
+        Note that [[WOT-TD]] allows using a shortened <a>Thing Description</a>
+        by the means of <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in
+        [[WOT-TD]] for the properties that are not explicitly defined in a given
+        <a>TD</a>.
+      </p>
+      <p>
+        To <dfn>expand a TD</dfn> given <var>td</var>, run the following steps:
         <ol>
           <li>
-            If invoking <code>discover()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
-            Return an <code><a>Observable</a></code> <var>obs</var> and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If <code>obs.subscribe(handler, errorHandler, complete)</code> is called, execute the following sub-steps:
-            <ol>
-              <li>
-                If the first argument <var>handler</var> is not defined or it is not a function, throw <code>TypeError</code> and terminate the algorithm. Otherwise configure <var>handler</var> to be invoked when a discovery hit happens.
-              </li>
-              <li>
-                If the second argument <var>errorHandler</var> is defined, but it is not a function, throw <code>TypeError</code> and terminate these steps. Otherwise if defined, save it to be invoked in error conditions.
-              </li>
-              <li>
-                If the third argument <var>onComplete</var> is defined, but it is not a function, throw <code>TypeError</code> and terminate these steps. Otherwise if defined, save it to be invoked when the discovery process finished for other reasons than having been canceled.
-              </li>
-              <li>
-                If <var>filter.query</var> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, implementations SHOULD throw a <code>NotSupported</code> error and terminate these steps.
-              </li>
-              <li>
-                If <var>filter.fragment</var> is defined, and if it contains other properties than the ones defined in <a>ThingFragment</a>, throw <code>TypeError</code> and terminate these steps. Otherwise save the object for matching the discovered items against it.
-              </li>
-              <li>
-                Request the underlying platform to start the discovery process, with the following parameters:
-                <ul>
-                  <li>
-                    If <var>filter.method</var> is not defined or the value is <code>"any"</code>, use the widest discovery method supported by the underlying platform.
-                  </li>
-                  <li>
-                    Otherwise if <var>filter.method</var> is <code>"local"</code>, use the local <a>Thing Directory</a> for discovery. Usually that defines <a>Thing</a>s deployed in the same device, or connected to the device in slave mode (e.g. sensors connected via Bluetooth or a serial connection).
-                  </li>
-                  <li>
-                    Otherwise if <var>filter.method</var> is <code>"directory"</code>, use the remote <a>Thing Directory</a> specified in <var>filter.url</var>.
-                  </li>
-                  <li>
-                    Otherwise if <var>filter.method</var> is <code>"multicast"</code>, use all the multicast discovery protocols supported by the underlying platform.
-                  </li>
-                </ul>
-              </li>
-            </ol>
-          </li>
-          <li>
-            Whenever a new item <var>td</var> is discovered by the underlying platform, run the following sub-steps:
-            <ol>
-              <li>
-                If <var>filter.query</var> is defined, check if <var>td</var> is a match for the query. The matching algorithm is encapsulated by implementations. If that returns <code>false</code>, discard <var>td</var> and continue the discovery process.
-              </li>
-              <li>
-                If <var>filter.fragment</var> is defined, for each property defined in it, check if that property exists in <var>td</var> and has the same value. If this is <code>false</code> in any checks, discard <var>td</var> and continue the discovery process.
-              </li>
-              <li>
-                Otherwise if <var>td</var> has not been discarded in the previous steps, invoke the <var>handler</var> function with <var>td</var> as parameter.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Whenever an error occurs during the discovery process, and if <var>errorHandler</var> is defined, invoke it with an argument of type <code>Error</code> whose <code>message</code> property is set to <code>UnknownError</code> unless there was an error code provided by the <a>Protocol Bindings</a>, in which case set it to that value.
-          </li>
-          <li>
-            When the discovery process is finished, and if <var>onComplete</var> is defined, invoke it run the <a>cancel discovery</a> steps.
-          </li>
-          <li>
-            When the <code>obs.unsubscribe()</code> method is called, run the following <dfn>cancel discovery</dfn> steps:
-            <ol>
-              <li>
-                Request the underlying platform to stop the discovery process. If this returns an error, or if it is not possible, for instance when discovery is based on open ended multicast requests, the implementation SHOULD discard subsequent discovered items.
-              </li>
-              <li>
-                 Set <var>obs.closed</var> to <code>false</code>.
-              </li>
-            </ol>
+            For each item in the <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in <a>td</a>, add the term definition with the default value specified in [[!WOT-TD]].
           </li>
         </ol>
       </p>
-    </section> <!-- Discovery -->
+    </section>
 
-    <section> <h3> The <dfn>fetch()</dfn> method</h3>
+    <section> <h3>Validating a Thing Description</h3>
       <p>
-        Accepts an <code>url</code> argument of type <code>USVString</code> that represents a URL (e.g. <code>"file://..."</code> or <code>"https://..."</code>) and returns a <code><a>Promise</a></code> that resolves with a <a>ThingDescription</a> (a serialized <a>JSON-LD</a> document of type <code>USVString</code>).
+        The [[!WOT-TD]] specification defines how a <a>TD</a> should be validated.
+        Therefore, this API expects the <a>ThingDescription</a> objects be validated before used as parameters. This specification defines a basic <a>TD</a> validation as follows.
       </p>
       <p>
-        The <code>fetch(url)</code> method MUST run the following steps:
+        To <dfn>validate a TD</dfn> given <var>td</var>, run the following steps:
+          <li>
+            If <var>td</var> is not an object, throw <code>"TypeError"</code>
+            and terminate these steps.
+          </li>
+          <li>
+            If any of the mandatory properties defined in [[!WOT-TD]] for
+            <a href="https://w3c.github.io/wot-thing-description/#thing">Thing</a>
+            that don't have <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">default definitions</a>
+            are missing from <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
+          </li>
+          <li>
+            If <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation</a> fails on <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
+          </li>
+        </ol>
+      </p>
+    </section>
+  </section>
+</section>
+
+<section data-dfn-for="WOT">
+  <h2>The <dfn>WoT API object</dfn></h2>
+  <p>
+    Defines the API entry point exposed as a singleton and contains the API methods.
+  </p>
+  <section> <h3>The <dfn>WOT</dfn> interface</h3>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface WOT {
+        // methods defined in UA conformance classes
+      };
+    </pre>
+    <p class="note">
+       Browser implementations should use a namespace object such as <code>navigator.wot</code>. Standalone runtimes may expose the API object through mechanisms like <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a>.
+    </p>
+  </section>
+  <section> <h3>The <dfn>consume()</dfn> method</h3>
+    <pre class="idl">
+      partial interface WOT {
+        Promise&lt;ConsumedThing&gt; consume(ThingDescription td);
+      };
+    </pre>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class. Expects an <var>td</var> argument and returns a <a>Promise</a> that resolves with a <a>ConsumedThing</a> object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+        </li>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+        </li>
+        <li>
+          Run the <a>validate a TD</a> steps on <var>td</var>. If that throws, reject <var>promise</var> with the error and terminate these steps.
+        </li>
+        <li>
+          Let <var>thing</var> be a new <a>ConsumedThing</a> object constructed from <var>td</var>.
+        </li>
+        <li>
+          Set up the <a>WoT Interactions</a> based on introspecting <a>td</a> as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]]. Make a request to the underlying platform to initialize the <a>Protocol Bindings</a>.
+          The details are private to the implementations and out of scope of this specification.
+        </li>
+        <li>
+          Resolve <var>promise</var> with <var>thing</var>.
+        </li>
+      </ol>
+    </p>
+  </section>
+
+  <section> <h3>The <dfn>produce()</dfn> method</h3>
+    <pre class="idl">
+      partial interface WOT {
+        Promise&lt;ExposedThing&gt; produce(ThingDescription td);
+      };
+    </pre>
+    <p>
+      Belongs to the <a>WoT Producer</a> conformance class. Expects a <code>td</code> argument and returns a <a>Promise</a> that resolves with an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+        </li>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, reject <a>promise</a> with <code>SecurityError</code> and terminate these steps.
+        </li>
+        <li>
+          Let <var>thing</var> be a new <a>ExposedThing</a> object constructed with <var>td</var>.
+        </li>
+        <li>
+          Resolve <var>promise</var> with <var>thing</var>.
+        </li>
+      </ol>
+    </p>
+  </section>
+
+  <section> <h3>The <dfn>discover()</dfn> method</h3>
+    <pre class="idl">
+      partial interface WOT {
+        ThingDiscovery discover(optional ThingFilter filter = null);
+      };
+    </pre>
+    <p>
+      Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that will provide <a>ThingDescription</a> objects for <a>Thing Description</a>s that match an optional <var>filter</var> argument. The method MUST run the following steps:
+      <ol>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+        </li>
+        <li>
+          Construct a <a>ThingDiscovery</a> object <var>discovery</var> with <var>filter</var>.
+        </li>
+        <li>
+          Invoke the <a href="#the-start-method">discovery.start()</a> method.
+        </li>
+        <li>
+          Return <var>discovery</var>.
+        </li>
+      </ol>
+    </p>
+    <p>
+      Refer to the <a>ThingDiscovery</a> section for how discovery should be implemented.
+    </p>
+  </section>
+
+</section>
+
+  <section data-dfn-for="ConsumedThing">
+    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
+    <p>
+      Represents a client API to operate a <a>Thing</a>. Belongs to the
+      <a>WoT Consumer</a> conformance class.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ConsumedThing {
+        constructor(ThingDescription td);
+        Promise&lt;any&gt; readProperty(DOMString propertyName,
+                                  optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readMultipleProperties(
+                                  sequence&lt;DOMString&gt; propertyNames,
+                                  optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeProperty(DOMString propertyName,
+                                    any value,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);
+        Promise&lt;any&gt; invokeAction(DOMString actionName,
+                                    optional any params = null,
+                                    optional InteractionOptions options = null);
+        Promise&lt;DOMString&gt; observeProperty(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; unobserveProperty(DOMString subscriptionId);
+        Promise&lt;DOMString&gt; subscribeEvent(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; unsubscribeEvent(DOMString subscriptionId);
+        ThingDescription getThingDescription();
+      };
+      dictionary InteractionOptions {
+        object uriVariables;
+      };
+      typedef object PropertyMap;
+      callback WotListener = void(any data);
+    </pre>
+
+    <section>
+      <h4>Constructing <code>ConsumedThing</code></h4>
+      <p>
+        After <a href="#fetching-a-thing-description">fetching</a> a
+        <a>Thing Description</a> as a JSON object, one can create a
+        <a>ConsumedThing</a> object.
+      </p>
+      <p>
+        To create <a>ConsumedThing</a> with the <a>ThingDescription</a>
+        <var>td</var>, run the following steps:
+        <ol>
+          <li>
+            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-throw the error and terminate these steps.
+          </li>
+          <li>
+            Let <var>thing</var> be a new <a>ConsumedThing</a> object.
+          </li>
+          <li>
+            Let ||td|| be an internal slot of <var>thing</var> and let <var>td</var> be its value.
+          </li>
+          <li>
+            Return <var>thing</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>getThingDescription()</dfn> method</h3>
+      <p>
+        Returns the internal slot ||td|| of the <a>ConsumedThing</a> object that represents the <a>Thing Description</a> of the <a>ConsumedThing</a>.
+        Applications may consult the <a>Thing</a> metadata stored in ||td|| in order to introspect its capabilities before interacting with it.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>InteractionOptions</dfn> dictionary</h3>
+      <p>
+        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>. In this version of the specification only URI template variables are used, represented as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON objects</a> defined in [[!WOT-TD]].
+      </p>
+      <p class="ednote">
+        The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the <var>options</var> parameter could be dismissed from the methods exposed by this API.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>PropertyMap</dfn> type</h3>
+      <p>
+        Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
+      </p>
+      <p class="ednote">
+         It could be defined in Web IDL (as well as <a>ThingDescription</a>) as a <a href="https://heycam.github.io/webidl/#idl-maplike">maplike</a> interface from <i>string</i> to <i>any</i>.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>readProperty()</dfn> method</h3>
+      <p>
+        Reads a <a>Property</a> value. Takes a string argument <var>propertyName</var> and and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns a <a>Property</a> value represented as <code>any</code> type. The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking <code>fetch()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            If the argument <var>url</var> is not a URL, reject <var>promise</var> with <code>TypeError</code> and terminate these steps.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a> given by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            Make a request to fetch the content of <var>url</var> as described by the <a>Protocol Bindings</a> and wait for the reply. Implementations encapsulate the fetching process and the accepted media types (such as <code>application/td+json</code>), as far as a valid <a>Thing Description</a> can be obtained as defined in [[!WOT-TD]]. Let <var>td</var> be the <a>Thing Description</a> string-serialized from the returned content, as specified in the <a data-cite="!WOT-TD#sec-td-serialization">Thing Description serialization</a>.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
-            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
+            Let <var>value</var> be the result of the request.
           </li>
           <li>
-            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
-          </li>
-        </ol>
-      </p>
-    </section>
-
-    <section> <h3> The <dfn>consume()</dfn> method</h3>
-      <p>
-        Accepts an <code>td</code> argument of type <code><a>ThingDescription</a></code> and returns a <a>ConsumedThing</a> object instantiated based on parsing that description.
-      </p>
-      <p>
-        The <code>consume(td)</code> method must run the following steps:
-        <ol>
-          <li>
-            If the argument <var>td</var> is not a string, throw a <code>TypeError</code> and terminate these steps.
-          </li>
-          <li>
-            Let <var>stub</var> be the result of running the <a>TD parsing algorithm</a> with <var>td</var> as argument. If that throws an error, re-throw the error and terminate these steps.
-          </li>
-          <li>
-            If <var>stub</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>stub</var>.
-          </li>
-          <li>
-            Create a <a>ConsumedThing</a> object <var>thing</var> initialized from <var>stub</var> that implements <a>Observable</a>.
-          </li>
-          <li>
-            Add the <code>read()</code> and <code>write()</code> methods to the <a>ThingProperty</a> elements so that they make requests to access the remote <a>Thing</a>s and wait for the reply, as defined by the <a>Protocol Bindings</a>. Also, all <a>ThingProperty</a> elements SHOULD implement <a>Observable</a>, i.e. define a <code>subscribe()</code> method that should make request to observe the given <a>Properties</a> as defined by the <a>Protocol Bindings</a>.
-          </li>
-          <li>
-            Add the <code>invoke()</code> methods to the <a>ThingAction</a> elements so that they make requests to the remote <a>Thing</a> to invoke its actions, as defined by the <a>Protocol Bindings</a>.
-          </li>
-          <li>
-            Add the <code>subscribe()</code> method to all <a>ThingEvent</a> elements so that they make requests to subscribe to the events defined by the remote <a>Thing</a>, as defined by the <a>Protocol Bindings</a>.
-          </li>
-          <li>
-            Return <var>thing</var>.
-          </li>
-        </ol>
-      </p>
-    </section>
-
-    <section> <h3>The <dfn id="produce-method">produce()</dfn> method</h3>
-      <p>
-        Accepts a <code>model</code> argument of type <code><a>ThingModel</a></code> and returns an <a>ExposedThing</a> object.
-      </p>
-      <p>
-        The <code>produce(model)</code> method MUST run the following steps:
-        <ol>
-          <li>
-            If invoking <code>produce()</code> is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
-            If the argument <var>model</var> is a string, then run the <i>TD parsing algorithm</i> with <var>model</var> passed as parameter. If it throws an error, re-throw that error and terminate this algorithm. Otherwise let <var>model</var> be the returned value.
-          </li>
-          <li>
-            If <var>model</var> is not an object, throw <code>TypeError</code> and terminate these steps.
-          </li>
-          <li>
-            If <var>model</var> does not have an own property that is defined in <a>ThingFragment</a> with a default value, add that property and value to <var>model</var>.
-          </li>
-          <li>
-            Create an <a>ExposedThing</a> object <var>thing</var> initialized from <var>model</var>.
-          </li>
-          <li>
-            For each property of <a>ExposedThing</a> defined in <a>ThingFragment</a>, initialize the property based on the provided initial or default values provided to the local <a>WoT Runtime</a> implementation, for instance initialize:
+            Run the <dfn>validate Property value</dfn> sub-steps on <var>value</var>:
             <ol>
               <li>
-                 the <code>id</code> property to be the final unique identifier of the <a>Thing</a>,
+                Based on the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getThingDescription().properties[</code><var>propertyName</var><code>]</code>.
               </li>
               <li>
-                the <code>security</code> object of type <a>SecurityScheme</a> to represent the actual security scheme and its properties as set up by the implementation,
-              </li>
-              <li>
-                the <code>properties</code> property to be an object with all properties being <a>ThingProperty</a> objects in which the <code>read()</code> and <code>write()</code> methods are provided to define local methods to get and set the <a>Property</a> values,
-              </li>
-              <li>
-                the <code>actions</code> property to be an object with all properties being <a>ThingAction</a> objects in which the <code>invoke()</code> method is provided to define a local method to run the defined <a>Action</a>s,
-              </li>
-              <li>
-                the <code>events</code> property to be an object with all properties being <a>ExposedEvent</a> objects in which the <code>emit()</code> method is provided to define a local way to trigger sending notifications to all subscribed clients,
-              </li>
-              <li>
-                and initialize the other properties as initialized from <var>model</var>.
-              </li>
+                If this fails, throw <code>SyntaxError</code>, otherwise return <var>value</var>.
+            </li>
+          </ol>
+          <li>
+            If these above steps failed, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
           </li>
           <li>
-            Return <var>thing</var>.
+            Otherwise resolve <var>promise</var> with <var>value</var>.
           </li>
         </ol>
       </p>
-      <p>
-        The <dfn>TD parsing algorithm</dfn> takes a string <var>td</var> as argument and runs the following steps:
-        <ol>
-          <li>
-            Parse <var>td</var> according to the <a data-cite="!WOT-TD#sec-td-serialization">WoT Thing Description</a> in order to produce a <a href="https://www.w3.org/TR/json-ld/#dfn-json-object">JSON object</a> <var>json</var>. Update <var>thing</var> with the properties and values defined in <var>json</var>.
-          </li>
-          <li>
-            If there was an error during the parsing, throw that error and terminate these steps.
-          </li>
-          <li>
-            Otherwise return <var>json</var>.
-          </li>
-        </ol>
-      </p>
-    </section> <!-- produce() -->
-
-    <section> <h3>The <dfn>register()</dfn> method</h3>
-      <p>
-        Takes two mandatory arguments:
-        <ul>
-          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
-          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
-        </ul>
-      </p>
-      <p>
-        Generate the <a>Thing Description</a> as <var>td</var>, given the <a>Properties</a>, <a>Action</a>s and <a>Event</a>s defined for this <a>ExposedThing</a> object. Then make a request to register <var>td</var> to the given WoT <a>Thing Directory</a>.
-      </p>
     </section>
-
-    <section> <h3>The <dfn>unregister()</dfn> method</h3>
-      <p>
-        Takes two mandatory arguments:
-        <ul>
-          <li><code>directory</code> denoting a <a>Thing Directory</a>, and </li>
-          <li><code>thing</code> denoting an <a>ExposedThing</a> object.</li>
-        </ul>
-      </p>
-      <p>
-        Makes a request to unregister the <code>thing</code> from the given WoT <a>Thing Directory</a>.
-      </p>
-    </section>
-
-    <section> <h3>Examples</h3>
-      <pre class="example" title="Discover Things via directory">
-        let discoveryFilter = {
-          method: "directory",
-          url: "http://directory.wotservice.org"
-        };
-        let subscription = wot.discover(discoveryFilter).subscribe(
-          td => {
-            console.log("Found Thing " + td.name);
-            // fetch the TD and create a ConsumedThing
-            let thing = wot.consume(td);
-          },
-          error => { console.log("Discovery finished because an error: " + error.message); },
-          () => { console.log("Discovery finished successfully");}
-        );
-        setTimeout( () => {
-            subscription.unsubscribe();
-            console.log("Discovery timeout");
-          },
-          5000);
-      </pre>
-      <pre class="example" title="Discover Things exposed by local hardware">
-        let subscription = wot.discover({ method: "local" }).subscribe(
-          td => { console.log("Found local Thing " + td.name); },
-          error => { console.log("Discovery error: " + error.message); },
-          () => { console.log("Discovery finished successfully");}
-        );
-      </pre>
-      <pre class="example" title="Same as above but with different Observable syntax">
-        let subscription = wot.discover({ method: "local" }).subscribe({
-          td => { console.log("Found local Thing " + td.name); },
-          error: err => { console.log("Discovery error: " + err.message); },
-          complete: () => { console.log("Discovery finished successfully");}
-        });
-      </pre>
-    </section> <!-- Examples -->
-  </section> <!-- WoT API -->
-
-  <section data-dfn-for="ConsumedThing">
-    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
-    <p>
-      Represents an object that extends a <a>ThingFragment</a> with methods for client interactions (send request for reading and writing <a>Properties</a>), invoke <a>Action</a>s, subscribe and unsubscribe for <a>Property</a> changes and <a>Event</a>s.
-    </p>
-    <pre class="idl">
-      interface ConsumedThing: ThingFragment {
-        readonly attribute DOMString id;
-        readonly attribute DOMString name;
-        readonly attribute DOMString? base;
-        readonly attribute PropertyMap properties;
-        readonly attribute ActionMap actions;
-        readonly attribute EventMap events;
-        // getter for ThingFragment properties
-        getter any(DOMString name);
-      };
-      [NoInterfaceObject]
-      interface PropertyMap {
-        readonly maplike&lt;DOMString, ThingProperty&gt;;
-      };
-      [NoInterfaceObject]
-      interface ActionMap {
-        readonly maplike&lt;DOMString, ThingAction&gt;;
-      };
-      [NoInterfaceObject]
-      interface EventMap {
-        readonly maplike&lt;DOMString, ThingEvent&gt;;
-      };
-      ConsumedThing includes Observable;  // for TD changes
-    </pre>
-    <p>
-      The <dfn>id</dfn> attribute represents the unique identifier of the <a>Thing</a> instance, typically a URI, IRI, or URN as <code>USVString</code>.
-    </p>
-    <p>
-      The <dfn>name</dfn> attribute represents the name of the <a>Thing</a> as <code>DOMString</code>.
-    </p>
-    <p>
-      The <dfn>base</dfn> attribute represents the base URI that is valid for all defined local interaction resources.
-    </p>
-    <p>
-      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items. The <dfn>PropertyMap</dfn> interface represents a maplike dictionary where all values are <a>ThingProperty</a> objects. The <code>read()</code> and <code>write()</code> methods make a request to access the <a>Properties</a> on the remote <a>Thing</a> represented by this <a>ConsumedThing</a> proxy object.
-    </p>
-    <p>
-      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items. The <dfn>ActionMap</dfn> interface represents a maplike dictionary where all values are <a>ThingAction</a> objects. The <code>invoke()</code> method represents a request to invoke the <a>Action</a> on the remote <a>Thing</a>.
-    </p>
-    <p>
-      The <dfn>events</dfn> attribute represents a dictionary of <a>ThingEvent</a> items. The <dfn>EventMap</dfn> interface represents a maplike dictionary where all values are <a>ThingEvent</a> objects. Subscribing to the events involves setting up an observation (subscription) mechanism on the remote object.
-    </p>
 
     <section>
-      <h2>Examples</h2>
+      <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
       <p>
-        Below a <code><a>ConsumedThing</a></code> interface example is given.
+        Reads multiple <a>Property</a> values with one or multiple requests. Takes the <var>propertyNames</var> argument as a sequence of strings and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns an object with keys from <var>propertyNames</var> and values returned by this algorithm. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Let <var>result</var> be an object and for each string <var>name</var> in <var>propertyNames</var> add a property with key <var>name</var> and the value <code>null</code>.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by <var>propertyNames</var> with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with <code>NotSupportedError</code> and terminate these steps.
+          </li>
+          <li>
+            Process the reply and update all properties in <var>result</var> with the values obtained in the reply.
+          </li>
+          <li>
+            If the above step fails at any point, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
+          </li>
+          <li>
+            Resolve <var>promise</var> with <var>result</var>.
+          </li>
+        </ol>
       </p>
-      <pre class="example" title="Consume a Thing">
+    </section>
+
+    <section>
+      <h3>The <dfn>readAllProperties()</dfn> method</h3>
+      <p>
+        Reads all properties of the <a>Thing</a> with one or multiple requests. Takes an optional <a>InteractionOptions</a> <var>options</var> argument. It returns an object with keys from <a>Property</a> names and values returned by this algorithm. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Let <var>result</var> be an object and for each string <var>name</var> in <var>propertyNames</var> add a property with key <var>name</var> and the value <code>null</code>.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with <code>NotSupportedError</code> and terminate these steps.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Process the reply and update all properties in <var>result</var> with the values obtained in the reply.
+          </li>
+          <li>
+            Resolve <var>promise</var> with <var>result</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>writeProperty()</dfn> method</h3>
+      <p>
+        Writes a single <a>Property</a>. Takes a string argument <var>propertyName</var>, a value argument <var>value</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Run the <a>validate Property value</a> steps on <var>value</var>. If that fails, reject <a>promise</a> with <code>SyntaxError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to write <var>value</var> to the <a>Property</a> given by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>writeMultipleProperties()</dfn> method</h3>
+      <p>
+        Writes a multiple <a>Property</a> values with one request. Takes a <var>properties</var> argument as an object with keys being <a>Property</a> names and values as <a>Property</a> values and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            For each key <var>name</var> on <var>properties</var>, take its value as <var>value</var> and run the <a>validate Property value</a> steps on <var>value</var>. If that fails in for any <var>name</var>, reject <a>promise</a> with <code>SyntaxError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a single request to the underlying platform (via the <a>Protocol Bindings</a>) to write the each <a>Property</a> provided in <var>properties</var> with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with <code>NotSupportedError</code> and terminate these steps.
+          </li>
+          <li>
+            If the request fails, return the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>WotListener</dfn> callback</h3>
+      <p>
+        User provided callback that takes <code>any</code> argument and is used
+        for observing <a>Property</a> changes and handling <a>Event</a> notifications. Since subscribing to these are WoT interactions, they are not modelled with software events.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>observeProperty()</dfn> method</h3>
+      <p>
+        Makes a request for <a>Property</a> value change notifications. Takes a string argument <var>propertyName</var>, a <a>WotListener</a>
+        callback function <var>listener</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If <var>listener</var> is not a function, reject <var>promise</var>
+            with <code>"TypeError"</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise let <var>id</var> be a string generated by the implementation to identify the subscription in a later unobserve request. Resolve <var>promise</var> with a <var>id</var>.
+          </li>
+          <li>
+            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value <var>value</var>, run
+            the following sub-steps:
+            <ul>
+              <li>
+                If running the <a>validate Property value</a> steps on <var>value</var> fails, terminate these steps.
+              </li>
+              <li>
+                Invoke <var>listener</var> with <var>value</var> as parameter.
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>unobserveProperty()</dfn> method</h3>
+      <p>
+        Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes a string argument <var>subscriptionId</var> and returns success or failure. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by <var>subscriptionId</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>invokeAction()</dfn> method</h3>
+      <p>
+        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument <var>actionName</var>, an optional argument <var>params</var> of type <code>any</code> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by <var>actionName</var> with parameters provided in <var>params</var> with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails locally or returns an error over the network, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise let <var>value</var> be the result returned in the reply and run the <a>validate Property value</a> steps on it. If that fails, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
+          </li>
+          <li>
+            Reject <var>promise</var> with <var>value</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>subscribeEvent()</dfn> method</h3>
+      <p>
+        Makes a request for subscribing to <a>Event</a> notifications. Takes a string argument <var>eventName</var>, a <a>WotListener</a>
+        callback function <var>listener</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If <var>listener</var> is not a function, reject <var>promise</var>
+            with <code>"TypeError"</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by <var>eventName</var>with optional URI templates given in <var>options.uriVariables</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise let <var>id</var> be a string generated by the implementation to identify the subscription in a later unsubscribe request. Resolve <var>promise</var>.
+          </li>
+          <li>
+            Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
+            <var>listener</var>, giving the data provided with the <a>Event</a>
+            as parameter.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>unsubscribeEvent()</dfn> method</h3>
+      <p>
+        Makes a request for unsubscribing from <a>Event</a> notifications. Takes a string argument <var>subscriptionId</var> and returns success or failure. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by <var>subscriptionId</var>.
+          </li>
+          <li>
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+          </li>
+          <li>
+            Otherwise resolve <var>promise</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h2>ConsumedThing Examples</h2>
+      <p>
+        The next example illustrates how to fetch a <a>TD</a> by URL, create a <a>ConsumedThing</a>, read metadata (title), read property value, subscribe to property change, subscribe to a WoT event, unsubscribe.
+      </p>
+      <pre class="example" title="Thing Client API example">
         try {
-          let subscription = wot.discover({ method: "local" }).subscribe(
-            td => {
-              let thing = wot.consume(td);
-              console.log("Thing " + thing.name + " has been consumed.");
-              let subscription = thing["temperature"].subscribe(function(value) {
-                  console.log("Temperature: " + value);
-                });
-              thing.actions["startMeasurement"].invoke({ units: "Celsius" })
-                .then(() => { console.log("Temperature measurement started."); })
-                .catch(e => {
-                   console.log("Error starting measurement.");
-                   subscription.unsubscribe();
-                 })
-            },
-            error => { console.log("Discovery error: " + error.message); },
-            () => { console.log("Discovery finished successfully");}
-          );
-        } catch(error) {
-          console.log("Error: " + error.message);
+          let res = await fetch("https://tds.mythings.org/sensor11");
+          let td = res.json();
+          let thing = new ConsumedThing(td);
+          console.log("Thing " + thing.getThingDescription().title + " consumed.");
+        } catch(e) {
+          console.log("TD fetch error: " + e.message); },
         };
+        try {
+          // subscribe to property change for “temperature”
+          await thing.observeProperty("temperature", value => {
+            console.log("Temperature changed to: " + value);
+          });
+          // subscribe to the “ready” event defined in the TD
+          await thing.subscribeEvent("ready", eventData => {
+            console.log("Ready; index: " + eventData);
+            // run the “startMeasurement” action defined by TD
+            await thing.invokeAction("startMeasurement", { units: "Celsius" });
+            console.log("Measurement started.");
+          });
+        } catch(e) {
+          console.log("Error starting measurement.");
+        }
+        setTimeout( () => {
+          console.log(“Temperature: “ + await thing.readProperty(“temperature”));
+          await thing.unsubscribe(“ready”);
+          console.log("Unsubscribed from the ‘ready’ event.");
+        },
+        10000);
       </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
@@ -703,73 +943,275 @@
   <section data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
     <p>
-      The <a>ExposedThing</a> interface is the server API that allows defining request handlers, properties, <a>Actions</a>, and <a>Events</a> to a <a>Thing</a>. It also implements the <a>Observable</a> interface. An <a>ExposedThing</a> is created by the <a href="#the-produce-method">produce()</a> method.
+      The <a>ExposedThing</a> interface is the server API to operate the <a>Thing</a> that allows defining request handlers, <a>Property</a>, <a>Action</a>, and <a>Event</a> interactions.
     </p>
     <pre class="idl">
-      interface ExposedThing: ThingFragment {
-        readonly attribute PropertyMap properties;
-        readonly attribute ActionMap actions;
-        readonly attribute ExposedEvents events;
-        // getter for ThingFragment properties
-        getter any(DOMString name);
-        // setter for ThingFragment properties
-        setter void(DOMString name, any value);
-        // methods to expose and destroy the Thing
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ExposedThing: ConsumedThing {
+        ExposedThing setPropertyReadHandler(DOMString name,
+                PropertyReadHandler readHandler);
+        ExposedThing setPropertyWriteHandler(DOMString name,
+                PropertyWriteHandler writeHandler);
+        ExposedThing setActionHandler(DOMString name, ActionHandler action);
+        void emitEvent(DOMString name, any data);
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
-        // define Properties
-        ExposedThing addProperty(DOMString name, PropertyFragment property, optional any initValue);
-        ExposedThing setPropertyReadHandler(DOMString name, PropertyReadHandler readHandler);
-        ExposedThing setPropertyWriteHandler(DOMString name, PropertyWriteHandler writeHandler);
-        ExposedThing removeProperty(DOMString name);
-        // define Actions
-        ExposedThing addAction(DOMString name, ActionFragment init, ActionHandler action);
-        ExposedThing removeAction(DOMString name);
-        ExposedThing setActionHandler(DOMString name, ActionHandler action);
-        // define Events
-        ExposedThing addEvent(DOMString name, EventFragment event);
-        ExposedThing removeEvent(DOMString name);
       };
-      [NoInterfaceObject]
-      interface ExposedEvents {
-        maplike&lt;DOMString, ExposedEvent&gt;;
-      };
-      callback PropertyReadHandler = Promise&lt;any&gt;();
-      callback PropertyWriteHandler = Promise&lt;void&gt;(any value);
-      callback ActionHandler = Promise&lt;any&gt;(any parameters);
+      callback PropertyReadHandler = Promise&lt;any&gt;(
+              optional InteractionOptions options = null);
+      callback PropertyWriteHandler = Promise&lt;void&gt;(any value,
+              optional InteractionOptions options = null);
+      callback ActionHandler = Promise&lt;any&gt;(any params,
+              optional InteractionOptions options = null);
     </pre>
 
-    <p>
-      The <dfn>properties</dfn> attribute represents a dictionary of <a>ThingProperty</a> items in which the <code>read()</code> and <code>write()</code> methods define local methods that access the physical representations of the <a>Properties</a>.
-    </p>
-    <p>
-      The <dfn>actions</dfn> attribute represents a dictionary of <a>ThingAction</a> items in which the <code>invoke()</code> method represents a local method to invoke the <a>Action</a>.
-    </p>
-    <p>
-      The <dfn>events</dfn> attribute represents a dictionary of <a>ExposedEvent</a> items that add the <code>emit()</code> method to the <a>ThingEvent</a> definition. The <dfn>ExposedEvents</dfn> interface represents a maplike dictionary where all values are <a>ExposedEvent</a> objects.
-    </p>
+    <section>
+      <h3>Constructing <code>ExposedThing</code></h3>
+      <p>
+        The <code>ExposedThing</code> interface extends <a>ConsumedThing</a>. It
+        is constructed from a full or partial <a>ThingDescription</a> object.
+      </p>
+      <p class="note">
+         Note that an existing <a>ThingDescription</a> object can be optionally modified (for instance by adding or removing elements on its <var>properties</var>, <var>actions</var> and <var>events</var> internal properties) and the resulting object can used for constructing an
+         <a>ExposedThing</a> object. This is the current way of adding and
+         removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions, as illustrated in the <a href="#exposedthing-examples">examples</a>.
+      </p>
+      <p class="note">
+        Before invoking <a href="#dom-exposedthing-expose">expose()</a>, the <a>ExposedThing</a> object does not serve any requests. This allows first constructing <a>ExposedThing</a> and then initialize its <a>Properties</a> and service handlers before starting serving requests.
+      </p>
+      <p>
+        To construct an <a>ExposedThing</a> with the <a>ThingDescription</a>
+        <var>td</var>, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-throw the error and terminate these steps.
+          </li>
+          <li>
+            Let <var>thing</var> be a new <a>ExposedThing</a> object.
+          </li>
+          <li>
+            Let ||td|| be an internal slot of <var>thing</var> and let <var>td</var> be its value.
+          </li>
+          <li>
+            Return <var>thing</var>.
+          </li>
+        </ol>
+      </p>
+    </section>
+    <section>
+      <h3>Methods inherited from <a>ConsumedThing</a></h3>
+      <p>
+        The <code>readProperty()</code>, <code>readMultipleProperties()</code>, <code>readAllProperties()</code>, <code>writeProperty()</code>, <code>writeMultipleProperties()</code>, <code>writeAllProperties()</code> methods have the same algorithmic steps as described in <a href="#the-consumedthing-interface"><code>ConsumedThing</code></a>, with the difference that making a request to the underlying platform MAY be implemented with local methods or libraries and don't necessarily need to involve network operations.
+      </p>
+      <p>
+        The implementation of <a>ConsumedThing</a> interface in an <a>ExposedThing</a> provide the <i>default</i> methods to interact with the <a>ExposedThing</a>.
+      </p>
+      <p>
+        After constructing an <a>ExposedThing</a>, a script can initialize its <a>Properties</a> and can set up the optional read, write and action request handlers (the default ones are provided by the implementation). The script provided handlers MAY use the default handlers, thereby extending the default behavior, but they can also bypass them, overriding the default behavior. Finally, the script would call <a href="#the-expose-method"><code>expose()</code></a> on the <a>ExposedThing</a> in order to start serving external requests.
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyReadHandler">
+      <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a <a>Promise</a> and resolves it when the value of the <a>Property</a> matching the <code>name</code> argument is obtained, or rejects with an error if the property is not found or the value cannot be retrieved.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
+      <p>
+        Takes <code>name</code> as string argument and <code>readHandler</code> as argument of type <a>PropertyReadHandler</a>. Sets the service handler for reading the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
+      </p>
+      <p>
+         The <code>readHandler</code> callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> read requests</h3>
+      <p>
+        When a network request for reading <a>Property</a> <var>propertyName</var> is received by the implementation, run the following steps:
+        <ol>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+          </li>
+          <li>
+            If there is a user provided read handler registered with <code>setPropertyReadHandler()</code>, invoke that wih <var>propertyName</var>, return the value with the reply and terminate these steps.
+          </li>
+          <li>
+            Otherwise, if there is a default read handler provided by the implementation, invoke it with <var>propertyName</var>, return the value with the reply and terminate these steps.
+          </li>
+          <li>
+            if there is no default handler defined by the implementation, return <a>NotSupportedError</a> with the reply and terminate these steps.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> observe requests</h3>
+      <p>
+        When a network request for observing a <a>Property</a> <var>propertyName</var> is received by the implementation, run the following steps:
+        <ol>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+          </li>
+          <li>
+            Save the request sender information to the <a>Property</a>'s <a>internal observer list</a> in order to be able to notify about <a>Property</a> value changes.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyWriteHandler">
+      <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for writing a <a>Property</a> is received and defines what to do with such requests. It expects the requested new <code>value</code> as argument and returns a <a>Promise</a> which is resolved when the value of the <a>Property</a> that matches the <code>name</code> argument has been updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
+      </p>
+      <p class="ednote">
+        Note that the code in this callback function can read the property before updating it in order to find out the old value, if needed. Therefore the old value is not provided to this function.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
+      <p>
+        Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the service handler  for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
+      </p>
+      <p>
+        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change, based on the <a>Thing Description</a>.
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> write requests</h3>
+      <p>
+        When a network request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, implementations SHOULD run the following <dfn>update property steps</dfn>, given <var>propertyName</var>, <var>value</var> and <var>mode</var> set to <code>"single"</code>:
+        <ol>
+          <li>
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+          </li>
+          <li>
+            If there is a user provided write handler registered with <code>setPropertyWriteHandler()</code>, or if there is a default write handler,
+            <ol>
+              <li>
+                Invoke the handler with <var>propertyName</var>. If it fails, return the error in the reply and terminate these steps.
+              </li>
+              <li>
+                Otherwise, if <var>mode</var> is <code>"single"</code>, reply to the request with the new value, following to the <a>Protocol Bindings</a>.
+              </li>
+              <li>
+                For each item stored in the <a>internal observer list</a> of the <a>Property</a> with <var>propertyName</var>, send an observe reply with the new value attached.
+              </li>
+          </li>
+          <li>
+            If there is no handler to handle the request, return <a>NotSupportedError</a> in the reply and terminate these steps.
+          </li>
+        </ol>
+      </p>
+      <p>
+        When a network request for writing multiple <a>Properties</a> given in an object <var>propertyNames</var> is received, run the following steps:
+        <ol>
+          <li>
+            For each property with key <var>name</var> and value <var>value</var> defined in <var>propertyNames</var>, run the <a>update property steps</a> with <var>name</var>, <var>value</var> and <var>mode</var> set to <code>"multiple"</code>.
+          </li>
+          <li>
+            Reply to the request (by sending a single or multiple replies) according to the <a>Protocol Bindings</a> defined for the <a>Property</a>.
+          </li>
+      </p>
+    </section>
+
+    <section data-dfn-for="ActionHandler">
+      <h3>The <dfn>ActionHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for invoking an
+        <a>Action</a> is received and defines what to do with such requests.
+        It is invoked with a <code>params</code> dictionary argument.
+        It returns a <a>Promise</a> that rejects with an error or resolves if
+        the action is successful.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
+      <p>
+        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
+      </p>
+      <p>
+         The <code>action</code> callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Action</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Action</a> requests</h3>
+      <p>
+        When a network request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
+        <ol>
+          <li>
+            If an <a>Action</a> identified by <var>name</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+          </li>
+          <li>
+            If there is a user provided action handler registered with <code>setActionHandler()</code>, invoke that wih <var>name</var>, return the resulting value with the reply and terminate these steps.
+          </li>
+          <li>
+            Otherwise return <a>NotSupportedError</a> with the reply and terminate these steps.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
+      <p>
+        Takes <var>name</var> as string argument denoting an <a>Event</a> name, and a <var>data</var> argument of <code>any</code> type. The method MUST run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          </li>
+          <li>
+            If an <a>Event</a> with the name <var>name</var> is not found in <var>this.getThingDescription().events</var>, throw <code>NotFoundError</code> and terminate these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to send an <a>Event</a> with <var>data</var> attached as property, using the <a>Protocol Bindings</a>, then terminate these steps.
+          </li>
+        </ol>
+      </p>
+    </section>
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
       <p>
-        Start serving external requests for the <a>Thing</a>, so that <a>WoT Interactions</a> using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible.
-      </p>
-      <p>
-        The <code>expose()</code> method MUST run the following steps:
+        Start serving external requests for the <a>Thing</a>, so that <a>WoT Interactions</a> using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible. The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking <code>expose()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            Make a request to the underlying platform to attach protocol handlers and start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
+            Run the <a>expand a TD</a> steps on the internal slot ||td||.
+          </li>
+          <li>
+            Run the <a>validate a TD</a> on ||td||. If that fails,
+            reject <var>promise</var> with <code>"TypeError"</code> and terminate
+            these steps.
+          </li>
+          <li>
+            For each <a>Property</a> definition in <var>this.instance.properties</var> initialize an |<dfn>internal observer list</dfn>| internal slot
+            in order to store observe request data needed to notify the observers on value changes.
+          </li>
+          <li>
+            Set up the <a>WoT Interactions</a> based on introspecting <a>td</a>
+            as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
+            Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>. The details are private to the implementations and out of scope of this specification.
           </li>
           <li>
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
-            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
+            Otherwise resolve <var>promise</var> and terminate these steps.
           </li>
         </ol>
       </p>
@@ -777,16 +1219,13 @@
 
     <section> <h3>The <dfn>destroy()</dfn> method</h3>
       <p>
-        Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method.
-      </p>
-      <p>
-        The <code>destroy()</code> method MUST run the following steps:
+        Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method. The method MUST run the following steps:
         <ol>
           <li>
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking <code>destroy()</code> is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
             Make a request to the underlying platform to stop serving external requests for <a>WoT Interactions</a>, based on the <a>Protocol Bindings</a>.
@@ -795,180 +1234,25 @@
             If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
           </li>
           <li>
-            Otherwise resolve <var>promise</var> with <var>td</var> and terminate these steps.
-          </li>
-        </ol>
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>addProperty()</dfn> method</h3>
-      <p>
-        Adds a <a>Property</a> with name defined by the <var>name</var> argument, the data schema provided by the <var>property</var> argument of type <a>PropertyFragment</a>, and optionally an initial value provided in the argument <var>initValue</var> whose type should match the one defined in the <code>type</code> property according to the <a>value-matching algorithm</a>. If <var>initValue</var> is not provided, it SHOULD be initialized as <code>undefined</code>. Implementations SHOULD update the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-    </section> <!-- addProperty() -->
-
-    <section> <h3>The <dfn>removeProperty()</dfn> method</h3>
-      <p>
-        Removes the <a>Property</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>addAction()</dfn> method</h3>
-      <p>
-        Adds to the <code>actions</code> property of a <a>Thing</a> object an <a>Action</a> with name defined by the <var>name</var> argument, defines input and output data format by the <var>init</var> argument of type <a>ActionFragment</a>, and adds the function provided in the <var>action</var> argument as a handler, then updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-        The provided <var>action</var> callback function will implement invoking an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform. The callback will receive a <code>parameters</code> dictionary argument according to the definition in the <var>init.input</var> argument and will return a value of type defined by the <var>init.output</var> argument according to the <a>value-matching algorithm</a>.
-      </p>
-      <p>
-        There SHOULD be exactly one handler for any given <a>Action</a>. If no handler is initialized for any given <a>Action</a>, implementations SHOULD throw a <code>TypeError</code>.
-      </p>
-    </section> <!-- addAction -->
-
-    <section> <h3>The <dfn>removeAction()</dfn> method</h3>
-      <p>
-        Removes the <a>Action</a> specified by the <code>name</code> argument and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>addEvent()</dfn> method</h3>
-      <p>
-        Adds an event with name defined by the <var>name</var> argument and qualifiers and initialization value provided by the <var>event</var> argument of type <a>EventFragment</a>to the <a>Thing</a> object and updates the <a>Thing Description</a>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>removeEvent()</dfn> method</h3>
-      <p>
-        Removes the event specified by the <code>name</code> argument and updates the <a>Thing Description</a>. Returns a reference to the same object for supporting chaining.
-      </p>
-    </section>
-
-    <section data-dfn-for="PropertyReadHandler">
-      <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
-      <p>
-        A function that is called when an external request for reading a <a>Property</a> is received. It should return a <a>Promise</a> and resolves it with the value of the <a>Property</a> matching the <code>name</code> argument to the <code>setPropertyReadHandler</code> function, or rejects with an error if the property is not found or the value cannot be retrieved.
-      </p>
-    </section>
-
-    <section data-dfn-for="PropertyWriteHandler">
-      <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
-      <p>
-        A function that is called when an external request for writing a <a>Property</a> is received. It is given the requested new <code>value</code> as argument and should return a <a>Promise</a> which is resolved when the value of the <a>Property</a> that matches the <code>name</code> argument has been updated with <code>value</code>, or rejects with an error if the property is not found or the value cannot be updated.
-      </p>
-      <p class="ednote">
-        Note that this function is invoked by implementations before the property is updated and it actually defines what to do when a write request is received. The code in this callback function can invoke the <code>read()</code> method to find out the old value of the property, if needed. Therefore the old value is not provided to this function.
-      </p>
-    </section>
-
-    <section data-dfn-for="ActionHandler">
-      <h3>The <dfn>ActionHandler</dfn> callback</h3>
-      <p>
-        A function called with a <code>parameters</code> dictionary argument assembled by the <a>WoT runtime</a> based on the <a>Thing Description</a> and the external client request. It returns a <a>Promise</a> that rejects with an error or resolves if the action is successful or ongoing (may also resolve with a control object such as an <a>Observable</a> for actions that need progress notifications or that can be canceled).
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
-      <p>
-        Takes <code>name</code> as string argument and <code>readHandler</code> as argument of type <a>PropertyReadHandler</a>. Sets the handler function for reading the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-         The <code>readHandler</code> callback function will implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
-      </p>
-      <p>
-        There SHOULD be at most one handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler.
-      </p>
-      <p>
-        When an external request for reading <a>Property</a> <var>propertyName</var> is received, the runtime SHOULD execute the following steps:
-        <ol>
-          <li>
-            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, if no read handler has been defined for <var>propertyName</var>, resolve <var>promise</var> with the value of the <a>Property</a> named <var>propertyName</var> provided by the  runtime implementation and terminate these steps.
-          </li>
-          <li>
-            Otherwise, invoke the read handler associated with <var>propertyName</var>. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
-          </li>
-        </ol>
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
-      <p>
-        Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the handler function for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-        There SHOULD be at most one write handler for any given <a>Property</a> and newly added handlers replace the old handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change.
-      </p>
-      <p>
-        When an external request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, the runtime SHOULD execute the following steps:
-        <ol>
-          <li>
-            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If a <a>Property</a> with <var>propertyName</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, if no write handler has been defined for <var>propertyName</var>, the runtime implementation SHOULD update the <a>Property</a> value with <var>value</var>, resolve <var>promise</var> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, invoke the write handler associated with <var>propertyName</var> providing <var>value</var> as argument. If it rejects, then reject <var>promise</var> with the same error, and resolve <a>promise</a> with the same value.
-          </li>
-        </ol>
-      </p>
-    </section>
-
-    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
-      <p>
-        Takes <code>name</code> as string argument and <code>action</code> as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by <code>name</code>. Throws on error. Returns a reference to the same object for supporting chaining.
-      </p>
-      <p>
-         The <code>action</code> callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
-      </p>
-      <p>
-        There SHOULD be at most one handler for any given <a>Action</a> and newly added handlers replace the old handlers.
-      </p>
-      <p>
-        When an external request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
-        <ol>
-          <li>
-            Return a <a>Promise</a> <a>promise</a> and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If an <a>Action</a> identified by <var>name</var> does not exist, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, if no action handler has been defined for <var>name</var>, reject <a>promise</a> with a <code>ReferenceError</code> and terminate these steps.
-          </li>
-          <li>
-            Otherwise, invoke the <a>Action</a> handler associated with <var>name</var>. If it rejects with <var>error</var>, then reject <var>promise</var> with the same <var>error</var>, otherwise if it resolves with <var>value</var>, then resolve <a>promise</a> with the same <var>value</var>.
+            Otherwise resolve <var>promise</var> and terminate these steps.
           </li>
         </ol>
       </p>
     </section>
 
     <section>
-      <h2>Examples</h2>
+      <h2>ExposedThing Examples</h2>
       <p>
-        Below some <code><a>ExposedThing</a></code> interface examples are given.
+        The next example illustrates how to create an <code><a>ExposedThing</a></code> based on a partial <a>TD</a> object constructed beforehands.
       </p>
-
-      <pre class="example highlight" title="Create a new exposed Thing with a simple property">
+      <pre class="example highlight" title="Create ExposedThing with a simple Property">
         try {
-          var temperatureValueDefinition = {
+          let temperaturePropertyDefinition = {
             type: "number",
             minimum: -50,
             maximum: 10000
           };
-          var temperaturePropertyDefinition = temperatureValueDefinition;
-          // add the 'forms' property
-          temperaturePropertyDefinition.forms = [ ... ];
-          var thing = WoT.produce({
-            name: "tempSensor",
+          let tdFragment = {
             properties: {
               temperature: temperaturePropertyDefinition
             },
@@ -984,28 +1268,30 @@
             },
             events: {
               onchange: temperatureValueDefinition
-            },
-            links: []
-          });
-          await thing.expose();
-          await wot.register("https://mydirectory.org", thing);
-          // define Thing business logic
-          setInterval( async () => {
-            let mock = Math.random()*100;
-            let old = await thing["temperature"].read();
-            if (old < mock) {
-              await thing["temperature"].write(mock);
-              thing.emitEvent("onchange", mock);
             }
-          }, 1000);
+          };
+          let thing1 = await WOT.produce(tdFragment);
+          // initialize Properties
+          await thing1.writeProperty("temperature", 0);
+          // add service handlers
+          thing1.setPropertyReadHandler("temperature", () => {
+             return readLocalTemperatureSensor();  // Promise
+          });
+          // start serving requests
+          await thing1.expose();
         } catch (err) {
            console.log("Error creating ExposedThing: " + err);
         }
       </pre>
 
-      <pre class="example highlight" title="Create a new exposed Thing with object property">
+      <p>
+        The next example illustrates how to add or modify a <a>Property</a> definition on an existing <code><a>ExposedThing</a></code>: take its <var>td</var> property, add or modify it, then create another <a>ExposedThing</a> with that.
+      </p>
+      <pre class="example highlight" title="Add an object Property">
         try {
-          var statusValueDefinition = {
+          // create a deep copy of thing1's TD
+          let instance = JSON.parse(JSON.stringify(thing1.td));
+          const statusValueDefinition = {
             type: "object",
             properties: {
               brightness: {
@@ -1025,637 +1311,483 @@
                 }
               }
           };
-          var statusPropertyDefinition = statusValueDefinition;
-          // add the 'forms' property
-          statusPropertyDefinition["forms"] = [];
-          var thing = WoT.produce({
-            name: "mySensor",
-            properties: {
-              brightness: {
-                type: "number",
-                minimum: 0.0,
-                maximum: 100.0,
-                required: true,
-              },
-              status: statusPropertyDefinition
+          instance["name"] = "mySensor";
+          instance.properties["brightness"] = {
+            type: "number",
+            minimum: 0.0,
+            maximum: 100.0,
+            required: true,
+          };
+          instance.properties["status"] = statusValueDefinition;
+          instance.actions["getStatus"] = {
+            description: "Get status object",
+            input: null,
+            output: {
+              status : statusValueDefinition;
             },
-            actions: {
-              status: {
-                description: "Get status object",
-                input: null,
-                output: {
-                  status : statusValueDefinition;
-                },
-                forms: []
-              },
-            },
-            events: {
-              onstatuschange: statusValueDefinition;
-            },
-            links: []
-          });
-          thing.expose().then(() => {
-              thing.register();
+            forms: [...]
+          };
+          instance.events["onstatuschange"] = statusValueDefinition;
+          instance.forms = [...];  // update
+          var thing2 = new ExposedThing(instance);
+          // TODO: add service handlers
+          await thing2.expose();
           });
         } catch (err) {
            console.log("Error creating ExposedThing: " + err);
         }
       </pre>
-
-      <pre class="example highlight" title="Create a new exposed Thing from a Thing Description">
-        let thingDescription = '{ \
-          "name": "mySensor", \
-          "@context": [ "http://www.w3.org/ns/td",\
-             "https://w3c.github.io/wot/w3c-wot-common-context.jsonld" ],\
-          "@type": [ "Thing", "Sensor" ], \
-          "geo:location": "testspace", \
-          "properties": { \
-            "prop1": { \
-              "type": "number",\
-              "@type": [ "Property", "Temperature" ], \
-              "saref:TemperatureUnit": "degree_Celsius" \
-          } } }';
-        try {
-          // note that produce() fails if thingDescription contains error
-          let thing = WoT.produce(thingDescription);
-          // Interactions were added from TD
-          // WoT adds generic handler for reading any property
-          // define a specific handler for one property
-          let name = "examplePropertyName";
-          thing.setPropertyReadHandler(name, () => {
-            console.log("Handling read request for " + name);
-            return new Promise((resolve, reject) => {
-                let examplePropertyValue = 5;
-                resolve(examplePropertyValue);
-              },
-              e => {
-                console.log("Error");
-              });
-          });
-          thing.expose();
-        } catch(err) {
-           console.log("Error creating ExposedThing: " + err);
-        }
-      </pre>
-
-      <pre class="example highlight" title="Create a new exposed Thing from a TD URI">
-        // fetch an external TD, e.g., to set up a proxy for that Thing
-        WoT.fetch("http://myservice.org/mySensor/description").then(td => {
-          // WoT.produce() ignores instance-specific metadata (security, form)
-          let thing = WoT.produce(td);
-          // Interactions were added from TD
-          // add server functionality
-          // ...
-        });
-      </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section data-dfn-for="TD-structures">
-    <h2>Data types and structures</h2>
+  <section data-dfn-for="ThingDiscovery">
+    <h2>The <dfn>ThingDiscovery</dfn> interface</h2>
     <p>
-      The [[!WOT-TD]] specification defines the <a data-cite="!WOT-TD#sec-vocabulary-definition">WoT information model</a>, i.e. the data types and data structures used in <a>WoT Interactions</a>. In this API these definitions translate to dictionary objects that are extended with methods by the interfaces defined in this specification.
+      Discovery is a distributed application that requires provisioning and support from participating network nodes (clients, servers, directory services). This API models the client side of typical discovery schemes supported by various IoT deployments.
     </p>
     <p>
-      In order to avoid duplication of definitions, references to these data types and structures is defined in this section, but for their full description please refer to the <a href="">Thing Description specification</a>.
+      The <a>ThingDiscovery</a> object is constructed given a filter and provides the properties and methods controlling the discovery process.
     </p>
-    <section data-dfn-for="ValueTypes">
-      <h3>The <dfn>DataSchema</dfn> dictionary and its subclasses</h3>
-      <p>
-        Value types basically represent types that may be used in <a>JSON</a> object definitions and are used in <a>ThingFragment</a> to define <a>Properties</a>, <a>Event</a>s and <a>Action</a> parameters. Value types are represented as dictionary objects whose properties and possible sub-classes are defined in the <a data-cite="!WOT-TD#sec-data-schema-vocabulary-definition">DataSchema</a> section of [[!WOT-TD]].
-      </p>
-      <p>
-        One property of all <a>DataSchema</a> dictionary is the <code>type</code> property whose value is from a set of enumerated strings defined in the <a data-cite="!WOT-TD#dataschema">DataSchema</a> section of [[!WOT-TD]] and is referred as <dfn>DataType</dfn> in this specification.
-      </p>
-      <p>
-        Based on <code>type</code>, the following sub-classes of <a>DataSchema</a> are defined in [[!WOT-TD]]: <a data-cite="!WOT-TD#booleanschema"><dfn>BooleanSchema</dfn></a>, <a data-cite="!WOT-TD#numberschema"><dfn>NumberSchema</dfn></a>, <a data-cite="!WOT-TD#integerschema"><dfn>IntegerSchema</dfn></a>, <a data-cite="!WOT-TD#stringschema"><dfn>StringSchema</dfn></a>, <a data-cite="!WOT-TD#objectschema"><dfn>ObjectSchema</dfn></a>, <a data-cite="!WOT-TD#arrayschema"><dfn>ArraySchema</dfn></a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="SecurityScheme">
-      <h3>The <dfn>SecurityScheme</dfn> dictionary and its subclasses</h3>
-      <p>
-        Security metadata is represented as dictionary objects whose properties and sub-classes are defined in the <a data-cite="!WOT-TD#sec-security-vocabulary-definition">SecurityScheme</a> section of [[!WOT-TD]].
-      </p>
-      <p>
-        One property of the <a>SecurityScheme</a> dictionary is the <code>scheme</code> property whose value is from a set of enumerated strings defined in the <a data-cite="!WOT-TD#securityscheme">SecurityScheme</a> section of [[!WOT-TD]]. Based on <code>type</code>, multiple subclasses of <a>SecurityScheme</a> are defined.
-    </section>
-
-    <section data-dfn-for="Link">
-      <h3>The <dfn>Link</dfn> dictionary</h3>
-      <p>
-        Represents a <a href="https://tools.ietf.org/html/rfc8288">Web Link</a> with  properties defined in the <a data-cite="!WOT-TD#link">Link</a> section of [[!WOT-TD]].
-      </p>
-    </section>
-
-    <section data-dfn-for="Form">
-      <h3>The <dfn>Form</dfn> dictionary</h3>
-      <p>
-        Represents metadata describing service details, with  properties defined in the <a data-cite="!WOT-TD#form">Form</a> section of [[!WOT-TD]].
-      </p>
-    </section>
-
-    <section data-dfn-for="InteractionFragment">
-      <h3>The <code><dfn>InteractionFragment</dfn></code> dictionary</h3>
-      <p>
-        Represents the common properties of <a>WoT Interactions</a>, one of <a>Property</a>, <a>Action</a> or <a>Event</a>, as defined in the <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> section of [[!WOT-TD]]. Its subclasses are referred as <a>PropertyFragment</a>, <a>ActionFragment</a> and <a>EventFragment</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="PropertyFragment">
-      <h3>The <dfn>PropertyFragment</dfn> dictionary</h3>
-      <p>
-        Represents the <a>Property</a> interaction data that initializes a <a>ThingProperty</a> object. Its properties are defined in the <a data-cite="!WOT-TD#property">Property</a> and <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
-      </p>
-    </section>
-
-    <section data-dfn-for="ActionFragment">
-      <h3>The <dfn>ActionFragment</dfn> dictionary</h3>
-      <p>
-        Represents the <a>Action</a> interaction data that initializes a <a>ThingAction</a> object. Its properties are defined in the <a data-cite="!WOT-TD#action">Action</a> and <a data-cite="!WOT-TD#interactionpattern">InteractionPattern</a> sections of [[!WOT-TD]].
-      </p>
-    </section>
-
-    <section data-dfn-for="EventFragment">
-      <h3>The <dfn>EventFragment</dfn> dictionary</h3>
-      <p>
-        Represents the <a>Event</a> interaction data that initializes a <a>ThingEvent</a> object. Its properties are defined in the <a data-cite="!WOT-TD#event">Event</a> section of [[!WOT-TD]].
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingFragment">
-      <h3>The <dfn>ThingFragment</dfn> dictionary</h3>
-      <p>
-        The <a>ThingFragment</a> dictionary is defined as <a data-cite="!WOT-TD#thing"><b>Thing</b></a> in [[!WOT-TD]]. It is a dictionary that contains properties representing semantic metadata and interactions (<a>Properties</a>, <a>Action</a>s and <a>Event</a>s). It is used for initializing an internal representation of a <a>Thing Description</a> and its properties may be used in <a>ThingFilter</a>.
-      </p>
-    </section> <!-- ThingFragment -->
-
-    <section data-dfn-for="ThingDescription">
-    <h3>The <dfn>ThingDescription</dfn> type</h3>
-      <p>
-        Serialized representation of the <a>Thing Description</a> (a <a>JSON-LD</a> document).
-      </p>
-      <p class="note">
-        In this version of the API, <a>Thing Description</a>s are represented as an opaque <code>USVString</code> that can be transmitted between devices.
-      </p>
-    </section>
-  </section>
-
-  <section>
-    <h2>Interfaces for <a>WoT Interactions</a></h2>
-    <p>
-      The data types and structures imported from [[!WOT-TD]] are extended by this specification in order to provide the interfaces for <a>WoT Interactions</a>.
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ThingDiscovery {
+        constructor(optional ThingFilter filter = null);
+        readonly attribute ThingFilter? filter;
+        readonly attribute boolean active;
+        readonly attribute boolean done;
+        readonly attribute Error? error;
+        void start();
+        Promise&lt;ThingDescription&gt; next();
+        void stop();
+      };
+    </pre>
+    <p class="ednote">
+      The <a>ThingDiscovery</a> interface has a <code>next()</code> method and a <code>done</code> property, but it is not an <a href="">Iterable</a>. Look into <a href="https://github.com/w3c/wot-scripting-api/issues/177">Issue 177</a> for rationale.
     </p>
     <p>
-      Every <a>Thing</a> describes its metadata as defined in <a>ThingFragment</a>, and basic interactions defined as <a>Properties</a>, <a>Action</a>s and <a>Event</a>s. The following interfaces are used for representing these interactions.
+      The <dfn>discovery results</dfn> internal slot is an internal queue for temporarily storing the found <a>ThingDescription</a> objects until they are consumed by the application using the <a href="the-next-method">next()</a> method. Implementations MAY optimize the size of this queue based on e.g. the available resources and the frequency of invoking the <a href="the-next-method">next()</a> method.
+    </p>
+    <p>
+      The <dfn>filter</dfn> property represents the discovery filter of type <a>ThingFilter</a> specified for the discovery.
+    </p>
+    <p>
+      The <dfn>active</dfn> property is <code>true</code> when the discovery is actively ongoing on protocol level (i.e. new <a>TD</a>s may still arrive) and <code>false</code> otherwise.
+    </p>
+    <p>
+      The <dfn>done</dfn> property is <code>true</code> if the discovery has been completed with no more results to report and <a>discovery results</a> is also empty.
+    </p>
+    <p>
+      The <dfn>error</dfn> property represents the last error that occured during the discovery process. Typically used for critical errors that stop discovery.
     </p>
 
-    <section data-dfn-for="Interaction">
-      <h3>The <dfn>Interaction</dfn> interface</h3>
+    <section><h3>Constructing <code>ThingDiscovery</code></h3>
       <p>
-        The <a>Interaction</a> interface is an abstract class to represent <a>Thing</a> interactions: <a>Properties</a>, <a>Actions</a> and <a>Events</a>.
-      </p>
-      <p>
-        The <a>InteractionFragment</a> dictionary holds the common properties of <a>PropertyFragment</a>, <a>ActionFragment</a> and <a>EventFragment</a> dictionaries used for initializing <a>ThingProperty</a>, <a>ThingAction</a> and <a>ThingEvent</a> objects in a <a>ThingFragment</a> dictionary used for creating an <a>ExposedThing</a> object.
-      </p>
-
-      <pre class="idl">
-        interface Interaction {
-          readonly attribute (Form or FrozenArray&lt;Form&gt;) forms;
-        };
-        Interaction includes InteractionFragment;
-      </pre>
-      <p>
-        The <dfn>forms</dfn> read-only property represents the protocol bindings initialization data and is initialized by the <a>WoT Runtime</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingProperty">
-      <h3>The <dfn>ThingProperty</dfn> interface</h3>
-      <p>
-        The <a>ThingProperty</a> interface is used in <a>ConsumedThing</a> and <a>ExposedThing</a> objects to represent <a>Thing</a> <a>Property</a> interactions.
-      </p>
-      <p>
-        The <a>PropertyFragment</a> dictionary is used for initializing <a>Property</a> objects in a <a>ThingFragment</a> dictionary used for creating an <a>ExposedThing</a> object. It MUST implement one of the <a>DataSchema</a> dictionaries.
-      </p>
-      <pre class="idl">
-        interface ThingProperty: Interaction {
-          // getter for PropertyFragment properties
-          getter any(DOMString name);
-          // get and set interface for the Property
-          Promise&lt;any&gt; read();
-          Promise&lt;void&gt; write(any value);
-        };
-        ThingProperty includes PropertyFragment;
-        ThingProperty includes Observable;
-      </pre>
-      <p>
-        The <a>ThingProperty</a> interface contains all the properties defined on <a>PropertyFragment</a> as read-only properties.
-      </p>
-      <p>
-        The <dfn>type</dfn> read-only property represents the type definition for the <a>Property</a> as a <a>DataSchema</a> dictionary object.
-      </p>
-      <p>
-        The <dfn>writable</dfn> read-only property tells whether the <a>Property</a> value can be updated. If it is <code>false</code>, then the <code>set(value)</code> method SHOULD always reject.
-      </p>
-      <p>
-        The <strong><em>observable</em></strong> read-only property tells whether the <a>Property</a> supports subscribing to value change notifications. If it is <code>false</code>, then the <code>subscribe()</code> method SHOULD always fail.
-      </p>
-      <p>
-        The <strong><em>constant</em></strong> read-only property - defined in <a>DataSchema</a> - tells whether the <a>Property</a> value is a constant. If <code>true</code>, the <code>set()</code> and <code>subscribe()</code> methods SHOULD always fail.
-      </p>
-      <p>
-        The <strong><em>required</em></strong> read-only property  - defined in <a>DataSchema</a> - tells whether the <a>Property</a> should be always present on the <a>ExposedThing</a> object.
-      </p>
-      <p>
-        The <dfn>read()</dfn> method will fetch the value of the <a>Property</a>. Returns a <a>Promise</a> that resolves with the value, or rejects with an error.
-      </p>
-      <p>
-        The <dfn>write()</dfn> method will attempt to set the value of the <a>Property</a>specified in the <code>value</code> argument whose type SHOULD match the one specified by the <code>type</code> property. Returns a <a>Promise</a> that resolves on success, or rejects on an error.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingAction">
-      <h3>The <dfn>ThingAction</dfn> interface</h3>
-      <pre class="idl">
-        interface ThingAction: Interaction {
-          Promise&lt;any&gt; invoke(optional any inputValue);
-        };
-        ThingAction includes ActionFragment;
-      </pre>
-      <p>
-        The <dfn>invoke()</dfn> method when invoked, starts the <a>Action</a> interaction with the input value provided by the <var>inputValue</var> argument. If <var>inputValue</var> is <code>null</code>, the action does not take any arguments and rejects if any arguments are provided. If the value is <code>undefined</code>, the action will ignore any arguments provided. Otherwise the type of <var>inputValue</var> SHOULD match the <a>DataSchema</a> definition in the <code>input</code> property. Returns a <a>Promise</a> that will reject with an error or will resolve with a value of type defined by the <code>output</code> property.
-      </p>
-    </section>
-
-    <section data-dfn-for="ThingEvent"><h3>The <dfn>ThingEvent</dfn> interface</h3>
-      <pre class="idl">
-        interface ThingEvent: Interaction {
-        };
-        ThingEvent includes EventFragment;
-        ThingEvent includes ThingProperty;
-      </pre>
-      <p>
-        Since <a>ThingEvent</a> implements <a>Observable</a> through the <a>ThingProperty</a> interface, event subscription is done by invoking the <code>subscribe()</code> method on the event object that returns a cancelable <a>Subscription</a>.
-      </p>
-    </section>
-
-    <section data-dfn-for="ExposedEvent"><h3>The <dfn>ExposedEvent</dfn> interface</h3>
-      <pre class="idl">
-        interface ExposedEvent: ThingEvent {
-          void emit(any payload);
-        };
-      </pre>
-      <section> <h4>The <dfn>emit()</dfn> method</h4>
-        <p>
-          Emits an event that carries data specified by the <code>payload</code> argument.
-        </p>
-      </section>
-    </section>
-
-    <section><h3>The <dfn>value-matching algorithm</dfn></h3>
-      <p>
-        The value-matching algorithm is applied to a <var>value</var> input in relation to a <var>valueType</var> property of type <a>DataSchema</a>, for instance the <code>value</code> and <code>type</code> properties of a <a>PropertyFragment</a> object, or the <var>inputValue</var> parameter to the <code>invoke()</code> method of a <a>ThingAction</a> object in relation to the same object. It executes the following steps:
+        To create <a>ThingDiscovery</a> with the <a>ThingFilter</a>
+        <var>filter</var>, run the following steps:
         <ol>
           <li>
-            If <var>valueType.type</var> is not defined, or does not fully match a string enumerated in <a>DataType</a>, return <code>false</code>.
+            If <var>filter</var> is not an object or <code>null</code>, throw <code>"TypeError"</code>
+            and terminate these steps.
           </li>
           <li>
-            Otherwise, if <var>valueType.type</var> is <code>"null"</code>: if <var>value</var> is <code>null</code>, return <code>true</code>, otherwise return <code>false</code>.
+            Let <var>discovery</var> be a new <a>ThingDiscovery</a> object.
           </li>
           <li>
-            Otherwise, if <var>valueType.type</var> is <code>"boolean"</code>: if <var>value</var> is either <code>true</code> or <code>false</code>, then return <code>true</code>, otherwise return <code>false</code>.
+            Set the <a href="#dom-thingdiscovery-filter">filter</a> property to <var>filter</var>.
           </li>
           <li>
-            Otherwise, if <var>valueType.type</var> is <code>"integer"</code>: if <var>value</var> is not an integer type defined by the underlying platform (such as <code>long</code> or <code>long long</code>), then return <code>false</code>, otherwise execute the following sub-steps:
-            <ol>
-              <li>
-                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                Return <code>true</code>.
-              </li>
-            </ol>
+            Set <a href="#dom-thingdiscovery-active">active</a> and <a href="#dom-thingdiscovery-done">done</a> to <code>false</code>. Set <a href="#dom-thingdiscovery-error">error</a> to <code>null</code>.
           </li>
           <li>
-            Otherwise, if <var>valueType.type</var> is <code>"number"</code>, if <var>value</var> is not an integer or floating point type defined by the underlying platform (such as <code>long</code> or <code>long long</code> or <code>double</code>), then return <code>false</code>, otherwise otherwise execute the following sub-steps:
-            <ol>
-              <li>
-                If <var>valueType.minimum</var> is defined and <var>value</var> is not greater or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                If <var>valueType.maximum</var> is defined and <var>value</var> is not less or equal than that value, return <var>false</var>.
-              </li>
-              <li>
-                Return <code>true</code>.
-              </li>
-            </ol>
+            Return <var>discovery</var>.
+          </li>
+        </ol>
+      </p>
+      <p>
+        The <a href="the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <code>true</code>. The <a href="the-stop-method">stop()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <var>false</var>, but <a href="#dom-thingdiscovery-done">done</a> may be still <code>false</code> if there are <a>ThingDescription</a> objects in the <a>discovery results</a> not yet consumed with <a href="the-next-method">next()</a>.
+      </p>
+      <p>
+         During successive calls of <a href="the-next-method">next()</a>, <a href="#dom-thingdiscovery-active">active</a> may be <code>true</code> or <code>false</code>, but <a href="#dom-thingdiscovery-done">done</a> is set to <code>false</code> by <a href="the-next-method">next()</a> only when both <a href="#dom-thingdiscovery-active">active</a> is <code>false</code> and <a>discovery results</a> is empty.
+      </p>
+    </section>
+
+    <section data-dfn-for="DiscoveryMethod">
+      <h3>The <dfn>DiscoveryMethod</dfn> enumeration</h3>
+      <pre class="idl">
+        typedef DOMString DiscoveryMethod;
+      </pre>
+      <p>
+        Represents the discovery type to be used:
+      </p>
+      <ul>
+        <li><dfn>"any"</dfn> does not provide any restriction</li>
+        <li>
+          <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
+        </li>
+        <li>
+          <dfn>"directory"</dfn> for discovery based on a service provided by a <a>Thing Directory</a>.
+        </li>
+        <li>
+          <dfn>"multicast"</dfn> for discovering <a>Thing</a>s in the device's network by using a supported multicast protocol.
+        </li>
+      </ul>
+    </section>
+
+    <section data-dfn-for="ThingFilter">
+      <h3>The <dfn>ThingFilter</dfn> dictionary</h3>
+      <p>
+        Represents an object containing the constraints for discovering <a>Thing</a>s as key-value pairs.
+      </p>
+      <pre class="idl">
+        dictionary ThingFilter {
+          (DiscoveryMethod or DOMString) method = "any";
+          USVString? url;
+          USVString? query;
+          object? fragment;
+        };
+      </pre>
+      <p>
+        The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <code><a>DiscoveryMethod</a></code> enumeration that MAY be extended by string values defined by solutions (with no guarantee of interoperability).
+      </p>
+      <p>
+        The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <code>method</code> is <code>"directory"</code>) or that of a <a>Thing</a> (otherwise).
+      </p>
+      <p>
+        The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
+      </p>
+      <p>
+        The <dfn>fragment</dfn> property represents a template object used for matching property by property against discovered <a>Thing</a>s.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>start()</dfn> method</h3>
+      <p>
+        Starts the discovery process. The method MUST run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, set <var>this.error</var> to <code>SecurityError</code> and terminate these steps.
           </li>
           <li>
-            Otherwise, if <var>valueType.type</var> is <code>"string"</code>: if <var>value</var> is not a string type defined by the underlying platform, then return <code>false</code>, otherwise return <code>true</code>. In this case the algorithm expects a third parameter <var>valueType.enum</var> and runs the following sub-steps:
+            If discovery is not supported by the implementation, set <var>this.error</var> to <code>NotSupportedError</code> and terminate these steps.
+          </li>
+          <li>
+            If <var>this.filter</var> is defined,
             <ul>
               <li>
-                If <var>valueType.enum</var> is an array of strings, then if <var>value</var> fully matches one of the strings defined in the array, return <var>true</var>.
+                Let <var>filter</var> denote <var>this.filter</var>.
               </li>
               <li>
-                Otherwise, return <var>false</var>.
+                If <var>filter.query</var> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, set <var>this.error</var> to <code>NotSupportedError</code> and terminate these steps.
               </li>
             </ul>
           </li>
           <li>
-            Otherwise, if <var>valueType.type</var> is <code>"array"</code>, execute the following sub-steps:
+            Create the <a>discovery results</a> internal slot for storing discovered <a>ThingDescription</a> objects.
+          </li>
+          <li>
+            Request the underlying platform to start the discovery process, with the following parameters:
+            <ul>
+              <li>
+                If <var>filter.method</var> is not defined or the value is <code>"any"</code>, use the widest discovery method supported by the underlying platform.
+              </li>
+              <li>
+                Otherwise if <var>filter.method</var> is <code>"local"</code>, use the local <a>Thing Directory</a> for discovery. Usually that defines <a>Thing</a>s deployed in the same device, or connected to the device in slave mode (e.g. sensors connected via Bluetooth or a serial connection).
+              </li>
+              <li>
+                Otherwise if <var>filter.method</var> is <code>"directory"</code>, use the remote <a>Thing Directory</a> specified in <var>filter.url</var>.
+              </li>
+              <li>
+                Otherwise if <var>filter.method</var> is <code>"multicast"</code>, use all the multicast discovery protocols supported by the underlying platform.
+              </li>
+            </ul>
+          </li>
+          <li>
+            When the underlying platform has started the discovery process, set the <code>active</code> property to <code>true</code>.
+          </li>
+          <li>
+            Whenever a new <a>Thing Description</a> <var>td</var> is discovered by the underlying platform, run the following sub-steps:
             <ol>
               <li>
-                If <var>value</var> is not an array, return <code>false</code>.
+                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> <var>td</var> as a JSON object <var>json</var>. If that fails, set <var>this.error</var> to <code>SyntaxError</code>, discard <var>td</var> and continue the discovery process.
               </li>
               <li>
-                If <var>valueType.minItems</var> is defined, and <var>value</var> does not contain at least <var>valueType.minItems</var> elements, return <var>false</var>.
+                If <var>filter.query</var> is defined, check if <var>json</var> is a match for the query. The matching algorithm is encapsulated by implementations. If that returns <code>false</code>, discard <var>td</var> and continue the discovery process.
               </li>
               <li>
-                If <var>valueType.maxItems</var> is defined, and <var>value</var> contains more than <var>valueType.maxItems</var> elements, return <var>false</var>.
+                If <var>filter.fragment</var> is defined, for each property defined in it, check if that property exists in <var>json.properties</var> and has the same value. If this is <code>false</code> in any checks, discard <var>td</var> and continue the discovery process.
               </li>
               <li>
-                Otherwise, if <var>valueType.items</var> is <code>undefined</code>, return <code>false</code>.
+                Otherwise add <var>td</var> to the <a>discovery results</a>.
               </li>
               <li>
-                Otherwise, if <var>valueType.items</var> is <code>null</code>, return <code>true</code> (i.e. any type is accepted as array element, including heterogenous arrays).
-              </li>
-              <li>
-                Otherwise, for each element of the array <var>value</var> run the <a>value-matching algorithm</a> against the <var>valueType.items</var> object. If any of these runs returns <code>false</code>, then return <code>false</code>.
-              </li>
-              <li>
-                Otherwise, return <code>true</code>.
+                At this point implementations MAY control the flow of the discovery process (depending on memory constraints, for instance temporarily stop discovery if the queue is getting too large, or resume discovery when the queue is emptied sufficiently).
               </li>
             </ol>
           </li>
           <li>
-            Otherwise, if <var>type</var> is <code>"object"</code>, execute the following sub-steps:
+            Whenever an error occurs during the discovery process,
             <ol>
               <li>
-                If <var>value</var> is not an <code>Object</code>, return <code>false</code>.
+                Set <var>this.error</var> to a new <code>Error</code> object <var>error</var>. Set <var>error.name</var> to <code>'DiscoveryError'</code>.
               </li>
               <li>
-                If <var>valueType.properties</var> is not defined, return <code>false</code>.
+                 If there was an error code or message provided by the <a>Protocol Bindings</a>, set <var>error.message</var> to that value as string.
               </li>
               <li>
-                If <var>valueType.properties</var> is <code>null</code>, return <code>true</code> (i.e. accept any object value).
-              </li>
-              <li>
-                For each string in the <var>valueType.required</var> array, if it does not match a property name in the <var>value.properties</var> object or in the <var>value</var> object, then return <code>false</code>.
-              </li>
-              <li>
-                For each property with name <var>propName</var> and value <var>propDataSchema</var> found in <var>valueType.properties</var>, run the following sub-steps:
-                <ol>
-                  <li>
-                    If the result of applying the <a>value-matching algorithm</a> on the value <var>value[propName]</var> and <var>propDataSchema</var> is <var>false</var>, then return <var>false</var>.
-                  </li>
-                </ol>
-              </li>
-              <li>
-                Return <code>true</code>.
+                If the error is irrecoverable and discovery has been stopped by the underlying platform, set <code>this.active</code> to <code>false</code>.
               </li>
             </ol>
+          </li>
+          <li>
+            When the underlying platform reports the discovery process has completed, set <var>this.active</var> to <code>false</code>.
           </li>
         </ol>
       </p>
     </section>
+
+    <section>
+      <h3>The <dfn>next()</dfn> method</h3>
+      <p>
+        Provides the next discovered <a>ThingDescription</a> object. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If <var>this.active</var> is <code>true</code>, wait until the <a>discovery results</a> internal slot is not empty.
+          </li>
+          <li>
+            If <a>discovery results</a> is empty and <var>this.active</var> is <code>false</code>, set <var>this.done</var> to <code>true</code> and reject <var>promise</var>.
+          </li>
+          <li>
+            Remove the first <a>ThingDescription</a> object <var>td</var> from <a>discovery results</a>.
+          </li>
+          <li>
+            Resolve <var>promise</var> with <var>td</var> and terminate these steps.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>stop()</dfn> method</h3>
+      <p>
+        Stops or suppresses the discovery process. It might not be supported by all discovery methods and endpoints, however, any further discovery results or errors will be discarded and the discovery is marked inactive. The method MUST run the following steps:
+        <ol>
+          <li>
+            Request the underlying platform to stop the discovery process. If this returns an error, or if it is not possible, for instance when discovery is based on open ended multicast requests, the implementation SHOULD discard subsequent discovered items.
+          </li>
+          <li>
+            Set <code>this.active</code> to <code>false</code>.
+          </li>
+        </ol>
+      </p>
+    </section>
+
+    <section>
+      <h3>Discovery Examples</h3>
+      <p>
+        The following example finds <a>ThingDescription</a> objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running. Note that the discovery can end (become inactive) before the internal <a>discovery results</a> queue is emptied, so we need to continue reading <a>ThingDescription</a> objects until done. This is typical with local and directory type discoveries.
+      </p>
+      <pre class="example" title="Discover Things exposed by local hardware">
+        let discovery = new ThingDiscovery({ method: "local" });
+        do {
+          let td = await discovery.next();
+          console.log("Found Thing Description for " + td.title);
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } while (!discovery.done);
+      </pre>
+      <p>
+        The next example finds <a>ThingDescription</a> objects of <a>Thing</a>s listed in a <a>Thing Directory</a> service. We set a timeout for safety.
+      </p>
+      <pre class="example" title="Discover Things via directory">
+        let discoveryFilter = {
+          method: "directory",
+          url: "http://directory.wotservice.org"
+        };
+        let discovery = new ThingDiscovery(discoveryFilter);
+        setTimeout( () => {
+            discovery.stop();
+            console.log("Discovery stopped after timeout.");
+          },
+          3000);
+        do {
+          let td = await discovery.next();
+          console.log("Found Thing Description for " + td.title);
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } while (!discovery.done);
+        if (discovery.error) {
+          console.log("Discovery stopped because of an error: " + error.message);
+        }
+      </pre>
+      <p>
+        The next example is for an open-ended multicast discovery, which likely won't complete soon (depending on the underlying protocol), so stopping it with a timeout is a good idea. It will likely deliver results one by one.
+      </p>
+      <pre class="example" title="Discover Things in a network">
+        let discovery = new ThingDiscovery({ method: "multicast" });
+        setTimeout( () => {
+            discovery.stop();
+            console.log("Stopped open-ended discovery");
+          },
+          10000);
+        do {
+          let td = await discovery.next();
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } while (!discovery.done);
+      </pre>
+    </section> <!-- Examples -->
   </section>
 
-  <section data-dfn-for="Observable" class="informative">
-    <h2>Observables</h2>
+  <section> <h2 id="security">Security and Privacy</h2>
     <p>
-      <dfn>Observables</dfn> are <a href="https://github.com/tc39/proposal-observable">proposed</a> to be included in ECMAScript and are used for handling pushed data associated with various possible sources, for instance events, timers, streams, etc. A minimal required implementation is described here.
+      A detailed discussion of security and privacy considerations for the Web of Things, including a threat model that can be adapted to various circumstances, is
+      presented in the informative document [[!WOT-SECURITY-GUIDELINES]].
+      This section discusses only security and privacy risks and possible mitigations
+      directly relevant to the scripts and WoT Scripting API.
     </p>
-    <p class="ednote">
-      This section is informal and contains rather laconic information for implementations on what to support for interoperability.
-    </p>
-    <pre class="idl">
-      interface Observable {
-        Subscription subscribe(ObserverHandler handler,
-                               optional ErrorHandler errorHandler,
-                               optional OnComplete onComplete);
-      };
-      interface Subscription {
-        void unsubscribe();
-        readonly attribute boolean closed;
-      };
-      callback ObserverHandler = void (any value);
-      callback ErrorHandler = void (Error error);
-      callback OnComplete = void ();
-    </pre>
-
     <p>
-        The following callbacks can be provided when subscribing to an <a>Observable</a>:
-        <ul>
-          <li>
-            The <dfn>ObserverHandler</dfn> callback takes the next sample for the data in the <code>value</code> argument.
-          </li>
-          <li>
-            The <dfn>ErrorHandler</dfn> callback takes an error in the <code>value</code> argument. It is called when an error occured in producing the data the client should know about.
-          </li>
-          <li>
-            The <dfn>OnComplete</dfn> callback is called when the data source has finished sending values.
-          </li>
-        </ul>
-      </p>
-
-    <section data-dfn-for="Subscription">
-      <h3>The <dfn>Subscription</dfn> interface</h3>
-      <p>
-        Contains the <dfn>closed</dfn> property of type <code>boolean</code> that tells if the subscription is closed or active.
-      </p>
-      <p>
-        Also, contains the <dfn>unsubscribe</dfn>() method that cancels the subscription, i.e. makes a request to the underlying platform to stop receiving data from the source, and sets the <code>closed</code> property to <code>false</code>.
-      </p>
-    </section>
-
-    <section data-dfn-for="Observable">
-      <h3>The <dfn data-dfn-for="">Observable</dfn> interface</h3>
-      <p>
-        The <a>Observable</a> interface enabled subscribing to pushed data notifications by the <dfn>subscribe</dfn>() method:
-      </p>
+      A suggested set of best practices to improve security for WoT devices and
+      services has been documented in [[!WOT-SECURITY-BEST-PRACTICES]].
+      That document may be updated as security measures evolve.
+      Following these practices does not guarantee security,
+      but it might help avoid common known vulnerabilities.
+    </p>
+    <p>
+      The WoT security risks and possible mitigations are concerning the following groups:
       <ul>
         <li>
-          Initialize the data handler callback with the first function argument.
+          Implementors of WoT Runtimes that do not implement a Scripting Runtime.
+          The [[!WOT-ARCHITECTURE]] document provides generic security guidelines
+          for this group.
         </li>
         <li>
-          If the next argument is provided and is a function, initialize the error handling callback with that function, or throw on error.
+          Implementors of the WoT Scripting API in a WoT Scripting Runtime. This is the main scope and is covered in the
+          <a href="#sec-security-consideration-runtime">
+          Scripting Runtime Security and Privacy Risks</a> sub-section that
+          contains normative text regarding security.
         </li>
         <li>
-          If the third argument is provided and is a function, initialize the completion handler with that function, or throw on error.
-        </li>
-        <li>
-          After callback initializations, the implementation should request the underlying platform to provide data, error and completion notifications for the supported data source.
+          WoT script developers, covered in the
+          <a href="#sec-security-consideration-script">
+          Script Security and Privacy Risks</a> sub-section that contains
+          informative recommendations concerning security.
         </li>
       </ul>
-    </section>
-  </section> <!-- Observables -->
-
-<section> <h2 id="security">Security and Privacy</h2>
-
-  <p>
-    A detailed discussion of security and privacy considerations for the Web of Things, including a threat model that can be adapted to various circumstances, is
-    presented in the informative document [[!WOT-SECURITY-CONSIDERATIONS]].
-    This section discusses only security and privacy risks and possible mitigations
-    directly relevant to the scripts and WoT Scripting API.
-  </p>
-
-  <p>
-    A suggested set of best practices to improve security for WoT devices and
-    services has been documented in [[!WOT-SECURITY-BEST-PRACTICES]].
-    That document may be updated as security measures evolve.
-    Following these practices does not guarantee security,
-    but it might help avoid common known vulnerabilities.
-  </p>
-
-  <p>
-    The WoT security risks and possible mitigations are concerning the following groups:
-    <ul>
-      <li>
-        Implementors of WoT Runtimes that do not implement a Scripting Runtime.
-        The [[!WOT-ARCHITECTURE]] document provides generic security guidelines
-        for this group.
-      </li>
-      <li>
-        Implementors of the WoT Scripting API in a WoT Scripting Runtime. This is the main scope and is covered in the
-        <a href="#sec-security-consideration-runtime">
-        Scripting Runtime Security and Privacy Risks</a> sub-section that
-        contains normative text regarding security.
-      </li>
-      <li>
-        WoT script developers, covered in the
-        <a href="#sec-security-consideration-script">
-        Script Security and Privacy Risks</a> sub-section that contains
-        informative recommendations concerning security.
-      </li>
-    </ul>
-  </p>
-
-  <section id="sec-security-consideration-runtime">
-    <h3>Scripting Runtime Security and Privacy Risks</h3>
-    <p>
-      This section is normative and contains specific risks relevant for the WoT Scripting Runtime.
     </p>
 
-    <section id="sec-security-consideration-input">
-     <h4>Corrupted Input Security and Privacy Risk</h4>
-     <p>
-        A typical way to compromise any process is to send it a corrupted input
-        via one of the exposed interfaces. This can be done to a script instance
-        using WoT interface it exposes.
+    <section id="sec-security-consideration-runtime">
+      <h3>Scripting Runtime Security and Privacy Risks</h3>
+      <p>
+        This section is normative and contains specific risks relevant for the WoT Scripting Runtime.
       </p>
-      <dl><dt>Mitigation:</dt><dd>
-          Implementors of this API SHOULD perform validation on all script inputs.
-          In addition to input validation,
-          <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used
-          to verify that the input processing is done correctly.
-          There are many tools and techniques in existence to do such validation.
-          More details can be found in [[!WOT-SECURITY-TESTING]].
-      </dd></dl>
-    </section>
 
+      <section id="sec-security-consideration-input">
+        <h3>Corrupted Input Security and Privacy Risk</h3>
+        <p>
+          A typical way to compromise any process is to send it a corrupted input
+          via one of the exposed interfaces. This can be done to a script instance
+          using WoT interface it exposes.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY-TESTING]].
+        </dd></dl>
+      </section>
 
-    <section id="sec-security-consideration-device-direct-access">
-     <h4>Physical Device Direct Access Security and Privacy Risk</h4>
-     <p>
-        In case a script is compromised or misbehaving, the underlying physical device
-        (and potentially surrounded environment) can be damaged if a script can use directly exposed native device interfaces. If such interfaces lack safety checks on their inputs, they might bring the underlying physical device (or environment) to an unsafe state (i.e. device overheats and explodes).
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-         The WoT Scripting Runtime SHOULD avoid directly exposing the native device interfaces to the script developers. Instead, a WoT Scripting Runtime should provide a hardware abstraction layer for accessing the native device interfaces. Such hardware abstraction layer should refuse to execute commands that might put the device (or environment) to an unsafe state.
-         Additionally, in order to reduce the damage to a physical WoT device in cases a script gets compromised, it is important to minimize the number of interfaces that are exposed or accessible to a particular script based on its functionality.
-      </dd></dl>
-    </section>
+      <section id="sec-security-consideration-device-direct-access">
+        <h3>Physical Device Direct Access Security and Privacy Risk</h3>
+        <p>
+          In case a script is compromised or misbehaving, the underlying physical device (and potentially surrounded environment) can be damaged if a script can use directly exposed native device interfaces. If such interfaces lack safety checks on their inputs, they might bring the underlying physical device (or environment) to an unsafe state (i.e. device overheats and explodes).
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          The WoT Scripting Runtime SHOULD avoid directly exposing the native device interfaces to the script developers. Instead, a WoT Scripting Runtime should provide a hardware abstraction layer for accessing the native device interfaces. Such hardware abstraction layer should refuse to execute commands that might put the device (or environment) to an unsafe state.
+          Additionally, in order to reduce the damage to a physical WoT device in cases a script gets compromised, it is important to minimize the number of interfaces that are exposed or accessible to a particular script based on its functionality.
+        </dd></dl>
+      </section>
 
-    <section id="sec-security-consideration-update-provisioning">
-     <h4>Provisioning and Update Security Risk</h4>
-     <p>
-        If the WoT Scripting Runtime supports post-manufacturing provisioning
-        or updates of scripts, WoT Scripting Runtime or any related data
-        (including security credentials), it can be a major attack vector.
-        An attacker can try to modify any above described element
-        during the update or provisioning process or simply
-        provision attacker's code and data directly.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-          Post-manufacturing provisioning or update of scripts,
-          WoT Scripting Runtime or any related data should be done in a secure fashion.
-          A set of recommendations for secure update and post-manufacturing
-          provisioning can be found in [[!WOT-SECURITY-CONSIDERATIONS]].
-       </dd></dl>
-    </section>
+      <section id="sec-security-consideration-update-provisioning">
+        <h3>Provisioning and Update Security Risk</h3>
+        <p>
+          If the WoT Scripting Runtime supports post-manufacturing provisioning
+          or updates of scripts, WoT Scripting Runtime or any related data
+          (including security credentials), it can be a major attack vector.
+          An attacker can try to modify any above described element
+          during the update or provisioning process or simply
+          provision attacker's code and data directly.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+            Post-manufacturing provisioning or update of scripts,
+            WoT Scripting Runtime or any related data should be done in a secure fashion.
+            A set of recommendations for secure update and post-manufacturing
+            provisioning can be found in [[!WOT-SECURITY-GUIDELINES]].
+        </dd></dl>
+      </section>
 
-   <section id="sec-security-consideration-credentials-storage">
-     <h4>Security Credentials Storage Security and Privacy Risk</h4>
-     <p>
-        Typically the WoT Scripting Runtime needs to store the security credentials that are provisioned to a WoT device to operate in WoT network. If an attacker can compromise the confidentiality or integrity of these credentials, then it can obtain access to the WoT assets, impersonate WoT things or devices or create Denial-Of-Service (DoS) attacks.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
+      <section id="sec-security-consideration-credentials-storage">
+        <h3>Security Credentials Storage Security and Privacy Risk</h3>
+        <p>
+          Typically the WoT Scripting Runtime needs to store the security credentials that are provisioned to a WoT device to operate in WoT network. If an attacker can compromise the confidentiality or integrity of these credentials, then it can obtain access to the WoT assets, impersonate WoT things or devices or create Denial-Of-Service (DoS) attacks.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
           The WoT Scripting Runtime should securely store the provisioned security credentials, guaranteeing their integrity and confidentiality.
           In case there are more than one tenant on a single WoT-enabled device, a WoT Scripting Runtime should guarantee isolation of each tenant provisioned security credentials.
           Additionally, in order to minimize a risk that provisioned security credentials get compromised, the WoT Scripting Runtime should not expose any API for scripts to query the provisioned security credentials.
-      </dd></dl>
+        </dd></dl>
+      </section>
+    </section>
+
+    <section id="sec-security-consideration-script" class="informative">
+      <h3>Script Security and Privacy Risks</h3>
+      <p>
+        This section describes specific risks relevant for script developers.
+      </p>
+
+      <section id="sec-security-consideration-script-input">
+        <h3>Corrupted Script Input Security and Privacy Risk</h3>
+        <p>
+          A script instance may receive data formats defined by the TD, or data formats defined by the applications. While the WoT Scripting Runtime SHOULD perform validation on all input fields defined by the TD, scripts may be still exploited by input data.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY-TESTING]].
+        </dd></dl>
+      </section>
+
+      <section id="sec-security-consideration-script-processing">
+        <h3>Denial Of Service Security Risk</h3>
+        <p>
+          If a script performs a heavy functional processing on received requests before the request is authenticated, it presents a great risk for Denial-Of-Service (DOS) attacks.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          Scripts should avoid heavy functional processing without prior successful
+          authentication of requestor. The set of recommended authentication mechanisms
+          can be found in [[!WOT-SECURITY-BEST-PRACTICES]].
+        </dd></dl>
+      </section>
+
+      <section id="sec-security-consideration-script-stale-td">
+        <h3>Stale TD Security Risk</h3>
+        <p>
+          During the lifetime of a WoT network, a content of a TD can change.
+          This includes its identifier, which might not be an immutable one and might be updated periodically.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          Scripts should use this API to subscribe for notifications
+          on TD changes and do not rely on TD values to remain persistent.
+        </dd></dl>
+        <p class="ednote">
+          While stale TDs can present a potential problem for WoT network operation,
+          it might not be a security risk.
+        </p>
+      </section>
     </section>
   </section>
-
-  <section id="sec-security-consideration-script" class="informative">
-    <h3>Script Security and Privacy Risks</h3>
-    <p>
-      This section describes specific risks relevant for script developers.
-    </p>
-
-    <section id="sec-security-consideration-script-input">
-     <h4>Corrupted Script Input Security and Privacy Risk</h4>
-     <p>
-        A script instance may receive data formats defined by the TD, or data formats defined by the applications. While the WoT Scripting Runtime SHOULD perform validation on all input fields defined by the TD, scripts may be still exploited by input data.
-      </p>
-      <dl><dt>Mitigation:</dt><dd>
-          Script developers should perform validation on all application defined script inputs. In addition to input validation,
-          <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used
-          to verify that the input processing is done correctly.
-          There are many tools and techniques in existence to do such validation.
-          More details can be found in [[!WOT-SECURITY-TESTING]].
-      </dd></dl>
-    </section>
-
-    <section id="sec-security-consideration-script-processing">
-     <h4>Denial Of Service Security Risk</h4>
-     <p>
-        If a script performs a heavy functional processing on received requests before the request is authenticated, it presents a great risk for Denial-Of-Service (DOS) attacks.
-     </p>
-     <dl><dt>Mitigation:</dt><dd>
-        Scripts should avoid heavy functional processing without prior successful
-        authentication of requestor. The set of recommended authentication mechanisms
-        can be found in [[!WOT-SECURITY-BEST-PRACTICES]].
-      </dd></dl>
-    </section>
-
-    <section id="sec-security-consideration-script-stale-td">
-     <h4>Stale TD Security Risk</h4>
-     <p>
-        During the lifetime of a WoT network, a content of a TD can change.
-        This includes its identifier, which might not be an immutable one and might be updated periodically.
-     </p>
-     <dl><dt>Mitigation:</dt><dd>
-        Scripts should use this API to subscribe for notifications
-        on TD changes and do not rely on TD values to remain persistent.
-     </dd></dl>
-      <p class="ednote">
-        While stale TDs can present a potential problem for WoT network operation,
-        it might not be a security risk.
-      </p>
-    </section>
-  </section>
-
-</section>
-
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> (same as <dfn>WoT network interface</dfn>), <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
@@ -1691,20 +1823,7 @@
       are defined in [[!ENCODING]].
     </p>
     <p>
-      <dfn data-cite="!INFRA#ascii-decode">ASCII decode</dfn>,
-      <dfn data-cite="!INFRA#ascii-lowercase">ASCII lowercase</dfn>,
       <dfn data-cite="!INFRA#string">string</dfn>,
-      <dfn data-cite="!INFRA#byte">byte</dfn>,
-      <dfn data-cite="!INFRA#byte-sequence">byte sequence</dfn>,
-      <dfn data-cite="!INFRA#ordered-set">set</dfn>,
-      <dfn data-cite="!INFRA#map-exists">exists</dfn>,
-      <dfn data-cite="!INFRA#list">list</dfn>,
-      <dfn data-cite="!INFRA#list-iterate">for each</dfn>,
-      <dfn data-cite="!INFRA#iteration-continue">continue</dfn>,
-      <dfn data-cite="!INFRA#list-is-empty">is empty</dfn>,
-      <dfn data-cite="!INFRA#list-is-not-empty">is not empty</dfn>,
-      <dfn data-cite="!INFRA#list-append" data-lt="list-append">append</dfn>,
-      <dfn data-cite="!INFRA#list-contain" data-lt="list-contain">contains</dfn>,
       <dfn data-cite="!INFRA#parse-json-from-bytes">parse JSON from bytes</dfn> and
       <dfn data-cite="!INFRA#serialize-json-to-bytes">serialize JSON to bytes</dfn>,
       are defined in [[!INFRA]].
@@ -1733,6 +1852,7 @@
     </p>
     <p>
       <dfn data-cite="!ECMASCRIPT#sec-promise-objects"><a>Promise</a></dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-error-objects">Error</dfn>,
       <dfn data-cite="!ECMASCRIPT#sec-json-object">JSON</dfn>,
       <dfn data-cite="!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn>,
       <dfn data-cite="!ECMASCRIPT#sec-json.parse">JSON.parse</dfn> and
@@ -1745,43 +1865,13 @@
       <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing context</dfn>,
       <dfn data-cite="!HTML#global-object">global object</dfn>,
       <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
-      <dfn data-cite="!HTML#document">Document</dfn>,
-      <dfn data-cite="!HTML#document-base-url">document base URL</dfn>,
-      <dfn data-cite="!HTML#window"><code>Window</code></dfn>,
-      <dfn data-cite="!HTML#windowproxy"><code>WindowProxy</code></dfn>,
-      <dfn data-cite="!HTML#origin">origin</dfn>,
-      <dfn data-cite="!HTML#ascii-serialisation-of-an-origin">serialized origin</dfn>,
-      executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>,
-      <dfn data-cite="!HTML#queue-a-task">queue a task</dfn>,
-      <dfn data-cite="!HTML#task-source">task source</dfn>,
-      <dfn data-cite="!HTML#the-iframe-element">iframe</dfn>,
-      <dfn data-cite="!HTML#relevant-settings-object">relevant settings object</dfn>,
-      <dfn data-cite="!HTML#active-document">active document</dfn>,
-      <dfn data-cite="!HTML#environment-settings-object">environment settings object</dfn>,
-      <dfn data-cite="!HTML#eventhandler">EventHandler</dfn>,
+      executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
        are defined in [[!HTML5]] and are used in the context of browser implementations.
-    </p>
-    <p>
-      A <a>browsing context</a> refers to the environment in which
-      <a>Document</a> objects are presented to the user. A given
-      <a>browsing context</a> has a single <code><a>WindowProxy</a></code>
-      object, but it can have many <code>Document</code> objects, with their
-      associated <code><a>Window</a></code> objects.
-      The script execution context which invokes this API is associated with the
-      <a>browsing context</a>, which can be a <i>web app</i>, a <i>web page</i>,
-      or an <a>iframe</a>.
     </p>
     <p>
       The term
       <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">
       <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
-    </p>
-    <p>
-      <dfn data-cite="!DOM#concept-event-fire">fire an event</dfn>,
-      <dfn data-cite="!DOM#abortsignal">AbortSignal</dfn>,
-      <dfn data-cite="!DOM#abortsignal-aborted-flag">aborted flag</dfn>, and
-      <dfn data-cite="!DOM#abortsignal-add">add the following abort steps</dfn>
-      are defined in [[!DOM]].
     </p>
     <p>
       <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
@@ -1792,37 +1882,180 @@
     </p>
   </section>
 
-  <section id="conformance">
+  <section class="appendix">
+    <h2>API design rationale</h2>
     <p>
-      This document defines conformance criteria that apply to a single product: the <dfn>UA</dfn> (user agent) that implements the interfaces it contains.
+      API rationale usually belongs to a separate document, but in the WoT case
+      the complexity of the context justifies including basic rationale here.
     </p>
-    <p>
-      This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
-    </p>
-    <p>
-      The user agent (UA) may be implemented in the browser, or in a separate runtime environment, such as <a href="https://nodejs.org/en/">Node.js</a> or small embedded runtimes.
-    </p>
-    <p>
-      Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
-    </p>
-    <p>
-      Implementations that use TypeScript or ECMAScript in a runtime to implement the APIs defined in this document MUST implement them in a manner consistent with the TypeScript Bindings defined in the TypeScript specification [[!TYPESCRIPT]].
-    </p>
-    <p>
-      This document serves a general description of the WoT Scripting API. Language and runtime specific issues are discussed in separate extensions of this document.
-    </p>
+    <section> <h3>Approaches to WoT application development</h3>
+      <p>
+        The WoT Interest Group and Working Group have explored different
+        approaches to application development for WoT that have been all
+        implemented and tested.
+      </p>
+      <section> <h3>No Scripting API</h3>
+        <p>
+          It is possible to develop WoT applications that only use the
+          <a>WoT network interface</a>, typically exposed by a WoT gateway that
+          presents a REST-ful API towards clients and implements IoT protocol
+          plugins that communicate with supported IoT deployments. One such
+          implementation is the
+          <a href="https://iot.mozilla.org/">Mozilla WebThings</a> platform.
+        </p>
+      </section>
+      <section> <h3>Simple Scripting API</h3>
+        <p>
+          WoT <a>Thing</a>s show good synergy with software objects, so a
+          <a>Thing</a> can be represented as a software object, with <a>Properties</a> represented as object properties, <a>Action</a>s as methods, and
+          <a>Event</a>s as events. In addition, metadata is stored in special
+          properties. Consuming and exposing is done with factory methods that
+          produce a software object that directly represents a remote <a>Thing</a>
+          and its interactions. One such implementation is the
+          <a href="https://github.com/draggett/arena-webhub">Arena Web Hub</a>
+          project.
+        </p>
+        <p>
+          In the next example, a <a>Thing</a> that represents interactions with
+          a lock would look like the following: the <var>status</var> property
+          and the <code>open()</code> method are directly exposed on the object.
+        </p>
+        <pre class="example" title="Open a lock with a simple API">
+          let lock = await WoT.consume(‘https://td.my.com/lock-00123’);
+          console.log(lock.status);
+          lock.open('withThisKey');
+        </pre>
+      </section>
+      <section> <h3>This API, aligned with [[WOT-TD]]</h3>
+        <p>
+          Since the direct mapping of <a>Thing</a>s to software objects have had
+          some challenges, this specification takes another approach that
+          exposes software objects to represent the <a>Thing</a> metadata as
+          data property and the WoT interactions as methods. One implementation
+          is <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>
+          in the the <a href="http://www.thingweb.io/">Eclipse ThingWeb</a> project,
+          which is the current reference implementation of the API specified in
+          this document.
+        </p>
+        <p>
+          The same example now would look like the following: the
+          <var>status</var> property and the <code>open()</code> method are
+          represented indirectly.
+        </p>
+        <pre class="example" title="Open a lock">
+          let res = await fetch(‘https://td.my.com/lock-00123’);
+          let td = await res.json();
+          let lock = new ConsumedThing(td);
+          console.log(lock.readProperty(‘status’));
+          lock.invokeAction(‘open’, 'withThisKey');
+        </pre>
+      </section>
+      <p>
+        In conclusion, the WoT WG decided to explore the third option that
+        closely follows the [[WOT-TD]] specification. Based on this, a simple
+        API can also be implemented.
+        Since Scripting is an optional module in WoT, this leaves room for
+        applications that only use the WoT network interface.
+        Therefore all three approaches above are supported by [[WOT-TD]].
+      </p>
+      <p>
+        Moreover, the WoT network interface can be implemented in many languages
+        and runtimes. Consider this API an example for what needs to be taken
+        into consideration when designing a Scripting API for WoT.
+      </p>
+    </section>
+    <section> <h4>Fetching and validating a TD</h4>
+      <p>
+        The <code>fetch(url)</code> method has been part of this API in earlier versions. However, now fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details. The reason is that while simple fetch operations (covering most use cases) could be done in this API, when various fetch options were needed, there was no point in duplicating existing work to re-expose those options in this API.
+      </p>
+      <p>
+        Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
+        is defined externally in [[WOT-TD]], that is scoped out, too. This specification expects a <a>TD</a> as
+        <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[WOT-TD]] specification.
+      </p>
+    </section>
+    <section> <h4>Factory vs constructors</h4>
+      <p>
+        The factory methods for consuming and exposing <a>Thing</a>s are asynchronous and fully validate the input <a>TD</a>. In addition, one can also construct <a>ConsumedThing</a> and <a>ExposedThing</a> by providing a parsed and validated <a>TD</a>. Platform initialization is then done when needed during the WoT interactions. So applications that prefer validating a <a>TD</a> themselves, may use the constructors, whereas applications that leave validation to implementations and prefer interactions initialized up front SHOULD use the factory methods on the <a>WoT API object</a>.
+      </p>
+    </section>
+    <section> <h4>Observers</h4>
+      <p>
+        Earlier drafts used the
+        <a href="https://github.com/tc39/proposal-observable">Observer</a>
+        construct, but since it has not become standard, a new design was needed
+        that was light enough for embedded implementations. Therefore observing
+        <a>Property</a> changes and handling WoT <a>Event</a>s is done with
+        callback registrations.
+      </p>
+    </section>
+    <section> <h4>Using Events</h4>
+      <p>
+        This API ended up not using software events at all, for the following
+        reasons:
+        <ul>
+          <li>
+            Subscription to WoT <a>Event</a>s may be different from handling software events (subscription might need parameters, might involve security tokens etc).
+          </li>
+          <li>
+            Most implementations are for Node.js and browser implementations will likely be libraries (because possible dependency management issues in native implementations), using Events has been challenging.
+          </li>
+          <li>
+            Observing <a>Property</a> changes and handling WoT <a>Event</a>s is done with the solution above.
+          </li>
+        </ul>
+      </p>
+    </section>
+    <section> <h4>Polymorphic functions</h4>
+      <p>
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://w3c.github.io/wot-thing-description/#form">Form</a> definition in [[WOT-TD]].
+      </p>
+    </section>
   </section>
 
   <section class="appendix" id="Changes"><h2>Changes</h2>
     <p>
-      The following is a list of major changes to the document. For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
-    </p>
-    <p>
+      The following is a list of major changes to the document. Major versions of this specification are the following:
       <ul>
         <li>
-          Make the Scripting API refer to (rather then locally re-define) the data structures defined in the <a href="https://w3c.github.io/wot-thing-description/">Thing Description specification</a>.
+          First Public Working Draft <a href="https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/">September 2017</a>.
+        </li>
+        <li>
+          Working Draft <a href="https://www.w3.org/TR/2018/WD-wot-scripting-api-20180405/">April 2018</a>.
+        </li>
+        <li>
+          Working Draft <a href="https://www.w3.org/TR/2018/WD-wot-scripting-api-20181129/">November 2018</a>.
+        </li>
+        <li>
+          This version, introducing the following major changes:
+          <ul>
+            <li>
+              Remove <code>fetch()</code> for fetching a <a>TD</a> (delegated to external API).
+            </li>
+            <li>
+              Remove <code>Observer</code> and use <a href="https://w3ctag.github.io/design-principles/">W3C TAG recommended design patterns</a>.
+            </li>
+            <li>
+              Align the discovery API to other similar APIs (such as <a href="https://www.w3.org/TR/generic-sensor/#the-sensor-interface">W3C Generic Sensor API</a>).
+            </li>
+            <li>
+              Remove the large data definition API for constructing <a>TD</a>s and leverage using <a>ThingDescription</a> instead.
+            </li>
+            <li>
+              Add missing algorithms and rework most existing ones.
+            </li>
+            <li>
+              Allow constructors for <a>ConsumedThing</a> and <a>ExposedThing</a>.
+            </li>
+            <li>
+              Add API rationale as an appendix to this document.
+            </li>
+          </ul>
         </li>
       </ul>
+    </p>
+    <p>
+      For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
     </p>
   </section>
 
@@ -1832,22 +2065,21 @@
     </p>
       <ul>
         <li>
-          Security related metadata (https://github.com/w3c/wot-scripting-api/issues/91).
+          Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/)
         </li>
         <li>
-          Providing Protocol Binding for <a>ExposedThing</a> (https://github.com/w3c/wot-scripting-api/issues/45).
+          An explicit API for adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions on <a>ExposedThing</a> (it was present in earlier versions, but removed for complexity and a simpler way to do it.
         </li>
-        <li> Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/) </li>
       </ul>
   </section>
 
-<section class="appendix" id="idl-index">
+<section class="appendix" id="idl-index"> <h3>Full Web IDL</h3>
   <!-- ReSpec will gather all Web IDL code here. -->
 </section>
 
-  <section> <h2>Acknowledgements</h2>
+  <section class="appendix"> <h2>Acknowledgements</h2>
     <p>
-      Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster and Michael McCool for their comments and guidance.
+      Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) and Kazuaki Nimura (until December 2018) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Elena Reshetova, Michael McCool as well as the other WoT WG members for their comments, contributions and guidance.
     </p>
   </section>
 
