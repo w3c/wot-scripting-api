@@ -149,8 +149,8 @@
     <p>
       By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
     </p>
-    <p>
-      Exposing a <a>Thing</a> requires
+    <div>
+      Exposing a <a>Thing</a> requires:
       <ul>
         <li>
           defining a <a>Thing Description</a> (TD),
@@ -162,9 +162,8 @@
            then eventually publishing the <a>Thing Description</a> (for instance to a <a>Thing Directory</a> directory for easier discovery).
         </li>
       </ul>
-
       This specification describes how to expose and consume <a>Thing</a>s by a script. Also, it defines a generic API for <a>Thing</a> discovery.
-    </p>
+    </div>
     <p class="note">
       Typically scripts are meant to be used on bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s and have means to handle (e.g. install, uninstall, update etc.) and run scripts.
     </p>
@@ -208,11 +207,6 @@
       <li>
         Create a local <a>Thing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of an existing <a>Thing</a> object.
       </li>
-<!--
-  The add/remove use cases are being disputed, since add too much complexity to the spec.
-  The use cases can be solved by the use case above, edit the TD by other means,
-  then instantiate an ExposedThing.
--->
       <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
       <li>Remove a <a>Property</a> definition from the <a>Thing</a>.</li>
       <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
@@ -222,14 +216,6 @@
       <li>
         Emit a WoT <a>Event</a>, i.e. notify all subscribed listeners.
       </li>
-<!--
-      <li>
-        Provide notifications for <a>TD</a> changes to clients subscribed to that.
-        <p class="note">
-          This use case could be fulfilled by the <a>TD</a> specifying an event for TD change.
-        </p>
-      </li>
--->
       <li>Register service handlers for external requests:
         <ul>
           <li>to retrieve a <a>Property</a> value;</li>
@@ -343,14 +329,14 @@
         [[WOT-TD]] for the properties that are not explicitly defined in a given
         <a>TD</a>.
       </p>
-      <p>
+      <div>
         To <dfn>expand a TD</dfn> given <var>td</var>, run the following steps:
         <ol>
           <li>
             For each item in the <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in <a>td</a>, add the term definition with the default value specified in [[!WOT-TD]].
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section> <h3>Validating a Thing Description</h3>
@@ -358,8 +344,9 @@
         The [[!WOT-TD]] specification defines how a <a>TD</a> should be validated.
         Therefore, this API expects the <a>ThingDescription</a> objects be validated before used as parameters. This specification defines a basic <a>TD</a> validation as follows.
       </p>
-      <p>
+      <div>
         To <dfn>validate a TD</dfn> given <var>td</var>, run the following steps:
+        <ol>
           <li>
             If <var>td</var> is not an object, throw <code>"TypeError"</code>
             and terminate these steps.
@@ -374,12 +361,11 @@
             If <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation</a> fails on <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
   </section>
-</section>
 
-<section data-dfn-for="WOT">
+  <section data-dfn-for="WOT">
   <h2>The <dfn>WoT API object</dfn></h2>
   <p>
     Defines the API entry point exposed as a singleton and contains the API methods.
@@ -401,7 +387,7 @@
         Promise&lt;ConsumedThing&gt; consume(ThingDescription td);
       };
     </pre>
-    <p>
+    <div>
       Belongs to the <a>WoT Consumer</a> conformance class. Expects an <var>td</var> argument and returns a <a>Promise</a> that resolves with a <a>ConsumedThing</a> object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
       <ol>
         <li>
@@ -424,7 +410,7 @@
           Resolve <var>promise</var> with <var>thing</var>.
         </li>
       </ol>
-    </p>
+    </div>
   </section>
 
   <section> <h3>The <dfn>produce()</dfn> method</h3>
@@ -433,7 +419,7 @@
         Promise&lt;ExposedThing&gt; produce(ThingDescription td);
       };
     </pre>
-    <p>
+    <div>
       Belongs to the <a>WoT Producer</a> conformance class. Expects a <code>td</code> argument and returns a <a>Promise</a> that resolves with an <a>ExposedThing</a> object that extends <a>ConsumedThing</a> with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
       <ol>
         <li>
@@ -449,7 +435,7 @@
           Resolve <var>promise</var> with <var>thing</var>.
         </li>
       </ol>
-    </p>
+    </div>
   </section>
 
   <section> <h3>The <dfn>discover()</dfn> method</h3>
@@ -458,7 +444,7 @@
         ThingDiscovery discover(optional ThingFilter filter = null);
       };
     </pre>
-    <p>
+    <div>
       Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that will provide <a>ThingDescription</a> objects for <a>Thing Description</a>s that match an optional <var>filter</var> argument. The method MUST run the following steps:
       <ol>
         <li>
@@ -474,7 +460,7 @@
           Return <var>discovery</var>.
         </li>
       </ol>
-    </p>
+    </div>
     <p>
       Refer to the <a>ThingDiscovery</a> section for how discovery should be implemented.
     </p>
@@ -530,7 +516,7 @@
         <a>Thing Description</a> as a JSON object, one can create a
         <a>ConsumedThing</a> object.
       </p>
-      <p>
+      <div>
         To create <a>ConsumedThing</a> with the <a>ThingDescription</a>
         <var>td</var>, run the following steps:
         <ol>
@@ -547,7 +533,7 @@
             Return <var>thing</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
@@ -580,7 +566,7 @@
 
     <section>
       <h3>The <dfn>readProperty()</dfn> method</h3>
-      <p>
+      <div>
         Reads a <a>Property</a> value. Takes a string argument <var>propertyName</var> and and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns a <a>Property</a> value represented as <code>any</code> type. The method MUST run the following steps:
         <ol>
           <li>
@@ -615,12 +601,12 @@
             Otherwise resolve <var>promise</var> with <var>value</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
-      <p>
+      <div>
         Reads multiple <a>Property</a> values with one or multiple requests. Takes the <var>propertyNames</var> argument as a sequence of strings and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns an object with keys from <var>propertyNames</var> and values returned by this algorithm. The method MUST run the following steps:
         <ol>
           <li>
@@ -648,12 +634,12 @@
             Resolve <var>promise</var> with <var>result</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>readAllProperties()</dfn> method</h3>
-      <p>
+      <div>
         Reads all properties of the <a>Thing</a> with one or multiple requests. Takes an optional <a>InteractionOptions</a> <var>options</var> argument. It returns an object with keys from <a>Property</a> names and values returned by this algorithm. The method MUST run the following steps:
         <ol>
           <li>
@@ -681,12 +667,12 @@
             Resolve <var>promise</var> with <var>result</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>writeProperty()</dfn> method</h3>
-      <p>
+      <div>
         Writes a single <a>Property</a>. Takes a string argument <var>propertyName</var>, a value argument <var>value</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. The method MUST run the following steps:
         <ol>
           <li>
@@ -708,12 +694,12 @@
             Otherwise resolve <var>promise</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>writeMultipleProperties()</dfn> method</h3>
-      <p>
+      <div>
         Writes a multiple <a>Property</a> values with one request. Takes a <var>properties</var> argument as an object with keys being <a>Property</a> names and values as <a>Property</a> values and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure. The method MUST run the following steps:
         <ol>
           <li>
@@ -738,7 +724,7 @@
             Otherwise resolve <var>promise</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
@@ -751,7 +737,7 @@
 
     <section>
       <h3>The <dfn>observeProperty()</dfn> method</h3>
-      <p>
+      <div>
         Makes a request for <a>Property</a> value change notifications. Takes a string argument <var>propertyName</var>, a <a>WotListener</a>
         callback function <var>listener</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure.
         The method MUST run the following steps:
@@ -788,12 +774,12 @@
             </ul>
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>unobserveProperty()</dfn> method</h3>
-      <p>
+      <div>
         Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes a string argument <var>propertyName</var> and
         returns success or failure. The method MUST run the following steps:
         <ol>
@@ -813,12 +799,12 @@
             Otherwise resolve <var>promise</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>invokeAction()</dfn> method</h3>
-      <p>
+      <div>
         Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument <var>actionName</var>, an optional argument <var>params</var> of type <code>any</code> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
         <ol>
           <li>
@@ -840,12 +826,12 @@
             Reject <var>promise</var> with <var>value</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>subscribeEvent()</dfn> method</h3>
-      <p>
+      <div>
         Makes a request for subscribing to <a>Event</a> notifications. Takes a string argument <var>eventName</var>, a <a>WotListener</a>
         callback function <var>listener</var> and an optional <a>InteractionOptions</a> <var>options</var> argument. It returns success or failure.
         The method MUST run the following steps:
@@ -875,12 +861,12 @@
             as parameter.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>unsubscribeEvent()</dfn> method</h3>
-      <p>
+      <div>
         Makes a request for unsubscribing from <a>Event</a> notifications. Takes a string argument <var>eventName</var> and returns success or failure. The method MUST run the following steps:
         <ol>
           <li>
@@ -899,7 +885,7 @@
             Otherwise resolve <var>promise</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
@@ -980,7 +966,7 @@
       <p class="note">
         Before invoking <a href="#dom-exposedthing-expose">expose()</a>, the <a>ExposedThing</a> object does not serve any requests. This allows first constructing <a>ExposedThing</a> and then initialize its <a>Properties</a> and service handlers before starting serving requests.
       </p>
-      <p>
+      <div>
         To construct an <a>ExposedThing</a> with the <a>ThingDescription</a>
         <var>td</var>, run the following steps:
         <ol>
@@ -1000,7 +986,7 @@
             Return <var>thing</var>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
     <section>
       <h3>Methods inherited from <a>ConsumedThing</a></h3>
@@ -1035,7 +1021,7 @@
     </section>
 
     <section> <h3>Handling <a>Property</a> read requests</h3>
-      <p>
+      <div>
         When a network request for reading <a>Property</a> <var>propertyName</var> is received by the implementation, run the following steps:
         <ol>
           <li>
@@ -1051,11 +1037,11 @@
             if there is no default handler defined by the implementation, return <a>NotSupportedError</a> with the reply and terminate these steps.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section> <h3>Handling <a>Property</a> observe requests</h3>
-      <p>
+      <div>
         When a network request for observing a <a>Property</a> <var>propertyName</var> is received by the implementation, run the following steps:
         <ol>
           <li>
@@ -1066,7 +1052,7 @@
             Save the request sender information to the <a>Property</a>'s <a>internal observer list</a> in order to be able to notify about <a>Property</a> value changes.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section data-dfn-for="PropertyWriteHandler">
@@ -1089,7 +1075,7 @@
     </section>
 
     <section> <h3>Handling <a>Property</a> write requests</h3>
-      <p>
+      <div>
         When a network request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, implementations SHOULD run the following <dfn>update property steps</dfn>, given <var>propertyName</var>, <var>value</var> and <var>mode</var> set to <code>"single"</code>:
         <ol>
           <li>
@@ -1107,13 +1093,14 @@
               <li>
                 For each item stored in the <a>internal observer list</a> of the <a>Property</a> with <var>propertyName</var>, send an observe reply with the new value attached.
               </li>
+            </ol>
           </li>
           <li>
             If there is no handler to handle the request, return <a>NotSupportedError</a> in the reply and terminate these steps.
           </li>
         </ol>
-      </p>
-      <p>
+      </div>>
+      <div>
         When a network request for writing multiple <a>Properties</a> given in an object <var>propertyNames</var> is received, run the following steps:
         <ol>
           <li>
@@ -1122,7 +1109,8 @@
           <li>
             Reply to the request (by sending a single or multiple replies) according to the <a>Protocol Bindings</a> defined for the <a>Property</a>.
           </li>
-      </p>
+        </ol>
+      </div>
     </section>
 
     <section data-dfn-for="ActionHandler">
@@ -1149,7 +1137,7 @@
     </section>
 
     <section> <h3>Handling <a>Action</a> requests</h3>
-      <p>
+      <div>
         When a network request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
@@ -1162,11 +1150,11 @@
             Otherwise return <a>NotSupportedError</a> with the reply and terminate these steps.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
-      <p>
+      <div>
         Takes <var>name</var> as string argument denoting an <a>Event</a> name, and a <var>data</var> argument of <code>any</code> type. The method MUST run the following steps:
         <ol>
           <li>
@@ -1179,11 +1167,11 @@
             Make a request to the underlying platform to send an <a>Event</a> with <var>data</var> attached as property, using the <a>Protocol Bindings</a>, then terminate these steps.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section> <h3>The <dfn>expose()</dfn> method</h3>
-      <p>
+      <div>
         Start serving external requests for the <a>Thing</a>, so that <a>WoT Interactions</a> using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible. The method MUST run the following steps:
         <ol>
           <li>
@@ -1216,11 +1204,11 @@
             Otherwise resolve <var>promise</var> and terminate these steps.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section> <h3>The <dfn>destroy()</dfn> method</h3>
-      <p>
+      <div>
         Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method. The method MUST run the following steps:
         <ol>
           <li>
@@ -1239,7 +1227,7 @@
             Otherwise resolve <var>promise</var> and terminate these steps.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
@@ -1383,7 +1371,7 @@
     </p>
 
     <section><h3>Constructing <code>ThingDiscovery</code></h3>
-      <p>
+      <div>
         To create <a>ThingDiscovery</a> with the <a>ThingFilter</a>
         <var>filter</var>, run the following steps:
         <ol>
@@ -1404,7 +1392,7 @@
             Return <var>discovery</var>.
           </li>
         </ol>
-      </p>
+      </div>
       <p>
         The <a href="the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <code>true</code>. The <a href="the-stop-method">stop()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <var>false</var>, but <a href="#dom-thingdiscovery-done">done</a> may be still <code>false</code> if there are <a>ThingDescription</a> objects in the <a>discovery results</a> not yet consumed with <a href="the-next-method">next()</a>.
       </p>
@@ -1464,7 +1452,7 @@
 
     <section>
       <h3>The <dfn>start()</dfn> method</h3>
-      <p>
+      <div>
         Starts the discovery process. The method MUST run the following steps:
         <ol>
           <li>
@@ -1545,12 +1533,12 @@
             When the underlying platform reports the discovery process has completed, set <var>this.active</var> to <code>false</code>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>next()</dfn> method</h3>
-      <p>
+      <div>
         Provides the next discovered <a>ThingDescription</a> object. The method MUST run the following steps:
         <ol>
           <li>
@@ -1569,12 +1557,12 @@
             Resolve <var>promise</var> with <var>td</var> and terminate these steps.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
       <h3>The <dfn>stop()</dfn> method</h3>
-      <p>
+      <div>
         Stops or suppresses the discovery process. It might not be supported by all discovery methods and endpoints, however, any further discovery results or errors will be discarded and the discovery is marked inactive. The method MUST run the following steps:
         <ol>
           <li>
@@ -1584,7 +1572,7 @@
             Set <code>this.active</code> to <code>false</code>.
           </li>
         </ol>
-      </p>
+      </div>
     </section>
 
     <section>
@@ -1658,7 +1646,7 @@
       Following these practices does not guarantee security,
       but it might help avoid common known vulnerabilities.
     </p>
-    <p>
+    <div>
       The WoT security risks and possible mitigations are concerning the following groups:
       <ul>
         <li>
@@ -1679,7 +1667,7 @@
           informative recommendations concerning security.
         </li>
       </ul>
-    </p>
+    </div>
 
     <section id="sec-security-consideration-runtime">
       <h3>Scripting Runtime Security and Privacy Risks</h3>
@@ -1992,7 +1980,7 @@
       </p>
     </section>
     <section> <h4>Using Events</h4>
-      <p>
+      <div>
         This API ended up not using software events at all, for the following
         reasons:
         <ul>
@@ -2006,7 +1994,7 @@
             Observing <a>Property</a> changes and handling WoT <a>Event</a>s is done with the solution above.
           </li>
         </ul>
-      </p>
+      </div>
     </section>
     <section> <h4>Polymorphic functions</h4>
       <p>
@@ -2016,7 +2004,7 @@
   </section>
 
   <section class="appendix" id="Changes"><h2>Changes</h2>
-    <p>
+    <div>
       The following is a list of major changes to the document. Major versions of this specification are the following:
       <ul>
         <li>
@@ -2055,16 +2043,15 @@
           </ul>
         </li>
       </ul>
-    </p>
+    </div>
     <p>
       For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
     </p>
   </section>
 
   <section> <h3 class="appendix" id="openissues">Open issues</h3>
-    <p>
+    <div>
       The following problems are being discussed and need most attention:
-    </p>
       <ul>
         <li>
           Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/)
@@ -2073,6 +2060,7 @@
           An explicit API for adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions on <a>ExposedThing</a> (it was present in earlier versions, but removed for complexity and a simpler way to do it.
         </li>
       </ul>
+    </div>
   </section>
 
 <section class="appendix" id="idl-index"> <h3>Full Web IDL</h3>
