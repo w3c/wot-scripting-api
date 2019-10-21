@@ -1986,7 +1986,7 @@ W3C
 </abbr>
 maintains
 a
-<a rel="disclosure" href="">
+<a rel="disclosure" href= "https://www.w3.org/2004/01/pp-impl/95969/status">
 public
 list
 of
@@ -3319,21 +3319,23 @@ WOT-TD
 </del>
 </cite>
 <ins class="diff-chg">]
-</ins></a></li></ol></li><li class="tocline"><a class="tocxref" href= "#fetching-and-validating-a-td"><bdi class="secno"><ins class="diff-chg">
-A.2
+</ins>
+</a>
+</li>
+</ol>
+</li>
+<li class="tocline">
+<a class="tocxref" href= "#fetching-and-validating-a-td">
+<bdi class="secno">
+<ins class="diff-chg">A.2
 </ins></bdi><ins class="diff-chg">
 Fetching
 and
 validating
 a
 TD
-</ins>
-</a>
-</li>
-<li class="tocline">
-<a class="tocxref" href= "#factory-vs-constructors">
-<bdi class="secno">
-<ins class="diff-chg">A.3
+</ins></a></li><li class="tocline"><a class="tocxref" href= "#factory-vs-constructors"><bdi class="secno"><ins class="diff-chg">
+A.3
 </ins></bdi><ins class="diff-chg">
 Factory
 vs
@@ -4299,8 +4301,9 @@ i.e.
 notify
 all
 <del class="diff-old">listeners
+</del>
 subscribed
-to
+<del class="diff-old">to
 that
 Event
 .
@@ -4311,9 +4314,8 @@ TD
 changes
 to
 clients
-</del>
 subscribed
-<del class="diff-old">to
+to
 that.
 Mark/unmark
 the
@@ -5826,11 +5828,12 @@ Description
 </a>
 </h3>
 <p>
-<ins class="diff-new">Note
+<ins class="diff-chg">Note
 that
 [
-</ins><cite><a class="bibref" href="#bib-wot-td" title= "WoT Thing Description " data-link-type="biblio"><ins class="diff-new">
-WOT-TD
+</ins><cite>
+<a class="bibref" href="#bib-wot-td" title= "WoT Thing Description " data-link-type="biblio">
+<ins class="diff-new">WOT-TD
 </ins>
 </a>
 <del class="diff-old">dictionary
@@ -7171,11 +7174,11 @@ Expects
 a
 <del class="diff-old">URL
 (e.g.
-"file://..."
-or
 </del>
 <code>
-<del class="diff-old">"https://..."
+<del class="diff-old">"file://..."
+or
+"https://..."
 </del>
 <ins class="diff-chg">td
 </ins>
@@ -7384,16 +7387,16 @@ Belongs
 </ins>
 to
 <del class="diff-old">fetch
+</del>
 the
-content
+<del class="diff-old">content
 of
 url
 as
 described
 by
-</del>
 the
-<del class="diff-old">Protocol
+Protocol
 Bindings
 </del>
 <a href="#dfn-wot-discovery" class="internalDFN" data-link-type="dfn">
@@ -7931,7 +7934,10 @@ type
 <ins class="diff-chg">data
 </ins></span><ins class="diff-chg">
 );
-</ins></span></pre><section id="constructing-consumedthing"><h3 id="x6-1-constructing-consumedthing">
+</ins></span>
+</pre>
+<section id="constructing-consumedthing">
+<h3 id="x6-1-constructing-consumedthing">
 <bdi class= "secno">
 <ins class="diff-new">6.1
 </ins></bdi><ins class="diff-new">
@@ -11217,9 +11223,9 @@ ThingAction
 </a>
 <del class="diff-old">items.
 The
+ActionMap
 </del>
-<del class="diff-old">ActionMap
-interface
+<del class="diff-old">interface
 represents
 </del>
 </h3>
@@ -13732,11 +13738,11 @@ of
 </ins>
 </var>
 <del class="diff-old">argument
+and
+qualifiers
 </del>
 and
-<del class="diff-old">qualifiers
-and
-initialization
+<del class="diff-old">initialization
 value
 provided
 by
@@ -14014,8 +14020,9 @@ handlers
 MAY
 </ins></em><ins class="diff-chg">
 use
+</ins>
 the
-default
+<ins class="diff-new">default
 handlers,
 thereby
 extending
@@ -14029,9 +14036,8 @@ also
 bypass
 them,
 overriding
-</ins>
 the
-<ins class="diff-new">default
+default
 behavior.
 Finally,
 the
