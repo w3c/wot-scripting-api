@@ -1176,13 +1176,13 @@ version:
 <dt>
 Editors:
 </dt>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="57789">
 <span class="p-name fn">
 Zoltan
 Kis
 </span>
 (
-<a class="p-org org h-org h-card" href= "https://www.intel.com/">
+<a class= "p-org org h-org h-card" href= "https://www.intel.com/">
 Intel
 </a>
 )
@@ -1194,19 +1194,19 @@ Fujitsu
 Ltd.
 )
 </del>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="39497">
 <span class="p-name fn">
 Daniel
 Peintner
 </span>
 (
-<a class="p-org org h-org h-card" href= "https://www.siemens.com/">
+<a class= "p-org org h-org h-card" href="https://www.siemens.com/">
 Siemens
 AG
 </a>
 )
 </dd>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="74472">
 <span class="p-name fn">
 Johannes
 Hund
@@ -1224,11 +1224,11 @@ the
 GitHub
 repository
 </del>
-<dd class="p-author h-card vcard">
+<dd class="p-author h-card vcard" data-editor-id="59208">
 <span class="p-name fn">
-<ins class="diff-new">Kazuaki
+<ins class="diff-chg">Kazuaki
 Nimura
-</ins></span><ins class="diff-new">
+</ins></span><ins class="diff-chg">
 (Former
 Editor,
 at
@@ -4301,9 +4301,8 @@ i.e.
 notify
 all
 <del class="diff-old">listeners
-</del>
 subscribed
-<del class="diff-old">to
+to
 that
 Event
 .
@@ -4314,8 +4313,9 @@ TD
 changes
 to
 clients
+</del>
 subscribed
-to
+<del class="diff-old">to
 that.
 Mark/unmark
 the
@@ -7174,11 +7174,11 @@ Expects
 a
 <del class="diff-old">URL
 (e.g.
+"file://..."
+or
 </del>
 <code>
-<del class="diff-old">"file://..."
-or
-"https://..."
+<del class="diff-old">"https://..."
 </del>
 <ins class="diff-chg">td
 </ins>
@@ -7934,10 +7934,7 @@ type
 <ins class="diff-chg">data
 </ins></span><ins class="diff-chg">
 );
-</ins></span>
-</pre>
-<section id="constructing-consumedthing">
-<h3 id="x6-1-constructing-consumedthing">
+</ins></span></pre><section id="constructing-consumedthing"><h3 id="x6-1-constructing-consumedthing">
 <bdi class= "secno">
 <ins class="diff-new">6.1
 </ins></bdi><ins class="diff-new">
@@ -9049,14 +9046,17 @@ The
 </code>
 </dfn>
 <ins class="diff-new">method
-</ins><a class= "self-link" aria-label="§" href= "#the-readmultipleproperties-method"></a></h3><div><p><ins class="diff-new">
-Reads
+</ins><a class= "self-link" aria-label="§" href= "#the-readmultipleproperties-method">
+</a>
+</h3>
+<div>
+<p>
+<ins class="diff-new">Reads
 multiple
 </ins><a href="#dfn-properties" class="internalDFN" data-link-type="dfn"><ins class="diff-new">
 Property
-</ins>
-</a>
-<ins class="diff-new">values
+</ins></a><ins class="diff-new">
+values
 </ins>
 with
 <ins class="diff-new">one
@@ -13738,11 +13738,11 @@ of
 </ins>
 </var>
 <del class="diff-old">argument
-and
-qualifiers
 </del>
 and
-<del class="diff-old">initialization
+<del class="diff-old">qualifiers
+and
+initialization
 value
 provided
 by
@@ -13804,11 +13804,11 @@ object
 for
 supporting
 chaining.
-5.8
+</del>
+<del class="diff-old">5.8
 The
 removeEvent()
-</del>
-<del class="diff-old">method
+method
 </del>
 <a class="self-link" aria-label="§" href= "#methods-inherited-from-consumedthing">
 </a>
@@ -14929,15 +14929,15 @@ argument
 has
 been
 updated
+</ins>
 with
-</ins><code><ins class="diff-new">
-value
+<code>
+<ins class="diff-new">value
 </ins></code>,<ins class="diff-new">
 or
 rejects
-</ins>
 with
-<ins class="diff-new">an
+an
 error
 if
 </ins>
@@ -18903,9 +18903,9 @@ SHOULD
 always
 fail.
 The
-required
 </del>
-<del class="diff-old">read-only
+<del class="diff-old">required
+read-only
 property
 -
 defined
@@ -19576,17 +19576,17 @@ and
 match
 it
 against
+</ins>
 the
-</ins><a href="#dfn-thing-descriptions" class="internalDFN" data-link-type="dfn"><ins class="diff-new">
-Thing
+<a href="#dfn-thing-descriptions" class="internalDFN" data-link-type="dfn">
+<ins class="diff-new">Thing
 Description
 </ins></a><ins class="diff-new">
 s
 found
 during
-</ins>
 the
-<ins class="diff-new">discovery
+discovery
 process.
 If
 queries
@@ -19757,13 +19757,13 @@ is
 <del class="diff-old">either
 true
 or
-false
+</del>
+<code>
+<del class="diff-old">false
 ,
 then
 return
-</del>
-<code>
-<del class="diff-old">true
+true
 </del>
 <ins class="diff-chg">"local"
 </ins>
@@ -19844,14 +19844,14 @@ platform
 as
 long
 or
-long
+</del>
+<code>
+<del class="diff-old">long
 long
 ),
 then
 return
-</del>
-<code>
-<del class="diff-old">false
+false
 </del>
 <ins class="diff-chg">"directory"
 </ins>
@@ -23502,22 +23502,22 @@ record
 parse
 a
 URL
-</ins></a></dfn>,<dfn data-dfn-type="dfn" id= "dfn-absolute-url-string" data-no-export=""><a href= "https://url.spec.whatwg.org/#absolute-url-string"><ins class="diff-chg">
-absolute-URL
+</ins></a></dfn>,<dfn data-dfn-type="dfn" id= "dfn-absolute-url-string" data-no-export="">
+<a href= "https://url.spec.whatwg.org/#absolute-url-string">
+<ins class="diff-new">absolute-URL
 string
-</ins></a></dfn>,<dfn data-dfn-type="dfn" id= "dfn-path-absolute-url-string" data-no-export=""><a href= "https://url.spec.whatwg.org/#path-absolute-url-string"><ins class="diff-chg">
+</ins></a></dfn>,<dfn data-dfn-type="dfn" id= "dfn-path-absolute-url-string" data-no-export=""><a href= "https://url.spec.whatwg.org/#path-absolute-url-string"><ins class="diff-new">
 path-absolute-URL
 string
-</ins></a>
+</ins>
+</a>
 </dfn>,
 <dfn data-dfn-type="dfn" id= "dfn-basic-url-parser" data-no-export="">
 <a href= "https://url.spec.whatwg.org/#concept-basic-url-parser">
 <ins class="diff-new">basic
 URL
 parser
-</ins>
-</a>
-</dfn>
+</ins></a></dfn>
 are
 defined
 in
@@ -23949,11 +23949,11 @@ URIError
 <a href= "https://tc39.github.io/ecma262/#sec-promise-objects">
 </a>
 <del class="diff-old">,
-</del>
-<del class="diff-old">script
+script
 execution
 context
-,
+</del>
+<del class="diff-old">,
 </del>
 <a data-link-type="dfn" href= "https://tc39.github.io/ecma262/#sec-promise-objects">
 Promise
