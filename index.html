@@ -20,10 +20,10 @@
         noIDLIn:              true,
         format:               'markdown',
         editors: [
-          { name: "Zoltan Kis", company: "Intel", companyURL: "https://www.intel.com/" },
-          { name: "Daniel Peintner", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
-          { name: "Johannes Hund", note: "Former Editor, when at Siemens AG" },
-          { name: "Kazuaki Nimura", note: "Former Editor, at Fujitsu Ltd." },
+          { name: "Zoltan Kis", w3cid: "57789", company: "Intel", companyURL: "https://www.intel.com/" },
+          { name: "Daniel Peintner", w3cid: "39497", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
+          { name: "Johannes Hund", w3cid: "74472", note: "Former Editor, when at Siemens AG" },
+          { name: "Kazuaki Nimura", w3cid: "59208", note: "Former Editor, at Fujitsu Ltd." },
         ],
         wg:           "Web of Things Working Group",
         wgURI:        "https://www.w3.org/WoT/WG/",
@@ -54,16 +54,16 @@
         ],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
-            href:"https://w3c.github.io/wot-architecture/",
+            href:"https://www.w3.org/TR/2019/CR-wot-architecture-20190516/",
             title: "Web of Things Architecture",
             publisher: "W3C",
-            date: "20 August 2017"
+            date: "16 May 2019"
           },
           "WOT-TD" : {
-            href:"https://w3c.github.io/wot-thing-description/",
+            href:"https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/",
             title: "WoT Thing Description ",
             publisher: "W3C",
-            date: "20 August 2017"
+            date: "16 May 2019"
           },
           "WOT-PROTOCOL-BINDINGS" : {
             href:"https://w3c.github.io/wot-binding-templates/",
@@ -115,7 +115,7 @@
 
   <section id="abstract">
     <p>
-      The main <a>Web of Things</a> (WoT) concepts are described in the <a href="https://w3c.github.io/wot-architecture/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
+      The main <a>Web of Things</a> (WoT) concepts are described in the <a href="https://www.w3.org/TR/2019/CR-wot-architecture-20190516/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
     </p>
     <p>
       Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
@@ -124,7 +124,7 @@
       This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
     </p>
     <p>
-      The specification deliberately follows the <a href="https://w3c.github.io/wot-thing-description">WoT Thing Description specification</a> closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+      The specification deliberately follows the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/">WoT Thing Description specification</a> closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
     </p>
     <p class="ednote">
       This specification is implemented at least by the <a href="http://www.thingweb.io/">Thingweb</a> project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot">examples</a>. Other, closed source implementations have been made by WG member companies and tested against <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a> in plug-fests.
@@ -144,7 +144,7 @@
   <section id="introduction"> <h2>Introduction</h2>
     <p>
       WoT provides layered interoperability based on how <a>Thing</a>s are used:
-      "consumed" and "exposed", as <a href="https://w3c.github.io/wot-architecture/#terminology">defined</a> in [[WOT-ARCHITECTURE]].
+      "consumed" and "exposed", as <a href="https://www.w3.org/TR/2019/CR-wot-architecture-20190516/#terminology">defined</a> in [[WOT-ARCHITECTURE]].
     </p>
     <p>
       By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
@@ -302,7 +302,7 @@
 
     <p>
       Represents a <a>Thing Description</a> (<a>TD</a>) as defined in [[!WOT-TD]]. It is expected to be
-      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation</a>.
+      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a>.
     </p>
 
     <section> <h3> Fetching a Thing Description</h3>
@@ -325,7 +325,7 @@
     <section> <h3>Expanding a Thing Description</h3>
       <p>
         Note that [[WOT-TD]] allows using a shortened <a>Thing Description</a>
-        by the means of <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in
+        by the means of <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in
         [[WOT-TD]] for the properties that are not explicitly defined in a given
         <a>TD</a>.
       </p>
@@ -333,7 +333,7 @@
         To <dfn>expand a TD</dfn> given <var>td</var>, run the following steps:
         <ol>
           <li>
-            For each item in the <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in <a>td</a>, add the term definition with the default value specified in [[!WOT-TD]].
+            For each item in the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in <a>td</a>, add the term definition with the default value specified in [[!WOT-TD]].
           </li>
         </ol>
       </div>
@@ -353,12 +353,12 @@
           </li>
           <li>
             If any of the mandatory properties defined in [[!WOT-TD]] for
-            <a href="https://w3c.github.io/wot-thing-description/#thing">Thing</a>
-            that don't have <a href="https://w3c.github.io/wot-thing-description/#sec-default-values">default definitions</a>
+            <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#thing">Thing</a>
+            that don't have <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">default definitions</a>
             are missing from <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
           </li>
           <li>
-            If <a href="https://w3c.github.io/wot-thing-description/#json-schema-4-validation">JSON schema validation</a> fails on <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
+            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a> fails on <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
           </li>
         </ol>
       </div>
@@ -588,7 +588,7 @@
             Run the <dfn>validate Property value</dfn> sub-steps on <var>value</var>:
             <ol>
               <li>
-                Based on the <a href="https://w3c.github.io/wot-thing-description/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getThingDescription().properties[</code><var>propertyName</var><code>]</code>.
+                Based on the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getThingDescription().properties[</code><var>propertyName</var><code>]</code>.
               </li>
               <li>
                 If this fails, throw <code>SyntaxError</code>, otherwise return <var>value</var>.
@@ -1355,7 +1355,7 @@
       The <a>ThingDiscovery</a> interface has a <code>next()</code> method and a <code>done</code> property, but it is not an <a href="">Iterable</a>. Look into <a href="https://github.com/w3c/wot-scripting-api/issues/177">Issue 177</a> for rationale.
     </p>
     <p>
-      The <dfn>discovery results</dfn> internal slot is an internal queue for temporarily storing the found <a>ThingDescription</a> objects until they are consumed by the application using the <a href="the-next-method">next()</a> method. Implementations MAY optimize the size of this queue based on e.g. the available resources and the frequency of invoking the <a href="the-next-method">next()</a> method.
+      The <dfn>discovery results</dfn> internal slot is an internal queue for temporarily storing the found <a>ThingDescription</a> objects until they are consumed by the application using the <a href="#the-next-method">next()</a> method. Implementations MAY optimize the size of this queue based on e.g. the available resources and the frequency of invoking the <a href="#the-next-method">next()</a> method.
     </p>
     <p>
       The <dfn>filter</dfn> property represents the discovery filter of type <a>ThingFilter</a> specified for the discovery.
@@ -1394,10 +1394,10 @@
         </ol>
       </div>
       <p>
-        The <a href="the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <code>true</code>. The <a href="the-stop-method">stop()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <var>false</var>, but <a href="#dom-thingdiscovery-done">done</a> may be still <code>false</code> if there are <a>ThingDescription</a> objects in the <a>discovery results</a> not yet consumed with <a href="the-next-method">next()</a>.
+        The <a href="#the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <code>true</code>. The <a href="the-stop-method">stop()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <var>false</var>, but <a href="#dom-thingdiscovery-done">done</a> may be still <code>false</code> if there are <a>ThingDescription</a> objects in the <a>discovery results</a> not yet consumed with <a href="#the-next-method">next()</a>.
       </p>
       <p>
-         During successive calls of <a href="the-next-method">next()</a>, <a href="#dom-thingdiscovery-active">active</a> may be <code>true</code> or <code>false</code>, but <a href="#dom-thingdiscovery-done">done</a> is set to <code>false</code> by <a href="the-next-method">next()</a> only when both <a href="#dom-thingdiscovery-active">active</a> is <code>false</code> and <a>discovery results</a> is empty.
+         During successive calls of <a href="#the-next-method">next()</a>, <a href="#dom-thingdiscovery-active">active</a> may be <code>true</code> or <code>false</code>, but <a href="#dom-thingdiscovery-done">done</a> is set to <code>false</code> by <a href="#the-next-method">next()</a> only when both <a href="#dom-thingdiscovery-active">active</a> is <code>false</code> and <a>discovery results</a> is empty.
       </p>
     </section>
 
@@ -1998,7 +1998,7 @@
     </section>
     <section> <h4>Polymorphic functions</h4>
       <p>
-        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://w3c.github.io/wot-thing-description/#form">Form</a> definition in [[WOT-TD]].
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a> definition in [[WOT-TD]].
       </p>
     </section>
   </section>
