@@ -78,7 +78,7 @@ export interface ThingDiscovery {
  * WoT provides a unified representation for data exchange between Things, standardized in the Wot Things Description specification.
  * In this version of the API, Thing Descriptions is expected to be a parsed JSON object.
  */
-export declare type ThingDescription = object | { [key: string]: any; };
+export declare type ThingDescription = { [key: string]: any; };
 
 
 /**
