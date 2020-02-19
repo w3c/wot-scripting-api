@@ -1088,16 +1088,31 @@
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the service handler  for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
+        Takes <code>name</code> as string argument and <code>writeHandler</code>
+        as argument of type <a>PropertyWriteHandler</a>. Sets the service handler
+        that will be used for serving write requests for writing the specified
+        <a>Property</a> matched by <code>name</code>. Throws on error.
+        Returns a reference to <var>this</var> object for supporting chaining.
+      </p>
+      <p class="note">
+        Note that even for readonly <a>Properties</a> it is possible to specify
+        a write handler, as explained in <a href="https://github.com/w3c/wot-scripting-api/issues/199">Issue 199</a>. In this case, the write
+        handler may define in an application-specific way to fail the request.
       </p>
       <p>
-        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change, based on the <a>Thing Description</a>.
+        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update if the <a>Property</a> is
+        writeable and notifying observers on change if the <a>Property</a> is
+        observeable, based on the <a>Thing Description</a>.
       </p>
     </section>
 
     <section> <h3>Handling <a>Property</a> write requests</h3>
       <div>
-        When a network request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, implementations SHOULD run the following <dfn>update property steps</dfn>, given <var>propertyName</var>, <var>value</var> and <var>mode</var> set to <code>"single"</code>:
+        When a network request for writing a <a>Property</a> <var>propertyName</var>
+        with a new value <var>value</var> is received, implementations SHOULD run
+        the following <dfn>update property steps</dfn>, given
+        <var>propertyName</var>, <var>value</var> and <var>mode</var> set to
+        <code>"single"</code>:
         <ol>
           <li>
             If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
@@ -1120,7 +1135,7 @@
             If there is no handler to handle the request, return <a>NotSupportedError</a> in the reply and terminate these steps.
           </li>
         </ol>
-      </div>>
+      </div>
       <div>
         When a network request for writing multiple <a>Properties</a> given in an object <var>propertyNames</var> is received, run the following steps:
         <ol>
