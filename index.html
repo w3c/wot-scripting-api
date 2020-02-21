@@ -18,7 +18,6 @@
         crEnd:                "",
         inlineCSS:            true,
         noIDLIn:              true,
-        format:               'markdown',
         editors: [
           { name: "Zoltan Kis", w3cid: "57789", company: "Intel", companyURL: "https://www.intel.com/" },
           { name: "Daniel Peintner", w3cid: "39497", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
@@ -301,10 +300,11 @@
     </pre>
 
     <p>
-      Represents a <a>Thing Description</a> (<a>TD</a>) as defined in [[!WOT-TD]]. It is expected to be
+      Represents a <a>Thing Description</a> (<a>TD</a>) as
+      <a href="https://www.w3.org/TR/wot-thing-description/#thing">defined in
+      [[!WOT-TD]]. It is expected to be
       a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a>.
     </p>
-
     <section> <h3> Fetching a Thing Description</h3>
       <p>
         Fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details.
@@ -503,6 +503,7 @@
         ThingDescription getThingDescription();
       };
       dictionary InteractionOptions {
+        unsigned long formIndex;
         object uriVariables;
       };
       typedef object PropertyMap;
@@ -545,9 +546,29 @@
     </section>
 
     <section>
-      <h3>The <dfn>InteractionOptions</dfn> dictionary</h3>
+      <h3>
+          The <dfn data-dfn-for="InteractionOptions">InteractionOptions</dfn>
+          dictionary
+      </h3>
       <p>
-        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>. In this version of the specification only URI template variables are used, represented as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON objects</a> defined in [[!WOT-TD]].
+        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>.
+      </p>
+      <p>
+        The <dfn>formIndex</dfn> property, if defined, represents an application
+        hint for which <code>Form</code> definition, identified by this index,
+        of the <a>TD</a> to use for the given WoT interaction.
+        Implementations SHOULD use the <code>Form</code> with this index for
+        making the interaction, but MAY override this value if the index is not
+        found or not valid.
+        If not defined, implementations SHOULD attempt to use the
+        <code>Form</code> definitions in order of appearance as listed in the
+        <a>TD</a> for the given Wot Interaction.
+      </p>
+      <p>
+        The <dfn>uriVariables</dfn> property if defined, represents the URI
+        template variables to be used with the WoT Interaction that are represented
+        as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">
+        parsed JSON objects</a> defined in [[!WOT-TD]].
       </p>
       <p class="ednote">
         The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the <var>options</var> parameter could be dismissed from the methods exposed by this API.
@@ -1067,16 +1088,31 @@
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes <code>name</code> as string argument and <code>writeHandler</code> as argument of type <a>PropertyWriteHandler</a>. Sets the service handler  for writing the specified <a>Property</a> matched by <code>name</code>. Throws on error. Returns a reference to <var>this</var> object for supporting chaining.
+        Takes <code>name</code> as string argument and <code>writeHandler</code>
+        as argument of type <a>PropertyWriteHandler</a>. Sets the service handler
+        that will be used for serving write requests for writing the specified
+        <a>Property</a> matched by <code>name</code>. Throws on error.
+        Returns a reference to <var>this</var> object for supporting chaining.
+      </p>
+      <p class="note">
+        Note that even for readonly <a>Properties</a> it is possible to specify
+        a write handler, as explained in <a href="https://github.com/w3c/wot-scripting-api/issues/199">Issue 199</a>. In this case, the write
+        handler may define in an application-specific way to fail the request.
       </p>
       <p>
-        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update and notifying observers on change, based on the <a>Thing Description</a>.
+        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update if the <a>Property</a> is
+        writeable and notifying observers on change if the <a>Property</a> is
+        observeable, based on the <a>Thing Description</a>.
       </p>
     </section>
 
     <section> <h3>Handling <a>Property</a> write requests</h3>
       <div>
-        When a network request for writing a <a>Property</a> <var>propertyName</var> with a new value <var>value</var> is received, implementations SHOULD run the following <dfn>update property steps</dfn>, given <var>propertyName</var>, <var>value</var> and <var>mode</var> set to <code>"single"</code>:
+        When a network request for writing a <a>Property</a> <var>propertyName</var>
+        with a new value <var>value</var> is received, implementations SHOULD run
+        the following <dfn>update property steps</dfn>, given
+        <var>propertyName</var>, <var>value</var> and <var>mode</var> set to
+        <code>"single"</code>:
         <ol>
           <li>
             If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
@@ -1099,7 +1135,7 @@
             If there is no handler to handle the request, return <a>NotSupportedError</a> in the reply and terminate these steps.
           </li>
         </ol>
-      </div>>
+      </div>
       <div>
         When a network request for writing multiple <a>Properties</a> given in an object <var>propertyNames</var> is received, run the following steps:
         <ol>
