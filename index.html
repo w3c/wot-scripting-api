@@ -716,6 +716,15 @@
           </li>
         </ol>
       </div>
+      <p class="ednote">
+        As discussed in <a href="https://github.com/w3c/wot-scripting-api/issues/193">
+        Issue #193</a>, the design decision is that write interactions only
+        return success or error, not the written value (optionally).
+        <a>TD</a>s should capture the schema of the <a>Property</a>
+        values, including precision and alternative formats. When a return
+        value is expected from the interaction, an <a>Action</a> should be used
+        instead of a <a>Property</a>.
+      </p>
     </section>
 
     <section>
