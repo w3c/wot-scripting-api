@@ -17,6 +17,7 @@ Resolutions:
 - Non-browser implementations that use various runtimes may use either a namespace object `wot`, or an API object provided by the `require()` or `import()` or similar mechanisms.
 - The `ConsumedThing` and `ExposedThing` objects are created by factory methods.
 
+
 ## Discovery API
 
 Based on [WoT Current Practices](https://w3c.github.io/wot/current-practices/wot-practices.html#td-discovery), there are different discovery types: local (to the hardware), proximity based (such as BLE or NFC), registry (directory) based, and broadcast/multicast based. The discovery type is specific to the underlying protocol bindings.
@@ -40,3 +41,8 @@ Scripts that use the Client API are basically sending requests to servers in ord
 For browser compatibility of the Client API, events are used with the DOM convention: an Event (or Event sub-class) object is passed as an argument to the event listener, which contains a property with the event payload data, instead the Node.js convention where payload is directly passed to the event listener as arguments.
 
 There is no Client API for creating Things. ExposedThings can be created only locally through the Server API. However, a WoT Runtime may have a special management Thing exposed that would accept actions for installing, uninstalling, running and stopping scripts in that WoT Runtime. These scripts may create local ExposedThings, so the use case of remote Thing creation can be implemented.
+
+Write interactions only return success or error, not the written value as well.
+Based on [issue 193](https://github.com/w3c/wot-scripting-api/issues/193) and discussions during Scripting calls, TDs should fully capture the schema of the Property values, including precision and alternative formats, so that these should not be determined from analyzing the return value. If a return value is needed from an interaction, an
+Action should be used instead of a Property.
+
