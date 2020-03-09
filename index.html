@@ -349,17 +349,19 @@
         To <dfn>validate a TD</dfn> given <var>td</var>, run the following steps:
         <ol>
           <li>
-            If <var>td</var> is not an object, throw <code>"TypeError"</code>
-            and terminate these steps.
+            If <var>td</var> is not an object, [= exception/throw =] a
+            {{"TypeError"}} and abort these steps.
           </li>
           <li>
             If any of the mandatory properties defined in [[!WOT-TD]] for
             <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#thing">Thing</a>
             that don't have <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">default definitions</a>
-            are missing from <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
+            are missing from <var>td</var>, [= exception/throw =] a
+            {{"TypeError"}} and abort these steps.
           </li>
           <li>
-            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a> fails on <var>td</var>, throw <code>"TypeError"</code> and terminate these steps.
+            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a> fails on <var>td</var>, [= exception/throw =] a
+            {{"TypeError"}} and abort these steps.
           </li>
         </ol>
       </div>
@@ -395,10 +397,10 @@
           Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
         </li>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+          If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
         </li>
         <li>
-          Run the <a>validate a TD</a> steps on <var>td</var>. If that throws, reject <var>promise</var> with the error and terminate these steps.
+          Run the <a>validate a TD</a> steps on <var>td</var>. If that [= exception/throws =], reject <var>promise</var> with the error and abort these steps.
         </li>
         <li>
           Let <var>thing</var> be a new <a>ConsumedThing</a> object constructed from <var>td</var>.
@@ -427,7 +429,7 @@
           Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
         </li>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, reject <a>promise</a> with <code>SecurityError</code> and terminate these steps.
+          If invoking this method is not allowed for the current scripting context for security reasons, reject <a>promise</a> with a {{SecurityError}} and abort these steps.
         </li>
         <li>
           Let <var>thing</var> be a new <a>ExposedThing</a> object constructed with <var>td</var>.
@@ -449,7 +451,7 @@
       Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that will provide <a>ThingDescription</a> objects for <a>Thing Description</a>s that match an optional <var>filter</var> argument. The method MUST run the following steps:
       <ol>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+          If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{"SecurityError"}} and abort these steps.
         </li>
         <li>
           Construct a <a>ThingDiscovery</a> object <var>discovery</var> with <var>filter</var>.
@@ -523,7 +525,7 @@
         <var>td</var>, run the following steps:
         <ol>
           <li>
-            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-throw the error and terminate these steps.
+            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-[= exception/throw =] the error and abort these steps.
           </li>
           <li>
             Let <var>thing</var> be a new <a>ConsumedThing</a> object.
@@ -595,13 +597,13 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a> given by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Let <var>value</var> be the result of the request.
@@ -610,14 +612,16 @@
             Run the <dfn>validate Property value</dfn> sub-steps on <var>value</var>:
             <ol>
               <li>
-                Based on the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getThingDescription().properties[</code><var>propertyName</var><code>]</code>.
+                Based on the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#dataschema">DataSchema definition</a>, <var>value</var> MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <code>this.getThingDescription().properties[</code><var>propertyName</var><code>]</code>. If this fails, [= exception/throw =] a {{"SyntaxError"}} and abort these sub-steps.
               </li>
               <li>
-                If this fails, throw <code>SyntaxError</code>, otherwise return <var>value</var>.
+                Return <var>value</var>.
+              </li>
             </li>
           </ol>
           <li>
-            If these above steps failed, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
+            If these above sub-steps failed, reject <var>promise</var> with
+            {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var> with <var>value</var>.
@@ -635,7 +639,7 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let <var>result</var> be an object and for each string <var>name</var> in <var>propertyNames</var> add a property with key <var>name</var> and the value <code>null</code>.
@@ -644,13 +648,13 @@
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by <var>propertyNames</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with <code>NotSupportedError</code> and terminate these steps.
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
             Process the reply and update all properties in <var>result</var> with the values obtained in the reply.
           </li>
           <li>
-            If the above step fails at any point, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
+            If the above step fails at any point, reject <var>promise</var> with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Resolve <var>promise</var> with <var>result</var>.
@@ -668,7 +672,7 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let <var>result</var> be an object and for each string <var>name</var> in <var>propertyNames</var> add a property with key <var>name</var> and the value <code>null</code>.
@@ -677,10 +681,10 @@
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with <code>NotSupportedError</code> and terminate these steps.
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
-            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Process the reply and update all properties in <var>result</var> with the values obtained in the reply.
@@ -701,16 +705,16 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>validate Property value</a> steps on <var>value</var>. If that fails, reject <a>promise</a> with <code>SyntaxError</code> and terminate these steps.
+            Run the <a>validate Property value</a> steps on <var>value</var>. If that fails, reject <a>promise</a> with <code>SyntaxError</code> and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to write <var>value</var> to the <a>Property</a> given by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
@@ -737,19 +741,19 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            For each key <var>name</var> on <var>properties</var>, take its value as <var>value</var> and run the <a>validate Property value</a> steps on <var>value</var>. If that fails in for any <var>name</var>, reject <a>promise</a> with <code>SyntaxError</code> and terminate these steps.
+            For each key <var>name</var> on <var>properties</var>, take its value as <var>value</var> and run the <a>validate Property value</a> steps on <var>value</var>. If that fails in for any <var>name</var>, reject <a>promise</a> with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Make a single request to the underlying platform (via the <a>Protocol Bindings</a>) to write the each <a>Property</a> provided in <var>properties</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with <code>NotSupportedError</code> and terminate these steps.
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject <var>promise</var> with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
-            If the request fails, return the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, return the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
@@ -777,17 +781,17 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             If <var>listener</var> is not a function, reject <var>promise</var>
-            with <code>"TypeError"</code> and terminate these steps.
+            with a {{TypeError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by <var>propertyName</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
@@ -797,7 +801,7 @@
             the following sub-steps:
             <ul>
               <li>
-                If running the <a>validate Property value</a> steps on <var>value</var> fails, terminate these steps.
+                If running the <a>validate Property value</a> steps on <var>value</var> fails, abort these steps.
               </li>
               <li>
                 Invoke <var>listener</var> with <var>value</var> as parameter.
@@ -818,13 +822,13 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by <var>propertyName</var>.
           </li>
           <li>
-            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
@@ -842,16 +846,16 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by <var>actionName</var> with parameters provided in <var>params</var> with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If the request fails locally or returns an error over the network, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails locally or returns an error over the network, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise let <var>value</var> be the result returned in the reply and run the <a>validate Property value</a> steps on it. If that fails, reject <var>promise</var> with <code>SyntaxError</code> and terminate these steps.
+            Otherwise let <var>value</var> be the result returned in the reply and run the <a>validate Property value</a> steps on it. If that fails, reject <var>promise</var> with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Reject <var>promise</var> with <var>value</var>.
@@ -871,17 +875,17 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             If <var>listener</var> is not a function, reject <var>promise</var>
-            with <code>"TypeError"</code> and terminate these steps.
+            with a {{TypeError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by <var>eventName</var>with optional URI templates given in <var>options.uriVariables</var>.
           </li>
           <li>
-            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
@@ -904,13 +908,13 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by <var>eventName</var>.
           </li>
           <li>
-            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and terminate these steps.
+            If the request fails, reject <var>promise</var> with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve <var>promise</var>.
@@ -1002,10 +1006,10 @@
         <var>td</var>, run the following steps:
         <ol>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-throw the error and terminate these steps.
+            Run the <a>expand a TD</a> steps on <var>td</var>. If that fails, re-[= exception/throw =] the error and abort these steps.
           </li>
           <li>
             Let <var>thing</var> be a new <a>ExposedThing</a> object.
@@ -1056,16 +1060,16 @@
         When a network request for reading <a>Property</a> <var>propertyName</var> is received by the implementation, run the following steps:
         <ol>
           <li>
-            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return a {{ReferenceError}} in the reply and abort these steps.
           </li>
           <li>
-            If there is a user provided read handler registered with <code>setPropertyReadHandler()</code>, invoke that wih <var>propertyName</var>, return the value with the reply and terminate these steps.
+            If there is a user provided read handler registered with <code>setPropertyReadHandler()</code>, invoke that wih <var>propertyName</var>, return the value with the reply and abort these steps.
           </li>
           <li>
-            Otherwise, if there is a default read handler provided by the implementation, invoke it with <var>propertyName</var>, return the value with the reply and terminate these steps.
+            Otherwise, if there is a default read handler provided by the implementation, invoke it with <var>propertyName</var>, return the value with the reply and abort these steps.
           </li>
           <li>
-            if there is no default handler defined by the implementation, return <a>NotSupportedError</a> with the reply and terminate these steps.
+            if there is no default handler defined by the implementation, return a {{NotSupportedError}} with the reply and abort these steps.
           </li>
         </ol>
       </div>
@@ -1077,7 +1081,7 @@
         <ol>
           <li>
             If a <a>Property</a> with <var>propertyName</var> does not exist, return an error in the reply (as defined in the
-            <a>Thing Description</a>) and terminate these steps.
+            <a>Thing Description</a>) and abort these steps.
           </li>
           <li>
             Save the request sender information to the <a>Property</a>'s <a>internal observer list</a> in order to be able to notify about <a>Property</a> value changes.
@@ -1125,13 +1129,13 @@
         <code>"single"</code>:
         <ol>
           <li>
-            If a <a>Property</a> with <var>propertyName</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+            If a <a>Property</a> with <var>propertyName</var> does not exist, return a {{ReferenceError}} in the reply and abort these steps.
           </li>
           <li>
             If there is a user provided write handler registered with <code>setPropertyWriteHandler()</code>, or if there is a default write handler,
             <ol>
               <li>
-                Invoke the handler with <var>propertyName</var>. If it fails, return the error in the reply and terminate these steps.
+                Invoke the handler with <var>propertyName</var>. If it fails, return the error in the reply and abort these steps.
               </li>
               <li>
                 Otherwise, if <var>mode</var> is <code>"single"</code>, reply to the request with the new value, following to the <a>Protocol Bindings</a>.
@@ -1142,7 +1146,7 @@
             </ol>
           </li>
           <li>
-            If there is no handler to handle the request, return <a>NotSupportedError</a> in the reply and terminate these steps.
+            If there is no handler to handle the request, return a {{NotSupportedError}} in the reply and abort these steps.
           </li>
         </ol>
       </div>
@@ -1187,13 +1191,13 @@
         When a network request for invoking the <a>Action</a> identified by <var>name</var> is received, the runtime SHOULD execute the following steps:
         <ol>
           <li>
-            If an <a>Action</a> identified by <var>name</var> does not exist, return <code>ReferenceError</code> in the reply and terminate these steps.
+            If an <a>Action</a> identified by <var>name</var> does not exist, return a {{ReferenceError}} in the reply and abort these steps.
           </li>
           <li>
-            If there is a user provided action handler registered with <code>setActionHandler()</code>, invoke that wih <var>name</var>, return the resulting value with the reply and terminate these steps.
+            If there is a user provided action handler registered with <code>setActionHandler()</code>, invoke that wih <var>name</var>, return the resulting value with the reply and abort these steps.
           </li>
           <li>
-            Otherwise return <a>NotSupportedError</a> with the reply and terminate these steps.
+            Otherwise return a {{NotSupportedError}} with the reply and abort these steps.
           </li>
         </ol>
       </div>
@@ -1204,13 +1208,13 @@
         Takes <var>name</var> as string argument denoting an <a>Event</a> name, and a <var>data</var> argument of <code>any</code> type. The method MUST run the following steps:
         <ol>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If an <a>Event</a> with the name <var>name</var> is not found in <var>this.getThingDescription().events</var>, throw <code>NotFoundError</code> and terminate these steps.
+            If an <a>Event</a> with the name <var>name</var> is not found in <var>this.getThingDescription().events</var>, [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform to send an <a>Event</a> with <var>data</var> attached as property, using the <a>Protocol Bindings</a>, then terminate these steps.
+            Make a request to the underlying platform to send an <a>Event</a> with <var>data</var> attached as property, using the <a>Protocol Bindings</a>, then abort these steps.
           </li>
         </ol>
       </div>
@@ -1224,15 +1228,14 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Run the <a>expand a TD</a> steps on the internal slot ||td||.
           </li>
           <li>
             Run the <a>validate a TD</a> on ||td||. If that fails,
-            reject <var>promise</var> with <code>"TypeError"</code> and terminate
-            these steps.
+            reject <var>promise</var> with a {{TypeError}} and abort these steps.
           </li>
           <li>
             For each <a>Property</a> definition in <var>this.instance.properties</var> initialize an |<dfn>internal observer list</dfn>| internal slot
@@ -1244,10 +1247,10 @@
             Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>. The details are private to the implementations and out of scope of this specification.
           </li>
           <li>
-            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
+            If there was an error during the request, reject <var>promise</var> with an {{Error}} object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve <var>promise</var> and terminate these steps.
+            Otherwise resolve <var>promise</var> and abort these steps.
           </li>
         </ol>
       </div>
@@ -1261,16 +1264,16 @@
             Return a <a>Promise</a> <var>promise</var> and execute the next steps <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, reject <var>promise</var> with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform to stop serving external requests for <a>WoT Interactions</a>, based on the <a>Protocol Bindings</a>.
           </li>
           <li>
-            If there was an error during the request, reject <var>promise</var> with an <code>Error</code> object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and terminate these steps.
+            If there was an error during the request, reject <var>promise</var> with an {{Error}} object <var>error</var> with <code>error.message</code> set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve <var>promise</var> and terminate these steps.
+            Otherwise resolve <var>promise</var> and abort these steps.
           </li>
         </ol>
       </div>
@@ -1422,8 +1425,7 @@
         <var>filter</var>, run the following steps:
         <ol>
           <li>
-            If <var>filter</var> is not an object or <code>null</code>, throw <code>"TypeError"</code>
-            and terminate these steps.
+            If <var>filter</var> is not an object or <code>null</code>, [= exception/throw =] a {{TypeError}} and abort these steps.
           </li>
           <li>
             Let <var>discovery</var> be a new <a>ThingDiscovery</a> object.
@@ -1502,10 +1504,10 @@
         Starts the discovery process. The method MUST run the following steps:
         <ol>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, set <var>this.error</var> to <code>SecurityError</code> and terminate these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, set <var>this.error</var> to a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If discovery is not supported by the implementation, set <var>this.error</var> to <code>NotSupportedError</code> and terminate these steps.
+            If discovery is not supported by the implementation, set <var>this.error</var> to {{NotSupportedError}} and abort these steps.
           </li>
           <li>
             If <var>this.filter</var> is defined,
@@ -1514,7 +1516,7 @@
                 Let <var>filter</var> denote <var>this.filter</var>.
               </li>
               <li>
-                If <var>filter.query</var> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, set <var>this.error</var> to <code>NotSupportedError</code> and terminate these steps.
+                If <var>filter.query</var> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, set <var>this.error</var> to {{NotSupportedError}} and abort these steps.
               </li>
             </ul>
           </li>
@@ -1545,7 +1547,7 @@
             Whenever a new <a>Thing Description</a> <var>td</var> is discovered by the underlying platform, run the following sub-steps:
             <ol>
               <li>
-                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> <var>td</var> as a JSON object <var>json</var>. If that fails, set <var>this.error</var> to <code>SyntaxError</code>, discard <var>td</var> and continue the discovery process.
+                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> <var>td</var> as a JSON object <var>json</var>. If that fails, set <var>this.error</var> to {{SyntaxError}}, discard <var>td</var> and continue the discovery process.
               </li>
               <li>
                 If <var>filter.query</var> is defined, check if <var>json</var> is a match for the query. The matching algorithm is encapsulated by implementations. If that returns <code>false</code>, discard <var>td</var> and continue the discovery process.
@@ -1565,7 +1567,7 @@
             Whenever an error occurs during the discovery process,
             <ol>
               <li>
-                Set <var>this.error</var> to a new <code>Error</code> object <var>error</var>. Set <var>error.name</var> to <code>'DiscoveryError'</code>.
+                Set <var>this.error</var> to a new {{Error}} object <var>error</var>. Set <var>error.name</var> to <code>'DiscoveryError'</code>.
               </li>
               <li>
                  If there was an error code or message provided by the <a>Protocol Bindings</a>, set <var>error.message</var> to that value as string.
@@ -1600,7 +1602,7 @@
             Remove the first <a>ThingDescription</a> object <var>td</var> from <a>discovery results</a>.
           </li>
           <li>
-            Resolve <var>promise</var> with <var>td</var> and terminate these steps.
+            Resolve <var>promise</var> with <var>td</var> and abort these steps.
           </li>
         </ol>
       </div>
@@ -1863,28 +1865,6 @@
       <dfn data-cite="!INFRA#parse-json-from-bytes">parse JSON from bytes</dfn> and
       <dfn data-cite="!INFRA#serialize-json-to-bytes">serialize JSON to bytes</dfn>,
       are defined in [[!INFRA]].
-    </p>
-    <p>
-      The terms
-      <dfn data-cite="!WEBIDL#dfn-throw"><code>throw</code></dfn>,
-      <dfn data-cite="!WEBIDL#dfn-create-exception"><code>creating</code></dfn>,
-      <dfn data-cite="!WEBIDL#idl-DOMString"><code>DOMString</code></dfn>,
-      <dfn data-cite="!WEBIDL#idl-dictionary"><code>Dictionary</code></dfn>,
-      <dfn data-cite="!WEBIDL#idl-ArrayBuffer"><code>ArrayBuffer</code></dfn>,
-      <dfn data-cite="!WEBIDL#common-BufferSource"><code>BufferSource</code></dfn>,
-      <dfn data-cite="!WEBIDL#idl-any"><code>any</code></dfn>,
-      <dfn data-cite="!WEBIDL#dfn-present">not present</dfn>,
-      <dfn data-cite="!WEBIDL#idl-DOMException"><code>DOMException</code></dfn>,
-      <dfn data-cite="!WEBIDL#aborterror"><code>AbortError</code></dfn>,
-      <dfn data-cite="!WEBIDL#syntaxerror"><code>SyntaxError</code></dfn>,
-      <dfn data-cite="!WEBIDL#notsupportederror"><code>NotSupportedError</code></dfn>,
-      <dfn data-cite="!WEBIDL#networkerror"><code>NetworkError</code></dfn>,
-      <dfn data-cite="!WEBIDL#exceptiondef-typeerror"><code>TypeError</code></dfn>,
-      <dfn data-cite="!WEBIDL#notreadableerror"><code>NotReadableError</code></dfn>,
-      <dfn data-cite="!WEBIDL#timeouterror"><code>TimeoutError</code></dfn>,
-      <dfn data-cite="!WEBIDL#nomodificationallowederror"><code>NoModificationAllowedError</code></dfn>,
-      <dfn data-cite="!WEBIDL#securityerror"><code>SecurityError</code></dfn>,
-      are defined in [[!WEBIDL]].
     </p>
     <p>
       <dfn data-cite="!ECMASCRIPT#sec-promise-objects"><a>Promise</a></dfn>,
