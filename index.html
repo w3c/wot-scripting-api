@@ -495,11 +495,13 @@
         Promise&lt;void&gt; observeProperty(DOMString name,
                                     WotListener listener,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; unobserveProperty(DOMString name);
+        Promise&lt;void&gt; unobserveProperty(DOMString name,
+                                    optional InteractionOptions options = null);
         Promise&lt;void&gt; subscribeEvent(DOMString name,
                                     WotListener listener,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; unsubscribeEvent(DOMString name);
+        Promise&lt;void&gt; unsubscribeEvent(DOMString name,
+                                    optional InteractionOptions options = null);
         ThingDescription getThingDescription();
       };
       dictionary InteractionOptions {
@@ -808,8 +810,8 @@
     <section>
       <h3>The <dfn>unobserveProperty()</dfn> method</h3>
       <div>
-        Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes a string argument |propertyName:string| and
-        returns success or failure. The method MUST run the following steps:
+        Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes a string argument |propertyName:string| and an optional {{InteractionOptions}} |options:InteractionOptions| argument.
+        It returns success or failure. The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -818,7 +820,8 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with optional URI templates given in |options|'
+            {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -894,7 +897,7 @@
     <section>
       <h3>The <dfn>unsubscribeEvent()</dfn> method</h3>
       <div>
-        Makes a request for unsubscribing from <a>Event</a> notifications. Takes a string argument |eventName:string| and returns success or failure. The method MUST run the following steps:
+        Makes a request for unsubscribing from <a>Event</a> notifications. Takes a string argument |eventName:string| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -903,7 +906,8 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName|.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName|
+            with optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
