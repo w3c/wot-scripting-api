@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title>Web of Things (WoT) Scripting API</title>
-    <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove"></script>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c'
+            async class='remove'></script>
     <script class='remove'>
       // See https://github.com/w3c/respec/wiki/ for how to configure ReSpec
       var respecConfig = {
@@ -465,7 +466,6 @@
       </ol>
     </div>
   </section>
-
 </section>
 
   <section data-dfn-for="ConsumedThing">
@@ -478,7 +478,7 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
         constructor(ThingDescription td);
-        Promise&lt;any&gt; readProperty(DOMString propertyName,
+        Promise&lt;InteractionData&gt; readProperty(DOMString propertyName,
                                   optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readMultipleProperties(
@@ -489,7 +489,7 @@
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
-        Promise&lt;any&gt; invokeAction(DOMString actionName,
+        Promise&lt;InteractionData&gt; invokeAction(DOMString actionName,
                                     optional any params = null,
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; observeProperty(DOMString name,
@@ -509,7 +509,7 @@
         object uriVariables;
       };
       typedef object PropertyMap;
-      callback WotListener = void(any data);
+      callback WotListener = void(InteractionData data);
     </pre>
 
     <section>
@@ -613,9 +613,13 @@
                 Based on the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#dataschema">DataSchema definition</a>, |value| MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <a>Thing Description</a>. If this fails, [= exception/throw =] a {{"SyntaxError"}} and abort these sub-steps.
               </li>
               <li>
-                Return |value|.
+                Return |reply|.
               </li>
             </ol>
+          </li>
+          <li>
+            Let |reply| be the result of running <a>create reply data</a>
+            with |value|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             If these above sub-steps failed, reject |promise| with
@@ -649,7 +653,8 @@
             If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
-            Process the reply and update all properties in |result| with the values obtained in the reply.
+            Process the reply and update all properties in |result| with the
+            result of running <a>create reply data</a> on the values obtained in the reply.
           </li>
           <li>
             If the above step fails at any point, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -683,6 +688,12 @@
           </li>
           <li>
             Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
+          </li>
+          <li>
+            For each |key| in |result| having its value |value|, update |value|
+            with the result of running <a>create reply data</a> with |value|.
+            If that fails, reject |promise| with a {{SyntaxError}} and abort
+            these steps.
           </li>
           <li>
             Resolve |promise| with |result|.
@@ -799,7 +810,11 @@
                 If running the <a>validate Property value</a> steps on |value| fails, abort these steps.
               </li>
               <li>
-                Invoke |listener| with |value| as parameter.
+                Let |reply| be the result of running <a>create reply data</a>
+                with |value|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+              </li>
+              <li>
+                Invoke |listener| with |reply| as parameter.
               </li>
             </ul>
           </li>
@@ -854,7 +869,11 @@
             Otherwise let |value| be the result returned in the reply and run the <a>validate Property value</a> steps on it. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Reject |promise| with |value|.
+            Let |reply| be the result of running <a>create reply data</a>
+            with |value|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Resolve |promise| with |reply|.
           </li>
         </ol>
       </div>
@@ -887,8 +906,7 @@
           </li>
           <li>
             Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
-            |listener|, giving the data provided with the <a>Event</a>
-            as parameter.
+            |listener| with the result of running <a>create reply data</a> on the data provided with the <a>Event</a>.
           </li>
         </ol>
       </div>
@@ -936,11 +954,15 @@
         try {
           // subscribe to property change for “temperature”
           await thing.observeProperty("temperature", value => {
-            console.log("Temperature changed to: " + value);
+            const decoder = new TextDecoder();
+            const data = JSON.parse(decoder.decode(value.data));
+            console.log("Temperature changed to: " + data);
           });
           // subscribe to the “ready” event defined in the TD
           await thing.subscribeEvent("ready", eventData => {
-            console.log("Ready; index: " + eventData);
+            const decoder = new TextDecoder();
+            const data = JSON.parse(decoder.decode(value.data));
+            console.log("Ready; index: " + data);
             // run the “startMeasurement” action defined by TD
             await thing.invokeAction("startMeasurement", { units: "Celsius" });
             console.log("Measurement started.");
@@ -957,6 +979,93 @@
       </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
+
+  <section data-dfn-for="InteractionData">
+    <h2>The <dfn>InteractionData</dfn> interface</h2>
+    <p>
+      Represents the data returned by <a>WoT Interactions</a>. Belongs to the
+      <a>WoT Consumer</a> conformance class.
+    </p>
+    <p class="ednote">
+      Previously `any` has been used for representing data that
+      could be returned by <a>WoT Interactions</a>. Since data type can be
+      specified in the <a>TD</a> by a <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a>'s `contentType`
+      and optionally a <a>DataSchema</a>,
+      this interface enables handling returned data by applications.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface InteractionData {
+        readonly attribute DataView? data;
+        readonly attribute USVString? mediaType;
+        readonly attribute USVString? encoding;
+        readonly attribute USVString? lang;
+        readonly attribute DataSchema? dataSchema;
+      };
+    </pre>
+    <p>
+      The <dfn>data</dfn> property represents the returned payload from
+      <a>WoT Interactions</a>.
+    </p>
+    <p>
+      The <dfn>encoding</dfn> attribute represents the
+      <a href="https://encoding.spec.whatwg.org/#name">encoding name</a> used
+      for encoding the payload in the case it is textual data.
+    </p>
+    <p>
+      The <dfn>lang</dfn> attribute represents the [=language tag=]
+      of the payload in the case that was encoded.
+    </p>
+    <p>
+      A <dfn>language tag</dfn> is a <a>string</a> that matches the
+      production of a <code>Language-Tag</code> defined in the [[BCP47]]
+      specifications (see the <a href=
+      "http://www.iana.org/assignments/language-subtag-registry">IANA
+      Language Subtag Registry</a> for an authoritative list of possible
+      values).
+    </p>
+    <p>
+      The <dfn>dataSchema</dfn> attribute represents the <a>DataSchema</a>
+      of the payload when it is different from the one defined in the
+      <a>Thing Description</a>. If the value is `null`, then the `DataSchema`
+      of the <a>WoT Interaction</a> SHOULD be fetched from the <a>TD</a>.
+    </p>
+    <section><h3>The <dfn>create reply data</dfn> algorithm</h3>
+      For a given <a>WoT Interaction</a> |interaction| and <a>ConsumedThing</a>
+      object |thing:ConsumedThing|, in order to <a>create reply data</a>
+      given the |rawData| argument, run these steps:
+      <ol>
+        <li>
+          Let |result| be a new {{InteractionData}} object with all its properties
+          set to `null`.
+        </li>
+        <li>
+          Let |result|'s |data| be a new {{DataView}} created from |rawData|.
+        </li>
+        <li>
+          If |thing|'s <a>internal slot</a> ||td|| is not defined,
+          return |result| and abort these steps.
+        </li>
+        <li>
+          Let |form:Form| be the <a>Form</a> used for |interaction|.
+        </li>
+        <li>
+          Let |result|'s |mediaType| be |form|'s |contentType|.
+        </li>
+        <li>
+          If |rawData| is text, set |result|'s |encoding| to the text encoding
+          value of |rawData| and set |result|'s |lang| to the [=language tag=]
+          associated with |rawData|.
+        </li>
+        <li>
+          Return |result|.
+        </li>
+      </ol>
+      <p class="ednote">
+        These steps need to be expanded and defined in more detail.
+      </p>
+    </section>
+  </section>
 
   <section data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
@@ -1822,7 +1931,9 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> (same as <dfn>WoT network interface</dfn>), <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn> etc.
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> (same as <dfn>WoT network interface</dfn>), <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn>WoT Interactions</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      <a href="https://www.w3.org/TR/wot-thing-description/#dataschema">
+        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/wot-thing-description/#form"><dfn>Form</dfn></a> etc.
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
@@ -1879,7 +1990,7 @@
       <dfn data-cite="!HTML#global-object">global object</dfn>,
       <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
       executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
-       are defined in [[!HTML5]] and are used in the context of browser implementations.
+       are defined in [[!HTML5]] and are used in the context of browser implementations.[=language tag=]
     </p>
     <p>
       The term
