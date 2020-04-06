@@ -401,7 +401,7 @@
           If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
         </li>
         <li>
-          Run the <a>validate a TD</a> steps on |td|. If that [= exception/throws =], reject |promise| with that error and abort these steps.
+          Run the <a>validate a TD</a> steps on |td|. If that fails, reject |promise| with {{SyntaxError}} and abort these steps.
         </li>
         <li>
           Let |thing:ConsumedThing| be a new {{ConsumedThing}} object constructed from |td|.
@@ -607,15 +607,8 @@
             Let |value| be the result of the request.
           </li>
           <li>
-            Run the <dfn>validate Property value</dfn> sub-steps on |value|:
-            <ol>
-              <li>
-                Based on the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#dataschema">DataSchema definition</a>, |value| MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <a>Thing Description</a>. If this fails, [= exception/throw =] a {{"SyntaxError"}} and abort these sub-steps.
-              </li>
-              <li>
-                Return |reply|.
-              </li>
-            </ol>
+            Run the <a>validate Property value</a> steps on |value|.
+            If that fails, reject |promise| with {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Let |reply| be the result of running <a>create reply data</a>
@@ -1064,6 +1057,20 @@
       <p class="ednote">
         These steps need to be expanded and defined in more detail.
       </p>
+    </section>
+    <section><h3>The <dfn>validate Property value</dfn> algorithm</h3>
+      To <a>validate Property value</a> given |value|, run the following steps:
+      <ol>
+        <li>
+          Based on the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#dataschema">DataSchema definition</a>, |value| MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <a>Thing Description</a>.
+        </li>
+        <li>
+           If that fails, [= exception/throw =] a {{"SyntaxError"}} and abort these steps.
+        </li>
+        <li>
+          Return |reply|.
+        </li>
+      </ol>
     </section>
   </section>
 
