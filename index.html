@@ -509,7 +509,7 @@
         object uriVariables;
       };
       typedef object PropertyMap;
-      callback WotListener = void(InteractionData data);
+      callback WotListener = void(any data);
     </pre>
 
     <section>
@@ -1048,18 +1048,21 @@
         } catch(e) {
           console.log("TD fetch error: " + e.message); },
         };
+        function parseData(value) {
+          if (value instanceof InteractionData) {
+            const decoder = new TextDecoder();
+            return JSON.parse(decoder.decode(value.data));
+          }
+          return value;
+        };
         try {
           // subscribe to property change for “temperature”
           await thing.observeProperty("temperature", value => {
-            const decoder = new TextDecoder();
-            const data = JSON.parse(decoder.decode(value.data));
-            console.log("Temperature changed to: " + data);
+            console.log("Temperature changed to: " + parseData(value));
           });
           // subscribe to the “ready” event defined in the TD
           await thing.subscribeEvent("ready", eventData => {
-            const decoder = new TextDecoder();
-            const data = JSON.parse(decoder.decode(value.data));
-            console.log("Ready; index: " + data);
+            console.log("Ready; index: " + parseData(eventData));
             // run the “startMeasurement” action defined by TD
             await thing.invokeAction("startMeasurement", { units: "Celsius" });
             console.log("Measurement started.");
@@ -1068,7 +1071,8 @@
           console.log("Error starting measurement.");
         }
         setTimeout( () => {
-          console.log(“Temperature: “ + await thing.readProperty(“temperature”));
+          console.log(“Temperature: “ +
+            parseData(await thing.readProperty(“temperature”)));
           await thing.unsubscribe(“ready”);
           console.log("Unsubscribed from the ‘ready’ event.");
         },
@@ -1085,7 +1089,7 @@
       explicit <a>DataSchema</a> is available for the <a>WoT Interaction</a>,
       therefore applications need to rely on a <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a>'s `contentType`
       defined for the <a>WoT Interaction</a>.
-      Implementations MAY always return an <a>InteractionData</a>
+      Implementations MAY always return an {{InteractionData}}
       object for <a>WoT Interactions</a>, but MAY also parse the return data
       according to the interaction's <a>DataSchema</a> when that is available.
     </p>
