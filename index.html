@@ -478,18 +478,18 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
         constructor(ThingDescription td);
-        Promise&lt;InteractionData&gt; readProperty(DOMString propertyName,
-                                  optional InteractionOptions options = null);
+        Promise&lt;any&gt; readProperty(DOMString propertyName,
+                                    optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readMultipleProperties(
-                                  sequence&lt;DOMString&gt; propertyNames,
-                                  optional InteractionOptions options = null);
+                                    sequence&lt;DOMString&gt; propertyNames,
+                                    optional InteractionOptions options = null);
         Promise&lt;void&gt; writeProperty(DOMString propertyName,
                                     any value,
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
-        Promise&lt;InteractionData&gt; invokeAction(DOMString actionName,
+        Promise&lt;any&gt; invokeAction(DOMString actionName,
                                     optional any params = null,
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; observeProperty(DOMString name,
@@ -598,7 +598,20 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a> given by |propertyName| with optional URI templates given in |options|' {{uriVariables}}.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `readproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a>given by |propertyName| using |form| and the optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -607,19 +620,11 @@
             Let |value| be the result of the request.
           </li>
           <li>
-            Run the <a>validate Property value</a> steps on |value|.
-            If that fails, reject |promise| with {{SyntaxError}} and abort these steps.
+            Let |reply| be the result of running <a>parse interaction data</a>
+            with |value| and |form|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |reply| be the result of running <a>create reply data</a>
-            with |value|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            If these above sub-steps failed, reject |promise| with
-            {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise| with |value|.
+            Resolve |promise| with |reply|.
           </li>
         </ol>
       </div>
@@ -637,17 +642,24 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readmultipleproperties`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
             Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
+            If this cannot be done with a single request with the <a>Protocol Bindings</a>, reject |promise| with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
             Process the reply and update all properties in |result| with the
-            result of running <a>create reply data</a> on the values obtained in the reply.
+            result of running <a>parse interaction data</a> on the values obtained in the reply.
           </li>
           <li>
             If the above step fails at any point, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -671,7 +683,14 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with optional URI templates given in |options|' {{uriVariables}}.
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readallproperties`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with |form| and optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
@@ -684,7 +703,7 @@
           </li>
           <li>
             For each |key| in |result| having its value |value|, update |value|
-            with the result of running <a>create reply data</a> with |value|.
+            with the result of running <a>parse interaction data</a> with |value|.
             If that fails, reject |promise| with a {{SyntaxError}} and abort
             these steps.
           </li>
@@ -707,10 +726,23 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>validate Property value</a> steps on |value|. If that fails, reject <a>promise</a> with {{SyntaxError}} and abort these steps.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to write |value| to the <a>Property</a> given by |propertyName| with optional URI templates given in |options.uriVariables|.
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `writeproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |data| be the result of running the <a>create interaction data</a>steps on |value| and |form|. If that fails, reject <a>promise</a> with {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to write |data| to the <a>Property</a> given by |propertyName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -743,7 +775,17 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            For each key |name:string| in |properties|, take its value as |value| and run the <a>validate Property value</a> steps on |value|. If that fails for any |name|, reject <a>promise</a> with a {{SyntaxError}} and abort these steps.
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `writemultipleproperties`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
+          </li>
+          <li>
+            For each key |name:string| in |properties|, take its value as |value| and run the <a>create interaction data</a> steps on |value| and |form|. If that fails for any |name|, reject <a>promise</a> with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Make a single request to the underlying platform (via the <a>Protocol Bindings</a>) to write each <a>Property</a> provided in |properties| with optional URI templates given in |options| {{uriVariables}}.
@@ -787,7 +829,20 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by |propertyName| with optional URI templates given in |options|' {{uriVariables}}.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `observeproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by |propertyName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -800,10 +855,7 @@
             the following sub-steps:
             <ul>
               <li>
-                If running the <a>validate Property value</a> steps on |value| fails, abort these steps.
-              </li>
-              <li>
-                Let |reply| be the result of running <a>create reply data</a>
+                Let |reply| be the result of running <a>parse interaction data</a>
                 with |value|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
               </li>
               <li>
@@ -828,7 +880,20 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with optional URI templates given in |options|'
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `unobserveproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|'
             {{uriVariables}}.
           </li>
           <li>
@@ -853,20 +918,33 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |params| with optional URI templates given in |options|'s {{uriVariables}}.
+            Let |interaction| be the value of ||td||'s |actions|'s
+            |actionName|.
+          </li>
+          <li>
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `invokeaction`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |params| with |form| and optional URI templates given in |options|'s {{uriVariables}}.
           </li>
           <li>
             If the request fails locally or returns an error over the network, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise let |value| be the result returned in the reply and run the <a>validate Property value</a> steps on it. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+            Let |value| be the reply returned in the reply.
           </li>
           <li>
-            Let |reply| be the result of running <a>create reply data</a>
-            with |value|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+            Let |result| be the result of running <a>parse interaction data</a>
+            with |value| and |form|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Resolve |promise| with |reply|.
+            Resolve |promise| with |result|.
           </li>
         </ol>
       </div>
@@ -889,7 +967,19 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with optional URI templates given in |options|' {{uriVariables}}.
+            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
+          </li>
+          <li>
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `subscribeevent`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -899,7 +989,7 @@
           </li>
           <li>
             Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
-            |listener| with the result of running <a>create reply data</a> on the data provided with the <a>Event</a>.
+            |listener| with the result of running <a>parse interaction data</a> on the data provided with the <a>Event</a> and |form|.
           </li>
         </ol>
       </div>
@@ -917,14 +1007,28 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName|
-            with optional URI templates given in |options|' {{uriVariables}}.
+            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
+          </li>
+          <li>
+            If |option|'s {{formIndex}} is defined, let |form| be the
+            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `unsubscribeevent`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise|.
+            Resolve |promise|.
+          </li>
+          <li>
+            If the underlying platform receives further notifications for this <a>Event</a> subscription, implementations SHOULD silently suppress them.
           </li>
         </ol>
       </div>
@@ -976,8 +1080,14 @@
   <section data-dfn-for="InteractionData">
     <h2>The <dfn>InteractionData</dfn> interface</h2>
     <p>
-      Represents the data returned by <a>WoT Interactions</a>. Belongs to the
-      <a>WoT Consumer</a> conformance class.
+      Belongs to the <a>WoT Consumer</a> conformance class.
+      Represents the data returned by <a>WoT Interactions</a> when no
+      explicit <a>DataSchema</a> is available for the <a>WoT Interaction</a>,
+      therefore applications need to rely on a <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a>'s `contentType`
+      defined for the <a>WoT Interaction</a>.
+      Implementations MAY always return an <a>InteractionData</a>
+      object for <a>WoT Interactions</a>, but MAY also parse the return data
+      according to the interaction's <a>DataSchema</a> when that is available.
     </p>
     <p class="ednote">
       Previously `any` has been used for representing data that
@@ -1023,52 +1133,211 @@
       <a>Thing Description</a>. If the value is `null`, then the `DataSchema`
       of the <a>WoT Interaction</a> SHOULD be fetched from the <a>TD</a>.
     </p>
-    <section><h3>The <dfn>create reply data</dfn> algorithm</h3>
+
+    <section><h3>The <dfn>parse interaction data</dfn> algorithm</h3>
       For a given <a>WoT Interaction</a> |interaction| and <a>ConsumedThing</a>
-      object |thing:ConsumedThing|, in order to <a>create reply data</a>
-      given the |rawData| argument, run these steps:
+      object |thing:ConsumedThing|, in order to <a>parse interaction data</a>
+      given |rawData| and |form|, run these steps:
       <ol>
         <li>
-          Let |result| be a new {{InteractionData}} object with all its properties
-          set to `null`.
+          If |form|'s |type| is defined, run these sub-steps:
+          <ol>
+            <li>
+              If |type| is `"null"`, let |result| be `null`.
+            </li>
+            <li>
+              If |type| is `"boolean"` and |rawData| is a falsy value, let
+              |result| be `false`, otherwise `true`.
+            </li>
+            <li>
+              If |type| is `"integer"` or `"number"`, let |result| be the number parsed from
+              |rawData|; if |form|'s |minimum| is defined and |result| is smaller,
+              or if |form|'s |maximum| is defined and |result| is bigger,
+              throw {{SyntaxError}} and abort these steps;
+            </li>
+            <li>
+              If |type| is `"string"`, let |result| be the string parsed from |rawData| with
+              the default language and encoding settings.
+              <p class="issue">
+                Need to define what are the default settings and how are they set.
+                See <a href="https://github.com/w3c/wot-scripting-api/issues/213">
+                issue #213</a>.
+              </p>
+            </li>
+            <li>
+              If |type| is `"array"`, run these sub-steps:
+              <ol>
+                <li>
+                  Let |length| be the length of |form|'s |items| array.
+                </li>
+                <li>
+                  If |form|'s |minItems| is defined and |length| is less than
+                  that, or if |form|'s |maxItems| is defined and |length| is
+                  more than that, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Split |rawData| in |length| number of equal chunks. If that fails,
+                  throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Let |result| be an array of items obtained by
+                  running these steps on each |rawData| chunk and the |item| in |form|'s |items| of the same index. If this throws at any stage,
+                  throw {{SyntaxError}} and abort these steps.
+                </li>
+              </ol>
+            </li>
+            <li>
+              If |type| is `"object"`, run these sub-steps:
+              <ol>
+                <li>
+                  If |form|'s |properties| is not an object,
+                  throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Let |result| be the result of running
+                  <a>parse JSON from bytes</a> on |rawData|.
+                </li>
+                <li>
+                  For each property |key| in |result|,
+                  <ol>
+                    <li>Let |value| be the value of |key|.</li>
+                    <li>Let |schema| be the value of |key| in |properties|.</li>
+                    <li>
+                      Let |value| be the result of running these steps on |value| and |schema|. If this throws, then throw {{SyntaxError}} and abort these steps.
+                    </li>
+                  </ol>
+                </li>
+              </ol>
+            </li>
+          </ol>
         </li>
         <li>
-          Let |result|'s |data| be a new {{DataView}} created from |rawData|.
+          Return |result| and abort these steps.
         </li>
         <li>
-          If |thing|'s <a>internal slot</a> ||td|| is not defined,
-          return |result| and abort these steps.
-        </li>
-        <li>
-          Let |form:Form| be the <a>Form</a> used for |interaction|.
-        </li>
-        <li>
-          Let |result|'s |mediaType| be |form|'s |contentType|.
-        </li>
-        <li>
-          If |rawData| is text, set |result|'s |encoding| to the text encoding
-          value of |rawData| and set |result|'s |lang| to the [=language tag=]
-          associated with |rawData|.
-        </li>
-        <li>
-          Return |result|.
+          Otherwise, if |form|'s |type| is not defined, run these sub-steps
+          <ol>
+            <li>
+              Let |result| be a new {{InteractionData}} object with all its properties
+              set to `null`.
+            </li>
+            <li>
+              Let |result|'s |data| be a new {{DataView}} created from |rawData|.
+            </li>
+            <li>
+              Let |result|'s |mediaType| be |form|'s |contentType|.
+            </li>
+            <li>
+              Set |result|'s |encoding| to the
+              <a href="https://encoding.spec.whatwg.org/#name">encoding name</a>
+              if that is available.
+            </li>
+            <li>
+              Set |result|'s |lang| to the [=language tag=] if available.
+            </li>
+            <li>
+              Return |result|.
+            </li>
+          </ol>
         </li>
       </ol>
-      <p class="ednote">
-        These steps need to be expanded and defined in more detail.
-      </p>
     </section>
-    <section><h3>The <dfn>validate Property value</dfn> algorithm</h3>
-      To <a>validate Property value</a> given |value|, run the following steps:
+
+    <section><h3>The <dfn>create interaction data</dfn> algorithm</h3>
+      For a given <a>WoT Interaction</a> |interaction| and <a>ConsumedThing</a>
+      object |thing:ConsumedThing|, in order to <a>create interaction data</a>
+      given |data| and |form|, run these steps:
       <ol>
         <li>
-          Based on the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#dataschema">DataSchema definition</a>, |value| MUST be a JSON value and comply to the data schema defined for the <a>Property</a> that is found in <a>Thing Description</a>.
+          If |data| is an {{InteractionData}} object, run these sub-steps:
+          <ol>
+            <li>
+              If |form|'s |contentType| and |data|'s |mediaType| are defined,
+              but not equal, throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |data|'s |mediaType| is not defined, let it be |form|'s |contentType|.
+            </li>
+            <li>
+              Return |data| and abort these steps.
+            </li>
+          </ol>
         </li>
         <li>
-           If that fails, [= exception/throw =] a {{"SyntaxError"}} and abort these steps.
-        </li>
-        <li>
-          Return |reply|.
+          If |form|'s |type| is defined, run these sub-steps:
+          <ol>
+            <li>
+              If |type| is `"null"` and |data| is not, throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"boolean"` and |data| is a falsy value, let
+              |data| be `false`, otherwise `true`.
+            </li>
+            <li>
+              If |type| is `"integer"` or `"number"` and |data| is not a number,
+              or if |form|'s |minimum| is defined and |data| is smaller,
+              or if |form|'s |maximum| is defined and |data| is bigger,
+              throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"string"` and |data| is not a string, let |data| be
+              the result of running <a>serialize JSON to bytes</a> on |data|.
+              If that is failure, throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"array"`, run these sub-steps:
+              <ol>
+                <li>
+                  If |data| is not an array, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Let |length| be the length of |data|.
+                </li>
+                <li>
+                  If |form|'s |minItems| is defined and |length| is less than
+                  that, or if |form|'s |maxItems| is defined and |length| is
+                  more than that, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  For each item in |data|,  |rawData| in |length| number of equal chunks. If that fails,
+                  throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  For each |item| in |data| with |index|, let |item| be the
+                  result of running these steps on |item| and |schema| obtained
+                  from |form|'s |items| at |index|. If this throws at any stage,
+                  throw {{SyntaxError}} and abort these steps.
+                </li>
+              </ol>
+            </li>
+            <li>
+              If |type| is `"object"`, run these sub-steps:
+              <ol>
+                <li>
+                  If |data| is not an object, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  If |form|'s |properties| is not an object,
+                  throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  For each property |key| in |data|,
+                  <ol>
+                    <li>Let |value| be the value of |key|.</li>
+                    <li>Let |schema| be the value of |key| in |properties|.</li>
+                    <li>
+                      Let |value| be the result of running these steps on |value| and |schema|. If this throws, then throw {{SyntaxError}} and abort these steps.
+                    </li>
+                  </ol>
+                </li>
+                <li>
+                  If |form|'s |required| is defined, for each of its |item|
+                  check if |item| is a property in |data|. If an |item| is
+                  not found in |result|, throw {{SyntaxError}} and abort these steps.
+                </li>
+              </ol>
+            </li>
+          </ol>
         </li>
       </ol>
     </section>
