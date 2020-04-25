@@ -507,6 +507,7 @@
       dictionary InteractionOptions {
         unsigned long formIndex;
         object uriVariables;
+        any data;
       };
       typedef object PropertyMap;
       callback WotListener = void(InteractionData data);
@@ -573,6 +574,10 @@
       </p>
       <p class="ednote">
         The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the |options| parameter could be dismissed from the methods exposed by this API.
+      </p>
+      <p>
+        The <dfn>data</dfn> property if defined, represents additional opaque
+        data that needs to be passed to the interaction.
       </p>
     </section>
 
@@ -1086,7 +1091,15 @@
                 PropertyReadHandler readHandler);
         ExposedThing setPropertyWriteHandler(DOMString name,
                 PropertyWriteHandler writeHandler);
+        ExposedThing setPropertyObserveHandler(DOMString name,
+                PropertyReadHandler handler);
+        ExposedThing setPropertyUnobserveHandler(DOMString name,
+                PropertyReadHandler handler);
         ExposedThing setActionHandler(DOMString name, ActionHandler action);
+        ExposedThing setEventSubscribeHandler(DOMString name,
+                EventListenerHandler handler);
+        ExposedThing setEventUnsubscribeHandler(DOMString name,
+                EventListenerHandler handler);
         void emitEvent(DOMString name, any data);
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
@@ -1097,8 +1110,9 @@
               optional InteractionOptions options = null);
       callback ActionHandler = Promise&lt;any&gt;(any params,
               optional InteractionOptions options = null);
+      callback EventListenerHandler = Promise&lt;void&gt;(
+              optional InteractionOptions options = null);
     </pre>
-
     <section>
       <h3>Constructing {{ExposedThing}}</h3>
       <p>
@@ -1187,16 +1201,88 @@
       </div>
     </section>
 
+    <section> <h3>The <dfn>setPropertyObserveHandler()</dfn> method</h3>
+      <p>
+        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>. Sets the service handler for observing the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function should implement reading a <a>Property</a>.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
+      </p>
+    </section>
+
     <section> <h3>Handling <a>Property</a> observe requests</h3>
       <div>
         When a network request for observing a <a>Property</a> |propertyName:string| is received by the implementation, run the following steps:
         <ol>
           <li>
-            If a <a>Property</a> with |propertyName| does not exist, return an error in the reply (as defined in the
-            <a>Thing Description</a>) and abort these steps.
+            Let |property| be the <a>Property</a> with the name |propertyName|. If it does not exist, return an error in the reply (as defined in the <a>Thing Description</a>) and abort these steps.
           </li>
           <li>
-            Save the request sender information to the <a>Property</a>'s <a>internal observer list</a> in order to be able to notify about <a>Property</a> value changes.
+            Save the request sender information to |property|'s <a>internal observer list</a> as |sender|, in order to be able to notify about <a>Property</a> value changes.
+          </li>
+          <li>
+            If there is a user provided handler registered with <code>setPropertyObserveHandler()</code> for |property|, save that as an
+            <a>internal slot</a> for |property| as |observeHandler|.
+          </li>
+          <li>
+            Otherwise, if there is no read handler defined for |property|, return a {{NotSupportedError}} with the reply and abort these steps.
+          </li>
+          <li>
+            If there is a read handler provided by the implementation,
+            save that as an <a>internal slot</a> for |property| as |observeHandler|.
+          </li>
+          <li>
+            Every time the value of |property| changes, invoke its |observHandler|
+            given |propertyName|, include the returned |value| into the notification
+            prepared to the |sender|, send the notification according to the
+            <a>Protocol Bindings</a> description and abort these steps.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyUnobserveHandler()</dfn> method</h3>
+      <p>
+        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>. Sets the service handler for unobserving the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function should implement reading a <a>Property</a>.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
+      </p>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> unobserve requests</h3>
+      <div>
+        When a network request for unobserving a <a>Property</a> |propertyName:string| is received by the implementation, run the following steps:
+        <ol>
+          <li>
+            Let |property| be the <a>Property</a> with the name |propertyName|. If it does not exist, return an error in the reply (as defined in the <a>Thing Description</a>) and abort these steps.
+          </li>
+          <li>
+            If the request sender information cannot be found in |property|'s <a>internal observer list</a> as |sender|, return an error in the reply (as defined in the <a>Thing Description</a>) and abort these steps.
+          </li>
+          <li>
+            Remove |sender| from |property|'s <a>internal observer list</a> and
+            remove its |observeHandler| slot from |property|.
+          </li>
+          <li>
+            If there is a user provided handler registered with <code>setPropertyUnobserveHandler()</code> for |property|, save that as an
+            <a>internal slot</a> for |property| as |unobserveHandler|.
+          </li>
+          <li>
+            Every time the value of |property| changes, run these sub-steps:
+            <ol>
+              <li>
+              </li>
+            invoke its |observHandler|
+            given |propertyName|, include the returned |value| into the notification
+            prepared to the |sender|, send the notification according to the
+            <a>Protocol Bindings</a> description and abort these steps.
           </li>
         </ol>
       </div>
