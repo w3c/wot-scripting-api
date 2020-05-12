@@ -103,6 +103,7 @@ export interface ConsumedThing {
 }
 
 export interface InteractionOptions {
+    formIndex: number;
     uriVariables: object;
 }
 
@@ -110,6 +111,15 @@ export declare type PropertyValueMap = object | { [key: string]: any; };
 
 export declare type WotListener = (data: any) => void;
 
+export interface InteractionData {
+    data?: DataView;
+    mediaType?: string;
+    encoding?: string;
+    lang?: string;
+    dataSchema?: DataSchema;
+}
+
+export declare type DataSchema = { [key: string]: any; };
 
 /**
  * The ExposedThing interface is the server API to operate the Thing that allows defining request handlers, Property, Action, and Event interactions.
