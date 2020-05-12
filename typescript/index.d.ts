@@ -103,8 +103,8 @@ export interface ConsumedThing {
 }
 
 export interface InteractionOptions {
-    formIndex: number;
-    uriVariables: object;
+    formIndex?: number;
+    uriVariables?: object;
 }
 
 export declare type PropertyValueMap = object | { [key: string]: any; };
