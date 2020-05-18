@@ -478,7 +478,7 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
         constructor(ThingDescription td);
-        Promise&lt;any&gt; readProperty(DOMString propertyName,
+        Promise&lt;InteractionData&gt; readProperty(DOMString propertyName,
                                     optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readMultipleProperties(
@@ -617,14 +617,15 @@
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |value| be the result of the request.
+            Let |response| be the response received to the request.
           </li>
           <li>
-            Let |reply| be the result of running <a>parse interaction data</a>
-            with |value| and |form|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+            Let |data| be the result of running <a>parse interaction response</a>
+            on |response|, |form| and |interaction|.
+            If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Resolve |promise| with |reply|.
+            Resolve |promise| with |data|.
           </li>
         </ol>
       </div>
@@ -658,8 +659,21 @@
             If this cannot be done with a single request with the <a>Protocol Bindings</a>, reject |promise| with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
-            Process the reply and update all properties in |result| with the
-            result of running <a>parse interaction data</a> on the values obtained in the reply.
+            Process the response and for each |key| in |result|, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |value| be the value of |result|'s |key|.
+              </li>
+              <li>
+                Let |dataschema| be the value of ||td||'s |properties|'s |key|.
+              </li>
+              <li>
+                Let |property| be the result of running
+                <a>parse interaction response</a> on |value|, |form| and
+                |dataschema|.
+              </li>
+            </ol>
           </li>
           <li>
             If the above step fails at any point, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -702,10 +716,21 @@
             Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
           </li>
           <li>
-            For each |key| in |result| having its value |value|, update |value|
-            with the result of running <a>parse interaction data</a> with |value|.
-            If that fails, reject |promise| with a {{SyntaxError}} and abort
-            these steps.
+            Process the response and for each |key| in |result|, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |value| be the value of |result|'s |key|.
+              </li>
+              <li>
+                Let |dataschema| be the value of ||td||'s |properties|'s |key|.
+              </li>
+              <li>
+                Let |property| be the result of running
+                <a>parse interaction response</a> on |value|, |form| and
+                |dataschema|.
+              </li>
+            </ol>
           </li>
           <li>
             Resolve |promise| with |result|.
@@ -739,10 +764,13 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |data| be the result of running the <a>create interaction data</a>steps on |value| and |form|. If that fails, reject <a>promise</a> with {{SyntaxError}} and abort these steps.
+            Let |data| be the result of running the <a>create interaction data</a>steps on |value|, |form| and |interaction|. If that fails, reject <a>promise</a> with {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to write |data| to the <a>Property</a> given by |propertyName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
+            to write the <a>Property</a> given by |propertyName| using
+            |data:InteractionData| and the optional URI templates given in
+            |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -769,32 +797,54 @@
         Writes a multiple <a>Property</a> values with one request. Takes a |properties:object| argument as an object with keys being <a>Property</a> names and values as <a>Property</a> values and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps
+            <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting
+            context for security reasons, reject |promise| with a
+            {{SecurityError}} and abort these steps.
           </li>
           <li>
             If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `writemultipleproperties`.
+            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array,
+            otherwise let |form| be the first <a>Form</a> in ||td||'s |forms|
+            array whose |op| is `writemultipleproperties`.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            abort these steps.
           </li>
           <li>
-            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
+            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and let its value be
+            `null`.
           </li>
           <li>
-            For each key |name:string| in |properties|, take its value as |value| and run the <a>create interaction data</a> steps on |value| and |form|. If that fails for any |name|, reject <a>promise</a> with a {{SyntaxError}} and abort these steps.
+            Let |dataschemas:object| be an object and for each string |name:string|
+            in |propertyNames| add a property with key |name| and let its value
+            be the value of ||td||'s |properties|'s |name|.
           </li>
           <li>
-            Make a single request to the underlying platform (via the <a>Protocol Bindings</a>) to write each <a>Property</a> provided in |properties| with optional URI templates given in |options| {{uriVariables}}.
+            For each key |key:string| in |properties|, take its value as |value|
+            and run the <a>create interaction data</a> steps on |value|, |form|
+            and the value for |dataschema|'s |key|.
+            If that fails for any |name|, reject <a>promise</a> with a
+            {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
+            Make a single request to the underlying platform (via the
+            <a>Protocol Bindings</a>) to write each <a>Property</a> provided in
+            |properties| with optional URI templates given in |options|'
+            {{uriVariables}}.
           </li>
           <li>
-            If the request fails, return the error received from the <a>Protocol Bindings</a> and abort these steps.
+            If this cannot be done with a single request with the
+            <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise|
+            with a {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            If the request fails, return the error received from the
+            <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve |promise|.
@@ -851,15 +901,14 @@
             Otherwise resolve |promise|.
           </li>
           <li>
-            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|, run
-            the following sub-steps:
+            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|, run the following sub-steps:
             <ul>
               <li>
-                Let |reply| be the result of running <a>parse interaction data</a>
-                with |value|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+                Let |reply| be the result of running <a>parse interaction response</a>
+                with |value|, |form| and |interaction|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
               </li>
               <li>
-                Invoke |listener| with |reply| as parameter.
+                Invoke |listener| with |reply|.
               </li>
             </ul>
           </li>
@@ -940,8 +989,8 @@
             Let |value| be the reply returned in the reply.
           </li>
           <li>
-            Let |result| be the result of running <a>parse interaction data</a>
-            with |value| and |form|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+            Let |result| be the result of running <a>parse interaction response</a>
+            with |value|, |form| and |interaction|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Resolve |promise| with |result|.
@@ -989,7 +1038,7 @@
           </li>
           <li>
             Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
-            |listener| with the result of running <a>parse interaction data</a> on the data provided with the <a>Event</a> and |form|.
+            |listener| with the result of running <a>parse interaction response</a> on the data provided with the <a>Event</a>, |form| and |interaction|.
           </li>
         </ol>
       </div>
@@ -1048,13 +1097,7 @@
         } catch(e) {
           console.log("TD fetch error: " + e.message); },
         };
-        function parseData(value) {
-          if (value instanceof InteractionData) {
-            const decoder = new TextDecoder();
-            return JSON.parse(decoder.decode(value.data));
-          }
-          return value;
-        };
+
         try {
           // subscribe to property change for “temperature”
           await thing.observeProperty("temperature", value => {
@@ -1070,6 +1113,7 @@
         } catch(e) {
           console.log("Error starting measurement.");
         }
+
         setTimeout( () => {
           console.log(“Temperature: “ +
             parseData(await thing.readProperty(“temperature”)));
@@ -1077,6 +1121,24 @@
           console.log("Unsubscribed from the ‘ready’ event.");
         },
         10000);
+
+        function parseData(response) {
+          if (response.value !== undefined)
+            return data.value;
+          // if response.value is undefined, it means parsing has failed
+          // app can try low-level stream read
+          const reader = value.data.getReader();
+          let value = null;
+
+          reader.read().then(function process({ done, chunk }) {
+              if (done) {
+                value += chunk;
+                return value
+              }
+              value += chunk;
+              return reader.read().then(process);
+            });
+        };
       </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
@@ -1085,162 +1147,158 @@
     <h2>The <dfn>InteractionData</dfn> interface</h2>
     <p>
       Belongs to the <a>WoT Consumer</a> conformance class.
-      Represents the data returned by <a>WoT Interactions</a> when no
-      explicit <a>DataSchema</a> is available for the <a>WoT Interaction</a>,
-      therefore applications need to rely on a <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a>'s `contentType`
-      defined for the <a>WoT Interaction</a>.
-      Implementations MAY always return an {{InteractionData}}
-      object for <a>WoT Interactions</a>, but MAY also parse the return data
-      according to the interaction's <a>DataSchema</a> when that is available.
+      Represents the data used by <a>WoT Interactions</a>.
     </p>
     <p class="ednote">
       Previously `any` has been used for representing data that
-      could be returned by <a>WoT Interactions</a>. Since data type can be
-      specified in the <a>TD</a> by a <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a>'s `contentType`
-      and optionally a <a>DataSchema</a>,
-      this interface enables handling returned data by applications.
+      could be returned by <a>WoT Interactions</a>. Data type is specified in
+      the <a>TD</a> by a <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a>'s `contentType`
+      and optionally a <a>DataSchema</a>.
+      This interface enables handling returned data by applications as a stream
+      or
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface InteractionData {
-        readonly attribute DataView? data;
-        readonly attribute USVString? mediaType;
-        readonly attribute USVString? encoding;
-        readonly attribute USVString? lang;
+        readonly attribute any value;
+        readonly attribute ReadableStream? data;
         readonly attribute DataSchema? dataSchema;
+        readonly attribute Form? form;
       };
     </pre>
     <p>
-      The <dfn>data</dfn> property represents the returned payload from
+      The <dfn>value</dfn> property represents the parsed payload in
       <a>WoT Interactions</a>.
     </p>
     <p>
-      The <dfn>encoding</dfn> attribute represents the
-      <a href="https://encoding.spec.whatwg.org/#name">encoding name</a> used
-      for encoding the payload in the case it is textual data.
-    </p>
-    <p>
-      The <dfn>lang</dfn> attribute represents the [=language tag=]
-      of the payload in the case that was encoded.
-    </p>
-    <p>
-      A <dfn>language tag</dfn> is a <a>string</a> that matches the
-      production of a <code>Language-Tag</code> defined in the [[BCP47]]
-      specifications (see the <a href=
-      "http://www.iana.org/assignments/language-subtag-registry">IANA
-      Language Subtag Registry</a> for an authoritative list of possible
-      values).
+      The <dfn>data</dfn> property represents the raw payload in
+      <a>WoT Interactions</a> as a {{ReadableStream}}.
     </p>
     <p>
       The <dfn>dataSchema</dfn> attribute represents the <a>DataSchema</a>
-      of the payload when it is different from the one defined in the
-      <a>Thing Description</a>. If the value is `null`, then the `DataSchema`
-      of the <a>WoT Interaction</a> SHOULD be fetched from the <a>TD</a>.
+      of the payload as a {{JSON}} object.
+    </p>
+    <p>
+      The <dfn>form</dfn> attribute represents the <a>Form</a> selected from
+      the <a>Thing Description</a> for this <a>WoT Interaction</a>.
     </p>
 
-    <section><h3>The <dfn>parse interaction data</dfn> algorithm</h3>
-      For a given <a>WoT Interaction</a> |interaction| and <a>ConsumedThing</a>
-      object |thing:ConsumedThing|, in order to <a>parse interaction data</a>
-      given |rawData| and |form|, run these steps:
+    <section><h3>The <dfn>parse interaction response</dfn> algorithm</h3>
+      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
+      <a>parse interaction response</a> given |response|, |form:Form| and
+      |dataschema:object|, run these steps:
       <ol>
         <li>
-          If |form|'s |type| is defined, run these sub-steps:
-          <ol>
-            <li>
-              If |type| is `"null"`, let |result| be `null`.
-            </li>
-            <li>
-              If |type| is `"boolean"` and |rawData| is a falsy value, let
-              |result| be `false`, otherwise `true`.
-            </li>
-            <li>
-              If |type| is `"integer"` or `"number"`, let |result| be the number parsed from
-              |rawData|; if |form|'s |minimum| is defined and |result| is smaller,
-              or if |form|'s |maximum| is defined and |result| is bigger,
-              throw {{SyntaxError}} and abort these steps;
-            </li>
-            <li>
-              If |type| is `"string"`, let |result| be the string parsed from |rawData| with
-              the default language and encoding settings.
-              <p class="issue">
-                Need to define what are the default settings and how are they set.
-                See <a href="https://github.com/w3c/wot-scripting-api/issues/213">
-                issue #213</a>.
-              </p>
-            </li>
-            <li>
-              If |type| is `"array"`, run these sub-steps:
-              <ol>
-                <li>
-                  Let |length| be the length of |form|'s |items| array.
-                </li>
-                <li>
-                  If |form|'s |minItems| is defined and |length| is less than
-                  that, or if |form|'s |maxItems| is defined and |length| is
-                  more than that, throw {{SyntaxError}} and abort these steps.
-                </li>
-                <li>
-                  Split |rawData| in |length| number of equal chunks. If that fails,
-                  throw {{SyntaxError}} and abort these steps.
-                </li>
-                <li>
-                  Let |result| be an array of items obtained by
-                  running these steps on each |rawData| chunk and the |item| in |form|'s |items| of the same index. If this throws at any stage,
-                  throw {{SyntaxError}} and abort these steps.
-                </li>
-              </ol>
-            </li>
-            <li>
-              If |type| is `"object"`, run these sub-steps:
-              <ol>
-                <li>
-                  If |form|'s |properties| is not an object,
-                  throw {{SyntaxError}} and abort these steps.
-                </li>
-                <li>
-                  Let |result| be the result of running
-                  <a>parse JSON from bytes</a> on |rawData|.
-                </li>
-                <li>
-                  For each property |key| in |result|,
-                  <ol>
-                    <li>Let |value| be the value of |key|.</li>
-                    <li>Let |schema| be the value of |key| in |properties|.</li>
-                    <li>
-                      Let |value| be the result of running these steps on |value| and |schema|. If this throws, then throw {{SyntaxError}} and abort these steps.
-                    </li>
-                  </ol>
-                </li>
-              </ol>
-            </li>
-          </ol>
+          Let |result| be a new {{InteractionData}} object.
+        </li>
+        <li>
+          Let |result|'s |dataSchema| be |dataschema|.
+        </li>
+        <li>
+          Let |result|'s |form| be |form|.
+        </li>
+        <li>
+          Let |result|'s |data| be a new {{ReadableStream}} representation of
+          the payload data |response|.
+        </li>
+        <li>
+          Let |rawData| be the bytes representation of the payload data |response|.
+        </li>
+        <li>
+          Let |value| be `undefined`.
+        </li>
+        <li>
+          If |dataschema|'s |type| is defined, let |result|'s |value| be the
+          result of running the <a>parse data schema</a> sub-steps on
+          |rawData|, |form| and |dataschema|.
+          If that throws, let |result|'s |value| be `undefined`.
         </li>
         <li>
           Return |result| and abort these steps.
         </li>
+      </ol>
+      To run the <dfn>parse data schema</dfn> steps on |rawData|, |form| and
+      |dataschema|:
+      <ol>
         <li>
-          Otherwise, if |form|'s |type| is not defined, run these sub-steps
+          Let |type| be |dataschema|'s |type|.
+        </li>
+        <li>
+          If |type| is `"null"`, return `null`.
+        </li>
+        <li>
+          If |type| is `"boolean"` and |rawData| is a falsy value, return
+          `false`, otherwise return `true`.
+        </li>
+        <li>
+          If |type| is `"integer"` or `"number"`, let |value| be the number
+          parsed from |rawData|; if |form|'s |minimum| is defined and
+          |result| is smaller, or if |form|'s |maximum| is defined and
+          |result| is bigger, throw {{SyntaxError}} and abort these steps;
+        </li>
+        <li>
+          If |type| is `"string"`, let |value| be the string parsed from
+          |rawData| using |form|'s |contentType| and |contentCoding|.
+        </li>
+        <li>
+          If |type| is `"array"`, run these sub-steps:
           <ol>
             <li>
-              Let |result| be a new {{InteractionData}} object with all its properties
-              set to `null`.
+              Let |length| be the length of |form|'s |items| array.
             </li>
             <li>
-              Let |result|'s |data| be a new {{DataView}} created from |rawData|.
+              If |form|'s |minItems| is defined and |length| is less than
+              that, or if |form|'s |maxItems| is defined and |length| is
+              more than that, throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              Let |result|'s |mediaType| be |form|'s |contentType|.
+              Split |rawData| in |length| number of equal chunks. If that fails,
+              throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              Set |result|'s |encoding| to the
-              <a href="https://encoding.spec.whatwg.org/#name">encoding name</a>
-              if that is available.
+              Let |value| be an array of items obtained by
+              running these steps on each |rawData| chunk and the |item| in
+              |form|'s |items| of the same index. If this throws at any stage,
+              throw {{SyntaxError}} and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If |type| is `"object"`, run these sub-steps:
+          <ol>
+            <li>
+              If |dataschema|'s |properties| is not an object,
+              throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              Set |result|'s |lang| to the [=language tag=] if available.
+              Let |value| be the result of running
+              <a>parse JSON from bytes</a> on |rawData|.
             </li>
             <li>
-              Return |result|.
+              For each property |key| in |value|,
+              <ol>
+                <li>Let |prop| be the value of |key|.</li>
+                <li>
+                  Let |schema| be the value of |key| in |interaction|'s
+                  |properties|.
+                </li>
+                <li>
+                  Let |prop| be the result of running the
+                  <a>parse data schema</a> steps on |prop|, |form| and |schema|.
+                  If this throws, then throw {{SyntaxError}} and abort these steps.
+                </li>
+              </ol>
+            </li>
+            <li>
+              Let |required| be |dataschema|'s |required| if that is an array
+              or an empty array otherwise.
+            </li>
+            <li>
+              For each |key| in |required|, if |key| is not present in |value|,
+              throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              Return |value|.
             </li>
           </ol>
         </li>
@@ -1248,54 +1306,49 @@
     </section>
 
     <section><h3>The <dfn>create interaction data</dfn> algorithm</h3>
-      For a given <a>WoT Interaction</a> |interaction| and <a>ConsumedThing</a>
-      object |thing:ConsumedThing|, in order to <a>create interaction data</a>
-      given |data| and |form|, run these steps:
+      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
+      <a>create interaction data</a> given |value|, |form:Form| and
+      |dataschema:object|, run these steps:
       <ol>
         <li>
-          If |data| is an {{InteractionData}} object, run these sub-steps:
-          <ol>
-            <li>
-              If |form|'s |contentType| and |data|'s |mediaType| are defined,
-              but not equal, throw {{SyntaxError}} and abort these steps.
-            </li>
-            <li>
-              If |data|'s |mediaType| is not defined, let it be |form|'s |contentType|.
-            </li>
-            <li>
-              Return |data| and abort these steps.
-            </li>
-          </ol>
+          If |value| is an {{InteractionData}} object whose |data| is a
+          {{ReadableStream}}, return |value| and abort these steps.
         </li>
         <li>
-          If |form|'s |type| is defined, run these sub-steps:
+          Let |data| be a new an {{InteractionData}} object whose |value| is
+          `undefined`, whose |form| is |form|, whose |dataSchema| is |dataschema|
+          and whose |data| is `null`.
+        </li>
+        <li>
+          If |dataschema|'s |type| is defined, run these sub-steps:
           <ol>
             <li>
-              If |type| is `"null"` and |data| is not, throw {{SyntaxError}} and abort these steps.
-            </li>
-            <li>
-              If |type| is `"boolean"` and |data| is a falsy value, let
-              |data| be `false`, otherwise `true`.
-            </li>
-            <li>
-              If |type| is `"integer"` or `"number"` and |data| is not a number,
-              or if |form|'s |minimum| is defined and |data| is smaller,
-              or if |form|'s |maximum| is defined and |data| is bigger,
+              If |type| is `"null"` and |value| is not,
               throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              If |type| is `"string"` and |data| is not a string, let |data| be
-              the result of running <a>serialize JSON to bytes</a> on |data|.
+              If |type| is `"boolean"` and |value| is a falsy value, let
+              |value| be `false`, otherwise `true`.
+            </li>
+            <li>
+              If |type| is `"integer"` or `"number"` and |value| is not a number,
+              or if |form|'s |minimum| is defined and |value| is smaller,
+              or if |form|'s |maximum| is defined and |value| is bigger,
+              throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"string"` and |value| is not a string, let |value| be
+              the result of running <a>serialize JSON to bytes</a> on |value|.
               If that is failure, throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
               If |type| is `"array"`, run these sub-steps:
               <ol>
                 <li>
-                  If |data| is not an array, throw {{SyntaxError}} and abort these steps.
+                  If |value| is not an array, throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  Let |length| be the length of |data|.
+                  Let |length| be the length of |value|.
                 </li>
                 <li>
                   If |form|'s |minItems| is defined and |length| is less than
@@ -1303,13 +1356,10 @@
                   more than that, throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  For each item in |data|,  |rawData| in |length| number of equal chunks. If that fails,
-                  throw {{SyntaxError}} and abort these steps.
-                </li>
-                <li>
-                  For each |item| in |data| with |index|, let |item| be the
-                  result of running these steps on |item| and |schema| obtained
-                  from |form|'s |items| at |index|. If this throws at any stage,
+                  For each |item| in |value| with |index|, let |schema| be
+                  |dataschema|'s |items| at |index| and let |item| be the
+                  result of running these steps on |item|, |form| and |schema|.
+                  If this throws at any stage,
                   throw {{SyntaxError}} and abort these steps.
                 </li>
               </ol>
@@ -1318,30 +1368,36 @@
               If |type| is `"object"`, run these sub-steps:
               <ol>
                 <li>
-                  If |data| is not an object, throw {{SyntaxError}} and abort these steps.
+                  If |value| is not an object, throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  If |form|'s |properties| is not an object,
+                  If |dataschema|'s |properties| is not an object,
                   throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  For each property |key| in |data|,
+                  For each property |key| in |value|,
                   <ol>
                     <li>Let |value| be the value of |key|.</li>
                     <li>Let |schema| be the value of |key| in |properties|.</li>
                     <li>
-                      Let |value| be the result of running these steps on |value| and |schema|. If this throws, then throw {{SyntaxError}} and abort these steps.
+                      Let |value| be the result of running these steps on |value|, |form| and |schema|. If this throws, then throw {{SyntaxError}} and abort these steps.
                     </li>
                   </ol>
                 </li>
                 <li>
-                  If |form|'s |required| is defined, for each of its |item|
-                  check if |item| is a property in |data|. If an |item| is
-                  not found in |result|, throw {{SyntaxError}} and abort these steps.
+                  If |dataschema|'s |required| is an array, for each |item| in |required|
+                  check if |item| is a property name in |value|. If an |item| is
+                  not found in |value|, throw {{SyntaxError}} and abort these steps.
                 </li>
               </ol>
             </li>
           </ol>
+        </li>
+        <li>
+          Let |data|'s |value| be |value|.
+        </li>
+        <li>
+          Return |data|.
         </li>
       </ol>
     </section>
@@ -2270,7 +2326,7 @@
       <dfn data-cite="!HTML#global-object">global object</dfn>,
       <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
       executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
-       are defined in [[!HTML5]] and are used in the context of browser implementations.[=language tag=]
+       are defined in [[!HTML5]] and are used in the context of browser implementations.
     </p>
     <p>
       The term
