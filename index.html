@@ -1150,12 +1150,19 @@
       Represents the data used by <a>WoT Interactions</a>.
     </p>
     <p class="ednote">
-      Previously `any` has been used for representing data that
-      could be returned by <a>WoT Interactions</a>. Data type is specified in
-      the <a>TD</a> by a <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a>'s `contentType`
-      and optionally a <a>DataSchema</a>.
-      This interface enables handling returned data by applications as a stream
-      or
+      As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
+      and include a number of possible <a>Form</a>s, out of which one is selected
+      for the interaction. The
+      <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
+      Form</a> contains a `contentType` to describe the data.
+      For certain content types, a <a>DataSchema</a> is defined, based on
+      <a>JSON schema</a>, making possible to represent these contents as
+      JavaScript types.
+    </p>
+    <p>
+      This interface provides automatic value parsing when a <a>DataSchema</a>
+      is available, and otherwise provide a way to parse data based on
+      content type and exposed as a stream.
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
@@ -2273,6 +2280,9 @@
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
+    </p>
+    <p>
+      <dfn>JSON schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
     </p>
     <p>
       The terms
