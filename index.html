@@ -589,13 +589,19 @@
     <section>
       <h3>The <dfn>readProperty()</dfn> method</h3>
       <div>
-        Reads a <a>Property</a> value. Takes a string argument |propertyName| and and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns a <a>Property</a> value represented as `any` type. The method MUST run the following steps:
+        Reads a <a>Property</a> value. Takes a string argument |propertyName|
+        and an optional {{InteractionOptions}} |options:InteractionOptions|
+        argument. It returns a <a>Property</a> value represented as `any` type.
+        The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps
+            <a>in parallel</a>.
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting
+            context for security reasons, reject |promise| with a
+            {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let |interaction| be the value of ||td||'s |properties|'s
@@ -608,10 +614,14 @@
             |interaction|'s |forms| whose |op| is `readproperty`.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a>given by |propertyName| using |form| and the optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the
+            <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a>
+            given by |propertyName| using |form| and the optional URI templates
+            given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -666,12 +676,12 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |dataschema| be the value of ||td||'s |properties|'s |key|.
+                Let |schema| be the value of ||td||'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
                 <a>parse interaction response</a> on |value|, |form| and
-                |dataschema|.
+                |schema|.
               </li>
             </ol>
           </li>
@@ -723,12 +733,12 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |dataschema| be the value of ||td||'s |properties|'s |key|.
+                Let |schema| be the value of ||td||'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
                 <a>parse interaction response</a> on |value|, |form| and
-                |dataschema|.
+                |schema|.
               </li>
             </ol>
           </li>
@@ -820,14 +830,14 @@
             `null`.
           </li>
           <li>
-            Let |dataschemas:object| be an object and for each string |name:string|
+            Let |schemas:object| be an object and for each string |name:string|
             in |propertyNames| add a property with key |name| and let its value
             be the value of ||td||'s |properties|'s |name|.
           </li>
           <li>
             For each key |key:string| in |properties|, take its value as |value|
             and run the <a>create interaction data</a> steps on |value|, |form|
-            and the value for |dataschema|'s |key|.
+            and the value for |schema|'s |key|.
             If that fails for any |name|, reject <a>promise</a> with a
             {{SyntaxError}} and abort these steps.
           </li>
@@ -942,8 +952,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|'
-            {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|' {{uriVariables}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1157,116 +1166,180 @@
       Form</a> contains a `contentType` to describe the data.
       For certain content types, a <a>DataSchema</a> is defined, based on
       <a>JSON schema</a>, making possible to represent these contents as
-      JavaScript types.
+      JavaScript types and eventually set range constraints on the data.
     </p>
     <p>
-      This interface provides automatic value parsing when a <a>DataSchema</a>
-      is available, and otherwise provide a way to parse data based on
-      content type and exposed as a stream.
+      This interface exposes the data returned from the <a>WoT Interaction</a>.
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface InteractionData {
-        readonly attribute any value;
         readonly attribute ReadableStream? data;
-        readonly attribute DataSchema? dataSchema;
+        readonly attribute boolean dataUsed;
         readonly attribute Form? form;
+        readonly attribute DataSchema? schema;
+        Promise&lt;ArrayBuffer&gt; arrayBuffer();
+        Promise&lt;any&gt; value();
       };
     </pre>
     <p>
-      The <dfn>value</dfn> property represents the parsed payload in
-      <a>WoT Interactions</a>.
-    </p>
-    <p>
       The <dfn>data</dfn> property represents the raw payload in
-      <a>WoT Interactions</a> as a {{ReadableStream}}.
+      <a>WoT Interactions</a> as a {{ReadableStream}}, initialy `null`.
     </p>
     <p>
-      The <dfn>dataSchema</dfn> attribute represents the <a>DataSchema</a>
-      of the payload as a {{JSON}} object.
+      The <dfn>dataUsed</dfn> property tells whether the <a>data</a> stream has
+      been <a href="https://fetch.spec.whatwg.org/#concept-readablestream-disturbed">
+      disturbed</a>. Initially `false`.
     </p>
     <p>
       The <dfn>form</dfn> attribute represents the <a>Form</a> selected from
-      the <a>Thing Description</a> for this <a>WoT Interaction</a>.
+      the <a>Thing Description</a> for this <a>WoT Interaction</a>,
+      initially `null`.
+    </p>
+    <p>
+      The <dfn>schema</dfn> attribute represents the <a>DataSchema</a>
+      of the payload as a {{JSON}} object, initially `null`.
+    </p>
+    <p>
+      The <dfn>[[\value]]</dfn> internal slot represents the parsed value of
+      the <a>WoT Interaction</a>, initially `undefined` (note that `null` is a
+      valid value).
     </p>
 
-    <section><h3>The <dfn>parse interaction response</dfn> algorithm</h3>
-      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
-      <a>parse interaction response</a> given |response|, |form:Form| and
-      |dataschema:object|, run these steps:
+    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
+      When invoked, MUST run the following steps:
       <ol>
         <li>
-          Let |result| be a new {{InteractionData}} object.
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
         </li>
         <li>
-          Let |result|'s |dataSchema| be |dataschema|.
+          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
+          reject|promise| with {{SyntaxError}} and abort these steps.
         </li>
         <li>
-          Let |result|'s |form| be |form|.
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
         </li>
         <li>
-          Let |result|'s |data| be a new {{ReadableStream}} representation of
-          the payload data |response|.
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
         </li>
         <li>
-          Let |rawData| be the bytes representation of the payload data |response|.
+          Set |dataUsed| to `true`.
         </li>
         <li>
-          Let |value| be `undefined`.
+          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
+          If that throws, reject |promise| with that exception and abort these steps.
         </li>
         <li>
-          If |dataschema|'s |type| is defined, let |result|'s |value| be the
-          result of running the <a>parse data schema</a> sub-steps on
-          |rawData|, |form| and |dataschema|.
-          If that throws, let |result|'s |value| be `undefined`.
-        </li>
-        <li>
-          Return |result| and abort these steps.
+          Resolve |promise| with |arrayBuffer|.
         </li>
       </ol>
-      To run the <dfn>parse data schema</dfn> steps on |rawData|, |form| and
-      |dataschema|:
+    </section>
+
+    <section><h3>The <dfn>value()</dfn> function</h3>
+      Parses the data returned from the <a>WoT Interaction</a> and returns a
+      value with the type described by the <a>DataSchema</a> of the interaction
+      if that exists, or by the `contentType` of the <a>Form</a> used for the
+      interaction. The method MUST run the following steps:
       <ol>
         <li>
-          Let |type| be |dataschema|'s |type|.
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
         </li>
         <li>
-          If |type| is `"null"`, return `null`.
+          If the value of the <a>[[\value]]</a> <a>internal slot</a> is not
+          `undefined`, resolve |promise| with that value and abort these steps.
         </li>
         <li>
-          If |type| is `"boolean"` and |rawData| is a falsy value, return
-          `false`, otherwise return `true`.
+          If the value of the |data| property is not a {{ReadableStream}} or if
+          |dataUsed| is `true`, or if |form| is `null` or if |schema| or its
+          |type| are `null` or `undefined`,
+          reject |promise| with {{SyntaxError}} and abort these steps.
         </li>
         <li>
-          If |type| is `"integer"` or `"number"`, let |value| be the number
-          parsed from |rawData|; if |form|'s |minimum| is defined and
-          |result| is smaller, or if |form|'s |maximum| is defined and
-          |result| is bigger, throw {{SyntaxError}} and abort these steps;
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
         </li>
         <li>
-          If |type| is `"string"`, let |value| be the string parsed from
-          |rawData| using |form|'s |contentType| and |contentCoding|.
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
+        </li>
+        <li>
+          Set |dataUsed| to `true`.
+        </li>
+        <li>
+          If |form|'s |contentType| is not `application/json` and if a mapping is
+          available in the <a>Protocol Bindings</a> from |form|'s |contentType|
+          to [JSON-SCHEMA], transform |bytes| with that mapping.
+        </li>
+        <li>
+          Let |json| be the result of running <a>parse JSON from bytes</a> on
+          |bytes|. If that throws, reject |promise| with {{SyntaxError}} and
+          abort these steps.
+        </li>
+        <li>
+          Set <a>[[\value]]</a> to the result of running <a>check data schema</a>
+          on |json| and |schema|. If that throws, reject |promise| with that
+          exception and abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with <a>[[\value]]</a>.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>check data schema</dfn> algorithm</h3>
+      To run the <a>check data schema</a> steps on |payload| and |schema:object|,
+      <ol>
+        <li>
+          Let |type| be |schema|'s |type|.
+        </li>
+        <li>
+          If |type| is `"null"` and if |payload| is not `null`,
+          throw {{SyntaxError}} and abort these steps, otherwise return `null`.
+        </li>
+        <li>
+          If |type| is `"boolean"` and |payload| is a falsey value or its byte
+          length is 0, return `false`, otherwise return `true`.
+        </li>
+        <li>
+          If |type| is `"integer"` or `"number"`,
+          <ol>
+            <li>
+              If |payload| is not a number, throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |form|'s |minimum| is defined and |payload| is smaller, or if |form|'s |maximum| is defined and |payload| is bigger, throw {{SyntaxError}} and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If |type| is `"string"`, return |payload|.
         </li>
         <li>
           If |type| is `"array"`, run these sub-steps:
           <ol>
             <li>
-              Let |length| be the length of |form|'s |items| array.
+              If |payload| is not an array, throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              If |form|'s |minItems| is defined and |length| is less than
-              that, or if |form|'s |maxItems| is defined and |length| is
-              more than that, throw {{SyntaxError}} and abort these steps.
+              If |form|'s |minItems| is defined and |payload|'s |length| is
+              less than that, or if |form|'s |maxItems| is defined and |payload|'s
+              |length| is more than that, throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              Split |rawData| in |length| number of equal chunks. If that fails,
-              throw {{SyntaxError}} and abort these steps.
-            </li>
-            <li>
-              Let |value| be an array of items obtained by
-              running these steps on each |rawData| chunk and the |item| in
-              |form|'s |items| of the same index. If this throws at any stage,
-              throw {{SyntaxError}} and abort these steps.
+              Let |payload| be an array of items obtained by running the
+              <a>check data schema</a> steps on each element |item| of |payload|
+              and |schema|'s |items|.
+              If this throws at any stage, throw {{SyntaxError}} and abort these steps.
             </li>
           </ol>
         </li>
@@ -1274,88 +1347,86 @@
           If |type| is `"object"`, run these sub-steps:
           <ol>
             <li>
-              If |dataschema|'s |properties| is not an object,
+              If |payload| or |schema|'s |properties| is not an object,
               throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              Let |value| be the result of running
-              <a>parse JSON from bytes</a> on |rawData|.
-            </li>
-            <li>
-              For each property |key| in |value|,
+              For each property |key| in |payload|,
               <ol>
                 <li>Let |prop| be the value of |key|.</li>
                 <li>
-                  Let |schema| be the value of |key| in |interaction|'s
+                  Let |propSchema| be the value of |key| in |interaction|'s
                   |properties|.
                 </li>
                 <li>
                   Let |prop| be the result of running the
-                  <a>parse data schema</a> steps on |prop|, |form| and |schema|.
+                  <a>check data schema</a> steps on |prop| and |propSchema|.
                   If this throws, then throw {{SyntaxError}} and abort these steps.
                 </li>
               </ol>
             </li>
             <li>
-              Let |required| be |dataschema|'s |required| if that is an array
+              Let |required| be |schema|'s |required| if that is an array
               or an empty array otherwise.
             </li>
             <li>
-              For each |key| in |required|, if |key| is not present in |value|,
+              For each |key| in |required|, if |key| is not present in |payload|,
               throw {{SyntaxError}} and abort these steps.
             </li>
-            <li>
-              Return |value|.
-            </li>
           </ol>
+        </li>
+        <li>
+          Return |payload|.
         </li>
       </ol>
     </section>
 
     <section><h3>The <dfn>create interaction data</dfn> algorithm</h3>
       For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
-      <a>create interaction data</a> given |value|, |form:Form| and
-      |dataschema:object|, run these steps:
+      <a>create interaction data</a> given |source|, |form:Form| and
+      |schema:object|, run these steps:
       <ol>
         <li>
-          If |value| is an {{InteractionData}} object whose |data| is a
-          {{ReadableStream}}, return |value| and abort these steps.
+          If |source| is an {{InteractionData}} object whose |data| is a
+          {{ReadableStream}}, set its |form| to |form|,
+          return |source| and abort these steps.
         </li>
         <li>
-          Let |data| be a new an {{InteractionData}} object whose |value| is
-          `undefined`, whose |form| is |form|, whose |dataSchema| is |dataschema|
-          and whose |data| is `null`.
+          Let |idata| be a new an {{InteractionData}} object whose [[\value]]
+          <a>internal slot</a> is `undefined`, whose |form| is |form|,
+          whose |schema| is set to |schema| and whose |data| is `null`.
         </li>
         <li>
-          If |dataschema|'s |type| is defined, run these sub-steps:
+          If |schema|'s |type| is defined, run these sub-steps:
           <ol>
             <li>
-              If |type| is `"null"` and |value| is not,
+              If |type| is `"null"` and |source| is not,
               throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              If |type| is `"boolean"` and |value| is a falsy value, let
-              |value| be `false`, otherwise `true`.
+              If |type| is `"boolean"` and |source| is a falsy value, set
+              |idata|'s [[\value]] |value| to `false`, otherwise to `true`.
             </li>
             <li>
-              If |type| is `"integer"` or `"number"` and |value| is not a number,
-              or if |form|'s |minimum| is defined and |value| is smaller,
-              or if |form|'s |maximum| is defined and |value| is bigger,
+              If |type| is `"integer"` or `"number"` and |source| is not a number,
+              or if |form|'s |minimum| is defined and |source| is smaller,
+              or if |form|'s |maximum| is defined and |source| is bigger,
               throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
-              If |type| is `"string"` and |value| is not a string, let |value| be
-              the result of running <a>serialize JSON to bytes</a> on |value|.
+              If |type| is `"string"` and |source| is not a string, let |idata|'s
+              [[\value]] be the result of running <a>serialize JSON to bytes</a>
+              on |source|.
               If that is failure, throw {{SyntaxError}} and abort these steps.
             </li>
             <li>
               If |type| is `"array"`, run these sub-steps:
               <ol>
                 <li>
-                  If |value| is not an array, throw {{SyntaxError}} and abort these steps.
+                  If |source| is not an array, throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  Let |length| be the length of |value|.
+                  Let |length| be the length of |source|.
                 </li>
                 <li>
                   If |form|'s |minItems| is defined and |length| is less than
@@ -1363,11 +1434,14 @@
                   more than that, throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  For each |item| in |value| with |index|, let |schema| be
-                  |dataschema|'s |items| at |index| and let |item| be the
-                  result of running these steps on |item|, |form| and |schema|.
-                  If this throws at any stage,
-                  throw {{SyntaxError}} and abort these steps.
+                  For each |item| in |source|, let |itemschema| be |schema|'s
+                  |items| and let |item| be the result of running the
+                  <a>create interaction data</a> steps on |item|, |form| and
+                  |itemschema|.
+                  If this throws, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Set |data|'s [[\value]] to |source|.
                 </li>
               </ol>
             </li>
@@ -1375,39 +1449,78 @@
               If |type| is `"object"`, run these sub-steps:
               <ol>
                 <li>
-                  If |value| is not an object, throw {{SyntaxError}} and abort these steps.
+                  If |source| is not an object, throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  If |dataschema|'s |properties| is not an object,
+                  If |schema|'s |properties| is not an object,
                   throw {{SyntaxError}} and abort these steps.
                 </li>
                 <li>
-                  For each property |key| in |value|,
+                  For each property |key| in |source|,
                   <ol>
                     <li>Let |value| be the value of |key|.</li>
-                    <li>Let |schema| be the value of |key| in |properties|.</li>
+                    <li>Let |propschema| be the value of |key| in |properties|.</li>
                     <li>
-                      Let |value| be the result of running these steps on |value|, |form| and |schema|. If this throws, then throw {{SyntaxError}} and abort these steps.
+                      Let |value| be the result of running the
+                      <a>create interaction data</a> steps on |value|, |form|
+                      and |propschema|.
+                      If this throws, then throw {{SyntaxError}} and abort these steps.
                     </li>
                   </ol>
                 </li>
                 <li>
-                  If |dataschema|'s |required| is an array, for each |item| in |required|
-                  check if |item| is a property name in |value|. If an |item| is
-                  not found in |value|, throw {{SyntaxError}} and abort these steps.
+                  If |schema|'s |required| is an array, for each |item| in |required|
+                  check if |item| is a property name in |source|. If an |item| is
+                  not found in |source|, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Set |data|'s [[\value]] to |source|.
                 </li>
               </ol>
             </li>
           </ol>
         </li>
         <li>
-          Let |data|'s |value| be |value|.
+          Set |idata|'s |data| to a new {{ReadableStream}} created from |idata|'s
+          [[\value]] <a>internal slot</a> as its
+          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          underlying source</a>.
         </li>
         <li>
-          Return |data|.
+          Return |idata|.
         </li>
       </ol>
     </section>
+
+    <section><h3>The <dfn>parse interaction response</dfn> algorithm</h3>
+      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
+      <a>parse interaction response</a> given |response|, |form:Form| and
+      |schema:object|, run these steps:
+      <ol>
+        <li>
+          Let |result| be a new {{InteractionData}} object.
+        </li>
+        <li>
+          Let |result|'s |schema| be |schema|.
+        </li>
+        <li>
+          Let |result|'s |form| be |form|.
+        </li>
+        <li>
+          Let |result|'s |data| be a new {{ReadableStream}} with the payload data
+          of |response| as its
+          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          underlying source</a>.
+        </li>
+        <li>
+          Let |result|'s |dataUsed| be `false`.
+        </li>
+        <li>
+          Return |result|.
+        </li>
+      </ol>
+    </section>
+
   </section>
 
   <section data-dfn-for="ExposedThing">
