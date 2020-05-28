@@ -686,7 +686,8 @@
             </ol>
           </li>
           <li>
-            If the above step fails at any point, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If the above step throws at any point, reject |promise| with that
+            exception and abort these steps.
           </li>
           <li>
             Resolve |promise| with |result|.
@@ -774,7 +775,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |data| be the result of running the <a>create interaction data</a>steps on |value|, |form| and |interaction|. If that fails, reject <a>promise</a> with {{SyntaxError}} and abort these steps.
+            Let |data| be the result of running the <a>create interaction data</a>steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
@@ -838,8 +839,8 @@
             For each key |key:string| in |properties|, take its value as |value|
             and run the <a>create interaction data</a> steps on |value|, |form|
             and the value for |schema|'s |key|.
-            If that fails for any |name|, reject <a>promise</a> with a
-            {{SyntaxError}} and abort these steps.
+            If that throws for any |name|, reject <a>promise</a> with that
+            exception and abort these steps.
           </li>
           <li>
             Make a single request to the underlying platform (via the
@@ -915,7 +916,7 @@
             <ul>
               <li>
                 Let |reply| be the result of running <a>parse interaction response</a>
-                with |value|, |form| and |interaction|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+                with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
               </li>
               <li>
                 Invoke |listener| with |reply|.
@@ -999,7 +1000,7 @@
           </li>
           <li>
             Let |result| be the result of running <a>parse interaction response</a>
-            with |value|, |form| and |interaction|. If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+            with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
           </li>
           <li>
             Resolve |promise| with |result|.
@@ -1131,22 +1132,28 @@
         },
         10000);
 
-        function parseData(response) {
-          if (response.value !== undefined)
-            return data.value;
-          // if response.value is undefined, it means parsing has failed
-          // app can try low-level stream read
-          const reader = value.data.getReader();
-          let value = null;
+        async function parseData(response) {
+          let value = undefined;
+          try {
+            value = await response.value();
+          catch(err) {
+            // if response.value() fails, try low-level stream read
+            if (response.dataUsed)
+              return undefined;  // or make a second request
 
-          reader.read().then(function process({ done, chunk }) {
-              if (done) {
+            const reader = value.data.getReader();
+            value = null;
+
+            reader.read().then(function process({ done, chunk }) {
+                if (done) {
+                  value += chunk;
+                  return value;
+                }
                 value += chunk;
-                return value
-              }
-              value += chunk;
-              return reader.read().then(process);
-            });
+                return reader.read().then(process);
+              });
+          }
+          return value;
         };
       </pre>
     </section> <!-- Examples -->
@@ -1215,7 +1222,7 @@
         </li>
         <li>
           If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
-          reject|promise| with {{SyntaxError}} and abort these steps.
+          reject|promise| with {{NotReadableError}} and abort these steps.
         </li>
         <li>
           Let |reader| be the result of
@@ -1259,7 +1266,13 @@
           If the value of the |data| property is not a {{ReadableStream}} or if
           |dataUsed| is `true`, or if |form| is `null` or if |schema| or its
           |type| are `null` or `undefined`,
-          reject |promise| with {{SyntaxError}} and abort these steps.
+          reject |promise| with {{NotReadableError}} and abort these steps.
+        </li>
+        <li>
+          If |form|'s |contentType| is not `application/json` and if a mapping is
+          not available in the <a>Protocol Bindings</a> from |form|'s |contentType|
+          to [JSON-SCHEMA], reject |promise| with {{NotSupportedError}} and
+          abort these steps.
         </li>
         <li>
           Let |reader| be the result of
@@ -1282,7 +1295,7 @@
         </li>
         <li>
           Let |json| be the result of running <a>parse JSON from bytes</a> on
-          |bytes|. If that throws, reject |promise| with {{SyntaxError}} and
+          |bytes|. If that throws, reject |promise| with that exception and
           abort these steps.
         </li>
         <li>
@@ -1304,7 +1317,7 @@
         </li>
         <li>
           If |type| is `"null"` and if |payload| is not `null`,
-          throw {{SyntaxError}} and abort these steps, otherwise return `null`.
+          throw {{TypeError}} and abort these steps, otherwise return `null`.
         </li>
         <li>
           If |type| is `"boolean"` and |payload| is a falsey value or its byte
@@ -1314,10 +1327,11 @@
           If |type| is `"integer"` or `"number"`,
           <ol>
             <li>
-              If |payload| is not a number, throw {{SyntaxError}} and abort these steps.
+              If |payload| is not a number, throw {{TypeError}} and abort these steps.
             </li>
             <li>
-              If |form|'s |minimum| is defined and |payload| is smaller, or if |form|'s |maximum| is defined and |payload| is bigger, throw {{SyntaxError}} and abort these steps.
+              If |form|'s |minimum| is defined and |payload| is smaller, or if |form|'s |maximum| is defined and |payload| is bigger, throw
+              {{RangeError}} and abort these steps.
             </li>
           </ol>
         </li>
@@ -1328,18 +1342,18 @@
           If |type| is `"array"`, run these sub-steps:
           <ol>
             <li>
-              If |payload| is not an array, throw {{SyntaxError}} and abort these steps.
+              If |payload| is not an array, throw {{TypeError}} and abort these steps.
             </li>
             <li>
               If |form|'s |minItems| is defined and |payload|'s |length| is
               less than that, or if |form|'s |maxItems| is defined and |payload|'s
-              |length| is more than that, throw {{SyntaxError}} and abort these steps.
+              |length| is more than that, throw {{RangeError}} and abort these steps.
             </li>
             <li>
               Let |payload| be an array of items obtained by running the
               <a>check data schema</a> steps on each element |item| of |payload|
               and |schema|'s |items|.
-              If this throws at any stage, throw {{SyntaxError}} and abort these steps.
+              If this throws at any stage, re-throw that exception and abort these steps.
             </li>
           </ol>
         </li>
@@ -1348,7 +1362,7 @@
           <ol>
             <li>
               If |payload| or |schema|'s |properties| is not an object,
-              throw {{SyntaxError}} and abort these steps.
+              throw {{TypeError}} and abort these steps.
             </li>
             <li>
               For each property |key| in |payload|,
@@ -1361,7 +1375,7 @@
                 <li>
                   Let |prop| be the result of running the
                   <a>check data schema</a> steps on |prop| and |propSchema|.
-                  If this throws, then throw {{SyntaxError}} and abort these steps.
+                  If this throws, re-throw that exception and abort these steps.
                 </li>
               </ol>
             </li>
@@ -1401,7 +1415,7 @@
           <ol>
             <li>
               If |type| is `"null"` and |source| is not,
-              throw {{SyntaxError}} and abort these steps.
+              throw {{TypeError}} and abort these steps.
             </li>
             <li>
               If |type| is `"boolean"` and |source| is a falsy value, set
@@ -1411,7 +1425,7 @@
               If |type| is `"integer"` or `"number"` and |source| is not a number,
               or if |form|'s |minimum| is defined and |source| is smaller,
               or if |form|'s |maximum| is defined and |source| is bigger,
-              throw {{SyntaxError}} and abort these steps.
+              throw {{RangeError}} and abort these steps.
             </li>
             <li>
               If |type| is `"string"` and |source| is not a string, let |idata|'s
@@ -1423,7 +1437,7 @@
               If |type| is `"array"`, run these sub-steps:
               <ol>
                 <li>
-                  If |source| is not an array, throw {{SyntaxError}} and abort these steps.
+                  If |source| is not an array, throw a {{TypeError}} and abort these steps.
                 </li>
                 <li>
                   Let |length| be the length of |source|.
@@ -1431,14 +1445,14 @@
                 <li>
                   If |form|'s |minItems| is defined and |length| is less than
                   that, or if |form|'s |maxItems| is defined and |length| is
-                  more than that, throw {{SyntaxError}} and abort these steps.
+                  more than that, throw {{RangeError}} and abort these steps.
                 </li>
                 <li>
                   For each |item| in |source|, let |itemschema| be |schema|'s
                   |items| and let |item| be the result of running the
                   <a>create interaction data</a> steps on |item|, |form| and
                   |itemschema|.
-                  If this throws, throw {{SyntaxError}} and abort these steps.
+                  If this throws, re-throw that exception and abort these steps.
                 </li>
                 <li>
                   Set |data|'s [[\value]] to |source|.
@@ -1449,11 +1463,11 @@
               If |type| is `"object"`, run these sub-steps:
               <ol>
                 <li>
-                  If |source| is not an object, throw {{SyntaxError}} and abort these steps.
+                  If |source| is not an object, throw {{TypeError}} and abort these steps.
                 </li>
                 <li>
                   If |schema|'s |properties| is not an object,
-                  throw {{SyntaxError}} and abort these steps.
+                  throw {{TypeError}} and abort these steps.
                 </li>
                 <li>
                   For each property |key| in |source|,
@@ -1464,7 +1478,7 @@
                       Let |value| be the result of running the
                       <a>create interaction data</a> steps on |value|, |form|
                       and |propschema|.
-                      If this throws, then throw {{SyntaxError}} and abort these steps.
+                      If this throws, re-throw that exception and abort these steps.
                     </li>
                   </ol>
                 </li>
