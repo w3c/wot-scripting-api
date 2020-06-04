@@ -85,7 +85,7 @@ export declare type ThingDescription = { [key: string]: any; };
  * The ConsumedThing interface instance represents a client API to operate a Thing.
  */
 export interface ConsumedThing {
-    readProperty(propertyName: string, options?: InteractionOptions): Promise<any>;
+    readProperty(propertyName: string, options?: InteractionOptions): Promise<InteractionData>;
     readAllProperties(options?: InteractionOptions): Promise<PropertyValueMap>;
     readMultipleProperties(propertyNames: string[], options?: InteractionOptions): Promise<PropertyValueMap>;
     writeProperty(propertyName: string, value: any, options?: InteractionOptions): Promise<void>;
@@ -103,13 +103,25 @@ export interface ConsumedThing {
 }
 
 export interface InteractionOptions {
-    uriVariables: object;
+    formIndex?: number;
+    uriVariables?: object;
 }
 
 export declare type PropertyValueMap = object | { [key: string]: any; };
 
 export declare type WotListener = (data: any) => void;
 
+export interface InteractionData {
+    data?: ReadableStream;
+    dataUsed: boolean;
+    form?: Form;
+    schema?: DataSchema;
+    arrayBuffer(): Promise<ArrayBuffer>;
+    value(): Promise<any>;
+}
+
+export declare type Form = { [key: string]: any; };
+export declare type DataSchema = { [key: string]: any; };
 
 /**
  * The ExposedThing interface is the server API to operate the Thing that allows defining request handlers, Property, Action, and Event interactions.
