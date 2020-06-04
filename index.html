@@ -1613,26 +1613,6 @@
       <p>
         After constructing an {{ExposedThing}}, a script can initialize its <a>Properties</a> and can set up the optional read, write and action request handlers (the default ones are provided by the implementation). The script provided handlers MAY use the default handlers, thereby extending the default behavior, but they can also bypass them, overriding the default behavior. Finally, the script would call <a href="#the-expose-method"><code>expose()</code></a> on the {{ExposedThing}} in order to start serving external requests.
       </p>
-      <p>
-        When the <a href="#the-consume-method">consume()</a> method is invoked
-        on <a>ExposedThing</a> given the argument <var>td</var>, run the following steps:
-        <ol>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, throw <code>SecurityError</code> and terminate these steps.
-          </li>
-          <li>
-            Let <var>this.instance</var> be the result of running the
-            <a>instantiate a TD</a> steps on <var>td</var>.
-            If that throws, re-throw the error and terminate these steps.
-          </li>
-          <li>
-            Set up the <a>WoT Interactions</a> based on introspecting <var>this.instance</var> the <a>Thing Description</a> as explained in [[!WOT-TD]]. This part is private to the implementations.
-          </li>
-          <li>
-            For each <a>Property</a> definition in <var>this.instance.properties</var> initialize an <dfn>internal observer list</dfn> in order to store observe request data needed to notify the observers on value changes.
-          </li>
-        </ol>
-      </p>
     </section>
 
     <section data-dfn-for="PropertyReadHandler">
@@ -2016,14 +1996,6 @@
     <p>
       The <dfn>error</dfn> property represents the last error that occured during the discovery process. Typically used for critical errors that stop discovery.
     </p>
-    <p>
-      When <a>ThingDiscovery</a> is created, <a href="#dom-thingdiscovery-active">active</a> and <a href="#dom-thingdiscovery-done">done</a> are <code>false</code>, <a href="#dom-thingdiscovery-error">error</a> is <code>null</code>. The <a href="the-start-method">start()</a> sets <a href="#dom-thingdiscovery-active">active</a> to <code>true</code>. The <a href="the-stop-method">stop()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to <var>false</var>, but <a href="#dom-thingdiscovery-done">done</a> may be still <code>false</code> if there are <a>ThingDescription object</a>s in the <a>discovery results</a> not yet consumed with <a href="the-next-method">next()</a>. During successive calls of <a href="the-next-method">next()</a>, <a href="#dom-thingdiscovery-active">active</a> may be <code>true</code> or <code>false</code>, but <a href="#dom-thingdiscovery-done">done</a> is set to <code>false</code> by <a href="the-next-method">next()</a> only when both <a href="#dom-thingdiscovery-active">active</a> is <code>false</code> and <a>discovery results</a> is empty.
-    </p>
-
-    <section>
-      <h3>The <dfn>start()</dfn> method</h3>
-      <p>
-=======
 
     <section><h3>Constructing {{ThingDiscovery}}</h3>
       <div>
@@ -2106,7 +2078,6 @@
     <section>
       <h3>The <dfn>start()</dfn> method</h3>
       <div>
->>>>>>> 3df8c825b88b73c5a313909980a4497d46eda5cb
         Starts the discovery process. The method MUST run the following steps:
         <ol>
           <li>
