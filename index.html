@@ -493,7 +493,7 @@
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
-        Promise&lt;any&gt; invokeAction(DOMString actionName,
+        Promise&lt;InteractionData&gt; invokeAction(DOMString actionName,
                                     optional any params = null,
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; observeProperty(DOMString name,
@@ -508,13 +508,16 @@
                                     optional InteractionOptions options = null);
         ThingDescription getThingDescription();
       };
+
       dictionary InteractionOptions {
         unsigned long formIndex;
         object uriVariables;
         any data;
       };
+
       typedef object PropertyMap;
-      callback WotListener = void(any data);
+
+      callback WotListener = void(InteractionData data);
     </pre>
 
     <section>
@@ -876,8 +879,11 @@
     <section>
       <h3>The <dfn>WotListener</dfn> callback</h3>
       <p>
-        User provided callback that takes `any` argument and is used
-        for observing <a>Property</a> changes and handling <a>Event</a> notifications. Since subscribing to these are WoT interactions, they are not modelled with software events.
+        User provided callback that is given an argument of type
+        {{InteractionData}} and is used for observing <a>Property</a> changes
+        and handling <a>Event</a> notifications.
+        Since subscribing to these are WoT interactions, they are not modelled
+        with software events.
       </p>
     </section>
 
@@ -1420,7 +1426,7 @@
           whose |schema| is set to |schema| and whose |data| is `null`.
         </li>
         <li>
-          If |schema|'s |type| is defined, run these sub-steps:
+          If |schema| and its |type| are defined and not `null`, run these sub-steps:
           <ol>
             <li>
               If |type| is `"null"` and |source| is not,
@@ -1562,23 +1568,34 @@
                 PropertyReadHandler handler);
         ExposedThing setPropertyUnobserveHandler(DOMString name,
                 PropertyReadHandler handler);
+
         ExposedThing setActionHandler(DOMString name, ActionHandler action);
+
         ExposedThing setEventSubscribeHandler(DOMString name,
-                EventListenerHandler handler);
+                EventSubscriptionHandler handler);
         ExposedThing setEventUnsubscribeHandler(DOMString name,
-                EventListenerHandler handler);
+                EventSubscriptionHandler handler);
+        ExposedThing setEventHandler(DOMString name,
+                EventListenerHandler evantHandler);
         void emitEvent(DOMString name, any data);
+
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
       };
-      callback PropertyReadHandler = Promise&lt;any&gt;(
+
+      callback PropertyReadHandler = Promise&lt;InteractionData&gt;(
               optional InteractionOptions options = null);
+
       callback PropertyWriteHandler = Promise&lt;void&gt;(any value,
               optional InteractionOptions options = null);
-      callback ActionHandler = Promise&lt;any&gt;(any params,
+
+      callback ActionHandler = Promise&lt;InteractionData&gt;(any params,
               optional InteractionOptions options = null);
-      callback EventListenerHandler = Promise&lt;void&gt;(
+
+      callback EventSubscriptionHandler = Promise&lt;void&gt;(
               optional InteractionOptions options = null);
+
+      callback EventListenerHandler = Promise&lt;InteractionData&gt;();
     </pre>
     <section>
       <h3>Constructing {{ExposedThing}}</h3>
@@ -1632,37 +1649,156 @@
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves it when the value of the <a>Property</a> matching the |name:string| argument is obtained, or rejects with an error if the property is not found or the value cannot be retrieved.
+        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves with an {{InteractionData}} object
+        created by running the <a>create interaction data</a> steps on the
+        value of the <a>Property</a> matching the |name:string| argument that is obtained, or rejects with an error if the property is not found or the value cannot be retrieved.
+      </p>
+      <p class="ednote">
+        The reason why an {{InteractionData}} should be created from the obtained
+        value is for being able to also represent content types that don't have
+        a <a>DataSchema</a>.
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |readHandler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>. Sets the service handler for reading the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+        Takes |name:string| as string argument and |readHandler:PropertyReadHandler| as argument of type
+        <a>PropertyReadHandler</a>.
+        Sets the service handler that defines what to do when a request is
+        received for reading the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p class="ednote">
+        Note that there is no need to register handlers for handling requests
+        for reading multiple or all <a>Properties</a>. The request and reply
+        are transmitted in a single network request, but the <a>ExposedThing</a>
+        may implement them using multiple calls to the single read handler.
       </p>
       <p>
          The |readHandler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the ||td|| <a>internal slot</a>.
       </p>
-    </section>
-
-    <section> <h3>Handling <a>Property</a> read requests</h3>
       <div>
-        When a network request for reading <a>Property</a> |propertyName:string| is received by the implementation, run the following steps:
+        When the method is invoked given |name:string| and
+        |readHandler:PropertyReadHandler|, implementations MUST run the
+        following steps:
         <ol>
           <li>
-            If a <a>Property</a> with |propertyName| does not exist, return a {{ReferenceError}} in the reply and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If there is a user provided read handler registered with <code>setPropertyReadHandler()</code>, invoke that given |propertyName|, return the obtained value in the reply and abort these steps.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
           </li>
           <li>
-            Otherwise, if there is a default read handler provided by the implementation, invoke it with |propertyName|, include the returned |value| with the reply and abort these steps.
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            if there is no default handler defined by the implementation, return a {{NotSupportedError}} with the reply and abort these steps.
+            Set the <a>internal slot</a> ||readHandler|| on |interaction| to
+            |readHandler|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading a Property</h3>
+      <div>
+        When a network request for reading <a>Property</a> |name:string|
+        is received by the implementation with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            Let |value| be the result of running the <dfn>read server property</dfn>
+            steps with |name:string| and |options:InteractionOptions|:
+            <ol>
+              <li>
+                Let |interaction| be the value of ||td||'s |properties|'s
+                |name|.
+              </li>
+              <li>
+                If a <a>Property</a> with |name| does not exist, throw  {{NotFoundError}} and abort these steps.
+              </li>
+              <li>
+                Let |handler:function| be `null`.
+              </li>
+              <li>
+                If there is a user provided <a>internal slot</a> ||readHandler||
+                on |interaction|, let |handler| be that.
+              </li>
+              <li>
+                Otherwise, if there is a default read handler provided by the implementation, let |handler| be that.
+              </li>
+              <li>
+                Otherwise, if |handler| is `null`, throw {{NotSupportedError}}
+                and abort these steps.
+              </li>
+              <li>
+                Let |value| be the result of invoking |handler| with |options|.
+                If that fails, throw the error and abort these steps.
+              </li>
+              <li>
+                Return |value|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            If the previous step has thrown an error, send the error back with
+            the reply created by following the <a>Protocol Bindings</a> and abort
+            these steps.
+          </li>
+          <li>
+            Serialize and add the returned |value| to the reply created by
+            following the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading multiple Poperties</h3>
+      <div>
+        When a network request for reading multiple <a>Properties</a> given in
+        an object |propertyNames| is received with |options:InteractionOptions|,
+        run the following <dfn>read multiple properties</dfn> steps on |propertyNames| and |options|:
+        <ol>
+          <li>
+            For each property with key |name| defined in |propertyNames|,
+            <ol>
+              <li>
+                Let |value| be the result of running the <a>read server property</a>
+                steps on |name| and |options|.
+                If that throws, send back the error in the reply created by following the  <a>Protocol Bindings</a>and abort these steps.
+              </li>
+              <li>
+                Set the value of |propertyNames|'s |name| to |value|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Reply to the request by sending a single reply created from |propertyNames| according to the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            Let |value| be the result of running the <dfn>read property</dfn>
+            steps with |name:string|, |options:InteractionOptions| and |mode| set
+            to `single`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading all Properties</h3>
+      <div>
+        When a network request for reading all <a>Properties</a> is received
+        with |options:InteractionOptions|, run the following steps:
+        <ol>
+          <li>
+            Let |properties| be an object created with all properties defined in
+            the <a>Thing</a> with values set to `null`.
+          </li>
+          <li>
+            Run the <a>read multiple properties</a> steps on |properties| and
+            |options|.
           </li>
         </ol>
       </div>
@@ -1670,42 +1806,99 @@
 
     <section> <h3>The <dfn>setPropertyObserveHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>. Sets the service handler for observing the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>.
+        Sets the service handler that defines what to do when a request is received
+        for observing the specified <a>Property</a> matched by |name|.
+        Throws on error. Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
-         The |handler| callback function should implement reading a <a>Property</a>.
+         The |handler| callback function should implement reading a
+         <a>Property</a> and resolve with an {{InteractionData}} object or
+         reject with an error.
       </p>
       <p>
         There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
       </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||observeHandler|| on |interaction|
+            to |handler|.
+          </li>
+        </ol>
+      </div>
     </section>
 
     <section> <h3>Handling <a>Property</a> observe requests</h3>
       <div>
-        When a network request for observing a <a>Property</a> |propertyName:string| is received by the implementation, run the following steps:
+        When a network request for observing a <a>Property</a> |name:string| is
+        received by the implementation with |options:InteractionOptions|,
+        run the following steps:
         <ol>
           <li>
-            Let |property| be the <a>Property</a> with the name |propertyName|. If it does not exist, return an error in the reply (as defined in the <a>Thing Description</a>) and abort these steps.
+            Let |property| be the value of ||td||'s |properties|'s |name|.
+            If it does not exist, send back a {{NotFoundError}} in the
+            reply and abort these steps.
           </li>
           <li>
-            Save the request sender information to |property|'s <a>internal observer list</a> as |sender|, in order to be able to notify about <a>Property</a> value changes.
+            Save the request sender information together with |options| to
+            |property|'s <a>internal observer list</a>, in order to be able
+            to notify about <a>Property</a> value changes.
           </li>
           <li>
-            If there is a user provided handler registered with <code>setPropertyObserveHandler()</code> for |property|, save that as an
-            <a>internal slot</a> for |property| as |observeHandler|.
-          </li>
-          <li>
-            Otherwise, if there is no read handler defined for |property|, return a {{NotSupportedError}} with the reply and abort these steps.
-          </li>
-          <li>
-            If there is a read handler provided by the implementation,
-            save that as an <a>internal slot</a> for |property| as |observeHandler|.
-          </li>
-          <li>
-            Every time the value of |property| changes, invoke its |observHandler|
-            given |propertyName|, include the returned |value| into the notification
-            prepared to the |sender|, send the notification according to the
-            <a>Protocol Bindings</a> description and abort these steps.
+            Every time the value of |property| changes, run the following sub-steps:
+            <ol>
+              <li>
+                Let |handler:function| be `null.`
+              </li>
+              <li>
+                If there is an ||observeHandler|| <a>internal slot</a> associated
+                with |name| on |property|, let |handler| be that.
+              </li>
+              <li>
+                Otherwise, if there is a ||readHandler|| <a>internal slot</a>
+                associated with |name| on |property|, let |handler| be that.
+              </li>
+              <li>
+                If |handler| is `null`, abort these steps.
+              </li>
+              <li>
+                Let |promise| be the result of invoking |handler| wih |options|.
+              </li>
+              <li>
+                 If |promise| rejects, abort these steps.
+              </li>
+              <li>
+                If |promise| resolves with |data|, then for each |observer| in |property|'s <a>internal observer list</a>, run the following
+                sub-steps:
+                <ol>
+                  <li>
+                    Let |options| be the interaction options saved with |observer|.
+                  </li>
+                  <li>
+                    Create a |reply| from |data| and |options| according to the
+                    <a>Protocol Bindings</a>.
+                  </li>
+                  <li>
+                    Send |reply| to |observer|.
+                  </li>
+                </ol>
+              </li>
+            </ol>
           </li>
         </ol>
       </div>
@@ -1713,43 +1906,66 @@
 
     <section> <h3>The <dfn>setPropertyUnobserveHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>. Sets the service handler for unobserving the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+        Takes |name:string| as string argument and |handler:PropertyReadHandler|
+        as argument of type <a>PropertyReadHandler</a>. Sets the service handler
+        that defines what to do when a request is received for unobserving the
+        specified <a>Property</a> matched by |name|.
+        Throws on error. Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
-         The |handler| callback function should implement reading a <a>Property</a>.
+        The |handler| callback function should implement what to do when an
+        unobserve request is received by the implementation.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default handler based on the <a>Thing Description</a>.
       </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a
+            {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||unobserveHandler|| on |interaction|
+            to |handler|.
+          </li>
+        </ol>
+      </div>
     </section>
 
     <section> <h3>Handling <a>Property</a> unobserve requests</h3>
       <div>
-        When a network request for unobserving a <a>Property</a> |propertyName:string| is received by the implementation, run the following steps:
+        When a network request for unobserving a <a>Property</a> |name:string|
+        with |options:InteractionOptions| is received by the implementation,
+        run the following steps:
         <ol>
           <li>
-            Let |property| be the <a>Property</a> with the name |propertyName|. If it does not exist, return an error in the reply (as defined in the <a>Thing Description</a>) and abort these steps.
+            Let |property| be the value of ||td||'s |properties|'s |name|.
+            If it does not exist, send back a {{NotFoundError}} in the
+            reply and abort these steps.
           </li>
           <li>
-            If the request sender information cannot be found in |property|'s <a>internal observer list</a> as |sender|, return an error in the reply (as defined in the <a>Thing Description</a>) and abort these steps.
+            If there is an ||unobserveHandler|| defined for |name| on |property|,
+            invoke that with |options| and abort these steps.
           </li>
           <li>
-            Remove |sender| from |property|'s <a>internal observer list</a> and
-            remove its |observeHandler| slot from |property|.
+            Let |sender| be the matching observer found in |property|'s
+            <a>internal observer list</a>. If not found, send back a
+            {{NotFoundError}} in the reply and abort these steps.
           </li>
           <li>
-            If there is a user provided handler registered with <code>setPropertyUnobserveHandler()</code> for |property|, save that as an
-            <a>internal slot</a> for |property| as |unobserveHandler|.
-          </li>
-          <li>
-            Every time the value of |property| changes, run these sub-steps:
-            <ol>
-              <li>
-              </li>
-            invoke its |observHandler|
-            given |propertyName|, include the returned |value| into the notification
-            prepared to the |sender|, send the notification according to the
-            <a>Protocol Bindings</a> description and abort these steps.
+            Remove |sender| from |property|'s <a>internal observer list</a>.
           </li>
         </ol>
       </div>
@@ -1769,7 +1985,7 @@
       <p>
         Takes |name:string| as string argument and |writeHandler:PropertyWriteHandler|
         as argument of type <a>PropertyWriteHandler</a>. Sets the service handler
-        that will be used for serving write requests for writing the specified
+        that defines what to do when a request is received for writing the a
         <a>Property</a> matched by |name|. Throws on error.
         Returns a reference to |this| object for supporting chaining.
       </p>
@@ -1783,45 +1999,79 @@
         writeable and notifying observers on change if the <a>Property</a> is
         observeable, based on the <a>Thing Description</a>.
       </p>
-    </section>
-
-    <section> <h3>Handling <a>Property</a> write requests</h3>
       <div>
-        When a network request for writing a <a>Property</a> |propertyName:string|
-        with a new value |value| is received, implementations SHOULD run
-        the following <dfn>update property steps</dfn>, given
-        |propertyName|, |value| and |mode| set to `"single"`:
+        When the method is invoked given |name:string| and
+        |readHandler:PropertyWriteHandler|, implementations MUST run the
+        following steps:
         <ol>
           <li>
-            If a <a>Property</a> with |propertyName| does not exist, return a {{ReferenceError}} in the reply and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If there is a user provided write handler registered with <code>setPropertyWriteHandler()</code>, or if there is a default write handler,
-            <ol>
-              <li>
-                Invoke the handler with |propertyName|. If it fails, return the error in the reply and abort these steps.
-              </li>
-              <li>
-                Otherwise, if |mode| is `"single"`, reply to the request with the new value, following to the <a>Protocol Bindings</a>.
-              </li>
-              <li>
-                For each item stored in the <a>internal observer list</a> of the <a>Property</a> with |propertyName|, send an observe reply with the new value attached.
-              </li>
-            </ol>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
           </li>
           <li>
-            If there is no handler to handle the request, return a {{NotSupportedError}} in the reply and abort these steps.
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||writeHandler|| on |interaction|
+            to |writeHandler|.
           </li>
         </ol>
       </div>
+    </section>
+
+    <section> <h3>Handling requests for writing a Property</h3>
       <div>
-        When a network request for writing multiple <a>Properties</a> given in an object |propertyNames| is received, run the following steps:
+        When a network request for writing a <a>Property</a> |name:string|
+        with a new value |value| and |options:InteractionOptions| is received,
+        implementations MUST run the following <dfn>update property steps</dfn>, given |name|, |value|, |options| and |mode| set to `"single"`:
         <ol>
           <li>
-            For each property with key |name| and value |value| defined in |propertyNames|, run the <a>update property steps</a> with |name|, |value| and |mode| set to `"multiple"`.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
           </li>
           <li>
-            Reply to the request (by sending a single or multiple replies) according to the <a>Protocol Bindings</a> defined for the <a>Property</a>.
+            If a <a>Property</a> with |name| does not exist, return a {{NotFoundError}} in the reply and abort these steps.
+          </li>
+          <li>
+            Let |handler:function| be `null`.
+          </li>
+          <li>
+            If there is a user provided <a>internal slot</a> ||writeHandler||
+            on |interaction|, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if there is a default write handler provided by the implementation, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if |handler| is `null`, send back a {{NotSupportedError}}
+            with the reply and abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| with |name| and
+            |options|. If it fails, return the error in the reply and abort these steps.
+          </li>
+          <li>
+            If |mode| is `"single"`, reply to the request reporting success, following the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for writing multiple Properties</h3>
+      <div>
+        When a network request for writing multiple <a>Properties</a> given in an object |propertyNames| is received with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            For each property with key |name| and value |value| defined in |propertyNames|, run the <a>update property steps</a> with |name|, |value|, |options| and |mode| set to `"multiple"`.
+          </li>
+          <li>
+            Reply to the request by sending a single reply according to the
+            <a>Protocol Bindings</a>.
           </li>
         </ol>
       </div>
@@ -1832,15 +2082,18 @@
       <p>
         A function that is called when an external request for invoking an
         <a>Action</a> is received and defines what to do with such requests.
-        It is invoked with a |params:object| dictionary argument.
-        It returns a {{Promise}} that rejects with an error or resolves if
-        the action is successful.
+        It is invoked with a |params:object| argument and optionally
+        with an |options:InteractionOptions| object.
+        It returns a {{Promise}} that rejects with an error or resolves with an
+        {{InteractionData}} object if the action is successful.
       </p>
     </section>
 
     <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |action:ActionHandler| as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by |name|. May throw an error. Returns a reference to |this| object for supporting chaining.
+        Takes |name:string| as string argument and |action:ActionHandler| as argument of type <a>ActionHandler</a>. Sets the handler function that
+        defines what to do when a request is received to invoke the <a>Action</a>
+        matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
          The |action| callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
@@ -1848,20 +2101,328 @@
       <p>
         There MUST be at most one handler for any given <a>Action</a>, so newly added handlers MUST replace the previous handlers.
       </p>
+      <div>
+        When the method is invoked given |name:string| and |action:ActionHandler|,
+        run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |actions|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Action</a> with name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||actionHandler|| on |interaction|
+            to |action|.
+          </li>
+        </ol>
+      </div>
     </section>
 
     <section> <h3>Handling <a>Action</a> requests</h3>
       <div>
-        When a network request for invoking the <a>Action</a> identified by |name:string| is received, the runtime SHOULD execute the following steps:
+        When a network request for invoking the <a>Action</a> identified by |name:string| is received with |inputs| and optionally with
+        |options:InteractionOptions|, run the following steps:
         <ol>
           <li>
-            If an <a>Action</a> identified by |name| does not exist, return a {{ReferenceError}} in the reply and abort these steps.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
           </li>
           <li>
-            If there is a user provided action handler registered with <code>setActionHandler()</code>, invoke that wih |name|, return the resulting |value| with the reply and abort these steps.
+            If an <a>Action</a> identified by |name| does not exist, return a {{NotFoundError}} in the reply and abort these steps.
           </li>
           <li>
-            Otherwise return a {{NotSupportedError}} with the reply and abort these steps.
+            Let |handler:function| be `null`.
+          </li>
+          <li>
+            If there is a user provided <a>internal slot</a> ||actionHandler||
+            on |interaction|, let |handler| be its value.
+          </li>
+          <li>
+            If |handler| is `null`, return a {{NotSupportedError}} with the reply
+            created by following the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| with |name|, |inputs| and |options|.
+          </li>
+          <li>
+            If |promise| rejects, send the error with the reply and abort these
+            steps.
+          </li>
+          <li>
+            When |promise| resolves with |data:InteractionData|, use |data| to
+            create and send the reply according to the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section data-dfn-for="EventListenerHandler">
+      <h3>The <dfn>EventListenerHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an associated <a>Event</a> is triggered
+        and provides the data to be sent with the <a>Event</a> to subscribers.
+        Returns a {{Promise}} that resolves with an {{InteractionData}} object
+        or rejects with an error.
+      </p>
+    </section>
+
+    <section data-dfn-for="EventSubscriptionHandler">
+      <h3>The <dfn>EventSubscriptionHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for subscribing to an
+        <a>Event</a> is received and defines what to do with such requests.
+        It is invoked with a |options:InteractionOptions| object provided by the implementation and coming from subscribers.
+        It returns a {{Promise}} that rejects with an error or resolves when
+        the subscription is accepted.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setEventSubscribeHandler()</dfn> method</h3>
+      <p>
+        Takes |name:string| as string argument and
+        |handler:EventSubscriptionHandler| as argument of type
+        <a>EventSubscriptionHandler</a>. Sets the handler function that defines
+        what to do when a subscription request is received for
+        the specified <a>Event</a> matched by |name|. May throw an error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function SHOULD implement what to do when an
+         subscribe request is received, for instance necessary initializations.
+         Note that the handler for emitting <a>Events</a> is set separately.
+      </p>
+      <p>
+        There MUST be at most one event subscribe handler for any given
+        <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:EventSubscriptionHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||subscribeHandler|| on |interaction|
+            to |handler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Event</a> subscribe requests</h3>
+      <div>
+        When an <a>Event</a> subscription request for |name| is received by the
+        underlying platform with optional |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found, send back a
+            {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            If |name| has an associated ||subscribeHandler|| <a>internal slot</a>,
+            invoke it with |options| and abort these steps.
+          </li>
+          <li>
+            Otherwise, if no ||subscribeHandler|| is defined, then implement the
+            default subscriber mechanism:
+            <ol>
+              <li>
+                Let |subscriber| be a tuple formed of |options| and the
+                subscriber data needed to create an <a>Event</a> notification response.
+              </li>
+              <li>
+                Add |subscriber| to the <a>internal listener list</a> of |interaction|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setEventUnsubscribeHandler()</dfn> method</h3>
+      <p>
+        Takes |name:string| as string argument and |handler:EventSubscriptionHandler| as argument of type
+        <a>EventSubscriptionHandler</a>. Sets the handler function that
+        defines what to do when the specified <a>Event</a> matched by |name| is
+        unsubscribed from. May throw an error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function SHOULD implement what to do when an
+         unsubscribe request is received.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked with |name:string| and
+        |handler:EventSubscriptionHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||unsubscribeHandler|| on |interaction|
+            to |handler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Event</a> unsubscribe requests</h3>
+      <div>
+        When an <a>Event</a> unsubscribe request for |name| is received by the
+        underlying platform optionally with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found, send back a
+            {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            If |name| has an associated ||unsubscribeHandler||
+            <a>internal slot</a> that is a function,
+            invoke it with |options| and abort these steps.
+          </li>
+          <li>
+            Otherwise let |subscriber| be the tuple saved in |interaction|'s
+            <a>internal listener list</a>.
+          </li>
+          <li>
+             Remove |subscriber| from |interaction|'s
+            <a>internal listener list</a>.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setEventHandler()</dfn> method</h3>
+      <p>
+        Takes |name:string| as string argument, and an
+        |eventHandler:EventListenerHandler| callback.
+        Sets the event handler function for the specified <a>Event</a>
+        matched by |name|. May throw an error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+        The |eventHandler| callback function will implement what to do when the
+        event is emitted. It SHOULD resolve with an {{InteractionData}} object
+        or reject with an error.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked with |name:string| and
+        |eventHandler:EventListenerHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||eventHandler|| of |interaction| to
+            |eventHandler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Events</a></h3>
+      <div>
+        When an <a>Event</a> with name |name| is emitted with |data:any| either
+        by the underlying platform or by the <a href="#the-emitevent-method">
+        emitEvent()</a> method, run the following steps:
+        <ol>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If |data| is not defined or `null`,
+            <ol>
+              <li>
+                Let |eventHandler| be the value of the ||eventHandler||
+                <a>internal slot</a> of |interaction|.
+              </li>
+              <li>
+                If |eventHandler| is failure, abort these steps.
+              </li>
+              <li>
+                Let |data| be the result of awaiting to resolve the invocation
+                of |eventHandler|. If it rejects, abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Let |data| be the result of running the <a>create interaction data</a>
+            steps on |data|, `null` and |interaction|.
+            If that throws, abort these steps.
+          </li>
+          <li>
+            For each |subscriber| in the <a>internal listener list</a> of
+            |interaction|, run the following sub-steps:
+            <ol>
+              <li>
+                Create an <a>Event</a> notification |response| according to the
+                <a>Protocol Bindings</a> from |data| and |subscriber|, including
+                its |options|.
+              </li>
+              <li>
+                Send |response| to the subscriber identified by |subscriber|.
+              </li>
+            </ol>
           </li>
         </ol>
       </div>
@@ -1869,16 +2430,28 @@
 
     <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
       <div>
-        Takes a |name:string| argument denoting an <a>Event</a> name, and a |data:any| argument of `any` type. The method MUST run the following steps:
+        Takes a |name:string| argument denoting an <a>Event</a> name, and a
+        |data:any| argument of `any` type and triggers emitting the <a>Event</a>
+        with the given data.
+        The method MUST run the following steps:
         <ol>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If an <a>Event</a> with the name |name| is not found, [= exception/throw =] a {{NotFoundError}} and abort these steps.
+            Let |interaction| be the value of ||td||'s |events|'s |name|.
           </li>
           <li>
-            Make a request to the underlying platform to send an <a>Event</a> with |data| attached as property, using the <a>Protocol Bindings</a>, then abort these steps.
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to emit an <a>Event</a>
+            with |data|, using the <a>Protocol Bindings</a>.
+            <p class="note">
+              This will trigger the <a href="#handling-events">handling events</a>
+              steps.
+            </p>
           </li>
         </ol>
       </div>
@@ -1902,8 +2475,15 @@
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in ||td||, initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
+            For each <a>Property</a> definition in ||td||'s |properties|,
+            initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
             in order to store observe request data needed to notify the observers on value changes.
+          </li>
+          <li>
+            For each <a>Event</a> definition is ||td||'s |events|,
+            initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
+            in order to store subscription request data needed to notify the
+            <a>Event</a> listeners.
           </li>
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting ||td||
