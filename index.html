@@ -1053,7 +1053,8 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' {{uriVariables}}
+            and optional subscription data given in |options|'s {{data}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1093,7 +1094,8 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' {{uriVariables}}
+            and optional unsubscribe data given in |options|'s {{data}}.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1583,19 +1585,19 @@
         Promise&lt;void&gt; destroy();
       };
 
-      callback PropertyReadHandler = Promise&lt;InteractionData&gt;(
+      callback PropertyReadHandler = Promise&lt;any&gt;(
               optional InteractionOptions options = null);
 
-      callback PropertyWriteHandler = Promise&lt;void&gt;(any value,
+      callback PropertyWriteHandler = Promise&lt;void&gt;(InteractionData value,
               optional InteractionOptions options = null);
 
-      callback ActionHandler = Promise&lt;InteractionData&gt;(any params,
+      callback ActionHandler = Promise&lt;any&gt;(any params,
               optional InteractionOptions options = null);
 
       callback EventSubscriptionHandler = Promise&lt;void&gt;(
               optional InteractionOptions options = null);
 
-      callback EventListenerHandler = Promise&lt;InteractionData&gt;();
+      callback EventListenerHandler = Promise&lt;any&gt;();
     </pre>
     <section>
       <h3>Constructing {{ExposedThing}}</h3>
@@ -1644,19 +1646,32 @@
       <p>
         After constructing an {{ExposedThing}}, a script can initialize its <a>Properties</a> and can set up the optional read, write and action request handlers (the default ones are provided by the implementation). The script provided handlers MAY use the default handlers, thereby extending the default behavior, but they can also bypass them, overriding the default behavior. Finally, the script would call <a href="#the-expose-method"><code>expose()</code></a> on the {{ExposedThing}} in order to start serving external requests.
       </p>
+      <p class="note">
+        The request handlers actually implement the behavior and it is the
+        responsibility of the developers to keep the <a>Thing Description</a>
+        defined in {{ExposedThing}} synchronized with the implementation of the
+        request handlers.
+      </p>
     </section>
 
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves with an {{InteractionData}} object, or rejects with an error if the property is not found or the value cannot be retrieved.
+        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves with an {{InteractionData}} object or any type,
+        or rejects with an error if the property is not found or the value
+        cannot be retrieved.
+      </p>
+      <p class="note">
+        The <a>Property</a>'s value can be provided by the {{PropertyReadHandler}}
+        as a value conforming to {{DataSchema}} or as an {{InteractionData}} object
+        in order to be able to represent values that are not described by a
+        {{DataSchema}}, such as streams.
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |readHandler:PropertyReadHandler| as argument of type
-        <a>PropertyReadHandler</a>.
+        Takes |name:string| as string argument and |readHandler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>.
         Sets the service handler that defines what to do when a request is
         received for reading the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
       </p>
@@ -1703,6 +1718,14 @@
         run the following steps:
         <ol>
           <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
             Let |value| be the result of running the <dfn>read server property</dfn>
             steps with |name:string| and |options:InteractionOptions|:
             <ol>
@@ -1724,7 +1747,7 @@
                 Otherwise, if there is a default read handler provided by the implementation, let |handler| be that.
               </li>
               <li>
-                Otherwise, if |handler| is `null`, throw {{NotSupportedError}}
+                If |handler| is `null`, throw {{NotSupportedError}}
                 and abort these steps.
               </li>
               <li>
@@ -1733,6 +1756,11 @@
               </li>
               <li>
                 Return |value|.
+                <p class="note">
+                  The value returned here SHOULD either conform to {{DataSchema}}
+                  or it SHOULD be an {{InteractionData}} object created by the
+                  |handler|.
+                </p>
               </li>
             </ol>
           </li>
@@ -1755,6 +1783,14 @@
         an object |propertyNames| is received with |options:InteractionOptions|,
         run the following <dfn>read multiple properties</dfn> steps on |propertyNames| and |options|:
         <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
           <li>
             For each property with key |name| defined in |propertyNames|,
             <ol>
@@ -1780,6 +1816,14 @@
         When a network request for reading all <a>Properties</a> is received
         with |options:InteractionOptions|, run the following steps:
         <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
           <li>
             Let |properties| be an object created with all properties defined in
             the <a>Thing</a> with values set to `null`.
@@ -1837,6 +1881,14 @@
         received by the implementation with |options:InteractionOptions|,
         run the following steps:
         <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
           <li>
             Let |property| be the value of ||td||'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
@@ -1939,13 +1991,22 @@
         run the following steps:
         <ol>
           <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
             Let |property| be the value of ||td||'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
           <li>
             If there is an ||unobserveHandler|| defined for |name| on |property|,
-            invoke that with |options| and abort these steps.
+            invoke that with |options|, send back a reply following the
+            <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Let |sender| be the matching observer found in |property|'s
@@ -1953,7 +2014,8 @@
             {{NotFoundError}} in the reply and abort these steps.
           </li>
           <li>
-            Remove |sender| from |property|'s <a>internal observer list</a>.
+            Remove |sender| from |property|'s <a>internal observer list</a>
+            and send back a reply following the <a>Protocol Bindings</a>.
           </li>
         </ol>
       </div>
@@ -1962,10 +2024,21 @@
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for writing a <a>Property</a> is received and defines what to do with such requests. It expects the requested new |value| as argument and returns a {{Promise}} which is resolved when the value of the <a>Property</a> that matches the |name:string| argument has been updated with |value|, or rejects with an error if the property is not found or the value cannot be updated.
+        A function that is called when an external request for writing a
+        <a>Property</a> is received and defines what to do with such requests.
+        It expects the requested new |value| as argument of type
+        {{InteractionData}} and returns a {{Promise}} which is resolved when the
+        value of the <a>Property</a> that matches the |name:string| argument has
+        been updated, or rejects with an error if the property is not found or
+        the value cannot be updated.
       </p>
       <p class="ednote">
         Note that the code in this callback function can read the property before updating it in order to find out the old value, if needed. Therefore the old value is not provided to this function.
+      </p>
+      <p class="note">
+        The value is provided by implementations as an {{InteractionData}} object
+        in order to be able to represent values that are not described by a
+        {{DataSchema}}, such as streams.
       </p>
     </section>
 
@@ -2014,9 +2087,19 @@
     <section> <h3>Handling requests for writing a Property</h3>
       <div>
         When a network request for writing a <a>Property</a> |name:string|
-        with a new value |value| and |options:InteractionOptions| is received,
-        implementations MUST run the following <dfn>update property steps</dfn>, given |name|, |value|, |options| and |mode| set to `"single"`:
+        with a new value |value:InteractionData| and |options:InteractionOptions|
+        is received, implementations MUST run the following
+        <dfn>update property steps</dfn>, given |name|, |value|, |options|
+        and |mode| set to `"single"`:
         <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
           <li>
             Let |interaction| be the value of ||td||'s |properties|'s
             |name|.
@@ -2055,7 +2138,16 @@
         run the following steps:
         <ol>
           <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
             For each property with key |name| and value |value| defined in |propertyNames|, run the <a>update property steps</a> with |name|, |value|, |options| and |mode| set to `"multiple"`.
+            If that fails, reply to the request with that error and abort these steps.
           </li>
           <li>
             Reply to the request by sending a single reply according to the
@@ -2072,8 +2164,14 @@
         <a>Action</a> is received and defines what to do with such requests.
         It is invoked with a |params:object| argument and optionally
         with an |options:InteractionOptions| object.
-        It returns a {{Promise}} that rejects with an error or resolves with an
-        {{InteractionData}} object if the action is successful.
+        It returns a {{Promise}} that rejects with an error or resolves with
+        the value returned by the <a>Action</a>.
+      </p>
+      <p class="note">
+        Applications MAY return {{InteractionData}} from an {{ActionHandler}}
+        for instance when the data is specially encoded or it is a stream.
+        Implementations will then use the stream provided in
+        {{InteractionData}} when constructing the <a>Action</a>'s response.
       </p>
     </section>
 
@@ -2118,6 +2216,14 @@
         |options:InteractionOptions|, run the following steps:
         <ol>
           <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
             Let |interaction| be the value of ||td||'s |properties|'s
             |name|.
           </li>
@@ -2143,7 +2249,7 @@
             steps.
           </li>
           <li>
-            When |promise| resolves with |data:InteractionData|, use |data| to
+            When |promise| resolves with |data:any|, use |data| to
             create and send the reply according to the <a>Protocol Bindings</a>.
           </li>
         </ol>
@@ -2156,7 +2262,14 @@
         A function that is called when an associated <a>Event</a> is triggered
         and provides the data to be sent with the <a>Event</a> to subscribers.
         Returns a {{Promise}} that resolves with an {{InteractionData}} object
+        or otherwise any value that represents the <a>Event</a> data,
         or rejects with an error.
+      </p>
+      <p class="note">
+        Applications MAY return {{InteractionData}} from an {{EventListenerHandler}}
+        for instance when the <a>Event</a> data is specially encoded or it is a
+        stream. Implementations will then use the stream provided in
+        {{InteractionData}} when constructing the event notification.
       </p>
     </section>
 
@@ -2222,6 +2335,14 @@
         run the following steps:
         <ol>
           <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
             Let |interaction| be the value of ||td||'s |events|'s
             |name|.
           </li>
@@ -2238,8 +2359,10 @@
             default subscriber mechanism:
             <ol>
               <li>
-                Let |subscriber| be a tuple formed of |options| and the
-                subscriber data needed to create an <a>Event</a> notification response.
+                Let |subscriber| be a tuple formed of |options| (from which
+                {{uriVariables}} and {{data}} may be used) and the
+                subscriber information needed to create an <a>Event</a>
+                notification response.
               </li>
               <li>
                 Add |subscriber| to the <a>internal listener list</a> of |interaction|.
@@ -2298,6 +2421,14 @@
         run the following steps:
         <ol>
           <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
             Let |interaction| be the value of ||td||'s |events|'s
             |name|.
           </li>
@@ -2335,8 +2466,8 @@
       </p>
       <p>
         The |eventHandler| callback function will implement what to do when the
-        event is emitted. It SHOULD resolve with an {{InteractionData}} object
-        or reject with an error.
+        event is emitted. It SHOULD resolve with a value that represents the
+        <a>Event</a> data, or reject with an error.
       </p>
       <p>
         There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
@@ -2392,11 +2523,6 @@
                 of |eventHandler|. If it rejects, abort these steps.
               </li>
             </ol>
-          </li>
-          <li>
-            Let |data| be the result of running the <a>create interaction data</a>
-            steps on |data|, `null` and |interaction|.
-            If that throws, abort these steps.
           </li>
           <li>
             For each |subscriber| in the <a>internal listener list</a> of
