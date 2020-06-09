@@ -1576,7 +1576,7 @@
         ExposedThing setEventUnsubscribeHandler(DOMString name,
                 EventSubscriptionHandler handler);
         ExposedThing setEventHandler(DOMString name,
-                EventListenerHandler evantHandler);
+                EventListenerHandler eventHandler);
         void emitEvent(DOMString name, any data);
 
         Promise&lt;void&gt; expose();
@@ -1649,14 +1649,7 @@
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves with an {{InteractionData}} object
-        created by running the <a>create interaction data</a> steps on the
-        value of the <a>Property</a> matching the |name:string| argument that is obtained, or rejects with an error if the property is not found or the value cannot be retrieved.
-      </p>
-      <p class="ednote">
-        The reason why an {{InteractionData}} should be created from the obtained
-        value is for being able to also represent content types that don't have
-        a <a>DataSchema</a>.
+        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves with an {{InteractionData}} object, or rejects with an error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
 
@@ -1777,11 +1770,6 @@
           </li>
           <li>
             Reply to the request by sending a single reply created from |propertyNames| according to the <a>Protocol Bindings</a>.
-          </li>
-          <li>
-            Let |value| be the result of running the <dfn>read property</dfn>
-            steps with |name:string|, |options:InteractionOptions| and |mode| set
-            to `single`.
           </li>
         </ol>
       </div>
