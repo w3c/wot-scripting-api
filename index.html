@@ -470,7 +470,451 @@
       </ol>
     </div>
   </section>
-</section>
+  </section> <!-- WoT -->
+
+  <section data-dfn-for="InteractionData">
+    <h2>The <dfn>InteractionData</dfn> interface</h2>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class.
+      Represents the data used by <a>WoT Interactions</a>.
+      It is created only by the implementations.
+    </p>
+    <p class="ednote">
+      As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
+      and include a number of possible <a>Form</a>s, out of which one is selected
+      for the interaction. The
+      <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
+      Form</a> contains a `contentType` to describe the data.
+      For certain content types, a <a>DataSchema</a> is defined, based on
+      <a>JSON schema</a>, making possible to represent these contents as
+      JavaScript types and eventually set range constraints on the data.
+    </p>
+    <p>
+      This interface exposes the data returned from <a>WoT Interactions</a>
+      combining a convenient access method with a low-level access interface.
+    </p>
+    <p class="ednote">
+      The convenient interface is provided by the
+      <a href="#the-value-function">value()</a> function, which should work in
+      the vast majority of IoT use cases and whose implementation
+      will inspect the data, parse it if adheres to a {{DataSchema}}, or fail
+      early if it cannot parse it, leaving the underlying stream undisturbed so
+      that application scripts could attempt reading the stream themselves, or
+      handling the data as {{ArrayBuffer}}.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface InteractionData {
+        readonly attribute ReadableStream? data;
+        readonly attribute boolean dataUsed;
+        readonly attribute Form? form;
+        readonly attribute DataSchema? schema;
+        Promise&lt;ArrayBuffer&gt; arrayBuffer();
+        Promise&lt;any&gt; value();
+      };
+    </pre>
+    <p>
+      The <dfn>data</dfn> property represents the raw payload in
+      <a>WoT Interactions</a> as a {{ReadableStream}}, initialy `null`.
+    </p>
+    <p>
+      The <dfn>dataUsed</dfn> property tells whether the <a>data</a> stream has
+      been <a href="https://fetch.spec.whatwg.org/#concept-readablestream-disturbed">
+      disturbed</a>. Initially `false`.
+    </p>
+    <p>
+      The <dfn>form</dfn> attribute represents the <a>Form</a> selected from
+      the <a>Thing Description</a> for this <a>WoT Interaction</a>,
+      initially `null`.
+    </p>
+    <p>
+      The <dfn>schema</dfn> attribute represents the <a>DataSchema</a>
+      of the payload as a {{JSON}} object, initially `null`.
+    </p>
+    <p>
+      The <dfn>[[\value]]</dfn> internal slot represents the parsed value of
+      the <a>WoT Interaction</a>, initially `undefined` (note that `null` is a
+      valid value).
+    </p>
+
+    <p>
+      As illustrated in the next pictures, the {{InteractionData}} interface is
+      used every time implementations provide data to scripts, while `any` is
+      used when the scripts pass data to the implementation.
+    </p>
+    <figure id="scripting-read">
+      <img src="images/scripting-read-data.png"
+                width="100%"
+                title="Reading data"/>
+      <figcaption>Data structures used when reading data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} reads data, it receives it from the implementation
+      as an {{InteractionData}} object.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertyreadhandler-callback">
+      read handler</a> provides the read data to the implementation as
+      {{ReadableStream}} object, or as an
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> (i.e. `null`, boolean, number, string, array, or
+      object).
+    </p>
+
+    <figure id="scripting-write">
+      <img src="images/scripting-write-data.png"
+                width="100%"
+                title="Writing data"/>
+      <figcaption>Data structures used when writing data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} writes data, it provides it to the implementation
+      as a {{ReadableStream}} object, or as an
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a>.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertywritehandler-callback">
+      write handler</a> receives data from to implementation as
+      an {{InteractionData}} object.
+    </p>
+
+    <figure id="scripting-action">
+      <img src="images/scripting-action-data.png"
+                width="100%"
+                title="Invoking action"/>
+      <figcaption>Data structures used when invoking an Action</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} invokes an <a>Action</a> data, it provides the
+      parameters as a {{ReadableStream}} object, or as an
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a>.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-actionhandler-callback">
+      action handler</a> receives return values from the implementation as
+      an {{InteractionData}} object.
+    </p>
+
+    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
+      When invoked, MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
+        </li>
+        <li>
+          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
+          reject |promise| with {{NotReadableError}} and abort these steps.
+        </li>
+        <li>
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
+        </li>
+        <li>
+          Set |dataUsed| to `true`.
+        </li>
+        <li>
+          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
+          If that throws, reject |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with |arrayBuffer|.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>value()</dfn> function</h3>
+      Parses the data returned from the <a>WoT Interaction</a> and returns a
+      value with the type described by the <a>DataSchema</a> of the interaction
+      if that exists, or by the `contentType` of the <a>Form</a> used for the
+      interaction. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
+        </li>
+        <li>
+          If the value of the <a>[[\value]]</a> <a>internal slot</a> is not
+          `undefined`, resolve |promise| with that value and abort these steps.
+        </li>
+        <li>
+          If the value of the |data| property is not a {{ReadableStream}} or if
+          |dataUsed| is `true`, or if |form| is `null` or if |schema| or its
+          |type| are `null` or `undefined`,
+          reject |promise| with {{NotReadableError}} and abort these steps.
+        </li>
+        <li>
+          If |form|'s |contentType| is not `application/json` and if a mapping is
+          not available in the <a>Protocol Bindings</a> from |form|'s |contentType|
+          to [JSON-SCHEMA], reject |promise| with {{NotSupportedError}} and
+          abort these steps.
+        </li>
+        <li>
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
+        </li>
+        <li>
+          Set |dataUsed| to `true`.
+        </li>
+        <li>
+          If |form|'s |contentType| is not `application/json` and if a mapping is
+          available in the <a>Protocol Bindings</a> from |form|'s |contentType|
+          to [JSON-SCHEMA], transform |bytes| with that mapping.
+        </li>
+        <li>
+          Let |json| be the result of running <a>parse JSON from bytes</a> on
+          |bytes|. If that throws, reject |promise| with that exception and
+          abort these steps.
+        </li>
+        <li>
+          Set <a>[[\value]]</a> to the result of running <a>check data schema</a>
+          on |json| and |schema|. If that throws, reject |promise| with that
+          exception and abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with <a>[[\value]]</a>.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>check data schema</dfn> algorithm</h3>
+      To run the <a>check data schema</a> steps on |payload| and |schema:object|,
+      <ol>
+        <li>
+          Let |type| be |schema|'s |type|.
+        </li>
+        <li>
+          If |type| is `"null"` and if |payload| is not `null`,
+          throw {{TypeError}} and abort these steps, otherwise return `null`.
+        </li>
+        <li>
+          If |type| is `"boolean"` and |payload| is a falsey value or its byte
+          length is 0, return `false`, otherwise return `true`.
+        </li>
+        <li>
+          If |type| is `"integer"` or `"number"`,
+          <ol>
+            <li>
+              If |payload| is not a number, throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              If |form|'s |minimum| is defined and |payload| is smaller, or if |form|'s |maximum| is defined and |payload| is bigger, throw
+              {{RangeError}} and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If |type| is `"string"`, return |payload|.
+        </li>
+        <li>
+          If |type| is `"array"`, run these sub-steps:
+          <ol>
+            <li>
+              If |payload| is not an array, throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              If |form|'s |minItems| is defined and |payload|'s |length| is
+              less than that, or if |form|'s |maxItems| is defined and |payload|'s
+              |length| is more than that, throw {{RangeError}} and abort these steps.
+            </li>
+            <li>
+              Let |payload| be an array of items obtained by running the
+              <a>check data schema</a> steps on each element |item| of |payload|
+              and |schema|'s |items|.
+              If this throws at any stage, re-throw that exception and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If |type| is `"object"`, run these sub-steps:
+          <ol>
+            <li>
+              If |payload| or |schema|'s |properties| is not an object,
+              throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              For each property |key| in |payload|,
+              <ol>
+                <li>Let |prop| be the value of |key|.</li>
+                <li>
+                  Let |propSchema| be the value of |key| in |interaction|'s
+                  |properties|.
+                </li>
+                <li>
+                  Let |prop| be the result of running the
+                  <a>check data schema</a> steps on |prop| and |propSchema|.
+                  If this throws, re-throw that exception and abort these steps.
+                </li>
+              </ol>
+            </li>
+            <li>
+              Let |required| be |schema|'s |required| if that is an array
+              or an empty array otherwise.
+            </li>
+            <li>
+              For each |key| in |required|, if |key| is not present in |payload|,
+              throw {{SyntaxError}} and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          Return |payload|.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>create interaction data</dfn> algorithm</h3>
+      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
+      <a>create interaction data</a> given |source|, |form:Form| and
+      |schema:object|, run these steps:
+      <ol>
+        <li>
+          Let |idata| be a new an {{InteractionData}} object whose |form| is
+          set to |form|, whose |schema| is set to |schema|, whose [[\value]]
+          <a>internal slot</a> is `undefined` and whose |data| is `null`.
+        </li>
+        <li>
+          If |source| is a {{ReadableStream}} object, let |idata|'s |data| be
+          |source|, return |idata| and abort these steps.
+        </li>
+        <li>
+          If |schema| and its |type| are defined and not `null`, run these sub-steps:
+          <ol>
+            <li>
+              If |type| is `"null"` and |source| is not,
+              throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"boolean"` and |source| is a falsy value, set
+              |idata|'s [[\value]] |value| to `false`, otherwise to `true`.
+            </li>
+            <li>
+              If |type| is `"integer"` or `"number"` and |source| is not a number,
+              or if |form|'s |minimum| is defined and |source| is smaller,
+              or if |form|'s |maximum| is defined and |source| is bigger,
+              throw {{RangeError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"string"` and |source| is not a string, let |idata|'s
+              [[\value]] be the result of running <a>serialize JSON to bytes</a>
+              on |source|.
+              If that is failure, throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"array"`, run these sub-steps:
+              <ol>
+                <li>
+                  If |source| is not an array, throw a {{TypeError}} and abort these steps.
+                </li>
+                <li>
+                  Let |length| be the length of |source|.
+                </li>
+                <li>
+                  If |form|'s |minItems| is defined and |length| is less than
+                  that, or if |form|'s |maxItems| is defined and |length| is
+                  more than that, throw {{RangeError}} and abort these steps.
+                </li>
+                <li>
+                  For each |item| in |source|, let |itemschema| be |schema|'s
+                  |items| and let |item| be the result of running the
+                  <a>create interaction data</a> steps on |item|, |form| and
+                  |itemschema|.
+                  If this throws, re-throw that exception and abort these steps.
+                </li>
+                <li>
+                  Set |data|'s [[\value]] to |source|.
+                </li>
+              </ol>
+            </li>
+            <li>
+              If |type| is `"object"`, run these sub-steps:
+              <ol>
+                <li>
+                  If |source| is not an object, throw {{TypeError}} and abort these steps.
+                </li>
+                <li>
+                  If |schema|'s |properties| is not an object,
+                  throw {{TypeError}} and abort these steps.
+                </li>
+                <li>
+                  For each property |key| in |source|,
+                  <ol>
+                    <li>Let |value| be the value of |key|.</li>
+                    <li>Let |propschema| be the value of |key| in |properties|.</li>
+                    <li>
+                      Let |value| be the result of running the
+                      <a>create interaction data</a> steps on |value|, |form|
+                      and |propschema|.
+                      If this throws, re-throw that exception and abort these steps.
+                    </li>
+                  </ol>
+                </li>
+                <li>
+                  If |schema|'s |required| is an array, for each |item| in |required|
+                  check if |item| is a property name in |source|. If an |item| is
+                  not found in |source|, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Set |data|'s [[\value]] to |source|.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          Set |idata|'s |data| to a new {{ReadableStream}} created from |idata|'s
+          [[\value]] <a>internal slot</a> as its
+          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          underlying source</a>.
+        </li>
+        <li>
+          Return |idata|.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>parse interaction response</dfn> algorithm</h3>
+      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
+      <a>parse interaction response</a> given |response|, |form:Form| and
+      |schema:object|, run these steps:
+      <ol>
+        <li>
+          Let |result| be a new {{InteractionData}} object.
+        </li>
+        <li>
+          Let |result|'s |schema| be |schema|.
+        </li>
+        <li>
+          Let |result|'s |form| be |form|.
+        </li>
+        <li>
+          Let |result|'s |data| be a new {{ReadableStream}} with the payload data
+          of |response| as its
+          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          underlying source</a>.
+        </li>
+        <li>
+          Let |result|'s |dataUsed| be `false`.
+        </li>
+        <li>
+          Return |result|.
+        </li>
+      </ol>
+    </section>
+  </section>
 
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
@@ -603,7 +1047,8 @@
       <div>
         Reads a <a>Property</a> value. Takes a string argument |propertyName|
         and an optional {{InteractionOptions}} |options:InteractionOptions|
-        argument. It returns a <a>Property</a> value represented as `any` type.
+        argument. It returns a <a>Property</a> value represented as as an
+        {{InteractionData}} object.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -765,7 +1210,11 @@
     <section>
       <h3>The <dfn>writeProperty()</dfn> method</h3>
       <div>
-        Writes a single <a>Property</a>. Takes a string argument |propertyName:string|, a value argument |value:any| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
+        Writes a single <a>Property</a>. Takes a string argument |propertyName:string|,
+        a value argument |value:any| that can be a {{ReadableStream}} object or
+        an <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> and an optional {{InteractionOptions}}
+        |options:InteractionOptions| argument. It returns success or failure.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -983,7 +1432,12 @@
     <section>
       <h3>The <dfn>invokeAction()</dfn> method</h3>
       <div>
-        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument |actionName:string|, an optional argument |params:any| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
+        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument |actionName:string|, an optional argument |params:any| - that is either a
+        {{ReadableStream}} object or an <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> -,
+        and an optional {{InteractionOptions}} |options:InteractionOptions| argument.
+        It returns the result of the <a>Action</a> as a {{Promise}} that resolves
+        with an {{InteractionData}} object or rejects with an error.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -1005,7 +1459,10 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |params| with |form| and optional URI templates given in |options|'s {{uriVariables}}.
+            Let |args| be the result of running the <a>create interaction data</a>steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s {{uriVariables}}.
           </li>
           <li>
             If the request fails locally or returns an error over the network, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1176,384 +1633,6 @@
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
 
-  <section data-dfn-for="InteractionData">
-    <h2>The <dfn>InteractionData</dfn> interface</h2>
-    <p>
-      Belongs to the <a>WoT Consumer</a> conformance class.
-      Represents the data used by <a>WoT Interactions</a>.
-    </p>
-    <p class="ednote">
-      As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
-      and include a number of possible <a>Form</a>s, out of which one is selected
-      for the interaction. The
-      <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
-      Form</a> contains a `contentType` to describe the data.
-      For certain content types, a <a>DataSchema</a> is defined, based on
-      <a>JSON schema</a>, making possible to represent these contents as
-      JavaScript types and eventually set range constraints on the data.
-    </p>
-    <p>
-      This interface exposes the data returned from the <a>WoT Interaction</a>.
-    </p>
-    <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface InteractionData {
-        readonly attribute ReadableStream? data;
-        readonly attribute boolean dataUsed;
-        readonly attribute Form? form;
-        readonly attribute DataSchema? schema;
-        Promise&lt;ArrayBuffer&gt; arrayBuffer();
-        Promise&lt;any&gt; value();
-      };
-    </pre>
-    <p>
-      The <dfn>data</dfn> property represents the raw payload in
-      <a>WoT Interactions</a> as a {{ReadableStream}}, initialy `null`.
-    </p>
-    <p>
-      The <dfn>dataUsed</dfn> property tells whether the <a>data</a> stream has
-      been <a href="https://fetch.spec.whatwg.org/#concept-readablestream-disturbed">
-      disturbed</a>. Initially `false`.
-    </p>
-    <p>
-      The <dfn>form</dfn> attribute represents the <a>Form</a> selected from
-      the <a>Thing Description</a> for this <a>WoT Interaction</a>,
-      initially `null`.
-    </p>
-    <p>
-      The <dfn>schema</dfn> attribute represents the <a>DataSchema</a>
-      of the payload as a {{JSON}} object, initially `null`.
-    </p>
-    <p>
-      The <dfn>[[\value]]</dfn> internal slot represents the parsed value of
-      the <a>WoT Interaction</a>, initially `undefined` (note that `null` is a
-      valid value).
-    </p>
-
-    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
-      When invoked, MUST run the following steps:
-      <ol>
-        <li>
-          Return a {{Promise}} |promise:Promise| and execute the next steps
-          <a>in parallel</a>.
-        </li>
-        <li>
-          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
-          reject|promise| with {{NotReadableError}} and abort these steps.
-        </li>
-        <li>
-          Let |reader| be the result of
-          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
-          getting a reader</a> from |data|. If that threw an exception, reject
-          |promise| with that exception and abort these steps.
-        </li>
-        <li>
-          Let |bytes| be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
-          reading all bytes</a> from |data| with |reader|.
-        </li>
-        <li>
-          Set |dataUsed| to `true`.
-        </li>
-        <li>
-          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
-          If that throws, reject |promise| with that exception and abort these steps.
-        </li>
-        <li>
-          Resolve |promise| with |arrayBuffer|.
-        </li>
-      </ol>
-    </section>
-
-    <section><h3>The <dfn>value()</dfn> function</h3>
-      Parses the data returned from the <a>WoT Interaction</a> and returns a
-      value with the type described by the <a>DataSchema</a> of the interaction
-      if that exists, or by the `contentType` of the <a>Form</a> used for the
-      interaction. The method MUST run the following steps:
-      <ol>
-        <li>
-          Return a {{Promise}} |promise:Promise| and execute the next steps
-          <a>in parallel</a>.
-        </li>
-        <li>
-          If the value of the <a>[[\value]]</a> <a>internal slot</a> is not
-          `undefined`, resolve |promise| with that value and abort these steps.
-        </li>
-        <li>
-          If the value of the |data| property is not a {{ReadableStream}} or if
-          |dataUsed| is `true`, or if |form| is `null` or if |schema| or its
-          |type| are `null` or `undefined`,
-          reject |promise| with {{NotReadableError}} and abort these steps.
-        </li>
-        <li>
-          If |form|'s |contentType| is not `application/json` and if a mapping is
-          not available in the <a>Protocol Bindings</a> from |form|'s |contentType|
-          to [JSON-SCHEMA], reject |promise| with {{NotSupportedError}} and
-          abort these steps.
-        </li>
-        <li>
-          Let |reader| be the result of
-          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
-          getting a reader</a> from |data|. If that threw an exception, reject
-          |promise| with that exception and abort these steps.
-        </li>
-        <li>
-          Let |bytes| be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
-          reading all bytes</a> from |data| with |reader|.
-        </li>
-        <li>
-          Set |dataUsed| to `true`.
-        </li>
-        <li>
-          If |form|'s |contentType| is not `application/json` and if a mapping is
-          available in the <a>Protocol Bindings</a> from |form|'s |contentType|
-          to [JSON-SCHEMA], transform |bytes| with that mapping.
-        </li>
-        <li>
-          Let |json| be the result of running <a>parse JSON from bytes</a> on
-          |bytes|. If that throws, reject |promise| with that exception and
-          abort these steps.
-        </li>
-        <li>
-          Set <a>[[\value]]</a> to the result of running <a>check data schema</a>
-          on |json| and |schema|. If that throws, reject |promise| with that
-          exception and abort these steps.
-        </li>
-        <li>
-          Resolve |promise| with <a>[[\value]]</a>.
-        </li>
-      </ol>
-    </section>
-
-    <section><h3>The <dfn>check data schema</dfn> algorithm</h3>
-      To run the <a>check data schema</a> steps on |payload| and |schema:object|,
-      <ol>
-        <li>
-          Let |type| be |schema|'s |type|.
-        </li>
-        <li>
-          If |type| is `"null"` and if |payload| is not `null`,
-          throw {{TypeError}} and abort these steps, otherwise return `null`.
-        </li>
-        <li>
-          If |type| is `"boolean"` and |payload| is a falsey value or its byte
-          length is 0, return `false`, otherwise return `true`.
-        </li>
-        <li>
-          If |type| is `"integer"` or `"number"`,
-          <ol>
-            <li>
-              If |payload| is not a number, throw {{TypeError}} and abort these steps.
-            </li>
-            <li>
-              If |form|'s |minimum| is defined and |payload| is smaller, or if |form|'s |maximum| is defined and |payload| is bigger, throw
-              {{RangeError}} and abort these steps.
-            </li>
-          </ol>
-        </li>
-        <li>
-          If |type| is `"string"`, return |payload|.
-        </li>
-        <li>
-          If |type| is `"array"`, run these sub-steps:
-          <ol>
-            <li>
-              If |payload| is not an array, throw {{TypeError}} and abort these steps.
-            </li>
-            <li>
-              If |form|'s |minItems| is defined and |payload|'s |length| is
-              less than that, or if |form|'s |maxItems| is defined and |payload|'s
-              |length| is more than that, throw {{RangeError}} and abort these steps.
-            </li>
-            <li>
-              Let |payload| be an array of items obtained by running the
-              <a>check data schema</a> steps on each element |item| of |payload|
-              and |schema|'s |items|.
-              If this throws at any stage, re-throw that exception and abort these steps.
-            </li>
-          </ol>
-        </li>
-        <li>
-          If |type| is `"object"`, run these sub-steps:
-          <ol>
-            <li>
-              If |payload| or |schema|'s |properties| is not an object,
-              throw {{TypeError}} and abort these steps.
-            </li>
-            <li>
-              For each property |key| in |payload|,
-              <ol>
-                <li>Let |prop| be the value of |key|.</li>
-                <li>
-                  Let |propSchema| be the value of |key| in |interaction|'s
-                  |properties|.
-                </li>
-                <li>
-                  Let |prop| be the result of running the
-                  <a>check data schema</a> steps on |prop| and |propSchema|.
-                  If this throws, re-throw that exception and abort these steps.
-                </li>
-              </ol>
-            </li>
-            <li>
-              Let |required| be |schema|'s |required| if that is an array
-              or an empty array otherwise.
-            </li>
-            <li>
-              For each |key| in |required|, if |key| is not present in |payload|,
-              throw {{SyntaxError}} and abort these steps.
-            </li>
-          </ol>
-        </li>
-        <li>
-          Return |payload|.
-        </li>
-      </ol>
-    </section>
-
-    <section><h3>The <dfn>create interaction data</dfn> algorithm</h3>
-      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
-      <a>create interaction data</a> given |source|, |form:Form| and
-      |schema:object|, run these steps:
-      <ol>
-        <li>
-          If |source| is an {{InteractionData}} object whose |data| is a
-          {{ReadableStream}}, set its |form| to |form|,
-          return |source| and abort these steps.
-        </li>
-        <li>
-          Let |idata| be a new an {{InteractionData}} object whose [[\value]]
-          <a>internal slot</a> is `undefined`, whose |form| is |form|,
-          whose |schema| is set to |schema| and whose |data| is `null`.
-        </li>
-        <li>
-          If |schema| and its |type| are defined and not `null`, run these sub-steps:
-          <ol>
-            <li>
-              If |type| is `"null"` and |source| is not,
-              throw {{TypeError}} and abort these steps.
-            </li>
-            <li>
-              If |type| is `"boolean"` and |source| is a falsy value, set
-              |idata|'s [[\value]] |value| to `false`, otherwise to `true`.
-            </li>
-            <li>
-              If |type| is `"integer"` or `"number"` and |source| is not a number,
-              or if |form|'s |minimum| is defined and |source| is smaller,
-              or if |form|'s |maximum| is defined and |source| is bigger,
-              throw {{RangeError}} and abort these steps.
-            </li>
-            <li>
-              If |type| is `"string"` and |source| is not a string, let |idata|'s
-              [[\value]] be the result of running <a>serialize JSON to bytes</a>
-              on |source|.
-              If that is failure, throw {{SyntaxError}} and abort these steps.
-            </li>
-            <li>
-              If |type| is `"array"`, run these sub-steps:
-              <ol>
-                <li>
-                  If |source| is not an array, throw a {{TypeError}} and abort these steps.
-                </li>
-                <li>
-                  Let |length| be the length of |source|.
-                </li>
-                <li>
-                  If |form|'s |minItems| is defined and |length| is less than
-                  that, or if |form|'s |maxItems| is defined and |length| is
-                  more than that, throw {{RangeError}} and abort these steps.
-                </li>
-                <li>
-                  For each |item| in |source|, let |itemschema| be |schema|'s
-                  |items| and let |item| be the result of running the
-                  <a>create interaction data</a> steps on |item|, |form| and
-                  |itemschema|.
-                  If this throws, re-throw that exception and abort these steps.
-                </li>
-                <li>
-                  Set |data|'s [[\value]] to |source|.
-                </li>
-              </ol>
-            </li>
-            <li>
-              If |type| is `"object"`, run these sub-steps:
-              <ol>
-                <li>
-                  If |source| is not an object, throw {{TypeError}} and abort these steps.
-                </li>
-                <li>
-                  If |schema|'s |properties| is not an object,
-                  throw {{TypeError}} and abort these steps.
-                </li>
-                <li>
-                  For each property |key| in |source|,
-                  <ol>
-                    <li>Let |value| be the value of |key|.</li>
-                    <li>Let |propschema| be the value of |key| in |properties|.</li>
-                    <li>
-                      Let |value| be the result of running the
-                      <a>create interaction data</a> steps on |value|, |form|
-                      and |propschema|.
-                      If this throws, re-throw that exception and abort these steps.
-                    </li>
-                  </ol>
-                </li>
-                <li>
-                  If |schema|'s |required| is an array, for each |item| in |required|
-                  check if |item| is a property name in |source|. If an |item| is
-                  not found in |source|, throw {{SyntaxError}} and abort these steps.
-                </li>
-                <li>
-                  Set |data|'s [[\value]] to |source|.
-                </li>
-              </ol>
-            </li>
-          </ol>
-        </li>
-        <li>
-          Set |idata|'s |data| to a new {{ReadableStream}} created from |idata|'s
-          [[\value]] <a>internal slot</a> as its
-          <a href="https://streams.spec.whatwg.org/#underlying-source">
-          underlying source</a>.
-        </li>
-        <li>
-          Return |idata|.
-        </li>
-      </ol>
-    </section>
-
-    <section><h3>The <dfn>parse interaction response</dfn> algorithm</h3>
-      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
-      <a>parse interaction response</a> given |response|, |form:Form| and
-      |schema:object|, run these steps:
-      <ol>
-        <li>
-          Let |result| be a new {{InteractionData}} object.
-        </li>
-        <li>
-          Let |result|'s |schema| be |schema|.
-        </li>
-        <li>
-          Let |result|'s |form| be |form|.
-        </li>
-        <li>
-          Let |result|'s |data| be a new {{ReadableStream}} with the payload data
-          of |response| as its
-          <a href="https://streams.spec.whatwg.org/#underlying-source">
-          underlying source</a>.
-        </li>
-        <li>
-          Let |result|'s |dataUsed| be `false`.
-        </li>
-        <li>
-          Return |result|.
-        </li>
-      </ol>
-    </section>
-
-  </section>
-
   <section data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
     <p>
@@ -1657,15 +1736,12 @@
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves with an {{InteractionData}} object or any type,
-        or rejects with an error if the property is not found or the value
-        cannot be retrieved.
-      </p>
-      <p class="note">
-        The <a>Property</a>'s value can be provided by the {{PropertyReadHandler}}
-        as a value conforming to {{DataSchema}} or as an {{InteractionData}} object
-        in order to be able to represent values that are not described by a
-        {{DataSchema}}, such as streams.
+        A function that is called when an external request for reading a
+        <a>Property</a> is received and defines what to do with such requests.
+        It returns a {{Promise}} and resolves with an {{ReadableStream}} object or an
+        <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">
+        ECMAScript value</a> conforming to {{DataSchema}}, or rejects with an
+        error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
 
@@ -1673,7 +1749,8 @@
       <p>
         Takes |name:string| as string argument and |readHandler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>.
         Sets the service handler that defines what to do when a request is
-        received for reading the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+        received for reading the specified <a>Property</a> matched by |name|.
+        Throws on error. Returns a reference to |this| object for supporting chaining.
       </p>
       <p class="ednote">
         Note that there is no need to register handlers for handling requests
@@ -1757,8 +1834,8 @@
               <li>
                 Return |value|.
                 <p class="note">
-                  The value returned here SHOULD either conform to {{DataSchema}}
-                  or it SHOULD be an {{InteractionData}} object created by the
+                  The |value| returned here SHOULD either conform to {{DataSchema}}
+                  or it SHOULD be an {{ReadableStream}} object created by the
                   |handler|.
                 </p>
               </li>
@@ -1838,7 +1915,8 @@
 
     <section> <h3>The <dfn>setPropertyObserveHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>.
+        Takes |name:string| as string argument and |handler:PropertyReadHandler|
+        as argument of type <a>PropertyReadHandler</a>.
         Sets the service handler that defines what to do when a request is received
         for observing the specified <a>Property</a> matched by |name|.
         Throws on error. Returns a reference to |this| object for supporting chaining.
@@ -2162,16 +2240,15 @@
       <p>
         A function that is called when an external request for invoking an
         <a>Action</a> is received and defines what to do with such requests.
-        It is invoked with a |params:object| argument and optionally
+        It is invoked with a |params:InteractionData| argument and optionally
         with an |options:InteractionOptions| object.
         It returns a {{Promise}} that rejects with an error or resolves with
         the value returned by the <a>Action</a>.
       </p>
       <p class="note">
-        Applications MAY return {{InteractionData}} from an {{ActionHandler}}
-        for instance when the data is specially encoded or it is a stream.
-        Implementations will then use the stream provided in
-        {{InteractionData}} when constructing the <a>Action</a>'s response.
+        Application scripts MAY return a {{ReadableStream}} object from an
+        {{ActionHandler}}. Implementations will then use the stream for
+        constructing the <a>Action</a>'s response.
       </p>
     </section>
 
