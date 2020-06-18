@@ -487,25 +487,29 @@
   <section data-dfn-for="InteractionInput">
     <h2>The <dfn>InteractionInput</dfn> type</h2>
     <pre class="idl">
-      typedef any DataSchema;
-      typedef (ReadableStream or DataSchema) InteractionInput;
+      typedef any DataSchemaValue;
+      typedef (ReadableStream or DataSchemaValue) InteractionInput;
     </pre>
     <p>
       Belongs to the <a>WoT Consumer</a> conformance class and represents the
       <a>WoT Interaction</a> data provided by application scripts to the UA.
-      It is either a {{ReadableStream}} object, or an
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> (i.e. null, boolean, number, string, array, or object).
+    </p>
+    <p>
+      <dfn>DataSchemaValue</dfn> is an
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]]
+      (i.e. null, boolean, number, string, array, or object).
     </p>
     <p>
       {{ReadableStream}} is meant to be used for <a>WoT Interactions</a> that
-      don't have a {{DataSchema}} in the <a>Thing Description</a>, only a
+      don't have a <a>DataSchema</a> in the <a>Thing Description</a>, only a
       {{Form}}'s `contentType` that can be represented by a stream.
     </p>
     <p>
-      Any <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> may
-      be used for <a>WoT Interactions</a> that have a {{DataSchema}} defined in
-      the <a>Thing Description</a>, or which can be mapped by implementations
-      to the {{Form}}'s `contentType` defined in the <a>Thing Description</a>.
+      In practice, any
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> may be used for <a>WoT Interactions</a> that have a
+      <a>DataSchema</a> defined in the <a>Thing Description</a>,
+      or which can be mapped by implementations to the {{Form}}'s `contentType`
+      defined in the <a>Thing Description</a>.
     </p>
     <p>
       The algorithms in this document specify how exactly input data is used in
@@ -525,7 +529,7 @@
       This interface exposes a convenience function which should work in
       the vast majority of IoT use cases: the
       <a href="#the-value-function">value()</a> function. Its implementation
-      will inspect the data, parse it if adheres to a {{DataSchema}}, or
+      will inspect the data, parse it if adheres to a <a>DataSchema</a>, or
       otherwise fail early, leaving the underlying stream undisturbed so
       that application scripts could attempt reading the stream themselves, or
       handling the data as {{ArrayBuffer}}.
@@ -557,7 +561,7 @@
     </p>
     <p>
       The <dfn>schema</dfn> attribute represents the <a>DataSchema</a>
-      of the payload as a {{JSON}} object, initially `null`.
+      (defined in [[WoT-TD]]) of the payload as a {{JSON}} object, initially `null`.
     </p>
     <p>
       The <dfn>[[\value]]</dfn> internal slot represents the parsed value of
@@ -1792,7 +1796,7 @@
         <a>Property</a> is received and defines what to do with such requests.
         It returns a {{Promise}} and resolves with an {{ReadableStream}} object or an
         <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">
-        ECMAScript value</a> conforming to {{DataSchema}}, or rejects with an
+        ECMAScript value</a> conforming to <a>DataSchema</a>, or rejects with an
         error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
@@ -1887,7 +1891,7 @@
               <li>
                 Return |value|.
                 <p class="note">
-                  The |value| returned here SHOULD either conform to {{DataSchema}}
+                  The |value| returned here SHOULD either conform to <a>DataSchema</a>
                   or it SHOULD be an {{ReadableStream}} object created by the
                   |handler|.
                 </p>
@@ -2168,7 +2172,7 @@
       <p class="note">
         The value is provided by implementations as an {{InteractionOutput}} object
         in order to be able to represent values that are not described by a
-        {{DataSchema}}, such as streams.
+        <a>DataSchema</a>, such as streams.
       </p>
     </section>
 
