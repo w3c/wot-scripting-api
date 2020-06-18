@@ -472,39 +472,67 @@
   </section>
   </section> <!-- WoT -->
 
-  <section data-dfn-for="InteractionData">
-    <h2>The <dfn>InteractionData</dfn> interface</h2>
+  <section> <h2>Handling interaction data</h2>
+  <p>
+    As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
+    and include a number of possible <a>Form</a>s, out of which one is selected
+    for the interaction. The
+    <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
+    Form</a> contains a `contentType` to describe the data.
+    For certain content types, a <a>DataSchema</a> is defined, based on
+    <a>JSON schema</a>, making possible to represent these contents as
+    JavaScript types and eventually set range constraints on the data.
+  </p>
+
+  <section data-dfn-for="InteractionInput">
+    <h2>The <dfn>InteractionInput</dfn> type</h2>
+    <pre class="idl">
+      typedef any DataSchema;
+      typedef (ReadableStream or DataSchema) InteractionInput;
+    </pre>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class and represents the
+      <a>WoT Interaction</a> data provided by application scripts to the UA.
+      It is either a {{ReadableStream}} object, or an
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> (i.e. null, boolean, number, string, array, or object).
+    </p>
+    <p>
+      {{ReadableStream}} is meant to be used for <a>WoT Interactions</a> that
+      don't have a {{DataSchema}} in the <a>Thing Description</a>, only a
+      {{Form}}'s `contentType` that can be represented by a stream.
+    </p>
+    <p>
+      Any <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> may
+      be used for <a>WoT Interactions</a> that have a {{DataSchema}} defined in
+      the <a>Thing Description</a>, or which can be mapped by implementations
+      to the {{Form}}'s `contentType` defined in the <a>Thing Description</a>.
+    </p>
+    <p>
+      The algorithms in this document specify how exactly input data is used in
+      <a>WoT Interactions</a>.
+    </p>
+  </section>
+
+  <section data-dfn-for="InteractionOutput">
+    <h2>The <dfn>InteractionOutput</dfn> interface</h2>
     <p>
       Belongs to the <a>WoT Consumer</a> conformance class.
-      Represents the data used by <a>WoT Interactions</a>.
-      It is created only by the implementations.
-    </p>
-    <p class="ednote">
-      As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
-      and include a number of possible <a>Form</a>s, out of which one is selected
-      for the interaction. The
-      <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
-      Form</a> contains a `contentType` to describe the data.
-      For certain content types, a <a>DataSchema</a> is defined, based on
-      <a>JSON schema</a>, making possible to represent these contents as
-      JavaScript types and eventually set range constraints on the data.
+      An {{InteractionOutput}} object is always created by the implementations
+      and exposes the data returned from <a>WoT Interactions</a> to application
+      scripts.
     </p>
     <p>
-      This interface exposes the data returned from <a>WoT Interactions</a>
-      combining a convenient access method with a low-level access interface.
-    </p>
-    <p class="ednote">
-      The convenient interface is provided by the
-      <a href="#the-value-function">value()</a> function, which should work in
-      the vast majority of IoT use cases and whose implementation
-      will inspect the data, parse it if adheres to a {{DataSchema}}, or fail
-      early if it cannot parse it, leaving the underlying stream undisturbed so
+      This interface exposes a convenience function which should work in
+      the vast majority of IoT use cases: the
+      <a href="#the-value-function">value()</a> function. Its implementation
+      will inspect the data, parse it if adheres to a {{DataSchema}}, or
+      otherwise fail early, leaving the underlying stream undisturbed so
       that application scripts could attempt reading the stream themselves, or
       handling the data as {{ArrayBuffer}}.
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
-      interface InteractionData {
+      interface InteractionOutput {
         readonly attribute ReadableStream? data;
         readonly attribute boolean dataUsed;
         readonly attribute Form? form;
@@ -515,7 +543,7 @@
     </pre>
     <p>
       The <dfn>data</dfn> property represents the raw payload in
-      <a>WoT Interactions</a> as a {{ReadableStream}}, initialy `null`.
+      <a>WoT Interactions</a> as a {{ReadableStream}}, initially `null`.
     </p>
     <p>
       The <dfn>dataUsed</dfn> property tells whether the <a>data</a> stream has
@@ -536,99 +564,6 @@
       the <a>WoT Interaction</a>, initially `undefined` (note that `null` is a
       valid value).
     </p>
-
-    <p>
-      As illustrated in the next pictures, the {{InteractionData}} interface is
-      used every time implementations provide data to scripts, while `any` is
-      used when the scripts pass data to the implementation.
-    </p>
-    <figure id="scripting-read">
-      <img src="images/scripting-read-data.png"
-                width="100%"
-                title="Reading data"/>
-      <figcaption>Data structures used when reading data</figcaption>
-    </figure>
-    <p>
-      When a {{ConsumedThing}} reads data, it receives it from the implementation
-      as an {{InteractionData}} object.
-    </p>
-    <p>
-      An {{ExposedThing}} <a href="#the-propertyreadhandler-callback">
-      read handler</a> provides the read data to the implementation as
-      {{ReadableStream}} object, or as an
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> (i.e. `null`, boolean, number, string, array, or
-      object).
-    </p>
-
-    <figure id="scripting-write">
-      <img src="images/scripting-write-data.png"
-                width="100%"
-                title="Writing data"/>
-      <figcaption>Data structures used when writing data</figcaption>
-    </figure>
-    <p>
-      When a {{ConsumedThing}} writes data, it provides it to the implementation
-      as a {{ReadableStream}} object, or as an
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a>.
-    </p>
-    <p>
-      An {{ExposedThing}} <a href="#the-propertywritehandler-callback">
-      write handler</a> receives data from to implementation as
-      an {{InteractionData}} object.
-    </p>
-
-    <figure id="scripting-action">
-      <img src="images/scripting-action-data.png"
-                width="100%"
-                title="Invoking action"/>
-      <figcaption>Data structures used when invoking an Action</figcaption>
-    </figure>
-    <p>
-      When a {{ConsumedThing}} invokes an <a>Action</a> data, it provides the
-      parameters as a {{ReadableStream}} object, or as an
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a>.
-    </p>
-    <p>
-      An {{ExposedThing}} <a href="#the-actionhandler-callback">
-      action handler</a> receives return values from the implementation as
-      an {{InteractionData}} object.
-    </p>
-
-    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
-      When invoked, MUST run the following steps:
-      <ol>
-        <li>
-          Return a {{Promise}} |promise:Promise| and execute the next steps
-          <a>in parallel</a>.
-        </li>
-        <li>
-          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
-          reject |promise| with {{NotReadableError}} and abort these steps.
-        </li>
-        <li>
-          Let |reader| be the result of
-          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
-          getting a reader</a> from |data|. If that threw an exception, reject
-          |promise| with that exception and abort these steps.
-        </li>
-        <li>
-          Let |bytes| be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
-          reading all bytes</a> from |data| with |reader|.
-        </li>
-        <li>
-          Set |dataUsed| to `true`.
-        </li>
-        <li>
-          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
-          If that throws, reject |promise| with that exception and abort these steps.
-        </li>
-        <li>
-          Resolve |promise| with |arrayBuffer|.
-        </li>
-      </ol>
-    </section>
-
     <section><h3>The <dfn>value()</dfn> function</h3>
       Parses the data returned from the <a>WoT Interaction</a> and returns a
       value with the type described by the <a>DataSchema</a> of the interaction
@@ -686,6 +621,41 @@
         </li>
         <li>
           Resolve |promise| with <a>[[\value]]</a>.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
+      When invoked, MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
+        </li>
+        <li>
+          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
+          reject |promise| with {{NotReadableError}} and abort these steps.
+        </li>
+        <li>
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
+        </li>
+        <li>
+          Set |dataUsed| to `true`.
+        </li>
+        <li>
+          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
+          If that throws, reject |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with |arrayBuffer|.
         </li>
       </ol>
     </section>
@@ -782,7 +752,7 @@
       |schema:object|, run these steps:
       <ol>
         <li>
-          Let |idata| be a new an {{InteractionData}} object whose |form| is
+          Let |idata| be a new an {{InteractionOutput}} object whose |form| is
           set to |form|, whose |schema| is set to |schema|, whose [[\value]]
           <a>internal slot</a> is `undefined` and whose |data| is `null`.
         </li>
@@ -892,7 +862,7 @@
       |schema:object|, run these steps:
       <ol>
         <li>
-          Let |result| be a new {{InteractionData}} object.
+          Let |result| be a new {{InteractionOutput}} object.
         </li>
         <li>
           Let |result|'s |schema| be |schema|.
@@ -915,6 +885,64 @@
       </ol>
     </section>
   </section>
+  <section> <h3>Using {{InteractionInput}} and {{InteractionOutput}}</h3>
+    <p>
+      As illustrated in the next pictures, the {{InteractionOutput}} interface
+      is used every time implementations provide data to scripts, while
+      {{InteractionInput}} is used when the scripts pass data to the
+      implementation.
+    </p>
+    <figure id="scripting-read">
+      <img src="images/scripting-read-data.png"
+                width="100%"
+                title="Reading data"/>
+      <figcaption>Data structures used when reading data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} reads data, it receives it from the implementation
+      as an {{InteractionOutput}} object.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertyreadhandler-callback">
+      read handler</a> provides the read data to the implementation as
+      {{InteractionInput}}.
+    </p>
+
+    <figure id="scripting-write">
+      <img src="images/scripting-write-data.png"
+                width="100%"
+                title="Writing data"/>
+      <figcaption>Data structures used when writing data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} writes data, it provides it to the implementation
+      as {{InteractionInput}}.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertywritehandler-callback">
+      write handler</a> receives data from to implementation as
+      an {{InteractionOutput}} object.
+    </p>
+
+    <figure id="scripting-action">
+      <img src="images/scripting-action-data.png"
+                width="100%"
+                title="Invoking action"/>
+      <figcaption>Data structures used when invoking an Action</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} invokes an <a>Action</a> data, it provides the
+      parameters as {{InteractionInput}} and receives the output of the
+      <a>Action</a> as an {{InteractionOutput}} object.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-actionhandler-callback">
+      action handler</a> receives arguments from the implementation as
+      an {{InteractionOutput}} object and provides <a>Action</a> output as
+      {{InteractionInput}} to the implementation.
+    </p>
+  </section>
+  </section> <!-- Handling interaction data -->
 
   <section data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
@@ -926,19 +954,19 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
         constructor(ThingDescription td);
-        Promise&lt;InteractionData&gt; readProperty(DOMString propertyName,
+        Promise&lt;InteractionOutput&gt; readProperty(DOMString propertyName,
                                     optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
         Promise&lt;PropertyMap&gt; readMultipleProperties(
                                     sequence&lt;DOMString&gt; propertyNames,
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; writeProperty(DOMString propertyName,
-                                    any value,
+                                    InteractionInput value,
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
-        Promise&lt;InteractionData&gt; invokeAction(DOMString actionName,
-                                    optional any params = null,
+        Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
+                                    optional InteractionInput params = null,
                                     optional InteractionOptions options = null);
         Promise&lt;void&gt; observeProperty(DOMString name,
                                     WotListener listener,
@@ -961,7 +989,7 @@
 
       typedef object PropertyMap;
 
-      callback WotListener = void(InteractionData data);
+      callback WotListener = void(InteractionOutput data);
     </pre>
 
     <section>
@@ -1048,7 +1076,7 @@
         Reads a <a>Property</a> value. Takes a string argument |propertyName|
         and an optional {{InteractionOptions}} |options:InteractionOptions|
         argument. It returns a <a>Property</a> value represented as as an
-        {{InteractionData}} object.
+        {{InteractionOutput}} object.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -1241,7 +1269,7 @@
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
             to write the <a>Property</a> given by |propertyName| using
-            |data:InteractionData| and the optional URI templates given in
+            |data:InteractionOutput| and the optional URI templates given in
             |options|' {{uriVariables}}.
           </li>
           <li>
@@ -1329,7 +1357,7 @@
       <h3>The <dfn>WotListener</dfn> callback</h3>
       <p>
         User provided callback that is given an argument of type
-        {{InteractionData}} and is used for observing <a>Property</a> changes
+        {{InteractionOutput}} and is used for observing <a>Property</a> changes
         and handling <a>Event</a> notifications.
         Since subscribing to these are WoT interactions, they are not modelled
         with software events.
@@ -1436,7 +1464,7 @@
         {{ReadableStream}} object or an <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> -,
         and an optional {{InteractionOptions}} |options:InteractionOptions| argument.
         It returns the result of the <a>Action</a> as a {{Promise}} that resolves
-        with an {{InteractionData}} object or rejects with an error.
+        with an {{InteractionOutput}} object or rejects with an error.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -1658,7 +1686,7 @@
                 EventSubscriptionHandler handler);
         ExposedThing setEventHandler(DOMString name,
                 EventListenerHandler eventHandler);
-        void emitEvent(DOMString name, any data);
+        void emitEvent(DOMString name, InteractionInput data);
 
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
@@ -1667,16 +1695,18 @@
       callback PropertyReadHandler = Promise&lt;any&gt;(
               optional InteractionOptions options = null);
 
-      callback PropertyWriteHandler = Promise&lt;void&gt;(InteractionData value,
+      callback PropertyWriteHandler = Promise&lt;void&gt;(
+              InteractionOutput value,
               optional InteractionOptions options = null);
 
-      callback ActionHandler = Promise&lt;any&gt;(any params,
+      callback ActionHandler = Promise&lt;InteractionInput&gt;(
+              InteractionOutput params,
               optional InteractionOptions options = null);
 
       callback EventSubscriptionHandler = Promise&lt;void&gt;(
               optional InteractionOptions options = null);
 
-      callback EventListenerHandler = Promise&lt;any&gt;();
+      callback EventListenerHandler = Promise&lt;InteractionInput&gt;();
     </pre>
     <section>
       <h3>Constructing {{ExposedThing}}</h3>
@@ -1923,7 +1953,7 @@
       </p>
       <p>
          The |handler| callback function should implement reading a
-         <a>Property</a> and resolve with an {{InteractionData}} object or
+         <a>Property</a> and resolve with an {{InteractionOutput}} object or
          reject with an error.
       </p>
       <p>
@@ -2105,7 +2135,7 @@
         A function that is called when an external request for writing a
         <a>Property</a> is received and defines what to do with such requests.
         It expects the requested new |value| as argument of type
-        {{InteractionData}} and returns a {{Promise}} which is resolved when the
+        {{InteractionOutput}} and returns a {{Promise}} which is resolved when the
         value of the <a>Property</a> that matches the |name:string| argument has
         been updated, or rejects with an error if the property is not found or
         the value cannot be updated.
@@ -2114,7 +2144,7 @@
         Note that the code in this callback function can read the property before updating it in order to find out the old value, if needed. Therefore the old value is not provided to this function.
       </p>
       <p class="note">
-        The value is provided by implementations as an {{InteractionData}} object
+        The value is provided by implementations as an {{InteractionOutput}} object
         in order to be able to represent values that are not described by a
         {{DataSchema}}, such as streams.
       </p>
@@ -2165,7 +2195,7 @@
     <section> <h3>Handling requests for writing a Property</h3>
       <div>
         When a network request for writing a <a>Property</a> |name:string|
-        with a new value |value:InteractionData| and |options:InteractionOptions|
+        with a new value |value:InteractionOutput| and |options:InteractionOptions|
         is received, implementations MUST run the following
         <dfn>update property steps</dfn>, given |name|, |value|, |options|
         and |mode| set to `"single"`:
@@ -2240,7 +2270,7 @@
       <p>
         A function that is called when an external request for invoking an
         <a>Action</a> is received and defines what to do with such requests.
-        It is invoked with a |params:InteractionData| argument and optionally
+        It is invoked with a |params:InteractionOutput| argument and optionally
         with an |options:InteractionOptions| object.
         It returns a {{Promise}} that rejects with an error or resolves with
         the value returned by the <a>Action</a>.
@@ -2338,15 +2368,15 @@
       <p>
         A function that is called when an associated <a>Event</a> is triggered
         and provides the data to be sent with the <a>Event</a> to subscribers.
-        Returns a {{Promise}} that resolves with an {{InteractionData}} object
+        Returns a {{Promise}} that resolves with an {{InteractionOutput}} object
         or otherwise any value that represents the <a>Event</a> data,
         or rejects with an error.
       </p>
       <p class="note">
-        Applications MAY return {{InteractionData}} from an {{EventListenerHandler}}
+        Applications MAY return {{InteractionOutput}} from an {{EventListenerHandler}}
         for instance when the <a>Event</a> data is specially encoded or it is a
         stream. Implementations will then use the stream provided in
-        {{InteractionData}} when constructing the event notification.
+        {{InteractionOutput}} when constructing the event notification.
       </p>
     </section>
 
