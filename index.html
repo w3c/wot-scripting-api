@@ -1031,9 +1031,9 @@
       </p>
     </section>
 
-    <section>
+    <section data-dfn-for="InteractionOptions">
       <h3>
-        The <dfn data-dfn-for="InteractionOptions">InteractionOptions</dfn> dictionary
+        The <dfn>InteractionOptions</dfn> dictionary
       </h3>
       <p>
         Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>.
@@ -1097,8 +1097,8 @@
             |propertyName|.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be the first <a>Form</a> in
             |interaction|'s |forms| whose |op| is `readproperty`.
           </li>
@@ -1110,7 +1110,7 @@
             Make a request to the underlying platform (via the
             <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a>
             given by |propertyName| using |form| and the optional URI templates
-            given in |options|' {{uriVariables}}.
+            given in |options|' |uriVariables|.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1147,8 +1147,8 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readmultipleproperties`.
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readmultipleproperties`.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -1157,7 +1157,7 @@
             Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
             If this cannot be done with a single request with the <a>Protocol Bindings</a>, reject |promise| with a {{NotSupportedError}} and abort these steps.
@@ -1205,14 +1205,14 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readallproperties`.
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readallproperties`.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with |form| and optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
             If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
@@ -1266,8 +1266,8 @@
             |propertyName|.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be the first <a>Form</a> in
             |interaction|'s |forms| whose |op| is `writeproperty`.
           </li>
@@ -1281,7 +1281,7 @@
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
             to write the <a>Property</a> given by |propertyName| using
             |data:InteractionOutput| and the optional URI templates given in
-            |options|' {{uriVariables}}.
+            |options|' |uriVariables|.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1321,8 +1321,8 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array,
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array,
             otherwise let |form| be the first <a>Form</a> in ||td||'s |forms|
             array whose |op| is `writemultipleproperties`.
           </li>
@@ -1350,7 +1350,7 @@
             Make a single request to the underlying platform (via the
             <a>Protocol Bindings</a>) to write each <a>Property</a> provided in
             |properties| with optional URI templates given in |options|'
-            {{uriVariables}}.
+            |uriVariables|.
           </li>
           <li>
             If this cannot be done with a single request with the
@@ -1403,8 +1403,8 @@
             |propertyName|.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be the first <a>Form</a> in
             |interaction|'s |forms| array whose |op| is `observeproperty`.
           </li>
@@ -1412,7 +1412,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by |propertyName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by |propertyName| with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1455,8 +1455,8 @@
             |propertyName|.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be the first <a>Form</a> in
             |interaction|'s |forms| array whose |op| is `unobserveproperty`.
           </li>
@@ -1464,7 +1464,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|' {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1497,8 +1497,8 @@
             |actionName|.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be the first <a>Form</a> in
             |interaction|'s |forms| array whose |op| is `invokeaction`.
           </li>
@@ -1509,7 +1509,7 @@
             Let |args| be the result of running the <a>create interaction data</a>steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s {{uriVariables}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s |uriVariables|.
           </li>
           <li>
             If the request fails locally or returns an error over the network, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1551,8 +1551,8 @@
             Let |interaction| be the value of ||td||'s |events|'s |eventName|.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be the first <a>Form</a> in
             |interaction|'s |forms| array whose |op| is `subscribeevent`.
           </li>
@@ -1560,8 +1560,8 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' {{uriVariables}}
-            and optional subscription data given in |options|'s {{data}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' |uriVariables|
+            and optional subscription data given in |options|'s |data|.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -1596,8 +1596,8 @@
             Let |interaction| be the value of ||td||'s |events|'s |eventName|.
           </li>
           <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be the first <a>Form</a> in
             |interaction|'s |forms| array whose |op| is `unsubscribeevent`.
           </li>
@@ -1605,8 +1605,8 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' {{uriVariables}}
-            and optional unsubscribe data given in |options|'s {{data}}.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' |uriVariables|
+            and optional unsubscribe data given in |options|'s |data|.
           </li>
           <li>
             If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
@@ -2493,7 +2493,7 @@
             <ol>
               <li>
                 Let |subscriber| be a tuple formed of |options| (from which
-                {{uriVariables}} and {{data}} may be used) and the
+                |uriVariables| and |data| may be used) and the
                 subscriber information needed to create an <a>Event</a>
                 notification response.
               </li>
