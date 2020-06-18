@@ -470,721 +470,73 @@
       </ol>
     </div>
   </section>
-</section>
+  </section> <!-- WoT -->
 
-  <section data-dfn-for="ConsumedThing">
-    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
-    <p>
-      Represents a client API to operate a <a>Thing</a>. Belongs to the
-      <a>WoT Consumer</a> conformance class.
-    </p>
+  <section> <h2>Handling interaction data</h2>
+  <p>
+    As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
+    and include a number of possible <a>Form</a>s, out of which one is selected
+    for the interaction. The
+    <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
+    Form</a> contains a `contentType` to describe the data.
+    For certain content types, a <a>DataSchema</a> is defined, based on
+    <a>JSON schema</a>, making possible to represent these contents as
+    JavaScript types and eventually set range constraints on the data.
+  </p>
+
+  <section data-dfn-for="InteractionInput">
+    <h2>The <dfn>InteractionInput</dfn> type</h2>
     <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface ConsumedThing {
-        constructor(ThingDescription td);
-        Promise&lt;InteractionData&gt; readProperty(DOMString propertyName,
-                                    optional InteractionOptions options = null);
-        Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
-        Promise&lt;PropertyMap&gt; readMultipleProperties(
-                                    sequence&lt;DOMString&gt; propertyNames,
-                                    optional InteractionOptions options = null);
-        Promise&lt;void&gt; writeProperty(DOMString propertyName,
-                                    any value,
-                                    optional InteractionOptions options = null);
-        Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
-                                    optional InteractionOptions options = null);
-        Promise&lt;any&gt; invokeAction(DOMString actionName,
-                                    optional any params = null,
-                                    optional InteractionOptions options = null);
-        Promise&lt;void&gt; observeProperty(DOMString name,
-                                    WotListener listener,
-                                    optional InteractionOptions options = null);
-        Promise&lt;void&gt; unobserveProperty(DOMString name,
-                                    optional InteractionOptions options = null);
-        Promise&lt;void&gt; subscribeEvent(DOMString name,
-                                    WotListener listener,
-                                    optional InteractionOptions options = null);
-        Promise&lt;void&gt; unsubscribeEvent(DOMString name,
-                                    optional InteractionOptions options = null);
-        ThingDescription getThingDescription();
-      };
-      dictionary InteractionOptions {
-        unsigned long formIndex;
-        object uriVariables;
-      };
-      typedef object PropertyMap;
-      callback WotListener = void(any data);
+      typedef any DataSchemaValue;
+      typedef (ReadableStream or DataSchemaValue) InteractionInput;
     </pre>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class and represents the
+      <a>WoT Interaction</a> data provided by application scripts to the UA.
+    </p>
+    <p>
+      <dfn>DataSchemaValue</dfn> is an
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]]
+      (i.e. null, boolean, number, string, array, or object).
+    </p>
+    <p>
+      {{ReadableStream}} is meant to be used for <a>WoT Interactions</a> that
+      don't have a <a>DataSchema</a> in the <a>Thing Description</a>, only a
+      {{Form}}'s `contentType` that can be represented by a stream.
+    </p>
+    <p>
+      In practice, any
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> may be used for <a>WoT Interactions</a> that have a
+      <a>DataSchema</a> defined in the <a>Thing Description</a>,
+      or which can be mapped by implementations to the {{Form}}'s `contentType`
+      defined in the <a>Thing Description</a>.
+    </p>
+    <p>
+      The algorithms in this document specify how exactly input data is used in
+      <a>WoT Interactions</a>.
+    </p>
+  </section>
 
-    <section>
-      <h4>Constructing <code>ConsumedThing</code></h4>
-      <p>
-        After <a href="#fetching-a-thing-description">fetching</a> a
-        <a>Thing Description</a> as a JSON object, one can create a
-        {{ConsumedThing}} object.
-      </p>
-      <div>
-        To create {{ConsumedThing}} with the {{ThingDescription}}
-        |td:ThingDescription|, run the following steps:
-        <ol>
-          <li>
-            Run the <a>expand a TD</a> steps on |td|. If that fails, re-[= exception/throw =] the error and abort these steps.
-          </li>
-          <li>
-            Let |thing:ConsumedThing| be a new {{ConsumedThing}} object.
-          </li>
-          <li>
-            Let ||td|| be an <a>internal slot</a> of |thing| and let |td| be its value.
-          </li>
-          <li>
-            Return |thing|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>getThingDescription()</dfn> method</h3>
-      <p>
-        Returns the <a>internal slot</a> ||td|| of the {{ConsumedThing}} object that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
-        Applications may consult the <a>Thing</a> metadata stored in ||td|| in order to introspect its capabilities before interacting with it.
-      </p>
-    </section>
-
-    <section>
-      <h3>
-        The <dfn data-dfn-for="InteractionOptions">InteractionOptions</dfn> dictionary
-      </h3>
-      <p>
-        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>.
-      </p>
-      <p>
-        The <dfn>formIndex</dfn> property, if defined, represents an application
-        hint for which <code>Form</code> definition, identified by this index,
-        of the <a>TD</a> to use for the given WoT interaction.
-        Implementations SHOULD use the <code>Form</code> with this index for
-        making the interaction, but MAY override this value if the index is not
-        found or not valid.
-        If not defined, implementations SHOULD attempt to use the
-        <code>Form</code> definitions in order of appearance as listed in the
-        <a>TD</a> for the given Wot Interaction.
-      </p>
-      <p>
-        The <dfn>uriVariables</dfn> property if defined, represents the URI
-        template variables to be used with the WoT Interaction that are represented
-        as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">
-        parsed JSON objects</a> defined in [[!WOT-TD]].
-      </p>
-      <p class="ednote">
-        The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the |options| parameter could be dismissed from the methods exposed by this API.
-      </p>
-    </section>
-
-    <section>
-      <h3>The <dfn>PropertyMap</dfn> type</h3>
-      <p>
-        Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
-      </p>
-      <p class="ednote">
-         It could be defined in Web IDL (as well as {{ThingDescription}}) as a <a href="https://heycam.github.io/webidl/#idl-maplike">maplike</a> interface from <i>string</i> to <i>any</i>.
-      </p>
-    </section>
-
-    <section>
-      <h3>The <dfn>readProperty()</dfn> method</h3>
-      <div>
-        Reads a <a>Property</a> value. Takes a string argument |propertyName|
-        and an optional {{InteractionOptions}} |options:InteractionOptions|
-        argument. It returns a <a>Property</a> value represented as `any` type.
-        The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps
-            <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting
-            context for security reasons, reject |promise| with a
-            {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
-            |propertyName|.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| whose |op| is `readproperty`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and
-            abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the
-            <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a>
-            given by |propertyName| using |form| and the optional URI templates
-            given in |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Let |response| be the response received to the request.
-          </li>
-          <li>
-            Let |data| be the result of running <a>parse interaction response</a>
-            on |response|, |form| and |interaction|.
-            If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Resolve |promise| with |data|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
-      <div>
-        Reads multiple <a>Property</a> values with one or multiple requests. Takes the |propertyNames: string sequence| argument as a sequence of strings and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns an object that maps keys from |propertyNames| to values returned by this algorithm. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readmultipleproperties`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a>, reject |promise| with a {{NotSupportedError}} and abort these steps.
-          </li>
-          <li>
-            Process the response and for each |key| in |result|, run the following
-            sub-steps:
-            <ol>
-              <li>
-                Let |value| be the value of |result|'s |key|.
-              </li>
-              <li>
-                Let |schema| be the value of ||td||'s |properties|'s |key|.
-              </li>
-              <li>
-                Let |property| be the result of running
-                <a>parse interaction response</a> on |value|, |form| and
-                |schema|.
-              </li>
-            </ol>
-          </li>
-          <li>
-            If the above step throws at any point, reject |promise| with that
-            exception and abort these steps.
-          </li>
-          <li>
-            Resolve |promise| with |result|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>readAllProperties()</dfn> method</h3>
-      <div>
-        Reads all properties of the <a>Thing</a> with one or multiple requests. Takes an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns an object that maps keys from <a>Property</a> names to values returned by this algorithm. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readallproperties`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with |form| and optional URI templates given in |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
-          </li>
-          <li>
-            Process the response and for each |key| in |result|, run the following
-            sub-steps:
-            <ol>
-              <li>
-                Let |value| be the value of |result|'s |key|.
-              </li>
-              <li>
-                Let |schema| be the value of ||td||'s |properties|'s |key|.
-              </li>
-              <li>
-                Let |property| be the result of running
-                <a>parse interaction response</a> on |value|, |form| and
-                |schema|.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Resolve |promise| with |result|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>writeProperty()</dfn> method</h3>
-      <div>
-        Writes a single <a>Property</a>. Takes a string argument |propertyName:string|, a value argument |value:any| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
-            |propertyName|.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| whose |op| is `writeproperty`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Let |data| be the result of running the <a>create interaction data</a>steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
-            to write the <a>Property</a> given by |propertyName| using
-            |data:InteractionData| and the optional URI templates given in
-            |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise|.
-          </li>
-        </ol>
-      </div>
-      <p class="ednote">
-        As discussed in <a href="https://github.com/w3c/wot-scripting-api/issues/193">
-        Issue #193</a>, the design decision is that write interactions only
-        return success or error, not the written value (optionally).
-        <a>TD</a>s should capture the schema of the <a>Property</a>
-        values, including precision and alternative formats. When a return
-        value is expected from the interaction, an <a>Action</a> should be used
-        instead of a <a>Property</a>.
-      </p>
-    </section>
-
-    <section>
-      <h3>The <dfn>writeMultipleProperties()</dfn> method</h3>
-      <div>
-        Writes a multiple <a>Property</a> values with one request. Takes a |properties:object| argument as an object with keys being <a>Property</a> names and values as <a>Property</a> values and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps
-            <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting
-            context for security reasons, reject |promise| with a
-            {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in ||td||'s |forms| array,
-            otherwise let |form| be the first <a>Form</a> in ||td||'s |forms|
-            array whose |op| is `writemultipleproperties`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and
-            abort these steps.
-          </li>
-          <li>
-            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and let its value be
-            `null`.
-          </li>
-          <li>
-            Let |schemas:object| be an object and for each string |name:string|
-            in |propertyNames| add a property with key |name| and let its value
-            be the value of ||td||'s |properties|'s |name|.
-          </li>
-          <li>
-            For each key |key:string| in |properties|, take its value as |value|
-            and run the <a>create interaction data</a> steps on |value|, |form|
-            and the value for |schema|'s |key|.
-            If that throws for any |name|, reject <a>promise</a> with that
-            exception and abort these steps.
-          </li>
-          <li>
-            Make a single request to the underlying platform (via the
-            <a>Protocol Bindings</a>) to write each <a>Property</a> provided in
-            |properties| with optional URI templates given in |options|'
-            {{uriVariables}}.
-          </li>
-          <li>
-            If this cannot be done with a single request with the
-            <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise|
-            with a {{NotSupportedError}} and abort these steps.
-          </li>
-          <li>
-            If the request fails, return the error received from the
-            <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>WotListener</dfn> callback</h3>
-      <p>
-        User provided callback that takes `any` argument and is used
-        for observing <a>Property</a> changes and handling <a>Event</a> notifications. Since subscribing to these are WoT interactions, they are not modelled with software events.
-      </p>
-    </section>
-
-    <section>
-      <h3>The <dfn>observeProperty()</dfn> method</h3>
-      <div>
-        Makes a request for <a>Property</a> value change notifications. Takes a string argument |propertyName:string|, a {{WotListener}}
-        callback function |listener:WotListener| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure.
-        The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            If |listener| is not a {{Function}}, reject |promise|
-            with a {{TypeError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
-            |propertyName|.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `observeproperty`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by |propertyName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise|.
-          </li>
-          <li>
-            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|, run the following sub-steps:
-            <ul>
-              <li>
-                Let |reply| be the result of running <a>parse interaction response</a>
-                with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
-              </li>
-              <li>
-                Invoke |listener| with |reply|.
-              </li>
-            </ul>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>unobserveProperty()</dfn> method</h3>
-      <div>
-        Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes a string argument |propertyName:string| and an optional {{InteractionOptions}} |options:InteractionOptions| argument.
-        It returns success or failure. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
-            |propertyName|.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `unobserveproperty`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>invokeAction()</dfn> method</h3>
-      <div>
-        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument |actionName:string|, an optional argument |params:any| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns the result of the <a>Action</a> or an error. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |actions|'s
-            |actionName|.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `invokeaction`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |params| with |form| and optional URI templates given in |options|'s {{uriVariables}}.
-          </li>
-          <li>
-            If the request fails locally or returns an error over the network, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Let |value| be the reply returned in the reply.
-          </li>
-          <li>
-            Let |result| be the result of running <a>parse interaction response</a>
-            with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
-          </li>
-          <li>
-            Resolve |promise| with |result|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>subscribeEvent()</dfn> method</h3>
-      <div>
-        Makes a request for subscribing to <a>Event</a> notifications. Takes a string argument |eventName|, a {{WotListener}} callback function |listener:WoTListener| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure.
-        The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            If |listener| is not a {{Function}}, reject |promise|
-            with a {{TypeError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `subscribeevent`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise|.
-          </li>
-          <li>
-            Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
-            |listener| with the result of running <a>parse interaction response</a> on the data provided with the <a>Event</a>, |form| and |interaction|.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>unsubscribeEvent()</dfn> method</h3>
-      <div>
-        Makes a request for unsubscribing from <a>Event</a> notifications. Takes a string argument |eventName:string| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
-          </li>
-          <li>
-            If |option|'s {{formIndex}} is defined, let |form| be the
-            <a>Form</a> associated with {{formIndex}} in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `unsubscribeevent`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' {{uriVariables}}.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Resolve |promise|.
-          </li>
-          <li>
-            If the underlying platform receives further notifications for this <a>Event</a> subscription, implementations SHOULD silently suppress them.
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h2>ConsumedThing Examples</h2>
-      <p>
-        The next example illustrates how to fetch a <a>TD</a> by URL, create a {{ConsumedThing}}, read metadata (title), read property value, subscribe to property change, subscribe to a WoT event, unsubscribe.
-      </p>
-      <pre class="example" title="Thing Client API example">
-        try {
-          let res = await fetch("https://tds.mythings.org/sensor11");
-          let td = res.json();
-          let thing = new ConsumedThing(td);
-          console.log("Thing " + thing.getThingDescription().title + " consumed.");
-        } catch(e) {
-          console.log("TD fetch error: " + e.message); },
-        };
-
-        try {
-          // subscribe to property change for “temperature”
-          await thing.observeProperty("temperature", value => {
-            console.log("Temperature changed to: " + parseData(value));
-          });
-          // subscribe to the “ready” event defined in the TD
-          await thing.subscribeEvent("ready", eventData => {
-            console.log("Ready; index: " + parseData(eventData));
-            // run the “startMeasurement” action defined by TD
-            await thing.invokeAction("startMeasurement", { units: "Celsius" });
-            console.log("Measurement started.");
-          });
-        } catch(e) {
-          console.log("Error starting measurement.");
-        }
-
-        setTimeout( () => {
-          console.log(“Temperature: “ +
-            parseData(await thing.readProperty(“temperature”)));
-          await thing.unsubscribe(“ready”);
-          console.log("Unsubscribed from the ‘ready’ event.");
-        },
-        10000);
-
-        async function parseData(response) {
-          let value = undefined;
-          try {
-            value = await response.value();
-          catch(err) {
-            // if response.value() fails, try low-level stream read
-            if (response.dataUsed)
-              return undefined;  // or make a second request
-
-            const reader = value.data.getReader();
-            value = null;
-
-            reader.read().then(function process({ done, chunk }) {
-                if (done) {
-                  value += chunk;
-                  return value;
-                }
-                value += chunk;
-                return reader.read().then(process);
-              });
-          }
-          return value;
-        };
-      </pre>
-    </section> <!-- Examples -->
-  </section> <!-- ConsumedThing -->
-
-  <section data-dfn-for="InteractionData">
-    <h2>The <dfn>InteractionData</dfn> interface</h2>
+  <section data-dfn-for="InteractionOutput">
+    <h2>The <dfn>InteractionOutput</dfn> interface</h2>
     <p>
       Belongs to the <a>WoT Consumer</a> conformance class.
-      Represents the data used by <a>WoT Interactions</a>.
-    </p>
-    <p class="ednote">
-      As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
-      and include a number of possible <a>Form</a>s, out of which one is selected
-      for the interaction. The
-      <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
-      Form</a> contains a `contentType` to describe the data.
-      For certain content types, a <a>DataSchema</a> is defined, based on
-      <a>JSON schema</a>, making possible to represent these contents as
-      JavaScript types and eventually set range constraints on the data.
+      An {{InteractionOutput}} object is always created by the implementations
+      and exposes the data returned from <a>WoT Interactions</a> to application
+      scripts.
     </p>
     <p>
-      This interface exposes the data returned from the <a>WoT Interaction</a>.
+      This interface exposes a convenience function which should work in
+      the vast majority of IoT use cases: the
+      <a href="#the-value-function">value()</a> function. Its implementation
+      will inspect the data, parse it if adheres to a <a>DataSchema</a>, or
+      otherwise fail early, leaving the underlying stream undisturbed so
+      that application scripts could attempt reading the stream themselves, or
+      handling the data as {{ArrayBuffer}}.
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
-      interface InteractionData {
+      interface InteractionOutput {
         readonly attribute ReadableStream? data;
         readonly attribute boolean dataUsed;
         readonly attribute Form? form;
@@ -1195,7 +547,7 @@
     </pre>
     <p>
       The <dfn>data</dfn> property represents the raw payload in
-      <a>WoT Interactions</a> as a {{ReadableStream}}, initialy `null`.
+      <a>WoT Interactions</a> as a {{ReadableStream}}, initially `null`.
     </p>
     <p>
       The <dfn>dataUsed</dfn> property tells whether the <a>data</a> stream has
@@ -1209,49 +561,13 @@
     </p>
     <p>
       The <dfn>schema</dfn> attribute represents the <a>DataSchema</a>
-      of the payload as a {{JSON}} object, initially `null`.
+      (defined in [[WoT-TD]]) of the payload as a {{JSON}} object, initially `null`.
     </p>
     <p>
       The <dfn>[[\value]]</dfn> internal slot represents the parsed value of
       the <a>WoT Interaction</a>, initially `undefined` (note that `null` is a
       valid value).
     </p>
-
-    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
-      When invoked, MUST run the following steps:
-      <ol>
-        <li>
-          Return a {{Promise}} |promise:Promise| and execute the next steps
-          <a>in parallel</a>.
-        </li>
-        <li>
-          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
-          reject|promise| with {{NotReadableError}} and abort these steps.
-        </li>
-        <li>
-          Let |reader| be the result of
-          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
-          getting a reader</a> from |data|. If that threw an exception, reject
-          |promise| with that exception and abort these steps.
-        </li>
-        <li>
-          Let |bytes| be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
-          reading all bytes</a> from |data| with |reader|.
-        </li>
-        <li>
-          Set |dataUsed| to `true`.
-        </li>
-        <li>
-          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
-          If that throws, reject |promise| with that exception and abort these steps.
-        </li>
-        <li>
-          Resolve |promise| with |arrayBuffer|.
-        </li>
-      </ol>
-    </section>
-
     <section><h3>The <dfn>value()</dfn> function</h3>
       Parses the data returned from the <a>WoT Interaction</a> and returns a
       value with the type described by the <a>DataSchema</a> of the interaction
@@ -1309,6 +625,41 @@
         </li>
         <li>
           Resolve |promise| with <a>[[\value]]</a>.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
+      When invoked, MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
+        </li>
+        <li>
+          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
+          reject |promise| with {{NotReadableError}} and abort these steps.
+        </li>
+        <li>
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
+        </li>
+        <li>
+          Set |dataUsed| to `true`.
+        </li>
+        <li>
+          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
+          If that throws, reject |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with |arrayBuffer|.
         </li>
       </ol>
     </section>
@@ -1405,17 +756,16 @@
       |schema:object|, run these steps:
       <ol>
         <li>
-          If |source| is an {{InteractionData}} object whose |data| is a
-          {{ReadableStream}}, set its |form| to |form|,
-          return |source| and abort these steps.
+          Let |idata| be a new an {{InteractionOutput}} object whose |form| is
+          set to |form|, whose |schema| is set to |schema|, whose [[\value]]
+          <a>internal slot</a> is `undefined` and whose |data| is `null`.
         </li>
         <li>
-          Let |idata| be a new an {{InteractionData}} object whose [[\value]]
-          <a>internal slot</a> is `undefined`, whose |form| is |form|,
-          whose |schema| is set to |schema| and whose |data| is `null`.
+          If |source| is a {{ReadableStream}} object, let |idata|'s |data| be
+          |source|, return |idata| and abort these steps.
         </li>
         <li>
-          If |schema|'s |type| is defined, run these sub-steps:
+          If |schema| and its |type| are defined and not `null`, run these sub-steps:
           <ol>
             <li>
               If |type| is `"null"` and |source| is not,
@@ -1516,7 +866,7 @@
       |schema:object|, run these steps:
       <ol>
         <li>
-          Let |result| be a new {{InteractionData}} object.
+          Let |result| be a new {{InteractionOutput}} object.
         </li>
         <li>
           Let |result|'s |schema| be |schema|.
@@ -1538,8 +888,804 @@
         </li>
       </ol>
     </section>
-
   </section>
+  <section> <h3>Using {{InteractionInput}} and {{InteractionOutput}}</h3>
+    <p>
+      As illustrated in the next pictures, the {{InteractionOutput}} interface
+      is used every time implementations provide data to scripts, while
+      {{InteractionInput}} is used when the scripts pass data to the
+      implementation.
+    </p>
+    <figure id="scripting-read">
+      <img src="images/scripting-read-data.png"
+                width="100%"
+                title="Reading data"/>
+      <figcaption>Data structures used when reading data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} reads data, it receives it from the implementation
+      as an {{InteractionOutput}} object.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertyreadhandler-callback">
+      read handler</a> provides the read data to the implementation as
+      {{InteractionInput}}.
+    </p>
+
+    <figure id="scripting-write">
+      <img src="images/scripting-write-data.png"
+                width="100%"
+                title="Writing data"/>
+      <figcaption>Data structures used when writing data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} writes data, it provides it to the implementation
+      as {{InteractionInput}}.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertywritehandler-callback">
+      write handler</a> receives data from to implementation as
+      an {{InteractionOutput}} object.
+    </p>
+
+    <figure id="scripting-action">
+      <img src="images/scripting-action-data.png"
+                width="100%"
+                title="Invoking action"/>
+      <figcaption>Data structures used when invoking an Action</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} invokes an <a>Action</a> data, it provides the
+      parameters as {{InteractionInput}} and receives the output of the
+      <a>Action</a> as an {{InteractionOutput}} object.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-actionhandler-callback">
+      action handler</a> receives arguments from the implementation as
+      an {{InteractionOutput}} object and provides <a>Action</a> output as
+      {{InteractionInput}} to the implementation.
+    </p>
+  </section>
+  </section> <!-- Handling interaction data -->
+
+  <section data-dfn-for="ConsumedThing">
+    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
+    <p>
+      Represents a client API to operate a <a>Thing</a>. Belongs to the
+      <a>WoT Consumer</a> conformance class.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ConsumedThing {
+        constructor(ThingDescription td);
+        Promise&lt;InteractionOutput&gt; readProperty(DOMString propertyName,
+                                    optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readMultipleProperties(
+                                    sequence&lt;DOMString&gt; propertyNames,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeProperty(DOMString propertyName,
+                                    InteractionInput value,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);
+        Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
+                                    optional InteractionInput params = null,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; observeProperty(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; unobserveProperty(DOMString name,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; subscribeEvent(DOMString name,
+                                    WotListener listener,
+                                    optional InteractionOptions options = null);
+        Promise&lt;void&gt; unsubscribeEvent(DOMString name,
+                                    optional InteractionOptions options = null);
+        ThingDescription getThingDescription();
+      };
+
+      dictionary InteractionOptions {
+        unsigned long formIndex;
+        object uriVariables;
+        any data;
+      };
+
+      typedef object PropertyMap;
+
+      callback WotListener = void(InteractionOutput data);
+    </pre>
+
+    <section>
+      <h4>Constructing <code>ConsumedThing</code></h4>
+      <p>
+        After <a href="#fetching-a-thing-description">fetching</a> a
+        <a>Thing Description</a> as a JSON object, one can create a
+        {{ConsumedThing}} object.
+      </p>
+      <div>
+        To create {{ConsumedThing}} with the {{ThingDescription}}
+        |td:ThingDescription|, run the following steps:
+        <ol>
+          <li>
+            Run the <a>expand a TD</a> steps on |td|. If that fails, re-[= exception/throw =] the error and abort these steps.
+          </li>
+          <li>
+            Let |thing:ConsumedThing| be a new {{ConsumedThing}} object.
+          </li>
+          <li>
+            Let ||td|| be an <a>internal slot</a> of |thing| and let |td| be its value.
+          </li>
+          <li>
+            Return |thing|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>getThingDescription()</dfn> method</h3>
+      <p>
+        Returns the <a>internal slot</a> ||td|| of the {{ConsumedThing}} object that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
+        Applications may consult the <a>Thing</a> metadata stored in ||td|| in order to introspect its capabilities before interacting with it.
+      </p>
+    </section>
+
+    <section data-dfn-for="InteractionOptions">
+      <h3>
+        The <dfn>InteractionOptions</dfn> dictionary
+      </h3>
+      <p>
+        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>.
+      </p>
+      <p>
+        The <dfn>formIndex</dfn> property, if defined, represents an application
+        hint for which <code>Form</code> definition, identified by this index,
+        of the <a>TD</a> to use for the given WoT interaction.
+        Implementations SHOULD use the <code>Form</code> with this index for
+        making the interaction, but MAY override this value if the index is not
+        found or not valid.
+        If not defined, implementations SHOULD attempt to use the
+        <code>Form</code> definitions in order of appearance as listed in the
+        <a>TD</a> for the given Wot Interaction.
+      </p>
+      <p>
+        The <dfn>uriVariables</dfn> property if defined, represents the URI
+        template variables to be used with the WoT Interaction that are represented
+        as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">
+        parsed JSON objects</a> defined in [[!WOT-TD]].
+      </p>
+      <p class="ednote">
+        The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the |options| parameter could be dismissed from the methods exposed by this API.
+      </p>
+      <p>
+        The <dfn>data</dfn> property if defined, represents additional opaque
+        data that needs to be passed to the interaction.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>PropertyMap</dfn> type</h3>
+      <p>
+        Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
+      </p>
+      <p class="ednote">
+         It could be defined in Web IDL (as well as {{ThingDescription}}) as a <a href="https://heycam.github.io/webidl/#idl-maplike">maplike</a> interface from <i>string</i> to <i>any</i>.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>readProperty()</dfn> method</h3>
+      <div>
+        Reads a <a>Property</a> value. Takes as arguments |propertyName:string|
+        and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with a <a>Property</a> value
+        represented as as an {{InteractionOutput}} object or rejects on error.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps
+            <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting
+            context for security reasons, reject |promise| with a
+            {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `readproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the
+            <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a>
+            given by |propertyName| using |form| and the optional URI templates
+            given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |response| be the response received to the request.
+          </li>
+          <li>
+            Let |data| be the result of running <a>parse interaction response</a>
+            on |response|, |form| and |interaction|.
+            If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Resolve |promise| with |data|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
+      <div>
+        Reads multiple <a>Property</a> values with one or multiple requests.
+        Takes as arguments |propertyNames: string sequence| and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with a {{PropertyMap}} object
+        that maps keys from |propertyNames| to values returned by this algorithm.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readmultipleproperties`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a>, reject |promise| with a {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            Process the response and for each |key| in |result|, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |value| be the value of |result|'s |key|.
+              </li>
+              <li>
+                Let |schema| be the value of ||td||'s |properties|'s |key|.
+              </li>
+              <li>
+                Let |property| be the result of running
+                <a>parse interaction response</a> on |value|, |form| and
+                |schema|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            If the above step throws at any point, reject |promise| with that
+            exception and abort these steps.
+          </li>
+          <li>
+            Resolve |promise| with |result|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>readAllProperties()</dfn> method</h3>
+      <div>
+        Reads all properties of the <a>Thing</a> with one or multiple requests. Takes |options:InteractionOptions| as optional argument.
+        It returns a {{Promise}} that resolves with a {{PropertyMap}} object that
+        maps keys from <a>Property</a> names to values returned by this algorithm.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readallproperties`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with |form| and optional URI templates given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
+          </li>
+          <li>
+            Process the response and for each |key| in |result|, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |value| be the value of |result|'s |key|.
+              </li>
+              <li>
+                Let |schema| be the value of ||td||'s |properties|'s |key|.
+              </li>
+              <li>
+                Let |property| be the result of running
+                <a>parse interaction response</a> on |value|, |form| and
+                |schema|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Resolve |promise| with |result|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>writeProperty()</dfn> method</h3>
+      <div>
+        Writes a single <a>Property</a>. Takes as arguments |propertyName:string|,
+        |value:InteractionInput| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `writeproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |data| be the result of running the <a>create interaction data</a>steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
+            to write the <a>Property</a> given by |propertyName| using
+            |data:InteractionOutput| and the optional URI templates given in
+            |options|' |uriVariables|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+        </ol>
+      </div>
+      <p class="ednote">
+        As discussed in <a href="https://github.com/w3c/wot-scripting-api/issues/193">
+        Issue #193</a>, the design decision is that write interactions only
+        return success or error, not the written value (optionally).
+        <a>TD</a>s should capture the schema of the <a>Property</a>
+        values, including precision and alternative formats. When a return
+        value is expected from the interaction, an <a>Action</a> should be used
+        instead of a <a>Property</a>.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>writeMultipleProperties()</dfn> method</h3>
+      <div>
+        Writes a multiple <a>Property</a> values with one request.
+        Takes as arguments |properties:object| - as an object with keys being
+        <a>Property</a> names and values as <a>Property</a> values - and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps
+            <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting
+            context for security reasons, reject |promise| with a
+            {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array,
+            otherwise let |form| be the first <a>Form</a> in ||td||'s |forms|
+            array whose |op| is `writemultipleproperties`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            abort these steps.
+          </li>
+          <li>
+            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and let its value be
+            `null`.
+          </li>
+          <li>
+            Let |schemas:object| be an object and for each string |name:string|
+            in |propertyNames| add a property with key |name| and let its value
+            be the value of ||td||'s |properties|'s |name|.
+          </li>
+          <li>
+            For each key |key:string| in |properties|, take its value as |value|
+            and run the <a>create interaction data</a> steps on |value|, |form|
+            and the value for |schema|'s |key|.
+            If that throws for any |name|, reject <a>promise</a> with that
+            exception and abort these steps.
+          </li>
+          <li>
+            Make a single request to the underlying platform (via the
+            <a>Protocol Bindings</a>) to write each <a>Property</a> provided in
+            |properties| with optional URI templates given in |options|'
+            |uriVariables|.
+          </li>
+          <li>
+            If this cannot be done with a single request with the
+            <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise|
+            with a {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            If the request fails, return the error received from the
+            <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>WotListener</dfn> callback</h3>
+      <p>
+        User provided callback that is given an argument of type
+        {{InteractionOutput}} and is used for observing <a>Property</a> changes
+        and handling <a>Event</a> notifications.
+        Since subscribing to <a>Events</a> are WoT interactions and might take
+        options or even data, they are not modelled with software events.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>observeProperty()</dfn> method</h3>
+      <div>
+        Makes a request for <a>Property</a> value change notifications.
+        Takes as arguments |propertyName:string|, |listener:WotListener| and
+        optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |listener| is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `observeproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by |propertyName| with |form| and optional URI templates given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+          <li>
+            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|, run the following sub-steps:
+            <ul>
+              <li>
+                Let |reply| be the result of running <a>parse interaction response</a>
+                with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
+              </li>
+              <li>
+                Invoke |listener| with |reply|.
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>unobserveProperty()</dfn> method</h3>
+      <div>
+        Makes a request for unsubscribing from <a>Property</a> value change notifications.
+        Takes as arguments |propertyName:string| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `unobserveproperty`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>invokeAction()</dfn> method</h3>
+      <div>
+        Makes a request for invoking an <a>Action</a> and return the result.
+        Takes as arguments |actionName:string|, optionally
+        |params:InteractionInput| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with the result of the <a>Action</a>
+        represented as an {{InteractionOutput}} object, or rejects with an error.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |actions|'s
+            |actionName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `invokeaction`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |args| be the result of running the <a>create interaction data</a>steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s |uriVariables|.
+          </li>
+          <li>
+            If the request fails locally or returns an error over the network, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |value| be the reply returned in the reply.
+          </li>
+          <li>
+            Let |result| be the result of running <a>parse interaction response</a>
+            with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
+          </li>
+          <li>
+            Resolve |promise| with |result|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>subscribeEvent()</dfn> method</h3>
+      <div>
+        Makes a request for subscribing to <a>Event</a> notifications.
+        Takes as arguments |eventName:string|, |listener:WoTListener| and
+        optionally |options:InteractionOptions|.
+        It returns a {{Promise}} to signal success or failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |listener| is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `subscribeevent`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' |uriVariables|
+            and optional subscription data given in |options|'s |data|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+          <li>
+            Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
+            |listener| with the result of running <a>parse interaction response</a> on the data provided with the <a>Event</a>, |form| and |interaction|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>unsubscribeEvent()</dfn> method</h3>
+      <div>
+        Makes a request for unsubscribing from <a>Event</a> notifications.
+        Takes as arguments |eventName:string| and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} to signal success or failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be the first <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `unsubscribeevent`.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' |uriVariables|
+            and optional unsubscribe data given in |options|'s |data|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Resolve |promise|.
+          </li>
+          <li>
+            If the underlying platform receives further notifications for this <a>Event</a> subscription, implementations SHOULD silently suppress them.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h2>ConsumedThing Examples</h2>
+      <p>
+        The next example illustrates how to fetch a <a>TD</a> by URL, create a {{ConsumedThing}}, read metadata (title), read property value, subscribe to property change, subscribe to a WoT event, unsubscribe.
+      </p>
+      <pre class="example" title="Thing Client API example">
+        try {
+          let res = await fetch("https://tds.mythings.org/sensor11");
+          let td = res.json();
+          let thing = new ConsumedThing(td);
+          console.log("Thing " + thing.getThingDescription().title + " consumed.");
+        } catch(e) {
+          console.log("TD fetch error: " + e.message); },
+        };
+
+        try {
+          // subscribe to property change for “temperature”
+          await thing.observeProperty("temperature", value => {
+            console.log("Temperature changed to: " + parseData(value));
+          });
+          // subscribe to the “ready” event defined in the TD
+          await thing.subscribeEvent("ready", eventData => {
+            console.log("Ready; index: " + parseData(eventData));
+            // run the “startMeasurement” action defined by TD
+            await thing.invokeAction("startMeasurement", { units: "Celsius" });
+            console.log("Measurement started.");
+          });
+        } catch(e) {
+          console.log("Error starting measurement.");
+        }
+
+        setTimeout( () => {
+          console.log(“Temperature: “ +
+            parseData(await thing.readProperty(“temperature”)));
+          await thing.unsubscribe(“ready”);
+          console.log("Unsubscribed from the ‘ready’ event.");
+        },
+        10000);
+
+        async function parseData(response) {
+          let value = undefined;
+          try {
+            value = await response.value();
+          catch(err) {
+            // if response.value() fails, try low-level stream read
+            if (response.dataUsed)
+              return undefined;  // or make a second request
+
+            const reader = value.data.getReader();
+            value = null;
+
+            reader.read().then(function process({ done, chunk }) {
+                if (done) {
+                  value += chunk;
+                  return value;
+                }
+                value += chunk;
+                return reader.read().then(process);
+              });
+          }
+          return value;
+        };
+      </pre>
+    </section> <!-- Examples -->
+  </section> <!-- ConsumedThing -->
 
   <section data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
@@ -1550,22 +1696,44 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface ExposedThing: ConsumedThing {
         ExposedThing setPropertyReadHandler(DOMString name,
-                PropertyReadHandler readHandler);
+                PropertyReadHandler handler);
         ExposedThing setPropertyWriteHandler(DOMString name,
-                PropertyWriteHandler writeHandler);
+                PropertyWriteHandler handler);
+        ExposedThing setPropertyObserveHandler(DOMString name,
+                PropertyReadHandler handler);
+        ExposedThing setPropertyUnobserveHandler(DOMString name,
+                PropertyReadHandler handler);
+
         ExposedThing setActionHandler(DOMString name, ActionHandler action);
-        void emitEvent(DOMString name, any data);
+
+        ExposedThing setEventSubscribeHandler(DOMString name,
+                EventSubscriptionHandler handler);
+        ExposedThing setEventUnsubscribeHandler(DOMString name,
+                EventSubscriptionHandler handler);
+        ExposedThing setEventHandler(DOMString name,
+                EventListenerHandler eventHandler);
+        void emitEvent(DOMString name, InteractionInput data);
+
         Promise&lt;void&gt; expose();
         Promise&lt;void&gt; destroy();
       };
+
       callback PropertyReadHandler = Promise&lt;any&gt;(
               optional InteractionOptions options = null);
-      callback PropertyWriteHandler = Promise&lt;void&gt;(any value,
-              optional InteractionOptions options = null);
-      callback ActionHandler = Promise&lt;any&gt;(any params,
-              optional InteractionOptions options = null);
-    </pre>
 
+      callback PropertyWriteHandler = Promise&lt;void&gt;(
+              InteractionOutput value,
+              optional InteractionOptions options = null);
+
+      callback ActionHandler = Promise&lt;InteractionInput&gt;(
+              InteractionOutput params,
+              optional InteractionOptions options = null);
+
+      callback EventSubscriptionHandler = Promise&lt;void&gt;(
+              optional InteractionOptions options = null);
+
+      callback EventListenerHandler = Promise&lt;InteractionInput&gt;();
+    </pre>
     <section>
       <h3>Constructing {{ExposedThing}}</h3>
       <p>
@@ -1613,42 +1781,230 @@
       <p>
         After constructing an {{ExposedThing}}, a script can initialize its <a>Properties</a> and can set up the optional read, write and action request handlers (the default ones are provided by the implementation). The script provided handlers MAY use the default handlers, thereby extending the default behavior, but they can also bypass them, overriding the default behavior. Finally, the script would call <a href="#the-expose-method"><code>expose()</code></a> on the {{ExposedThing}} in order to start serving external requests.
       </p>
+      <p class="note">
+        The request handlers actually implement the behavior and it is the
+        responsibility of the developers to keep the <a>Thing Description</a>
+        defined in {{ExposedThing}} synchronized with the implementation of the
+        request handlers.
+      </p>
     </section>
 
     <section data-dfn-for="PropertyReadHandler">
       <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for reading a <a>Property</a> is received and defines what to do with such requests. It returns a {{Promise}} and resolves it when the value of the <a>Property</a> matching the |name:string| argument is obtained, or rejects with an error if the property is not found or the value cannot be retrieved.
+        A function that is called when an external request for reading a
+        <a>Property</a> is received and defines what to do with such requests.
+        It returns a {{Promise}} and resolves with an {{ReadableStream}} object or an
+        <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">
+        ECMAScript value</a> conforming to <a>DataSchema</a>, or rejects with an
+        error if the property is not found or the value cannot be retrieved.
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |readHandler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>. Sets the service handler for reading the specified <a>Property</a> matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for reading the specified <a>Property</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p class="ednote">
+        Note that there is no need to register handlers for handling requests
+        for reading multiple or all <a>Properties</a>. The request and reply
+        are transmitted in a single network request, but the <a>ExposedThing</a>
+        may implement them using multiple calls to the single read handler.
       </p>
       <p>
-         The |readHandler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+         The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the ||td|| <a>internal slot</a>.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||readHandler|| on |interaction| to
+            |handler|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading a Property</h3>
+      <div>
+        When a network request for reading <a>Property</a> |name:string|
+        is received by the implementation with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |value| be the result of running the <dfn>read server property</dfn>
+            steps with |name:string| and |options:InteractionOptions|:
+            <ol>
+              <li>
+                Let |interaction| be the value of ||td||'s |properties|'s
+                |name|.
+              </li>
+              <li>
+                If a <a>Property</a> with |name| does not exist, throw  {{NotFoundError}} and abort these steps.
+              </li>
+              <li>
+                Let |handler:function| be `null`.
+              </li>
+              <li>
+                If there is a user provided <a>internal slot</a> ||readHandler||
+                on |interaction|, let |handler| be that.
+              </li>
+              <li>
+                Otherwise, if there is a default read handler provided by the implementation, let |handler| be that.
+              </li>
+              <li>
+                If |handler| is `null`, throw {{NotSupportedError}}
+                and abort these steps.
+              </li>
+              <li>
+                Let |value| be the result of invoking |handler| with |options|.
+                If that fails, throw the error and abort these steps.
+              </li>
+              <li>
+                Return |value|.
+                <p class="note">
+                  The |value| returned here SHOULD either conform to <a>DataSchema</a>
+                  or it SHOULD be an {{ReadableStream}} object created by the
+                  |handler|.
+                </p>
+              </li>
+            </ol>
+          </li>
+          <li>
+            If the previous step has thrown an error, send the error back with
+            the reply created by following the <a>Protocol Bindings</a> and abort
+            these steps.
+          </li>
+          <li>
+            Serialize and add the returned |value| to the reply created by
+            following the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading multiple Poperties</h3>
+      <div>
+        When a network request for reading multiple <a>Properties</a> given in
+        an object |propertyNames| is received with |options:InteractionOptions|,
+        run the following <dfn>read multiple properties</dfn> steps on |propertyNames| and |options|:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            For each property with key |name| defined in |propertyNames|,
+            <ol>
+              <li>
+                Let |value| be the result of running the <a>read server property</a>
+                steps on |name| and |options|.
+                If that throws, send back the error in the reply created by following the  <a>Protocol Bindings</a>and abort these steps.
+              </li>
+              <li>
+                Set the value of |propertyNames|'s |name| to |value|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Reply to the request by sending a single reply created from |propertyNames| according to the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading all Properties</h3>
+      <div>
+        When a network request for reading all <a>Properties</a> is received
+        with |options:InteractionOptions|, run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |properties| be an object created with all properties defined in
+            the <a>Thing</a> with values set to `null`.
+          </li>
+          <li>
+            Run the <a>read multiple properties</a> steps on |properties| and
+            |options|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyObserveHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
+        Sets the service handler that defines what to do when a request is received
+        for observing the specified <a>Property</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function should implement reading a
+         <a>Property</a> and resolve with an {{InteractionOutput}} object or
+         reject with an error.
       </p>
       <p>
         There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
       </p>
-    </section>
-
-    <section> <h3>Handling <a>Property</a> read requests</h3>
       <div>
-        When a network request for reading <a>Property</a> |propertyName:string| is received by the implementation, run the following steps:
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
         <ol>
           <li>
-            If a <a>Property</a> with |propertyName| does not exist, return a {{ReferenceError}} in the reply and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If there is a user provided read handler registered with <code>setPropertyReadHandler()</code>, invoke that given |propertyName|, return the obtained value in the reply and abort these steps.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
           </li>
           <li>
-            Otherwise, if there is a default read handler provided by the implementation, invoke it with |propertyName|, include the returned |value| with the reply and abort these steps.
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            if there is no default handler defined by the implementation, return a {{NotSupportedError}} with the reply and abort these steps.
+            Set the <a>internal slot</a> ||observeHandler|| on |interaction|
+            to |handler|.
           </li>
         </ol>
       </div>
@@ -1656,14 +2012,145 @@
 
     <section> <h3>Handling <a>Property</a> observe requests</h3>
       <div>
-        When a network request for observing a <a>Property</a> |propertyName:string| is received by the implementation, run the following steps:
+        When a network request for observing a <a>Property</a> |name:string| is
+        received by the implementation with |options:InteractionOptions|,
+        run the following steps:
         <ol>
           <li>
-            If a <a>Property</a> with |propertyName| does not exist, return an error in the reply (as defined in the
-            <a>Thing Description</a>) and abort these steps.
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Save the request sender information to the <a>Property</a>'s <a>internal observer list</a> in order to be able to notify about <a>Property</a> value changes.
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |property| be the value of ||td||'s |properties|'s |name|.
+            If it does not exist, send back a {{NotFoundError}} in the
+            reply and abort these steps.
+          </li>
+          <li>
+            Save the request sender information together with |options| to
+            |property|'s <a>internal observer list</a>, in order to be able
+            to notify about <a>Property</a> value changes.
+          </li>
+          <li>
+            Every time the value of |property| changes, run the following sub-steps:
+            <ol>
+              <li>
+                Let |handler:function| be `null.`
+              </li>
+              <li>
+                If there is an ||observeHandler|| <a>internal slot</a> associated
+                with |name| on |property|, let |handler| be that.
+              </li>
+              <li>
+                Otherwise, if there is a ||readHandler|| <a>internal slot</a>
+                associated with |name| on |property|, let |handler| be that.
+              </li>
+              <li>
+                If |handler| is `null`, abort these steps.
+              </li>
+              <li>
+                Let |promise| be the result of invoking |handler| wih |options|.
+              </li>
+              <li>
+                 If |promise| rejects, abort these steps.
+              </li>
+              <li>
+                If |promise| resolves with |data|, then for each |observer| in |property|'s <a>internal observer list</a>, run the following
+                sub-steps:
+                <ol>
+                  <li>
+                    Let |options| be the interaction options saved with |observer|.
+                  </li>
+                  <li>
+                    Create a |reply| from |data| and |options| according to the
+                    <a>Protocol Bindings</a>.
+                  </li>
+                  <li>
+                    Send |reply| to |observer|.
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyUnobserveHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for unobserving the specified <a>Property</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+        The |handler| callback function should implement what to do when an
+        unobserve request is received by the implementation.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default handler based on the <a>Thing Description</a>.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a
+            {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||unobserveHandler|| on |interaction|
+            to |handler|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> unobserve requests</h3>
+      <div>
+        When a network request for unobserving a <a>Property</a> |name:string|
+        with |options:InteractionOptions| is received by the implementation,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |property| be the value of ||td||'s |properties|'s |name|.
+            If it does not exist, send back a {{NotFoundError}} in the
+            reply and abort these steps.
+          </li>
+          <li>
+            If there is an ||unobserveHandler|| defined for |name| on |property|,
+            invoke that with |options|, send back a reply following the
+            <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |sender| be the matching observer found in |property|'s
+            <a>internal observer list</a>. If not found, send back a
+            {{NotFoundError}} in the reply and abort these steps.
+          </li>
+          <li>
+            Remove |sender| from |property|'s <a>internal observer list</a>
+            and send back a reply following the <a>Protocol Bindings</a>.
           </li>
         </ol>
       </div>
@@ -1672,19 +2159,30 @@
     <section data-dfn-for="PropertyWriteHandler">
       <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
       <p>
-        A function that is called when an external request for writing a <a>Property</a> is received and defines what to do with such requests. It expects the requested new |value| as argument and returns a {{Promise}} which is resolved when the value of the <a>Property</a> that matches the |name:string| argument has been updated with |value|, or rejects with an error if the property is not found or the value cannot be updated.
+        A function that is called when an external request for writing a
+        <a>Property</a> is received and defines what to do with such requests.
+        Takes as argument |value:InteractionOutput| and returns a {{Promise}},
+        resolved when the value of the <a>Property</a> - identified by the name
+        provided when setting the handler has been updated -, or rejects
+        with an error if the property is not found or the value cannot be updated.
       </p>
       <p class="ednote">
         Note that the code in this callback function can read the property before updating it in order to find out the old value, if needed. Therefore the old value is not provided to this function.
+      </p>
+      <p class="note">
+        The value is provided by implementations as an {{InteractionOutput}} object
+        in order to be able to represent values that are not described by a
+        <a>DataSchema</a>, such as streams.
       </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |writeHandler:PropertyWriteHandler|
-        as argument of type <a>PropertyWriteHandler</a>. Sets the service handler
-        that will be used for serving write requests for writing the specified
-        <a>Property</a> matched by |name|. Throws on error.
+        Takes as arguments |name:string| and |handler:PropertyWriteHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for writing the <a>Property</a> matched by |name| given when
+        setting the handler.
+        Throws on error.
         Returns a reference to |this| object for supporting chaining.
       </p>
       <p class="note">
@@ -1697,45 +2195,98 @@
         writeable and notifying observers on change if the <a>Property</a> is
         observeable, based on the <a>Thing Description</a>.
       </p>
-    </section>
-
-    <section> <h3>Handling <a>Property</a> write requests</h3>
       <div>
-        When a network request for writing a <a>Property</a> |propertyName:string|
-        with a new value |value| is received, implementations SHOULD run
-        the following <dfn>update property steps</dfn>, given
-        |propertyName|, |value| and |mode| set to `"single"`:
+        When the method is invoked given |name:string| and
+        |handler:PropertyWriteHandler|, implementations MUST run the
+        following steps:
         <ol>
           <li>
-            If a <a>Property</a> with |propertyName| does not exist, return a {{ReferenceError}} in the reply and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If there is a user provided write handler registered with <code>setPropertyWriteHandler()</code>, or if there is a default write handler,
-            <ol>
-              <li>
-                Invoke the handler with |propertyName|. If it fails, return the error in the reply and abort these steps.
-              </li>
-              <li>
-                Otherwise, if |mode| is `"single"`, reply to the request with the new value, following to the <a>Protocol Bindings</a>.
-              </li>
-              <li>
-                For each item stored in the <a>internal observer list</a> of the <a>Property</a> with |propertyName|, send an observe reply with the new value attached.
-              </li>
-            </ol>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
           </li>
           <li>
-            If there is no handler to handle the request, return a {{NotSupportedError}} in the reply and abort these steps.
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||writeHandler|| on |interaction|
+            to |handler|.
           </li>
         </ol>
       </div>
+    </section>
+
+    <section> <h3>Handling requests for writing a Property</h3>
       <div>
-        When a network request for writing multiple <a>Properties</a> given in an object |propertyNames| is received, run the following steps:
+        When a network request for writing a <a>Property</a> |name:string|
+        with a new value |value:InteractionOutput| and |options:InteractionOptions|
+        is received, implementations MUST run the following
+        <dfn>update property steps</dfn>, given |name|, |value|, |options|
+        and |mode| set to `"single"`:
         <ol>
           <li>
-            For each property with key |name| and value |value| defined in |propertyNames|, run the <a>update property steps</a> with |name|, |value| and |mode| set to `"multiple"`.
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Reply to the request (by sending a single or multiple replies) according to the <a>Protocol Bindings</a> defined for the <a>Property</a>.
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> with |name| does not exist, return a {{NotFoundError}} in the reply and abort these steps.
+          </li>
+          <li>
+            Let |handler:function| be `null`.
+          </li>
+          <li>
+            If there is a user provided <a>internal slot</a> ||writeHandler||
+            on |interaction|, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if there is a default write handler provided by the implementation, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if |handler| is `null`, send back a {{NotSupportedError}}
+            with the reply and abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| with |name| and
+            |options|. If it fails, return the error in the reply and abort these steps.
+          </li>
+          <li>
+            If |mode| is `"single"`, reply to the request reporting success, following the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for writing multiple Properties</h3>
+      <div>
+        When a network request for writing multiple <a>Properties</a> given in an object |propertyNames| is received with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            For each property with key |name| and value |value| defined in |propertyNames|, run the <a>update property steps</a> with |name|, |value|, |options| and |mode| set to `"multiple"`.
+            If that fails, reply to the request with that error and abort these steps.
+          </li>
+          <li>
+            Reply to the request by sending a single reply according to the
+            <a>Protocol Bindings</a>.
           </li>
         </ol>
       </div>
@@ -1746,15 +2297,25 @@
       <p>
         A function that is called when an external request for invoking an
         <a>Action</a> is received and defines what to do with such requests.
-        It is invoked with a |params:object| dictionary argument.
-        It returns a {{Promise}} that rejects with an error or resolves if
-        the action is successful.
+        It is invoked with |params:InteractionOutput| and optionally
+        with an |options:InteractionOptions| object.
+        It returns a {{Promise}} that rejects with an error or resolves with
+        the value returned by the <a>Action</a> as {{InteractionInput}}.
+      </p>
+      <p class="note">
+        Application scripts MAY return a {{ReadableStream}} object from an
+        {{ActionHandler}}. Implementations will then use the stream for
+        constructing the <a>Action</a>'s response.
       </p>
     </section>
 
     <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |action:ActionHandler| as argument of type <a>ActionHandler</a>. Sets the handler function for the specified <a>Action</a> matched by |name|. May throw an error. Returns a reference to |this| object for supporting chaining.
+        Takes as arguments |name:string| and |action:ActionHandler|.
+        Sets the handler function that defines what to do when a request is
+        received to invoke the <a>Action</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
          The |action| callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
@@ -1762,20 +2323,354 @@
       <p>
         There MUST be at most one handler for any given <a>Action</a>, so newly added handlers MUST replace the previous handlers.
       </p>
+      <div>
+        When the method is invoked given |name:string| and |action:ActionHandler|,
+        run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |actions|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Action</a> with name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||actionHandler|| on |interaction|
+            to |action|.
+          </li>
+        </ol>
+      </div>
     </section>
 
     <section> <h3>Handling <a>Action</a> requests</h3>
       <div>
-        When a network request for invoking the <a>Action</a> identified by |name:string| is received, the runtime SHOULD execute the following steps:
+        When a network request for invoking the <a>Action</a> identified by |name:string| is received with |inputs| and optionally with
+        |options:InteractionOptions|, run the following steps:
         <ol>
           <li>
-            If an <a>Action</a> identified by |name| does not exist, return a {{ReferenceError}} in the reply and abort these steps.
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            If there is a user provided action handler registered with <code>setActionHandler()</code>, invoke that wih |name|, return the resulting |value| with the reply and abort these steps.
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise return a {{NotSupportedError}} with the reply and abort these steps.
+            Let |interaction| be the value of ||td||'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Action</a> identified by |name| does not exist, return a {{NotFoundError}} in the reply and abort these steps.
+          </li>
+          <li>
+            Let |handler:function| be `null`.
+          </li>
+          <li>
+            If there is a user provided <a>internal slot</a> ||actionHandler||
+            on |interaction|, let |handler| be its value.
+          </li>
+          <li>
+            If |handler| is `null`, return a {{NotSupportedError}} with the reply
+            created by following the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| with |name|, |inputs| and |options|.
+          </li>
+          <li>
+            If |promise| rejects, send the error with the reply and abort these
+            steps.
+          </li>
+          <li>
+            When |promise| resolves with |data:InteractionInput|, use |data| to
+            create and send the reply according to the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section data-dfn-for="EventListenerHandler">
+      <h3>The <dfn>EventListenerHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an associated <a>Event</a> is triggered
+        and provides the data to be sent with the <a>Event</a> to subscribers.
+        Returns a {{Promise}} that resolves with {{InteractionInput}} value
+        that represents the <a>Event</a> data, or rejects with an error.
+      </p>
+      <p class="note">
+        Applications MAY return {{ReadableStream}} from an {{EventListenerHandler}}
+        Implementations will then use the stream provided in
+        {{InteractionOutput}} when constructing the event notification.
+      </p>
+    </section>
+
+    <section data-dfn-for="EventSubscriptionHandler">
+      <h3>The <dfn>EventSubscriptionHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for subscribing to an
+        <a>Event</a> is received and defines what to do with such requests.
+        It is invoked with a |options:InteractionOptions| object provided by the implementation and coming from subscribers.
+        It returns a {{Promise}} that rejects with an error or resolves when
+        the subscription is accepted.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setEventSubscribeHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:EventSubscriptionHandler|.
+        Sets the handler function that defines what to do when a subscription
+        request is received for the specified <a>Event</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function SHOULD implement what to do when an
+         subscribe request is received, for instance necessary initializations.
+         Note that the handler for emitting <a>Events</a> is set separately.
+      </p>
+      <p>
+        There MUST be at most one event subscribe handler for any given
+        <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:EventSubscriptionHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||subscribeHandler|| on |interaction|
+            to |handler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Event</a> subscribe requests</h3>
+      <div>
+        When an <a>Event</a> subscription request for |name| is received by the
+        underlying platform with optional |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found, send back a
+            {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            If |name| has an associated ||subscribeHandler|| <a>internal slot</a>,
+            invoke it with |options| and abort these steps.
+          </li>
+          <li>
+            Otherwise, if no ||subscribeHandler|| is defined, then implement the
+            default subscriber mechanism:
+            <ol>
+              <li>
+                Let |subscriber| be a tuple formed of |options| (from which
+                |uriVariables| and |data| may be used) and the
+                subscriber information needed to create an <a>Event</a>
+                notification response.
+              </li>
+              <li>
+                Add |subscriber| to the <a>internal listener list</a> of |interaction|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setEventUnsubscribeHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:EventSubscriptionHandler|.
+        Sets the handler function that defines what to do when the specified
+        <a>Event</a> matched by |name| is unsubscribed from.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function SHOULD implement what to do when an
+         unsubscribe request is received.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked with |name:string| and
+        |handler:EventSubscriptionHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||unsubscribeHandler|| on |interaction|
+            to |handler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Event</a> unsubscribe requests</h3>
+      <div>
+        When an <a>Event</a> unsubscribe request for |name| is received by the
+        underlying platform optionally with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found, send back a
+            {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            If |name| has an associated ||unsubscribeHandler||
+            <a>internal slot</a> that is a function,
+            invoke it with |options| and abort these steps.
+          </li>
+          <li>
+            Otherwise let |subscriber| be the tuple saved in |interaction|'s
+            <a>internal listener list</a>.
+          </li>
+          <li>
+             Remove |subscriber| from |interaction|'s
+            <a>internal listener list</a>.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setEventHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |eventHandler:EventListenerHandler|.
+        Sets the event handler function for the specified <a>Event</a>
+        matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+        The |eventHandler| callback function will implement what to do when the
+        event is emitted. It SHOULD resolve with a value that represents the
+        <a>Event</a> data, or reject with an error.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked with |name:string| and
+        |eventHandler:EventListenerHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> ||eventHandler|| of |interaction| to
+            |eventHandler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Events</a></h3>
+      <div>
+        When an <a>Event</a> with name |name| is emitted with
+        |data:InteractionInput| either by the underlying platform or by the
+        <a href="#the-emitevent-method">emitEvent()</a> method, run the
+        following steps:
+        <ol>
+          <li>
+            Let |interaction| be the value of ||td||'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If |data| is not defined or `null`,
+            <ol>
+              <li>
+                Let |eventHandler| be the value of the ||eventHandler||
+                <a>internal slot</a> of |interaction|.
+              </li>
+              <li>
+                If |eventHandler| is failure, abort these steps.
+              </li>
+              <li>
+                Let |data| be the result of awaiting to resolve the invocation
+                of |eventHandler|. If it rejects, abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>
+            For each |subscriber| in the <a>internal listener list</a> of
+            |interaction|, run the following sub-steps:
+            <ol>
+              <li>
+                Create an <a>Event</a> notification |response| according to the
+                <a>Protocol Bindings</a> from |data| and |subscriber|, including
+                its |options|.
+              </li>
+              <li>
+                Send |response| to the subscriber identified by |subscriber|.
+              </li>
+            </ol>
           </li>
         </ol>
       </div>
@@ -1783,16 +2678,28 @@
 
     <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
       <div>
-        Takes a |name:string| argument denoting an <a>Event</a> name, and a |data:any| argument of `any` type. The method MUST run the following steps:
+        Takes as arguments |name:string| denoting an <a>Event</a> name and
+        |data:InteractionInput|.
+        Triggers emitting the <a>Event</a> with the given data.
+        The method MUST run the following steps:
         <ol>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If an <a>Event</a> with the name |name| is not found, [= exception/throw =] a {{NotFoundError}} and abort these steps.
+            Let |interaction| be the value of ||td||'s |events|'s |name|.
           </li>
           <li>
-            Make a request to the underlying platform to send an <a>Event</a> with |data| attached as property, using the <a>Protocol Bindings</a>, then abort these steps.
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to emit an <a>Event</a>
+            with |data|, using the <a>Protocol Bindings</a>.
+            <p class="note">
+              This will trigger the <a href="#handling-events">handling events</a>
+              steps.
+            </p>
           </li>
         </ol>
       </div>
@@ -1816,8 +2723,15 @@
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in ||td||, initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
+            For each <a>Property</a> definition in ||td||'s |properties|,
+            initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
             in order to store observe request data needed to notify the observers on value changes.
+          </li>
+          <li>
+            For each <a>Event</a> definition is ||td||'s |events|,
+            initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
+            in order to store subscription request data needed to notify the
+            <a>Event</a> listeners.
           </li>
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting ||td||
