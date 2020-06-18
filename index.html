@@ -1642,9 +1642,9 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface ExposedThing: ConsumedThing {
         ExposedThing setPropertyReadHandler(DOMString name,
-                PropertyReadHandler readHandler);
+                PropertyReadHandler handler);
         ExposedThing setPropertyWriteHandler(DOMString name,
-                PropertyWriteHandler writeHandler);
+                PropertyWriteHandler handler);
         ExposedThing setPropertyObserveHandler(DOMString name,
                 PropertyReadHandler handler);
         ExposedThing setPropertyUnobserveHandler(DOMString name,
@@ -1747,7 +1747,7 @@
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |readHandler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>.
+        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>.
         Sets the service handler that defines what to do when a request is
         received for reading the specified <a>Property</a> matched by |name|.
         Throws on error. Returns a reference to |this| object for supporting chaining.
@@ -1759,14 +1759,14 @@
         may implement them using multiple calls to the single read handler.
       </p>
       <p>
-         The |readHandler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+         The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
         There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the ||td|| <a>internal slot</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
-        |readHandler:PropertyReadHandler|, implementations MUST run the
+        |handler:PropertyReadHandler|, implementations MUST run the
         following steps:
         <ol>
           <li>
@@ -1782,7 +1782,7 @@
           </li>
           <li>
             Set the <a>internal slot</a> ||readHandler|| on |interaction| to
-            |readHandler|.
+            |handler|.
           </li>
         </ol>
       </div>
@@ -2122,7 +2122,7 @@
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |writeHandler:PropertyWriteHandler|
+        Takes |name:string| as string argument and |handler:PropertyWriteHandler|
         as argument of type <a>PropertyWriteHandler</a>. Sets the service handler
         that defines what to do when a request is received for writing the a
         <a>Property</a> matched by |name|. Throws on error.
@@ -2140,7 +2140,7 @@
       </p>
       <div>
         When the method is invoked given |name:string| and
-        |readHandler:PropertyWriteHandler|, implementations MUST run the
+        |handler:PropertyWriteHandler|, implementations MUST run the
         following steps:
         <ol>
           <li>
@@ -2156,7 +2156,7 @@
           </li>
           <li>
             Set the <a>internal slot</a> ||writeHandler|| on |interaction|
-            to |writeHandler|.
+            to |handler|.
           </li>
         </ol>
       </div>
