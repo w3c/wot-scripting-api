@@ -1073,10 +1073,10 @@
     <section>
       <h3>The <dfn>readProperty()</dfn> method</h3>
       <div>
-        Reads a <a>Property</a> value. Takes a string argument |propertyName|
-        and an optional {{InteractionOptions}} |options:InteractionOptions|
-        argument. It returns a <a>Property</a> value represented as as an
-        {{InteractionOutput}} object.
+        Reads a <a>Property</a> value. Takes as arguments |propertyName:string|
+        and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with a <a>Property</a> value
+        represented as as an {{InteractionOutput}} object or rejects on error.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -1129,7 +1129,12 @@
     <section>
       <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
       <div>
-        Reads multiple <a>Property</a> values with one or multiple requests. Takes the |propertyNames: string sequence| argument as a sequence of strings and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns an object that maps keys from |propertyNames| to values returned by this algorithm. The method MUST run the following steps:
+        Reads multiple <a>Property</a> values with one or multiple requests.
+        Takes as arguments |propertyNames: string sequence| and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with a {{PropertyMap}} object
+        that maps keys from |propertyNames| to values returned by this algorithm.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -1184,7 +1189,10 @@
     <section>
       <h3>The <dfn>readAllProperties()</dfn> method</h3>
       <div>
-        Reads all properties of the <a>Thing</a> with one or multiple requests. Takes an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns an object that maps keys from <a>Property</a> names to values returned by this algorithm. The method MUST run the following steps:
+        Reads all properties of the <a>Thing</a> with one or multiple requests. Takes |options:InteractionOptions| as optional argument.
+        It returns a {{Promise}} that resolves with a {{PropertyMap}} object that
+        maps keys from <a>Property</a> names to values returned by this algorithm.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -1238,10 +1246,9 @@
     <section>
       <h3>The <dfn>writeProperty()</dfn> method</h3>
       <div>
-        Writes a single <a>Property</a>. Takes a string argument |propertyName:string|,
-        a value argument |value:any| that can be a {{ReadableStream}} object or
-        an <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> and an optional {{InteractionOptions}}
-        |options:InteractionOptions| argument. It returns success or failure.
+        Writes a single <a>Property</a>. Takes as arguments |propertyName:string|,
+        |value:InteractionInput| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -1294,7 +1301,11 @@
     <section>
       <h3>The <dfn>writeMultipleProperties()</dfn> method</h3>
       <div>
-        Writes a multiple <a>Property</a> values with one request. Takes a |properties:object| argument as an object with keys being <a>Property</a> names and values as <a>Property</a> values and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
+        Writes a multiple <a>Property</a> values with one request.
+        Takes as arguments |properties:object| - as an object with keys being
+        <a>Property</a> names and values as <a>Property</a> values - and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure. The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps
@@ -1359,16 +1370,18 @@
         User provided callback that is given an argument of type
         {{InteractionOutput}} and is used for observing <a>Property</a> changes
         and handling <a>Event</a> notifications.
-        Since subscribing to these are WoT interactions, they are not modelled
-        with software events.
+        Since subscribing to <a>Events</a> are WoT interactions and might take
+        options or even data, they are not modelled with software events.
       </p>
     </section>
 
     <section>
       <h3>The <dfn>observeProperty()</dfn> method</h3>
       <div>
-        Makes a request for <a>Property</a> value change notifications. Takes a string argument |propertyName:string|, a {{WotListener}}
-        callback function |listener:WotListener| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure.
+        Makes a request for <a>Property</a> value change notifications.
+        Takes as arguments |propertyName:string|, |listener:WotListener| and
+        optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -1422,8 +1435,10 @@
     <section>
       <h3>The <dfn>unobserveProperty()</dfn> method</h3>
       <div>
-        Makes a request for unsubscribing from <a>Property</a> value change notifications. Takes a string argument |propertyName:string| and an optional {{InteractionOptions}} |options:InteractionOptions| argument.
-        It returns success or failure. The method MUST run the following steps:
+        Makes a request for unsubscribing from <a>Property</a> value change notifications.
+        Takes as arguments |propertyName:string| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -1460,11 +1475,11 @@
     <section>
       <h3>The <dfn>invokeAction()</dfn> method</h3>
       <div>
-        Makes a request for invoking an <a>Action</a> and return the result. Takes a string argument |actionName:string|, an optional argument |params:any| - that is either a
-        {{ReadableStream}} object or an <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> -,
-        and an optional {{InteractionOptions}} |options:InteractionOptions| argument.
-        It returns the result of the <a>Action</a> as a {{Promise}} that resolves
-        with an {{InteractionOutput}} object or rejects with an error.
+        Makes a request for invoking an <a>Action</a> and return the result.
+        Takes as arguments |actionName:string|, optionally
+        |params:InteractionInput| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with the result of the <a>Action</a>
+        represented as an {{InteractionOutput}} object, or rejects with an error.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -1512,7 +1527,10 @@
     <section>
       <h3>The <dfn>subscribeEvent()</dfn> method</h3>
       <div>
-        Makes a request for subscribing to <a>Event</a> notifications. Takes a string argument |eventName|, a {{WotListener}} callback function |listener:WoTListener| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure.
+        Makes a request for subscribing to <a>Event</a> notifications.
+        Takes as arguments |eventName:string|, |listener:WoTListener| and
+        optionally |options:InteractionOptions|.
+        It returns a {{Promise}} to signal success or failure.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -1558,7 +1576,11 @@
     <section>
       <h3>The <dfn>unsubscribeEvent()</dfn> method</h3>
       <div>
-        Makes a request for unsubscribing from <a>Event</a> notifications. Takes a string argument |eventName:string| and an optional {{InteractionOptions}} |options:InteractionOptions| argument. It returns success or failure. The method MUST run the following steps:
+        Makes a request for unsubscribing from <a>Event</a> notifications.
+        Takes as arguments |eventName:string| and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} to signal success or failure.
+        The method MUST run the following steps:
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -1777,10 +1799,11 @@
 
     <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:PropertyReadHandler| as argument of type <a>PropertyReadHandler</a>.
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
         Sets the service handler that defines what to do when a request is
         received for reading the specified <a>Property</a> matched by |name|.
-        Throws on error. Returns a reference to |this| object for supporting chaining.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
       </p>
       <p class="ednote">
         Note that there is no need to register handlers for handling requests
@@ -1945,11 +1968,11 @@
 
     <section> <h3>The <dfn>setPropertyObserveHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:PropertyReadHandler|
-        as argument of type <a>PropertyReadHandler</a>.
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
         Sets the service handler that defines what to do when a request is received
         for observing the specified <a>Property</a> matched by |name|.
-        Throws on error. Returns a reference to |this| object for supporting chaining.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
          The |handler| callback function should implement reading a
@@ -2054,11 +2077,11 @@
 
     <section> <h3>The <dfn>setPropertyUnobserveHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:PropertyReadHandler|
-        as argument of type <a>PropertyReadHandler</a>. Sets the service handler
-        that defines what to do when a request is received for unobserving the
-        specified <a>Property</a> matched by |name|.
-        Throws on error. Returns a reference to |this| object for supporting chaining.
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for unobserving the specified <a>Property</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
         The |handler| callback function should implement what to do when an
@@ -2134,11 +2157,10 @@
       <p>
         A function that is called when an external request for writing a
         <a>Property</a> is received and defines what to do with such requests.
-        It expects the requested new |value| as argument of type
-        {{InteractionOutput}} and returns a {{Promise}} which is resolved when the
-        value of the <a>Property</a> that matches the |name:string| argument has
-        been updated, or rejects with an error if the property is not found or
-        the value cannot be updated.
+        Takes as argument |value:InteractionOutput| and returns a {{Promise}},
+        resolved when the value of the <a>Property</a> - identified by the name
+        provided when setting the handler has been updated -, or rejects
+        with an error if the property is not found or the value cannot be updated.
       </p>
       <p class="ednote">
         Note that the code in this callback function can read the property before updating it in order to find out the old value, if needed. Therefore the old value is not provided to this function.
@@ -2152,10 +2174,11 @@
 
     <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:PropertyWriteHandler|
-        as argument of type <a>PropertyWriteHandler</a>. Sets the service handler
-        that defines what to do when a request is received for writing the a
-        <a>Property</a> matched by |name|. Throws on error.
+        Takes as arguments |name:string| and |handler:PropertyWriteHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for writing the <a>Property</a> matched by |name| given when
+        setting the handler.
+        Throws on error.
         Returns a reference to |this| object for supporting chaining.
       </p>
       <p class="note">
@@ -2270,10 +2293,10 @@
       <p>
         A function that is called when an external request for invoking an
         <a>Action</a> is received and defines what to do with such requests.
-        It is invoked with a |params:InteractionOutput| argument and optionally
+        It is invoked with |params:InteractionOutput| and optionally
         with an |options:InteractionOptions| object.
         It returns a {{Promise}} that rejects with an error or resolves with
-        the value returned by the <a>Action</a>.
+        the value returned by the <a>Action</a> as {{InteractionInput}}.
       </p>
       <p class="note">
         Application scripts MAY return a {{ReadableStream}} object from an
@@ -2284,9 +2307,11 @@
 
     <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |action:ActionHandler| as argument of type <a>ActionHandler</a>. Sets the handler function that
-        defines what to do when a request is received to invoke the <a>Action</a>
-        matched by |name|. Throws on error. Returns a reference to |this| object for supporting chaining.
+        Takes as arguments |name:string| and |action:ActionHandler|.
+        Sets the handler function that defines what to do when a request is
+        received to invoke the <a>Action</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
          The |action| callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
@@ -2356,7 +2381,7 @@
             steps.
           </li>
           <li>
-            When |promise| resolves with |data:any|, use |data| to
+            When |promise| resolves with |data:InteractionInput|, use |data| to
             create and send the reply according to the <a>Protocol Bindings</a>.
           </li>
         </ol>
@@ -2368,14 +2393,12 @@
       <p>
         A function that is called when an associated <a>Event</a> is triggered
         and provides the data to be sent with the <a>Event</a> to subscribers.
-        Returns a {{Promise}} that resolves with an {{InteractionOutput}} object
-        or otherwise any value that represents the <a>Event</a> data,
-        or rejects with an error.
+        Returns a {{Promise}} that resolves with {{InteractionInput}} value
+        that represents the <a>Event</a> data, or rejects with an error.
       </p>
       <p class="note">
-        Applications MAY return {{InteractionOutput}} from an {{EventListenerHandler}}
-        for instance when the <a>Event</a> data is specially encoded or it is a
-        stream. Implementations will then use the stream provided in
+        Applications MAY return {{ReadableStream}} from an {{EventListenerHandler}}
+        Implementations will then use the stream provided in
         {{InteractionOutput}} when constructing the event notification.
       </p>
     </section>
@@ -2393,11 +2416,10 @@
 
     <section> <h3>The <dfn>setEventSubscribeHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and
-        |handler:EventSubscriptionHandler| as argument of type
-        <a>EventSubscriptionHandler</a>. Sets the handler function that defines
-        what to do when a subscription request is received for
-        the specified <a>Event</a> matched by |name|. May throw an error.
+        Takes as arguments |name:string| and |handler:EventSubscriptionHandler|.
+        Sets the handler function that defines what to do when a subscription
+        request is received for the specified <a>Event</a> matched by |name|.
+        Throws on error.
         Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
@@ -2482,10 +2504,10 @@
 
     <section> <h3>The <dfn>setEventUnsubscribeHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument and |handler:EventSubscriptionHandler| as argument of type
-        <a>EventSubscriptionHandler</a>. Sets the handler function that
-        defines what to do when the specified <a>Event</a> matched by |name| is
-        unsubscribed from. May throw an error.
+        Takes as arguments |name:string| and |handler:EventSubscriptionHandler|.
+        Sets the handler function that defines what to do when the specified
+        <a>Event</a> matched by |name| is unsubscribed from.
+        Throws on error.
         Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
@@ -2565,10 +2587,10 @@
 
     <section> <h3>The <dfn>setEventHandler()</dfn> method</h3>
       <p>
-        Takes |name:string| as string argument, and an
-        |eventHandler:EventListenerHandler| callback.
+        Takes as arguments |name:string| and |eventHandler:EventListenerHandler|.
         Sets the event handler function for the specified <a>Event</a>
-        matched by |name|. May throw an error.
+        matched by |name|.
+        Throws on error.
         Returns a reference to |this| object for supporting chaining.
       </p>
       <p>
@@ -2607,9 +2629,10 @@
 
     <section> <h3>Handling <a>Events</a></h3>
       <div>
-        When an <a>Event</a> with name |name| is emitted with |data:any| either
-        by the underlying platform or by the <a href="#the-emitevent-method">
-        emitEvent()</a> method, run the following steps:
+        When an <a>Event</a> with name |name| is emitted with
+        |data:InteractionInput| either by the underlying platform or by the
+        <a href="#the-emitevent-method">emitEvent()</a> method, run the
+        following steps:
         <ol>
           <li>
             Let |interaction| be the value of ||td||'s |events|'s
@@ -2651,9 +2674,9 @@
 
     <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
       <div>
-        Takes a |name:string| argument denoting an <a>Event</a> name, and a
-        |data:any| argument of `any` type and triggers emitting the <a>Event</a>
-        with the given data.
+        Takes as arguments |name:string| denoting an <a>Event</a> name and
+        |data:InteractionInput|.
+        Triggers emitting the <a>Event</a> with the given data.
         The method MUST run the following steps:
         <ol>
           <li>
