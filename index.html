@@ -369,25 +369,21 @@
     </section>
   </section>
 
-  <section data-dfn-for="WOT">
-  <h2>The <dfn>WoT API object</dfn></h2>
+  <section data-dfn-for="WebOfThings">
+  <h2>The <dfn>WebOfThings</dfn> namespace</dfn></h2>
   <p>
-    Defines the API entry point exposed as a singleton and contains the API methods.
+    Defines the <dfn>WoT API object</dfn> as a singleton and contains the API
+    methods, grouped by conformance classes.
   </p>
-  <section> <h3>The <dfn>WOT</dfn> interface</h3>
-    <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface WOT {
-        // methods defined in UA conformance classes
-      };
-    </pre>
-    <p class="note">
-       Browser implementations should use a namespace object such as <code>navigator.wot</code>. Standalone runtimes may expose the API object through mechanisms like <a href="https://nodejs.org/api/modules.html">require()</a> or <a href="http://www.ecma-international.org/ecma-262/6.0/#sec-imports">import</a>.
-    </p>
-  </section>
+  <pre class="idl">
+    [SecureContext, Exposed=(Window,Worker)]
+    namespace WebOfThings {
+      // methods defined in UA conformance classes
+    };
+  </pre>
   <section> <h3>The <dfn>consume()</dfn> method</h3>
     <pre class="idl">
-      partial interface WOT {
+      partial namespace WebOfThings {
         Promise&lt;ConsumedThing&gt; consume(ThingDescription td);
       };
     </pre>
@@ -423,7 +419,7 @@
 
   <section> <h3>The <dfn>produce()</dfn> method</h3>
     <pre class="idl">
-      partial interface WOT {
+      partial namespace WebOfThings {
         Promise&lt;ExposedThing&gt; produce(ThingDescription td);
       };
     </pre>
@@ -448,7 +444,7 @@
 
   <section> <h3>The <dfn>discover()</dfn> method</h3>
     <pre class="idl">
-      partial interface WOT {
+      partial namespace WebOfThings {
         ThingDiscovery discover(optional ThingFilter filter = null);
       };
     </pre>
@@ -2801,7 +2797,7 @@
               onchange: temperatureValueDefinition
             }
           };
-          let thing1 = await WOT.produce(tdFragment);
+          let thing1 = await WebOfThings.produce(tdFragment);
           // initialize Properties
           await thing1.writeProperty("temperature", 0);
           // add service handlers
