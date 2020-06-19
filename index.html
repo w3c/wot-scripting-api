@@ -369,21 +369,21 @@
     </section>
   </section>
 
-  <section data-dfn-for="WebOfThings">
-  <h2>The <dfn>WebOfThings</dfn> namespace</dfn></h2>
+  <section data-dfn-for="WOT">
+  <h2>The <dfn>WOT</dfn> namespace</dfn></h2>
   <p>
     Defines the <dfn>WoT API object</dfn> as a singleton and contains the API
     methods, grouped by conformance classes.
   </p>
   <pre class="idl">
     [SecureContext, Exposed=(Window,Worker)]
-    namespace WebOfThings {
+    namespace WOT {
       // methods defined in UA conformance classes
     };
   </pre>
   <section> <h3>The <dfn>consume()</dfn> method</h3>
     <pre class="idl">
-      partial namespace WebOfThings {
+      partial namespace WOT {
         Promise&lt;ConsumedThing&gt; consume(ThingDescription td);
       };
     </pre>
@@ -419,7 +419,7 @@
 
   <section> <h3>The <dfn>produce()</dfn> method</h3>
     <pre class="idl">
-      partial namespace WebOfThings {
+      partial namespace WOT {
         Promise&lt;ExposedThing&gt; produce(ThingDescription td);
       };
     </pre>
@@ -444,7 +444,7 @@
 
   <section> <h3>The <dfn>discover()</dfn> method</h3>
     <pre class="idl">
-      partial namespace WebOfThings {
+      partial namespace WOT {
         ThingDiscovery discover(optional ThingFilter filter = null);
       };
     </pre>
@@ -2797,7 +2797,7 @@
               onchange: temperatureValueDefinition
             }
           };
-          let thing1 = await WebOfThings.produce(tdFragment);
+          let thing1 = await WOT.produce(tdFragment);
           // initialize Properties
           await thing1.writeProperty("temperature", 0);
           // add service handlers
