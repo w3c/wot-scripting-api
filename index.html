@@ -942,6 +942,33 @@
       {{InteractionInput}} to the implementation.
     </p>
   </section>
+
+  <section> <h3>Error handling</h3>
+    <p>
+      The algorithms in this API define the errors to be reported to application
+      scripts.
+    </p>
+    <p>
+      The errors reported to the other communication end are mapped and
+      encapsulated by the <a>Protocol Bindings</a>.
+    </p>
+    <figure id="scripting-error-handling">
+      <img src="images/scripting-error-handling.png"
+                width="100%"
+                title="Error handling"/>
+      <figcaption>Error handling in WoT interactions</figcaption>
+    </figure>
+    <p class="ednote">
+      This topic is still being discussed in
+      <a href="https://github.com/w3c/wot-scripting-api/issues/200">Issue #200</a>.
+      A standardized error mapping would be needed in order to ensure consistency
+      in mapping script errors to protocol errors and vice versa. In particular,
+      when algorithms say "error received from the <a>Protocol Bindings</a>",
+      that will be factored out as an explicit error mapping algorithm. Currently
+      that is encapsulated by implementations.
+    </p>
+  </section>
+
   </section> <!-- Handling interaction data -->
 
   <section data-dfn-for="ConsumedThing">
