@@ -1529,7 +1529,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |args| be the result of running the <a>create interaction data</a>steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+            Let |args| be the result of running the <a>create interaction data</a> steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s |uriVariables|.
@@ -1934,7 +1934,7 @@
       </div>
     </section>
 
-    <section> <h3>Handling requests for reading multiple Poperties</h3>
+    <section> <h3>Handling requests for reading multiple Properties</h3>
       <div>
         When a network request for reading multiple <a>Properties</a> given in
         an object |propertyNames| is received with |options:InteractionOptions|,
@@ -1954,7 +1954,7 @@
               <li>
                 Let |value| be the result of running the <a>read server property</a>
                 steps on |name| and |options|.
-                If that throws, send back the error in the reply created by following the  <a>Protocol Bindings</a>and abort these steps.
+                If that throws, send back the error in the reply created by following the  <a>Protocol Bindings</a> and abort these steps.
               </li>
               <li>
                 Set the value of |propertyNames|'s |name| to |value|.
@@ -2216,7 +2216,7 @@
       <p>
         There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update if the <a>Property</a> is
         writeable and notifying observers on change if the <a>Property</a> is
-        observeable, based on the <a>Thing Description</a>.
+        observable, based on the <a>Thing Description</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -2435,7 +2435,7 @@
       <p>
         A function that is called when an external request for subscribing to an
         <a>Event</a> is received and defines what to do with such requests.
-        It is invoked with a |options:InteractionOptions| object provided by the implementation and coming from subscribers.
+        It is invoked with an |options:InteractionOptions| object provided by the implementation and coming from subscribers.
         It returns a {{Promise}} that rejects with an error or resolves when
         the subscription is accepted.
       </p>
@@ -2931,7 +2931,7 @@
       The <dfn>done</dfn> property is `true` if the discovery has been completed with no more results to report and <a>discovery results</a> is also empty.
     </p>
     <p>
-      The <dfn>error</dfn> property represents the last error that occured during the discovery process. Typically used for critical errors that stop discovery.
+      The <dfn>error</dfn> property represents the last error that occurred during the discovery process. Typically used for critical errors that stop discovery.
     </p>
 
     <section><h3>Constructing {{ThingDiscovery}}</h3>
