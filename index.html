@@ -332,7 +332,7 @@
         <a>TD</a>.
       </p>
       <div>
-        run the following steps:
+        To <dfn>expand a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
             For each item in the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
@@ -347,15 +347,10 @@
         Therefore, this API expects the {{ThingDescription}} objects be validated before used as parameters. This specification defines a basic <a>TD</a> validation as follows.
       </p>
       <div>
-        run the following steps:
+        To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
             If |td| is not an object, [= exception/throw =] a
-            {{"TypeError"}} and abort these steps.
-          </li>
-          <li>
-            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema
-              validation</a> fails on |td|, [= exception/throw =] a
             {{"TypeError"}} and abort these steps.
           </li>
           <li>
@@ -363,6 +358,10 @@
             <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#thing">Thing</a>
             that don't have <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">default definitions</a>
             are missing from |td|, [= exception/throw =] a
+            {{"TypeError"}} and abort these steps.
+          </li>
+          <li>
+            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a> fails on |td|, [= exception/throw =] a
             {{"TypeError"}} and abort these steps.
           </li>
         </ol>
