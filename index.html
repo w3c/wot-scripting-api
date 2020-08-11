@@ -361,6 +361,10 @@
             {{"TypeError"}} and abort these steps.
           </li>
           <li>
+            Fill any missing mandatory property defined in [[!WOT-TD]] that have a 
+            <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">default definition</a> with its default.
+          </li>
+          <li>
             If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a> fails on |td|, [= exception/throw =] a
             {{"TypeError"}} and abort these steps.
           </li>
