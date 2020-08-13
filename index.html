@@ -350,23 +350,8 @@
         To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            If |td| is not an object, [= exception/throw =] a
-            {{"TypeError"}} and abort these steps.
-          </li>
-          <li>
-            If any of the mandatory properties defined in [[!WOT-TD]] for
-            <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#thing">Thing</a>
-            that don't have <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">default definitions</a>
-            are missing from |td|, [= exception/throw =] a
-            {{"TypeError"}} and abort these steps.
-          </li>
-          <li>
-            Fill any missing mandatory property defined in [[!WOT-TD]] that have a 
-            <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">default definition</a> with its default.
-          </li>
-          <li>
-            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a> fails on |td|, [= exception/throw =] a
-            {{"TypeError"}} and abort these steps.
+            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema
+            validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and abort these steps.
           </li>
         </ol>
       </div>
