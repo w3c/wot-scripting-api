@@ -316,7 +316,7 @@
           let res = await fetch('https://tds.mythings.biz/sensor11');
           // ... additional checks possible on res.headers
           let td = await res.json();
-          let thing = new ConsumedThing(td);
+          let thing = await WOT.consume(td);
           console.log("Thing name: " + thing.getThingDescription().title);
         } catch (err) {
           console.log("Fetching TD failed", err.message);
@@ -350,21 +350,13 @@
         To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            If |td| is not an object, [= exception/throw =] a
-            {{"TypeError"}} and abort these steps.
-          </li>
-          <li>
-            If any of the mandatory properties defined in [[!WOT-TD]] for
-            <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#thing">Thing</a>
-            that don't have <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">default definitions</a>
-            are missing from |td|, [= exception/throw =] a
-            {{"TypeError"}} and abort these steps.
-          </li>
-          <li>
-            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a> fails on |td|, [= exception/throw =] a
-            {{"TypeError"}} and abort these steps.
+            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema
+            validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and abort these steps.
           </li>
         </ol>
+        <p class="ednote" title="Handling default values">
+          Additional steps may be added to fill the default values of mandatory fields.
+        </p>
       </div>
     </section>
   </section>
