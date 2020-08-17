@@ -52,7 +52,7 @@
             ]
           },
         ],
-        xref: ["web-platform", "streams"],
+        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
             href:"https://www.w3.org/TR/2019/CR-wot-architecture-20190516/",
@@ -116,19 +116,24 @@
 
   <section id="abstract">
     <p>
-      The main <a>Web of Things</a> (WoT) concepts are described in the <a href="https://www.w3.org/TR/2019/CR-wot-architecture-20190516/">WoT Architecture</a> document. The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
+      The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
     </p>
     <p>
-      Scripting is an optional "convenience" building block in WoT and it is typically used in gateways that are able to run a <a>WoT Runtime</a> and <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
+      The main <a>Web of Things</a> (WoT) concepts are described in the [[WOT-ARCHITECTURE]] document.
+    </p>
+    <p>
+      Scripting is an optional building block in WoT and it is typically used in gateways or browsers that are able to run a <a>WoT Runtime</a> and
+      <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
     </p>
     <p>
       This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
     </p>
     <p>
-      The specification deliberately follows the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/">WoT Thing Description specification</a> closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+      The specification deliberately follows the [[WOT-TD]] specification closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
     </p>
     <p class="ednote">
-      This specification is implemented at least by the <a href="http://www.thingweb.io/">Thingweb</a> project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot">examples</a>. Other, closed source implementations have been made by WG member companies and tested against <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a> in plug-fests.
+      This specification is implemented at least by the <a href="http://www.thingweb.io/">Eclipse Thingweb</a>
+      project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot/examples">examples</a>.
     </p>
   </section>
 
@@ -145,7 +150,7 @@
   <section id="introduction"> <h2>Introduction</h2>
     <p>
       WoT provides layered interoperability based on how <a>Thing</a>s are used:
-      "consumed" and "exposed", as <a href="https://www.w3.org/TR/2019/CR-wot-architecture-20190516/#terminology">defined</a> in [[WOT-ARCHITECTURE]].
+      "consumed" and "exposed", as defined in [[WOT-ARCHITECTURE]] terminology.
     </p>
     <p>
       By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
@@ -185,7 +190,8 @@
     <section><h4>Consuming a Thing</h4>
     <ul>
       <li>
-        <a>Consume a TD</a>, i.e. create a programmatic object from a <a>Thing Description</a> that exposes <a>WoT Interactions</a>:
+        <a>Consume a TD</a>, i.e. create a programmatic object from a
+        <a>Thing Description</a> that exposes <a>WoT Interactions</a>:
         <ul>
           <li>Read the value of a <a>Property</a> or a set of properties.</li>
           <li>Set the value of a <a>Property</a> or a set of properties.</li>
@@ -193,7 +199,7 @@
           <li>Invoke an <a>Action</a>.</li>
           <li>Observe WoT <a>Events</a> emitted by the <a>Thing</a>.</li>
           <li>
-            Introspect the <a>Thing Description</a>, including the list of linked resources based on the <a>Thing Description</a>.
+            Introspect the <a>Thing Description</a>.
           </li>
         </ul>
       </li>
@@ -203,17 +209,31 @@
     <section><h4>Exposing a Thing</h4>
     <ul>
       <li>
-        Exposing the <a>Thing</a> includes generating the protocol bindings in order to access lower level functionality.
+        Exposing the <a>Thing</a> includes generating the protocol bindings in
+        order to access lower level functionality.
       </li>
       <li>
-        Create a local <a>Thing</a> to be exposed, based on a <a>Thing Description</a> provided in string serialized format, or out of an existing <a>Thing</a> object.
+        Create a local <a>Thing</a> to be exposed, based on <a>Thing Description</a>.
       </li>
-      <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
-      <li>Remove a <a>Property</a> definition from the <a>Thing</a>.</li>
-      <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
-      <li>Remove an <a>Action</a> definition from the <a>Thing</a>.</li>
-      <li>Add a WoT <a>Event</a> definition to the <a>Thing</a>.</li>
-      <li>Remove a WoT <a>Event</a> definition from the <a>Thing</a>.</li>
+      <li>
+        The following use cases can be implemented before creating the
+        <a>Thing</a> by editing the <a>Thing Description</a>:
+        <ul>
+          <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
+          <li>Remove a <a>Property</a> definition from the <a>Thing</a>.</li>
+          <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
+          <li>Remove an <a>Action</a> definition from the <a>Thing</a>.</li>
+          <li>Add a WoT <a>Event</a> definition to the <a>Thing</a>.</li>
+          <li>Remove a WoT <a>Event</a> definition from the <a>Thing</a>.</li>
+        </ul>
+        <p class="ednote">
+          After evaluating dynamic modifications to <a>Thing Descriptions</a>
+          through several versions of this API, the editors concluded that the
+          simplest way to represent these use cases is to take an existing
+          <a>TD</a>, modify it (i.e. add or remove definitions) and then create
+          a new <a>Thing</a> based on the modified <a>TD</a>.
+        </p>
+      </li>
       <li>
         Emit a WoT <a>Event</a>, i.e. notify all subscribed listeners.
       </li>
@@ -221,9 +241,13 @@
         <ul>
           <li>to retrieve a <a>Property</a> value;</li>
           <li>to update a <a>Property</a> value;</li>
+          <li>to observe a <a>Property</a>;</li>
+          <li>to unobserve a <a>Property</a>;</li>
           <li>
             to invoke an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
           </li>
+          <li>to subscribe to an <a>Event</a>;</li>
+          <li>to unsubscribe from an <a>Event</a>.</li>
         </ul>
       </li>
     </ul>
@@ -233,8 +257,9 @@
     <ul>
       <li>Discover <a>Thing</a>s in a network by sending a broadcast request.</li>
       <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
-      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth.</li>
-      <li>Discover <a>Thing</a>s by sending a discovery request to a given registry.</li>
+      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth,
+        or within a <a href="https://en.wikipedia.org/wiki/Geo-fence">geo-fence</a>.</li>
+      <li>Discover <a>Thing</a>s by sending a discovery request to a given <a>Thing Directory</a>.</li>
       <li>Discover <a>Thing</a>s filtered by filters defined on <a>Thing Description</a>s</li>
       <li>Discover <a>Thing</a>s filtered by semantic queries.</li>
       <li>Stop or suppress an ongoing discovery process.</li>
