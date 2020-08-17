@@ -1,6 +1,6 @@
 {
   "name": "wot-typescript-definitions",
-  "version": "0.7.4-SNAPSHOT.1",
+  "version": "0.8.0-SNAPSHOT.1",
   "description": "TypeScript definitions for the W3C WoT Scripting API",
   "author": "W3C Web of Things Working Group",
   "license": "W3C-20150513",
@@ -19,9 +19,7 @@
     "access": "public"
   },
   "types": "index.d.ts",
-  "dependencies": {
-    "rxjs": "5.4.3"
-  },
+  "dependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }
