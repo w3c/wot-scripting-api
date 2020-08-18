@@ -1012,23 +1012,23 @@
         Promise&lt;PropertyMap&gt; readMultipleProperties(
                                     sequence&lt;DOMString&gt; propertyNames,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; writeProperty(DOMString propertyName,
+        Promise&lt;undefined&gt; writeProperty(DOMString propertyName,
                                     InteractionInput value,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; writeMultipleProperties(PropertyMap valueMap,
+        Promise&lt;undefined&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = null,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; observeProperty(DOMString name,
+        Promise&lt;undefined&gt; observeProperty(DOMString name,
                                     WotListener listener,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; unobserveProperty(DOMString name,
+        Promise&lt;undefined&gt; unobserveProperty(DOMString name,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; subscribeEvent(DOMString name,
+        Promise&lt;undefined&gt; subscribeEvent(DOMString name,
                                     WotListener listener,
                                     optional InteractionOptions options = null);
-        Promise&lt;void&gt; unsubscribeEvent(DOMString name,
+        Promise&lt;undefined&gt; unsubscribeEvent(DOMString name,
                                     optional InteractionOptions options = null);
         ThingDescription getThingDescription();
       };
@@ -1041,7 +1041,7 @@
 
       typedef object PropertyMap;
 
-      callback WotListener = void(InteractionOutput data);
+      callback WotListener = undefined(InteractionOutput data);
     </pre>
 
     <section>
@@ -1760,16 +1760,16 @@
                 EventSubscriptionHandler handler);
         ExposedThing setEventHandler(DOMString name,
                 EventListenerHandler eventHandler);
-        void emitEvent(DOMString name, InteractionInput data);
+        undefined emitEvent(DOMString name, InteractionInput data);
 
-        Promise&lt;void&gt; expose();
-        Promise&lt;void&gt; destroy();
+        Promise&lt;undefined&gt; expose();
+        Promise&lt;undefined&gt; destroy();
       };
 
       callback PropertyReadHandler = Promise&lt;any&gt;(
               optional InteractionOptions options = null);
 
-      callback PropertyWriteHandler = Promise&lt;void&gt;(
+      callback PropertyWriteHandler = Promise&lt;undefined&gt;(
               InteractionOutput value,
               optional InteractionOptions options = null);
 
@@ -1777,7 +1777,7 @@
               InteractionOutput params,
               optional InteractionOptions options = null);
 
-      callback EventSubscriptionHandler = Promise&lt;void&gt;(
+      callback EventSubscriptionHandler = Promise&lt;undefined&gt;(
               optional InteractionOptions options = null);
 
       callback EventListenerHandler = Promise&lt;InteractionInput&gt;();
@@ -2935,9 +2935,9 @@
         readonly attribute boolean active;
         readonly attribute boolean done;
         readonly attribute Error? error;
-        void start();
+        undefined start();
         Promise&lt;ThingDescription&gt; next();
-        void stop();
+        undefined stop();
       };
     </pre>
     <p class="ednote">
