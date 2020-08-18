@@ -119,7 +119,7 @@
       The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
     </p>
     <p>
-      The main <a>Web of Things</a> (WoT) concepts are described in the [[WOT-ARCHITECTURE]] document.
+      The main <a>Web of Things</a> (WoT) concepts are described in the [[[WOT-ARCHITECTURE]]] specification.
     </p>
     <p>
       Scripting is an optional building block in WoT and it is typically used in gateways or browsers that are able to run a <a>WoT Runtime</a> and
@@ -129,7 +129,7 @@
       This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
     </p>
     <p>
-      The specification deliberately follows the [[WOT-TD]] specification closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+      The specification deliberately follows the [[[WOT-TD]]] specification closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
     </p>
     <p class="ednote">
       This specification is implemented at least by the <a href="http://www.thingweb.io/">Eclipse Thingweb</a>
@@ -150,7 +150,7 @@
   <section id="introduction"> <h2>Introduction</h2>
     <p>
       WoT provides layered interoperability based on how <a>Thing</a>s are used:
-      "consumed" and "exposed", as defined in [[WOT-ARCHITECTURE]] terminology.
+      "consumed" and "exposed", as defined in the [[[WOT-ARCHITECTURE]]] terminology.
     </p>
     <p>
       By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
@@ -351,9 +351,9 @@
 
     <section> <h3>Expanding a Thing Description</h3>
       <p>
-        Note that [[WOT-TD]] allows using a shortened <a>Thing Description</a>
-        by the means of <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in
-        [[WOT-TD]] for the properties that are not explicitly defined in a given
+        Note that the [[[WOT-TD]]] specification allows using a shortened <a>Thing Description</a>
+        by the means of <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
+        [[[WOT-TD]]] specification for the properties that are not explicitly defined in a given
         <a>TD</a>.
       </p>
       <div>
@@ -495,7 +495,7 @@
 
   <section> <h2>Handling interaction data</h2>
   <p>
-    As specified in [[WOT-TD]], <a>WoT interactions</a> extend <a>DataSchema</a>
+    As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
     and include a number of possible <a>Form</a>s, out of which one is selected
     for the interaction. The
     <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
@@ -1104,7 +1104,7 @@
         parsed JSON objects</a> defined in [[!WOT-TD]].
       </p>
       <p class="ednote">
-        The support for URI variables comes from the need exposed by [[WOT-TD]] to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the |options| parameter could be dismissed from the methods exposed by this API.
+        The support for URI variables comes from the need exposed by the [[[WOT-TD]]] specification to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the |options| parameter could be dismissed from the methods exposed by this API.
       </p>
       <p>
         The <dfn>data</dfn> property if defined, represents additional opaque
@@ -3489,7 +3489,7 @@
           lock.open('withThisKey');
         </pre>
       </section>
-      <section> <h3>This API, aligned with [[WOT-TD]]</h3>
+      <section> <h3>This API, aligned with the [[[WOT-TD]]] specification</h3>
         <p>
           Since the direct mapping of <a>Thing</a>s to software objects have had
           some challenges, this specification takes another approach that
@@ -3515,11 +3515,11 @@
       </section>
       <p>
         In conclusion, the WoT WG decided to explore the third option that
-        closely follows the [[WOT-TD]] specification. Based on this, a simple
+        closely follows the [[[WOT-TD]]] specification. Based on this, a simple
         API can also be implemented.
         Since Scripting is an optional module in WoT, this leaves room for
         applications that only use the WoT network interface.
-        Therefore all three approaches above are supported by [[WOT-TD]].
+        Therefore all three approaches above are supported by the [[[WOT-TD]]] specification.
       </p>
       <p>
         Moreover, the WoT network interface can be implemented in many languages
@@ -3533,8 +3533,9 @@
       </p>
       <p>
         Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
-        is defined externally in [[WOT-TD]], that is scoped out, too. This specification expects a <a>TD</a> as
-        <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[WOT-TD]] specification.
+        is defined externally in the [[[WOT-TD]]] specification, that is scoped out, too.
+        This specification expects a <a>TD</a> as
+        <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
       </p>
     </section>
     <section> <h4>Factory vs constructors</h4>
@@ -3571,7 +3572,7 @@
     </section>
     <section> <h4>Polymorphic functions</h4>
       <p>
-        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a> definition in [[WOT-TD]].
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a> definition in the [[[WOT-TD]]] specification.
       </p>
     </section>
   </section>
