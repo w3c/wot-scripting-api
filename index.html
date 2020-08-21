@@ -1178,7 +1178,7 @@
     <section>
       <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
       <div>
-        Reads multiple <a>Property</a> values with one or multiple requests.
+        Reads multiple <a>Property</a> values with one request.
         Takes as arguments |propertyNames: string sequence| and optionally
         |options:InteractionOptions|.
         It returns a {{Promise}} that resolves with a {{PropertyMap}} object
@@ -1238,7 +1238,7 @@
     <section>
       <h3>The <dfn>readAllProperties()</dfn> method</h3>
       <div>
-        Reads all properties of the <a>Thing</a> with one or multiple requests. Takes |options:InteractionOptions| as optional argument.
+        Reads all properties of the <a>Thing</a> with one request. Takes |options:InteractionOptions| as optional argument.
         It returns a {{Promise}} that resolves with a {{PropertyMap}} object that
         maps keys from <a>Property</a> names to values returned by this algorithm.
         The method MUST run the following steps:
@@ -1374,6 +1374,14 @@
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and
             abort these steps.
+          </li>
+          <li>
+            Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
+          </li>
+          <li>
+            For each |name:string| in |propertyNames|, let |property| be the value of ||td||'s |properties|'s |name|. 
+            If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
+            and abort these steps.
           </li>
           <li>
             Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and let its value be
