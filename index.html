@@ -1553,7 +1553,7 @@
             Otherwise resolve |promise|.
           </li>
           <li>
-            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|, run the following sub-steps:
+            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|,the platform SHOULD run the following sub-steps:
             <ul>
               <li>
                 Let |reply| be the result of running <a>parse interaction response</a>
@@ -1603,6 +1603,10 @@
           </li>
           <li>
             Otherwise resolve |promise|.
+          </li>
+          <li>
+            If the underlying platform receives further notifications for this subscription with new <a>Property</a> value, implementations SHOULD
+            silently suppress them.
           </li>
         </ol>
       </div>
