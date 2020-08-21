@@ -762,9 +762,9 @@
       </ol>
     </section>
 
-    <section><h3>The <dfn>create interaction data</dfn> algorithm</h3>
+    <section><h3>The <dfn>create interaction request</dfn> algorithm</h3>
       For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
-      <a>create interaction data</a> given |source|, |form:Form| and
+      <a>create interaction request</a> given an {{InteractionInput}} as |source|, |form:Form| and
       |schema:object|, run these steps:
       <ol>
         <li>
@@ -816,7 +816,7 @@
                 <li>
                   For each |item| in |source|, let |itemschema| be |schema|'s
                   |items| and let |item| be the result of running the
-                  <a>create interaction data</a> steps on |item|, |form| and
+                  <a>create interaction request</a> steps on |item|, |form| and
                   |itemschema|.
                   If this throws, re-throw that exception and abort these steps.
                 </li>
@@ -842,7 +842,7 @@
                     <li>Let |propschema| be the value of |key| in |properties|.</li>
                     <li>
                       Let |value| be the result of running the
-                      <a>create interaction data</a> steps on |value|, |form|
+                      <a>create interaction request</a> steps on |value|, |form|
                       and |propschema|.
                       If this throws, re-throw that exception and abort these steps.
                     </li>
@@ -1318,7 +1318,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |data| be the result of running the <a>create interaction data</a>steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+            Let |data| be the result of running the <a>create interaction request</a> steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
@@ -1549,7 +1549,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |args| be the result of running the <a>create interaction data</a> steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+            Let |args| be the result of running the <a>create interaction request</a> steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s |uriVariables|.
