@@ -1008,8 +1008,6 @@
                                     optional InteractionOptions options = null);
         Promise&lt;undefined&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
-        Promise&lt;undefined&gt; writeAllProperties(PropertyMap valueMap,
-                                    optional InteractionOptions options = null);
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = null,
                                     optional InteractionOptions options = null);
@@ -1404,85 +1402,6 @@
             <a>Protocol Bindings</a>) to write each <a>Property</a> provided in
             |properties| with optional URI templates given in |options|'
             |uriVariables|.
-          </li>
-          <li>
-            If this cannot be done with a single request with the
-            <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise|
-            with a {{NotSupportedError}} and abort these steps.
-          </li>
-          <li>
-            If the request fails, return the error received from the
-            <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise|.
-          </li>
-        </ol>
-      </div>
-    </section>
-    <section>
-      <h3>The <dfn>writeAllProperties()</dfn> method</h3>
-      <div>
-        Writes all writeable <a>Property</a> values with one request.
-        Takes as arguments |properties:object| - as an object with keys being
-        <a>Property</a> names and values as <a>Property</a> values - and optionally
-        |options:InteractionOptions|.
-        It returns a {{Promise}} that resolves on success and rejects on failure. The method MUST run the following steps:
-        <ol>
-          <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps
-            <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting
-            context for security reasons, reject |promise| with a
-            {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array,
-            otherwise let |form| be the first <a>Form</a> in ||td||'s |forms|
-            array whose |op| is `writeallproperties`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and
-            abort these steps.
-          </li>
-          <li>
-            Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
-          </li>
-          <li>
-            Let |writable_properties:number| be the total amount of |writeable| properties in ||td||.
-          </li>
-          <li>
-            If the `length` of |propertyNames| is not equal to |writable_properties| reject |promise| with {{DataError}}
-            and abort these steps.
-          </li>
-          <li>
-            For each |name:string| in |propertyNames|, let |property| be the value of ||td||'s |properties|'s |name|. 
-            If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
-            and abort these steps.
-          </li>
-          <li>
-            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and let its value be
-            `null`.
-          </li>
-          <li>
-            Let |schemas:object| be an object and for each string |name:string|
-            in |propertyNames| add a property with key |name| and let its value
-            be the value of ||td||'s |properties|'s |name|.
-          </li>
-          <li>
-            For each key |key:string| in |properties|, take its value as |value|
-            and run the <a>create interaction data</a> steps on |value|, |form|
-            and the value for |schema|'s |key|.
-            If that throws for any |name|, reject <a>promise</a> with that
-            exception and abort these steps.
-          </li>
-          <li>
-            Make a single request to the underlying platform (via the
-            <a>Protocol Bindings</a>) to write each <a>Property</a> provided in
-            |properties|.
           </li>
           <li>
             If this cannot be done with a single request with the
