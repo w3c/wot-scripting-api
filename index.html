@@ -1097,7 +1097,7 @@
       <p class="ednote">
         The support for URI variables comes from the need, exposed by the [[[WOT-TD]]] specification, to be able to describe
         existing REST-ful endpoints that use them. However, it should be possible to write a Thing Description that would use
-        Actions for representing this kind of interactions and model the URI variables as action parameters. In that case,
+        <a>Action</a>s for representing this kind of interactions and model the URI variables as action parameters. In that case,
         implementations can serialize the parameters as URI variables, and therefore, the |options| parameter could be
         dismissed.
       </p>
@@ -1392,7 +1392,7 @@
           </li>
           <li>
             For each key |key:string| in |properties|, take its value as |value|
-            and run the <a>create interaction data</a> steps on |value|, |form|
+            and run the <a>create interaction request</a> steps on |value|, |form|
             and the value for |schema|'s |key|.
             If that throws for any |name|, reject <a>promise</a> with that
             exception and abort these steps.
@@ -1481,7 +1481,7 @@
             Otherwise resolve |promise|.
           </li>
           <li>
-            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|,the platform SHOULD run the following sub-steps:
+            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|, run the following sub-steps:
             <ul>
               <li>
                 Let |reply| be the result of running <a>parse interaction response</a>
