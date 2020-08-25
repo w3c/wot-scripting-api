@@ -494,7 +494,7 @@
     <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
     Form</a> contains a `contentType` to describe the data.
     For certain content types, a <a>DataSchema</a> is defined, based on
-    <a>JSON schema</a>, making possible to represent these contents as
+    <a>JSON Schema</a>, making possible to represent these contents as
     JavaScript types and eventually set range constraints on the data.
   </p>
 
@@ -605,7 +605,7 @@
         <li>
           If |form|'s |contentType| is not `application/json` and if a mapping is
           not available in the <a>Protocol Bindings</a> from |form|'s |contentType|
-          to [JSON-SCHEMA], reject |promise| with {{NotSupportedError}} and
+          to [[!JSON-SCHEMA]], reject |promise| with {{NotSupportedError}} and
           abort these steps.
         </li>
         <li>
@@ -625,7 +625,7 @@
         <li>
           If |form|'s |contentType| is not `application/json` and if a mapping is
           available in the <a>Protocol Bindings</a> from |form|'s |contentType|
-          to [JSON-SCHEMA], transform |bytes| with that mapping.
+          to [[!JSON-SCHEMA]], transform |bytes| with that mapping.
         </li>
         <li>
           Let |json| be the result of running <a>parse JSON from bytes</a> on
@@ -982,7 +982,7 @@
       A standardized error mapping would be needed in order to ensure consistency
       in mapping script errors to protocol errors and vice versa. In particular,
       when algorithms say "error received from the <a>Protocol Bindings</a>",
-      that will be factored out as an explicit error mapping algorithm. Currently
+      that will be factored out as an explicit error mapping algorithm. Currently,
       that is encapsulated by implementations.
     </p>
   </section>
