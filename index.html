@@ -331,7 +331,7 @@
       Represents a <a>Thing Description</a> (<a>TD</a>) as
       <a href="https://www.w3.org/TR/wot-thing-description/#thing">defined</a> in
       [[!WOT-TD]]. It is expected to be
-      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema validation</a>.
+      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON Schema validation</a>.
     </p>
     <section> <h3> Fetching a Thing Description</h3>
       <p>
@@ -376,7 +376,7 @@
         To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON schema
+            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON Schema
             validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and abort these steps.
           </li>
         </ol>
@@ -494,7 +494,7 @@
     <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
     Form</a> contains a `contentType` to describe the data.
     For certain content types, a <a>DataSchema</a> is defined, based on
-    <a>JSON schema</a>, making possible to represent these contents as
+    <a>JSON Schema</a>, making possible to represent these contents as
     JavaScript types and eventually set range constraints on the data.
   </p>
 
@@ -604,7 +604,7 @@
         <li>
           If |form|'s |contentType| is not `application/json` and if a mapping is
           not available in the <a>Protocol Bindings</a> from |form|'s |contentType|
-          to [JSON-SCHEMA], reject |promise| with {{NotSupportedError}} and
+          to [[!JSON-SCHEMA]], reject |promise| with {{NotSupportedError}} and
           abort these steps.
         </li>
         <li>
@@ -624,7 +624,7 @@
         <li>
           If |form|'s |contentType| is not `application/json` and if a mapping is
           available in the <a>Protocol Bindings</a> from |form|'s |contentType|
-          to [JSON-SCHEMA], transform |bytes| with that mapping.
+          to [[!JSON-SCHEMA]], transform |bytes| with that mapping.
         </li>
         <li>
           Let |json| be the result of running <a>parse JSON from bytes</a> on
@@ -981,7 +981,7 @@
       A standardized error mapping would be needed in order to ensure consistency
       in mapping script errors to protocol errors and vice versa. In particular,
       when algorithms say "error received from the <a>Protocol Bindings</a>",
-      that will be factored out as an explicit error mapping algorithm. Currently
+      that will be factored out as an explicit error mapping algorithm. Currently,
       that is encapsulated by implementations.
     </p>
   </section>
@@ -3384,7 +3384,7 @@
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
     </p>
     <p>
-      <dfn>JSON schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
+      <dfn>JSON Schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
     </p>
     <p>
       The terms
