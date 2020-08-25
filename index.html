@@ -127,10 +127,10 @@
       <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
     </p>
     <p>
-      This specification describes a programming interface representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Things</a> characterized by <a> WoT Interactions</a> specified by a script.
+      This specification describes an application programming interface (API) representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Thing</a>s characterized by <a> WoT Interactions</a> specified by a script.
     </p>
     <p>
-      The specification deliberately follows the [[[WOT-TD]]] specification closely. It is possible to implement simpler APIs on top of this API, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+      The APIs defined in this document deliberately follow the [[[WOT-TD]]] specification closely. It is possible to implement more abstract APIs on top of them, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
     </p>
     <p class="ednote">
       This specification is implemented at least by the <a href="http://www.thingweb.io/">Eclipse Thingweb</a>
@@ -143,7 +143,7 @@
       Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the <a href="https://github.com/w3c/wot-scripting-api">repository</a> and take part in the discussions.
     </p>
     <p class="ednote" title="The W3C WoT WG is asking for feedback">
-      Please contribute to this draft using the <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub Issue</a> feature of the <a href="https://github.com/w3c/wot-scripting-api/">WoT Scripting API</a> repository.
+      Please contribute to this draft using the <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub Issues</a> page of the <a href="https://github.com/w3c/wot-scripting-api/">WoT Scripting API</a> repository.
       For feedback on security and privacy considerations, please use the <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> Issues.
     </p>
   </section>
@@ -540,7 +540,7 @@
       scripts.
     </p>
     <p>
-      This interface exposes a convenience function which should work in
+      This interface exposes a convenience function which should cover
       the vast majority of IoT use cases: the
       <a href="#the-value-function">value()</a> function. Its implementation
       will inspect the data, parse it if adheres to a <a>DataSchema</a>, or
@@ -583,10 +583,9 @@
       valid value).
     </p>
     <section><h3>The <dfn>value()</dfn> function</h3>
-      Parses the data returned from the <a>WoT Interaction</a> and returns a
-      value with the type described by the <a>DataSchema</a> of the interaction
-      if that exists, or by the `contentType` of the <a>Form</a> used for the
-      interaction. The method MUST run the following steps:
+      Parses the data returned by the <a>WoT Interaction</a> and returns a
+      value with the type described by the interaction <a>DataSchema</a>
+      if that exists, or by the `contentType` of the interaction <a>Form</a>. The method MUST run the following steps:
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps
@@ -764,9 +763,9 @@
       </ol>
     </section>
 
-    <section><h3>The <dfn>create interaction data</dfn> algorithm</h3>
+    <section><h3>The <dfn>create interaction request</dfn> algorithm</h3>
       For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
-      <a>create interaction data</a> given |source|, |form:Form| and
+      <a>create interaction request</a> given a |source: InteractionInput|, |form:Form| and
       |schema:object|, run these steps:
       <ol>
         <li>
@@ -818,7 +817,7 @@
                 <li>
                   For each |item| in |source|, let |itemschema| be |schema|'s
                   |items| and let |item| be the result of running the
-                  <a>create interaction data</a> steps on |item|, |form| and
+                  <a>create interaction request</a> steps on |item|, |form| and
                   |itemschema|.
                   If this throws, re-throw that exception and abort these steps.
                 </li>
@@ -844,7 +843,7 @@
                     <li>Let |propschema| be the value of |key| in |properties|.</li>
                     <li>
                       Let |value| be the result of running the
-                      <a>create interaction data</a> steps on |value|, |form|
+                      <a>create interaction request</a> steps on |value|, |form|
                       and |propschema|.
                       If this throws, re-throw that exception and abort these steps.
                     </li>
@@ -1010,6 +1009,8 @@
                                     optional InteractionOptions options = null);
         Promise&lt;undefined&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
+        /*Promise&lt;undefined&gt; writeAllProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);*/
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = null,
                                     optional InteractionOptions options = null);
@@ -1097,7 +1098,11 @@
         parsed JSON objects</a> defined in [[!WOT-TD]].
       </p>
       <p class="ednote">
-        The support for URI variables comes from the need exposed by the [[[WOT-TD]]] specification to be able to describe existing <a>TD</a>s that use them, but it should be possible to write a <a>Thing Description</a> that would use <a>Action</a>s for representing the interactions that need URI variables and represent the URI variables as parameters to the <a>Action</a> and in that case that could be encapsulated by the implementations and the |options| parameter could be dismissed from the methods exposed by this API.
+        The support for URI variables comes from the need, exposed by the [[[WOT-TD]]] specification, to be able to describe
+        existing REST-ful endpoints that use them. However, it should be possible to write a Thing Description that would use
+        <a>Action</a>s for representing this kind of interactions and model the URI variables as action parameters. In that case,
+        implementations can serialize the parameters as URI variables, and therefore, the |options| parameter could be
+        dismissed.
       </p>
       <p>
         The <dfn>data</dfn> property if defined, represents additional opaque
@@ -1174,7 +1179,7 @@
     <section>
       <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
       <div>
-        Reads multiple <a>Property</a> values with one or multiple requests.
+        Reads multiple <a>Property</a> values with one request.
         Takes as arguments |propertyNames: string sequence| and optionally
         |options:InteractionOptions|.
         It returns a {{Promise}} that resolves with a {{PropertyMap}} object
@@ -1234,7 +1239,7 @@
     <section>
       <h3>The <dfn>readAllProperties()</dfn> method</h3>
       <div>
-        Reads all properties of the <a>Thing</a> with one or multiple requests. Takes |options:InteractionOptions| as optional argument.
+        Reads all properties of the <a>Thing</a> with one request. Takes |options:InteractionOptions| as optional argument.
         It returns a {{Promise}} that resolves with a {{PropertyMap}} object that
         maps keys from <a>Property</a> names to values returned by this algorithm.
         The method MUST run the following steps:
@@ -1316,7 +1321,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |data| be the result of running the <a>create interaction data</a>steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+            Let |data| be the result of running the <a>create interaction request</a> steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
@@ -1372,6 +1377,14 @@
             abort these steps.
           </li>
           <li>
+            Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
+          </li>
+          <li>
+            For each |name:string| in |propertyNames|, let |property| be the value of ||td||'s |properties|'s |name|. 
+            If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
+            and abort these steps.
+          </li>
+          <li>
             Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and let its value be
             `null`.
           </li>
@@ -1382,7 +1395,7 @@
           </li>
           <li>
             For each key |key:string| in |properties|, take its value as |value|
-            and run the <a>create interaction data</a> steps on |value|, |form|
+            and run the <a>create interaction request</a> steps on |value|, |form|
             and the value for |schema|'s |key|.
             If that throws for any |name|, reject <a>promise</a> with that
             exception and abort these steps.
@@ -1408,7 +1421,6 @@
         </ol>
       </div>
     </section>
-
     <section>
       <h3>The <dfn>WotListener</dfn> callback</h3>
       <p>
@@ -1513,6 +1525,10 @@
           <li>
             Otherwise resolve |promise|.
           </li>
+          <li>
+            If the underlying platform receives further notifications for this subscription with new <a>Property</a> value, implementations SHOULD
+            silently suppress them.
+          </li>
         </ol>
       </div>
     </section>
@@ -1547,7 +1563,7 @@
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |args| be the result of running the <a>create interaction data</a> steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+            Let |args| be the result of running the <a>create interaction request</a> steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s |uriVariables|.
@@ -1693,7 +1709,7 @@
           console.log("Error starting measurement.");
         }
 
-        setTimeout( () => {
+        setTimeout( async () => {
           console.log(“Temperature: “ +
             parseData(await thing.readProperty(“temperature”)));
           await thing.unsubscribe(“ready”);
@@ -3633,7 +3649,10 @@
 <section class="appendix" id="idl-index"> <h3>Full Web IDL</h3>
   <!-- ReSpec will gather all Web IDL code here. -->
 </section>
-
+<p class="ednote" title="Where is the writeAllProperties method?"">
+  <code>writeAllProperties</code> method is still under discussion. Meanwhile, please
+  use <code>writeMultipleProperties</code> method instead.
+</p>
   <section class="appendix"> <h2>Acknowledgements</h2>
     <p>
       Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) and Kazuaki Nimura (until December 2018) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Elena Reshetova, Michael McCool as well as the other WoT WG members for their comments, contributions and guidance.
