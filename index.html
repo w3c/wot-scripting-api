@@ -1008,6 +1008,8 @@
                                     optional InteractionOptions options = null);
         Promise&lt;undefined&gt; writeMultipleProperties(PropertyMap valueMap,
                                     optional InteractionOptions options = null);
+        /*Promise&lt;undefined&gt; writeAllProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);*/
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = null,
                                     optional InteractionOptions options = null);
@@ -1418,16 +1420,6 @@
         </ol>
       </div>
     </section>
-    <section>
-      <h3>The <dfn>writeAllProperties()</dfn> method</h3>
-      <div>
-      <p class="ednote">
-        <code>writeAllProperties</code> method is still under discussion. Meanwhile, please 
-        use <code>writeMultipleProperties</code> method instead. 
-      </p>
-      </div>
-    </section>
-
     <section>
       <h3>The <dfn>WotListener</dfn> callback</h3>
       <p>
@@ -3656,7 +3648,10 @@
 <section class="appendix" id="idl-index"> <h3>Full Web IDL</h3>
   <!-- ReSpec will gather all Web IDL code here. -->
 </section>
-
+<p class="ednote" title="Where is the writeAllProperties method?"">
+  <code>writeAllProperties</code> method is still under discussion. Meanwhile, please
+  use <code>writeMultipleProperties</code> method instead.
+</p>
   <section class="appendix"> <h2>Acknowledgements</h2>
     <p>
       Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) and Kazuaki Nimura (until December 2018) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Elena Reshetova, Michael McCool as well as the other WoT WG members for their comments, contributions and guidance.
