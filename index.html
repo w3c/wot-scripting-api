@@ -1705,7 +1705,7 @@
           let value = undefined;
           try {
             value = await response.value();
-          catch(err) {
+          } catch(err) {
             // if response.value() fails, try low-level stream read
             if (response.dataUsed)
               return undefined;  // or make a second request
