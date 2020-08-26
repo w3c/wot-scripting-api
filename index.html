@@ -1380,7 +1380,7 @@
             Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
           </li>
           <li>
-            For each |name:string| in |propertyNames|, let |property| be the value of ||td||'s |properties|'s |name|. 
+            For each |name:string| in |propertyNames|, let |property| be the value of ||td||'s |properties|'s |name|.
             If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
             and abort these steps.
           </li>
@@ -3632,24 +3632,10 @@
     </p>
   </section>
 
-  <section> <h3 class="appendix" id="openissues">Open issues</h3>
-    <div>
-      The following problems are being discussed and need most attention:
-      <ul>
-        <li>
-          Script management and runtime related issues (https://github.com/w3c/wot-scripting-api/issues/)
-        </li>
-        <li>
-          An explicit API for adding and removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions on {{ExposedThing}} (it was present in earlier versions, but removed for complexity and a simpler way to do it.
-        </li>
-      </ul>
-    </div>
-  </section>
-
 <section class="appendix" id="idl-index"> <h3>Full Web IDL</h3>
   <!-- ReSpec will gather all Web IDL code here. -->
 </section>
-<p class="ednote" title="Where is the writeAllProperties method?"">
+<p class="ednote" title="Where is the writeAllProperties method?">
   <code>writeAllProperties</code> method is still under discussion. Meanwhile, please
   use <code>writeMultipleProperties</code> method instead.
 </p>
