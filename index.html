@@ -1689,57 +1689,48 @@
           let td = res.json();
           let thing = new ConsumedThing(td);
           console.log("Thing " + thing.getThingDescription().title + " consumed.");
-        } catch(e) {
-          console.log("TD fetch error: " + e.message); },
+        } catch (e) {
+          console.log("TD fetch error: " + e.message);
         };
-
+        
         try {
           // subscribe to property change for “temperature”
-          await thing.observeProperty("temperature", value => {
-            console.log("Temperature changed to: " + parseData(value));
+          await thing.observeProperty("temperature", async (data) => {
+            try {
+              console.log("Temperature changed to: " + await data.value());
+            } catch (error) {
+              console.error("Cannot read the observed property temperature");
+              console.error(error);
+            }
           });
           // subscribe to the “ready” event defined in the TD
-          await thing.subscribeEvent("ready", eventData => {
-            console.log("Ready; index: " + parseData(eventData));
-            // run the “startMeasurement” action defined by TD
-            await thing.invokeAction("startMeasurement", { units: "Celsius" });
-            console.log("Measurement started.");
+          await thing.subscribeEvent("ready", async (eventData) => {
+            try {
+              console.log("Ready; index: " + await eventData.value());
+              // run the “startMeasurement” action defined by TD
+              await thing.invokeAction("startMeasurement", { units: "Celsius" });
+              console.log("Measurement started.");
+            } catch (error) {
+              console.error("Cannot read the ready event or startMeasurement failed");
+              console.error(error)
+            }
           });
-        } catch(e) {
+        } catch (e) {
           console.log("Error starting measurement.");
         }
-
-        setTimeout( async () => {
-          console.log(“Temperature: “ +
-            parseData(await thing.readProperty(“temperature”)));
-          await thing.unsubscribe(“ready”);
-          console.log("Unsubscribed from the ‘ready’ event.");
-        },
-        10000);
-
-        async function parseData(response) {
-          let value = undefined;
+        
+        setTimeout(async () => {
           try {
-            value = await response.value();
-          } catch(err) {
-            // if response.value() fails, try low-level stream read
-            if (response.dataUsed)
-              return undefined;  // or make a second request
-
-            const reader = value.data.getReader();
-            value = null;
-
-            reader.read().then(function process({ done, chunk }) {
-                if (done) {
-                  value += chunk;
-                  return value;
-                }
-                value += chunk;
-                return reader.read().then(process);
-              });
+            const temperatureData = await thing.readProperty("temperature")
+            const temperature = await temperatureData.value();
+            console.log("Temperature: " + temperature);
+        
+            await thing.unsubscribe("ready");
+            console.log("Unsubscribed from the ‘ready’ event.");
+          } catch (error) {
+            console.log("Error in the cleanup function");
           }
-          return value;
-        };
+        }, 10000);
       </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
