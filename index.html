@@ -1736,6 +1736,92 @@
           }
         }, 10000);
       </pre>
+      <p>
+        The following shows an advance usage of {{InteractionOutput}} to read a property without a {{DataSchema}}.
+      </p>
+      <pre class="example" title="Client ArrayBuffer example">
+        /*
+        * takePicture affordance form:
+        * "form": {
+        *   "op": "invokeaction",
+        *   "href" : "http://camera.example.com:5683/takePicture",
+        *   "response": {
+        *     "contentType": "image/jpeg",
+        *     "contentCoding": "gzip"
+        *   }
+        *}
+        * See https://www.w3.org/TR/wot-thing-description/#example-23
+        */
+        let response;
+        let image;
+        try{
+          response = await thing.invokeAction(“takePicture”));
+          image = await response.value() // throws NotReadableError --> schema not defined
+        }catch(ex){
+          image = await response.arrayBuffer();
+          // image: ArrayBuffer [0x1 0x2 0x3 0x5 0x15 0x23 ...]
+        }
+      </pre>
+      <p>
+        Finally, the next two examples shows the usage of a {{ReadableStream}} from an {{InteractionOutput}}.
+      </p>
+      <pre class="example" title="Thing Client video streaming example">
+        /*{
+        "video": {
+          "description" : "the video stream of this camera",
+          "forms": [
+            {
+              "op": "readproperty",
+              "href": "http://camera.example.com/live",
+              "subprotocol": "hls"
+              "contentType": "video/mp4"
+            }
+          ]
+        }}*/
+
+        const video = await thing.readProperty("video")
+        const reader = video.data.getReader()
+        reader.read().then(function processVideo({ done, value }) {
+          if (done) {
+            console.log("live video stoped");
+            return;
+          }
+          const decoded = decode(value)
+          UI.show(decoded)
+          // Read some more, and call this function again
+          return reader.read().then(processText);
+        });
+      </pre>
+      <p>Here consider that the JSON object is too big to be read wholly in the memory. Therefore,
+        we use streaming processing to get the total number of the events recorded by the remote Web Thing.
+      </p>
+      <pre class="example" title="Client streaming processing: counting json objects">
+        /*
+        * "eventHistory":
+        * {
+        *   "description" : "A long list of the events recorderd by this thing",
+        *   "type": "array",
+        *   "forms": [
+        *     {
+        *       "op": "readproperty",
+        *       "href": "http://recorder.example.com/eventHistory",
+        *     }
+        *   ]
+        * }
+        */
+
+        // Example of streaming processing: counting json objects
+        let objectCounter = 0
+        const parser = new Parser() //User library for json streaming parsing (i.e. https://github.com/uhop/stream-json/wiki/Parser)
+        
+        parser.on('data', data => data.name === 'startObject' && ++objectCounter);
+        parser.on('end', () => console.log(`Found ${objectCounter} objects.`));
+        
+        const response = await thing.readProperty(“eventHistory”)
+        await response.data.pipeTo(parser);
+
+        // Found N objects
+      </pre>
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
 
