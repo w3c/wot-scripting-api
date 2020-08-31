@@ -1687,7 +1687,7 @@
       <p>
         The next example illustrates how to fetch a <a>TD</a> by URL, create a {{ConsumedThing}}, read metadata (title), read property value, subscribe to property change, subscribe to a WoT event, unsubscribe.
       </p>
-      <pre class="example" title="Thing Client API example">
+      <pre class="example" title="Thing Client API example with data value">
         try {
           let res = await fetch("https://tds.mythings.org/sensor11");
           let td = res.json();
@@ -1739,7 +1739,7 @@
       <p>
         The following shows an advance usage of {{InteractionOutput}} to read a property without a {{DataSchema}}.
       </p>
-      <pre class="example" title="Client ArrayBuffer example">
+      <pre class="example" title="Thing Client API example with arrayBuffer">
         /*
         * takePicture affordance form:
         * "form": {
@@ -1754,10 +1754,10 @@
         */
         let response;
         let image;
-        try{
+        try {
           response = await thing.invokeAction(“takePicture”));
           image = await response.value() // throws NotReadableError --> schema not defined
-        }catch(ex){
+        } catch(ex) {
           image = await response.arrayBuffer();
           // image: ArrayBuffer [0x1 0x2 0x3 0x5 0x15 0x23 ...]
         }
@@ -1765,7 +1765,7 @@
       <p>
         Finally, the next two examples shows the usage of a {{ReadableStream}} from an {{InteractionOutput}}.
       </p>
-      <pre class="example" title="Thing Client video streaming example">
+      <pre class="example" title="Thing Client API example with readable stream (e.g., video stream)">
         /*{
         "video": {
           "description" : "the video stream of this camera",
@@ -1795,7 +1795,7 @@
       <p>Here consider that the JSON object is too big to be read wholly in the memory. Therefore,
         we use streaming processing to get the total number of the events recorded by the remote Web Thing.
       </p>
-      <pre class="example" title="Client streaming processing: counting json objects">
+      <pre class="example" title="Thing Client API example with readable stream (e.g., counting json objects)">
         /*
         * "eventHistory":
         * {
