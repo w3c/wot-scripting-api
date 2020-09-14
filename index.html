@@ -429,6 +429,12 @@
           Resolve |promise| with |thing|.
         </li>
       </ol>
+      <p class="ednote">
+        Note the difference between constructing <a>ConsumedThing</a> and using
+        the <code>consume()</code> method: the latter also initializes the protocol
+        bindings, whereas a simple constructed object will not have <a>WoT Interactions</a>
+        initialized until they are invoked.
+      </p>
     </div>
   </section>
 
