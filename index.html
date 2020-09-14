@@ -1696,7 +1696,7 @@
         } catch (e) {
           console.log("TD fetch error: " + e.message);
         };
-        
+
         try {
           // subscribe to property change for “temperature”
           await thing.observeProperty("temperature", async (data) => {
@@ -1722,13 +1722,13 @@
         } catch (e) {
           console.log("Error starting measurement.");
         }
-        
+
         setTimeout(async () => {
           try {
             const temperatureData = await thing.readProperty("temperature")
             const temperature = await temperatureData.value();
             console.log("Temperature: " + temperature);
-        
+
             await thing.unsubscribe("ready");
             console.log("Unsubscribed from the ‘ready’ event.");
           } catch (error) {
@@ -1813,10 +1813,10 @@
         // Example of streaming processing: counting json objects
         let objectCounter = 0
         const parser = new Parser() //User library for json streaming parsing (i.e. https://github.com/uhop/stream-json/wiki/Parser)
-        
+
         parser.on('data', data => data.name === 'startObject' && ++objectCounter);
         parser.on('end', () => console.log(`Found ${objectCounter} objects.`));
-        
+
         const response = await thing.readProperty(“eventHistory”)
         await response.data.pipeTo(parser);
 
@@ -2874,7 +2874,16 @@
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting ||td||
             as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
-            Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
+            Make a request to the underlying platform to initialize the
+            <a>Protocol Bindings</a> and then start serving external requests
+            for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>,
+            invoke <a>Action</a>s and manage <a>Event</a> subscriptions),
+            based on the <a>Protocol Bindings</a>.
+            If for any <a>WoT Interaction</a> there is no |form| specified that
+            is supported by the implementation, reject |promise| with a
+            {{NotSupportedError}} and abort these steps.
+            Implementations MAY reject this step for any reason (e.g. if they
+            want to enforce further checks and constraints on interaction forms).
           </li>
           <li>
             If there was an error during the request, reject |promise| with an {{Error}} object |error| with |error|'s |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
