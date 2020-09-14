@@ -2874,7 +2874,13 @@
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting ||td||
             as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
-            Make a request to the underlying platform to initialize the <a>Protocol Bindings</a> and then start serving external requests for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>, invoke <a>Action</a>s and manage <a>Event</a> subscriptions), based on the <a>Protocol Bindings</a>.
+            Make a request to the underlying platform to initialize the
+            <a>Protocol Bindings</a> and then start serving external requests
+            for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>,
+            invoke <a>Action</a>s and manage <a>Event</a> subscriptions),
+            based on the <a>Protocol Bindings</a>.
+            Implementations MAY reject this step for any reason (e.g. if they
+            want to enforce further checks and constraints on interaction forms).
           </li>
           <li>
             If there was an error during the request, reject |promise| with an {{Error}} object |error| with |error|'s |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
