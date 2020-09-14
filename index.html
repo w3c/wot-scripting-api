@@ -1696,7 +1696,7 @@
         } catch (e) {
           console.log("TD fetch error: " + e.message);
         };
-        
+
         try {
           // subscribe to property change for “temperature”
           await thing.observeProperty("temperature", async (data) => {
@@ -1722,13 +1722,13 @@
         } catch (e) {
           console.log("Error starting measurement.");
         }
-        
+
         setTimeout(async () => {
           try {
             const temperatureData = await thing.readProperty("temperature")
             const temperature = await temperatureData.value();
             console.log("Temperature: " + temperature);
-        
+
             await thing.unsubscribe("ready");
             console.log("Unsubscribed from the ‘ready’ event.");
           } catch (error) {
@@ -1813,10 +1813,10 @@
         // Example of streaming processing: counting json objects
         let objectCounter = 0
         const parser = new Parser() //User library for json streaming parsing (i.e. https://github.com/uhop/stream-json/wiki/Parser)
-        
+
         parser.on('data', data => data.name === 'startObject' && ++objectCounter);
         parser.on('end', () => console.log(`Found ${objectCounter} objects.`));
-        
+
         const response = await thing.readProperty(“eventHistory”)
         await response.data.pipeTo(parser);
 
@@ -1935,7 +1935,7 @@
         It returns a {{Promise}} and resolves with an {{ReadableStream}} object or an
         <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">
         ECMAScript value</a> conforming to <a>DataSchema</a>, or rejects with an
-        error if the property is not found or the value cannot be retrieved.
+        error.
       </p>
     </section>
 
