@@ -15,19 +15,21 @@ As discussed in [issue 3](https://github.com/w3c/wot-scripting-api/issues/3), an
 Resolutions:
 - The browser implementations of the WoT Scripting API uses a namespace object `wot` in the browser.
 - Non-browser implementations that use various runtimes may use either a namespace object `wot`, or an API object provided by the `require()` or `import()` or similar mechanisms.
-- The `ConsumedThing` and `ExposedThing` objects are created by factory methods.
-
+- The `ConsumedThing` and `ExposedThing` objects are expected to be created by factory methods, though constructors are defined.
+- Interaction data can be retrieved with an attempted conversion by implementation as convenience interface for most JavaScript types, or as streams the applications can interpret.
+- Errors during protocol operations are exposed to applications.
 
 ## Discovery API
 
-Based on [WoT Current Practices](https://w3c.github.io/wot/current-practices/wot-practices.html#td-discovery), there are different discovery types: local (to the hardware), proximity based (such as BLE or NFC), registry (directory) based, and broadcast/multicast based. The discovery type is specific to the underlying protocol bindings.
+Represents the second stage of discovery in the [2-stage discovery process](https://github.com/w3c/wot-discovery/blob/master/proposals/directory.md), i.e. the
+operational stage when discovery is configured and discovery queries may be served.
 
 The discovery results may be filtered either at the source or at reception, by constraints made on the Thing Description.
 
 Based on [issue 16](https://github.com/w3c/wot-scripting-api/issues/16) there is a need to be able to tell the WoT Runtime to stop discovery (or in the case of open ended requests, suppress further discovery results). Therefore returning `Promise` was not an option any more, since cancellable `Promise`s were [dropped](https://github.com/tc39/proposal-cancelable-promises).
 
 Resolutions:
-- Use [Observables](https://github.com/tc39/proposal-observable) for controlling the discovery process (subscribe, unsubscribe).
+- Use [Observables](https://github.com/tc39/proposal-observable) or similar pattern for controlling the discovery process (subscribe, unsubscribe, handle notifications).
 - Use a single filter definition that also contains a property for discovery type, defaulting to `"any"`. It is simpler and more intuitive to use than having a separate parameter for discovery type. Some of the discovery types, such as registry/directory based discovery also require another parameter for the address of the directory. This can be provided as a required property in the discovery filter, described in the discovery algorithm.
 
 ## Server API (`ExposedThing`)
