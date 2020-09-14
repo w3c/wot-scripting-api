@@ -1017,15 +1017,13 @@
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = null,
                                     optional InteractionOptions options = null);
-        Promise&lt;undefined&gt; observeProperty(DOMString name,
-                                    WotListener listener,
+        Promise&lt;Subscription&gt; observeProperty(DOMString name,
+                                    InteractionListener listener,
+                                    optional ErrorListener onerror,
                                     optional InteractionOptions options = null);
-        Promise&lt;undefined&gt; unobserveProperty(DOMString name,
-                                    optional InteractionOptions options = null);
-        Promise&lt;undefined&gt; subscribeEvent(DOMString name,
-                                    WotListener listener,
-                                    optional InteractionOptions options = null);
-        Promise&lt;undefined&gt; unsubscribeEvent(DOMString name,
+        Promise&lt;Subscription&gt; subscribeEvent(DOMString name,
+                                    InteractionListener listener,
+                                    optional ErrorListener onerror,
                                     optional InteractionOptions options = null);
         ThingDescription getThingDescription();
       };
@@ -1036,13 +1034,20 @@
         any data;
       };
 
+      [SecureContext, Exposed=(Window,Worker)]
+      interface Subscription {
+        readonly attribute boolean active;
+        Promise&lt;undefined&gt; stop(optional InteractionOptions options = null);
+      };
+
       typedef object PropertyMap;
 
-      callback WotListener = undefined(InteractionOutput data);
+      callback InteractionListener = undefined(InteractionOutput data);
+      callback ErrorListener = undefined(Error error);
     </pre>
     <p class="ednote" title="Where is the writeAllProperties method?">
       The <code>writeAllProperties()</code> method is still under discussion.
-      eanwhile, use the <code>writeMultipleProperties()</code> method instead.
+      Meanwhile, use the <code>writeMultipleProperties()</code> method instead.
     </p>
 
     <section>
@@ -1081,53 +1086,6 @@
       <p>
         Returns the <a>internal slot</a> ||td|| of the {{ConsumedThing}} object that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
         Applications may consult the <a>Thing</a> metadata stored in ||td|| in order to introspect its capabilities before interacting with it.
-      </p>
-    </section>
-
-    <section data-dfn-for="InteractionOptions">
-      <h3>
-        The <dfn>InteractionOptions</dfn> dictionary
-      </h3>
-      <p>
-        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>.
-      </p>
-      <p>
-        The <dfn>formIndex</dfn> property, if defined, represents an application
-        hint for which <code>Form</code> definition, identified by this index,
-        of the <a>TD</a> to use for the given WoT interaction.
-        Implementations SHOULD use the <code>Form</code> with this index for
-        making the interaction, but MAY override this value if the index is not
-        found or not valid.
-        If not defined, implementations SHOULD attempt to use the
-        <code>Form</code> definitions in order of appearance as listed in the
-        <a>TD</a> for the given Wot Interaction.
-      </p>
-      <p>
-        The <dfn>uriVariables</dfn> property if defined, represents the URI
-        template variables to be used with the WoT Interaction that are represented
-        as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">
-        parsed JSON objects</a> defined in [[!WOT-TD]].
-      </p>
-      <p class="ednote">
-        The support for URI variables comes from the need, exposed by the [[[WOT-TD]]] specification, to be able to describe
-        existing REST-ful endpoints that use them. However, it should be possible to write a Thing Description that would use
-        <a>Action</a>s for representing this kind of interactions and model the URI variables as action parameters. In that case,
-        implementations can serialize the parameters as URI variables, and therefore, the |options| parameter could be
-        dismissed.
-      </p>
-      <p>
-        The <dfn>data</dfn> property if defined, represents additional opaque
-        data that needs to be passed to the interaction.
-      </p>
-    </section>
-
-    <section>
-      <h3>The <dfn>PropertyMap</dfn> type</h3>
-      <p>
-        Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
-      </p>
-      <p class="ednote">
-         It could be defined in Web IDL (as well as {{ThingDescription}}) as a <a href="https://heycam.github.io/webidl/#idl-maplike">maplike</a> interface from <i>string</i> to <i>any</i>.
       </p>
     </section>
 
@@ -1432,23 +1390,13 @@
         </ol>
       </div>
     </section>
-    <section>
-      <h3>The <dfn>WotListener</dfn> callback</h3>
-      <p>
-        User provided callback that is given an argument of type
-        {{InteractionOutput}} and is used for observing <a>Property</a> changes
-        and handling <a>Event</a> notifications.
-        Since subscribing to <a>Events</a> are WoT interactions and might take
-        options or even data, they are not modelled with software events.
-      </p>
-    </section>
 
     <section>
       <h3>The <dfn>observeProperty()</dfn> method</h3>
       <div>
         Makes a request for <a>Property</a> value change notifications.
-        Takes as arguments |propertyName:string|, |listener:WotListener| and
-        optionally |options:InteractionOptions|.
+        Takes as arguments |propertyName:string|, |listener:InteractionListener| and
+        optionally |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} that resolves on success and rejects on failure.
         The method MUST run the following steps:
         <ol>
@@ -1463,82 +1411,74 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
-            |propertyName|.
+            If |onerror| is not `null` and is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `observeproperty`.
+            Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
+            set as follows:
+            <ul>
+              <li>
+                Let |subscription|'s ||type|| be `"property"`.
+              </li>
+              <li>
+                Let |subscription|'s ||name|| be the value of |propertyName|.
+              </li>
+              <li>
+                Let |subscription|'s ||interaction|| be the value of ||td||'s
+                |properties|'s |propertyName|.
+              </li>
+              <li>
+                Let |subscription|'s ||form|| be the <a>Form</a> associated with
+                |formIndex| in ||interaction||'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let ||form|| be the first
+                <a>Form</a> in ||interaction||'s |forms| array whose |op| is
+                `"observeproperty"`.
+              </li>
+              <li>
+                If |subscription|'s ||form|| is failure, reject |promise| with a
+                {{SyntaxError}} and abort these steps.
+              </li>
+            </ul>
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+            Make a request to the underlying platform to observe the
+            <a>Property</a> identified by |propertyName| with |form| and
+            optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to observe <a>Property</a> identified by |propertyName| with |form| and optional URI templates given in |options|' |uriVariables|.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+            If the request fails, reject |promise| with the error received from
+            the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve |promise|.
           </li>
           <li>
-            Whenever the underlying platform receives a notification for this subscription with new <a>Property</a> value |value|, run the following sub-steps:
+            Whenever the underlying platform receives a notification for this
+            subscription with a new <a>Property</a> value |value|,
+            run the following sub-steps:
             <ul>
               <li>
                 Let |reply| be the result of running <a>parse interaction response</a>
-                with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
+                with |value|, ||form|| and ||interaction||. If that throws, reject |promise| with that exception and abort these steps.
               </li>
               <li>
                 Invoke |listener| with |reply|.
               </li>
             </ul>
           </li>
-        </ol>
-      </div>
-    </section>
-
-    <section>
-      <h3>The <dfn>unobserveProperty()</dfn> method</h3>
-      <div>
-        Makes a request for unsubscribing from <a>Property</a> value change notifications.
-        Takes as arguments |propertyName:string| and optionally |options:InteractionOptions|.
-        It returns a {{Promise}} that resolves on success and rejects on failure.
-        The method MUST run the following steps:
-        <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
-          </li>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
-            |propertyName|.
-          </li>
-          <li>
-            If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `unobserveproperty`.
-          </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to stop observing the <a>Property</a> identified by |propertyName|, with |form| and optional URI templates given in |options|' |uriVariables|.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Otherwise resolve |promise|.
-          </li>
-          <li>
-            If the underlying platform receives further notifications for this subscription with new <a>Property</a> value, implementations SHOULD
-            silently suppress them.
+            Whenever the underlying platform receives an error notification for
+            this subscription with an |error:Error|, run the following sub-steps:
+            <ul>
+              <li>
+                If the error is irrecoverable and stops the subscription, set
+                |subscription|'s |active| to `false` and suppress further notifications.
+              </li>
+              <li>
+                If |onerror| is a {{Function}}, invoke it with |error|.
+              </li>
+            </ul>
           </li>
         </ol>
       </div>
@@ -1601,7 +1541,7 @@
       <div>
         Makes a request for subscribing to <a>Event</a> notifications.
         Takes as arguments |eventName:string|, |listener:WoTListener| and
-        optionally |options:InteractionOptions|.
+        optionally  |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} to signal success or failure.
         The method MUST run the following steps:
         <ol>
@@ -1616,77 +1556,228 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
+            If |onerror| is not `null` and is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `subscribeevent`.
+            Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
+            set as follows:
+            <ul>
+              <li>
+                Let |subscription|'s ||type|| be `"event"`.
+              </li>
+              <li>
+                Let |subscription|'s ||name|| be the value of |eventName|.
+              </li>
+              <li>
+                Let |subscription|'s ||interaction|| be the value of ||td||'s
+                |events|'s |eventName|.
+              </li>
+              <li>
+                Let |subscription|'s ||form|| be the <a>Form</a> associated with
+                |formIndex| in ||interaction||'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let ||form|| be the first
+                <a>Form</a> in ||interaction||'s |forms| array whose |op| is
+                `"subscribeevent"`.
+              </li>
+              <li>
+                If |subscription|'s ||form|| is failure, reject |promise| with a
+                {{SyntaxError}} and abort these steps.
+              </li>
+            </ul>
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to subscribe to an <a>Event</a> identified by |eventName:string| with |form| and optional URI templates given in |options|' |uriVariables|
+            Make a request to the underlying platform via the <a>Protocol Bindings</a>
+            to subscribe to an <a>Event</a> identified by |eventName:string| with
+            ||form||, optional URI templates given in |options|' |uriVariables|
             and optional subscription data given in |options|'s |data|.
           </li>
           <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+            If the request fails, reject |promise| with the error received from
+            the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Otherwise resolve |promise|.
           </li>
           <li>
-            Whenever the underlying platform receives a notification for this <a>Event</a> subscription, implementations SHOULD invoke
-            |listener| with the result of running <a>parse interaction response</a> on the data provided with the <a>Event</a>, |form| and |interaction|.
+            Whenever the underlying platform receives a notification for this
+            <a>Event</a> subscription, run the following sub-steps:
+            <ol>
+              <li>
+                Invoke |listener| with the result of running
+                <a>parse interaction response</a> on the data provided with the
+                <a>Event</a>, ||form|| and ||interaction||.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Whenever the underlying platform receives an error notification for
+            this subscription with an |error:Error|, run the following sub-steps:
+            <ul>
+              <li>
+                If the error is irrecoverable and stops the subscription, set
+                |subscription|'s |active| to `false` and suppress further notifications.
+              </li>
+              <li>
+                If |onerror| is a {{Function}}, invoke it with |error|.
+              </li>
+            </ul>
           </li>
         </ol>
       </div>
     </section>
 
+    <section data-dfn-for="InteractionOptions">
+      <h3>
+        The <dfn>InteractionOptions</dfn> dictionary
+      </h3>
+      <p>
+        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>.
+      </p>
+      <p>
+        The <dfn>formIndex</dfn> property, if defined, represents an application
+        hint for which <code>Form</code> definition, identified by this index,
+        of the <a>TD</a> to use for the given WoT interaction.
+        Implementations SHOULD use the <code>Form</code> with this index for
+        making the interaction, but MAY override this value if the index is not
+        found or not valid.
+        If not defined, implementations SHOULD attempt to use the
+        <code>Form</code> definitions in order of appearance as listed in the
+        <a>TD</a> for the given Wot Interaction.
+      </p>
+      <p>
+        The <dfn>uriVariables</dfn> property if defined, represents the URI
+        template variables to be used with the WoT Interaction that are represented
+        as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">
+        parsed JSON objects</a> defined in [[!WOT-TD]].
+      </p>
+      <p class="ednote">
+        The support for URI variables comes from the need, exposed by the [[[WOT-TD]]] specification, to be able to describe
+        existing REST-ful endpoints that use them. However, it should be possible to write a Thing Description that would use
+        <a>Action</a>s for representing this kind of interactions and model the URI variables as action parameters. In that case,
+        implementations can serialize the parameters as URI variables, and therefore, the |options| parameter could be
+        dismissed.
+      </p>
+      <p>
+        The <dfn>data</dfn> property if defined, represents additional opaque
+        data that needs to be passed to the interaction.
+      </p>
+    </section>
+
     <section>
-      <h3>The <dfn>unsubscribeEvent()</dfn> method</h3>
-      <div>
-        Makes a request for unsubscribing from <a>Event</a> notifications.
-        Takes as arguments |eventName:string| and optionally
-        |options:InteractionOptions|.
-        It returns a {{Promise}} to signal success or failure.
-        The method MUST run the following steps:
-        <ol>
+      <h3>The <dfn>PropertyMap</dfn> type</h3>
+      <p>
+        Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
+      </p>
+      <p class="ednote">
+         It could be defined in Web IDL (as well as {{ThingDescription}}) as a <a href="https://heycam.github.io/webidl/#idl-maplike">maplike</a> interface from <i>string</i> to <i>any</i>.
+      </p>
+    </section>
+
+
+    <section>
+      <h3>The <dfn>InteractionListener</dfn> callback</h3>
+      <p>
+        User provided callback that is given an argument of type
+        {{InteractionOutput}} and is used for observing <a>Property</a> changes
+        and handling <a>Event</a> notifications.
+        Since subscribing to <a>Events</a> are WoT interactions and might take
+        options or even data, they are not modelled with software events.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>ErrorListener</dfn> callback</h3>
+      <p>
+        User provided callback that is given an argument of type
+        {{Error}} and is used for conveying critical and non-critical errors
+        from the <a>Protocol Bindings</a> to applications.
+      </p>
+    </section>
+
+    <section data-dfn-for="Subscription">
+      <h3>The <dfn>Subscription</dfn> interface</h3>
+      <p>
+        Represents a subscription to <a>Property</a> change and <a>Event</a>
+        interactions. It has the following <a>internal slots</a>:
+        <ul>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            ||type|| is either `"property"` or `"event"`, set by the
+            subscription algorithm,
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            ||name|| is the <a>Property</a> or <a>Event</a> name,
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s |eventName|.
+            ||interaction|| denotes the <a>Thing Description</a> fragment that
+            describes the <a>WoT interaction</a>,
           </li>
           <li>
-            If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `unsubscribeevent`.
+            ||form|| is the <a>Form</a> associated with the subscription.
           </li>
-          <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
-          </li>
-          <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to unsubscribe from the <a>Event</a> identified by |eventName| with |form| and optional URI templates given in |options|' |uriVariables|
-            and optional unsubscribe data given in |options|'s |data|.
-          </li>
-          <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
-          </li>
-          <li>
-            Resolve |promise|.
-          </li>
-          <li>
-            If the underlying platform receives further notifications for this <a>Event</a> subscription, implementations SHOULD silently suppress them.
-          </li>
-        </ol>
-      </div>
+        </ul>
+      </p>
+      <p>
+        The <dfn>active</dfn> boolean property denotes if the subscription is
+        active, i.e. it is not stopped because of an error or because of invocation
+        of the <code>stop()</code> method.
+      </p>
+      <section>
+        <h4>The <dfn>stop()</dfn> method</h4>
+        <p>
+          Stops delivering notifications for the subscription. It takes an
+          optional parameter |options:InteractionOptions| and returns a {{Promise}}.
+          When invoked, the method MUST execute the following steps:
+          <ol>
+            <li>
+              Return a {{Promise}} |promise:Promise| and execute the next steps
+              <a>in parallel</a>.
+            </li>
+            <li>
+              If invoking this method is not allowed for the current scripting
+              context for security reasons, reject |promise| with a
+              {{SecurityError}} and abort these steps.
+            </li>
+            <li>
+              If |options|' |formIndex| is defined, let |form| be the <a>Form</a>
+              associated with |formIndex| in ||interaction||'s |forms| array,
+              otherwise let |form| be the first <a>Form</a> in ||interaction||'s
+              |forms| array whose |op| is `"unobserveproperty"` if ||type|| is
+              `"property"` or whose |op| is `"unsubscribeevent"` if ||type|| is
+              `"event"`.
+            </li>
+            <li>
+              If |form| is failure, reject |promise| with a {{SyntaxError}} and
+              abort these steps.
+            </li>
+            <li>
+              If ||name|| is `"property"`, make a request to the underlying
+              platform via the <a>Protocol Bindings</a> to stop observing the
+              <a>Property</a> identified by ||name|| with |form| and optional
+              URI templates given in |options|' |uriVariables|.
+            </li>
+            <li>
+              Otherwise, if ||name|| is `"event"`, make a request to the underlying
+              platform via the <a>Protocol Bindings</a> to unsubscribe from the
+              <a>Event</a> identified by ||name|| with |form|, with optional URI
+              templates given in |options|' |uriVariables| and optional
+              unsubscribe data given in |options|'s |data|.
+            </li>
+            <li>
+              If the request fails, reject |promise| with the error received from
+              the <a>Protocol Bindings</a> and abort these steps.
+            </li>
+            <li>
+              Otherwise set <a href="#dom-subscription-active">active</a> to
+              `false` and resolve |promise|.
+            </li>
+            <li>
+              If the underlying platform receives further notifications for this
+              subscription, implementations SHOULD silently suppress them.
+            </li>
+          </ol>
+        </p>
+      </section>
     </section>
 
     <section>
