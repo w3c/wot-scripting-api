@@ -1731,7 +1731,7 @@
         active, i.e. it is not stopped because of an error or because of invocation
         of the <code>stop()</code> method.
       </p>
-      <div>
+      <section><h4>Internal slots for {{Subscription}}</h4>
         A {{Subscription}} object has the following <a>internal slots</a>:
         <table class="simple">
           <thead>
@@ -1770,7 +1770,7 @@
            </tr>
           </tbody>
         </table>
-      </div>
+      </section>
       <section>
         <h4>The <dfn>stop()</dfn> method</h4>
         <p>
@@ -1788,27 +1788,28 @@
               {{SecurityError}} and abort these steps.
             </li>
             <li>
-              If |options|' |formIndex| is defined, let |form| be the <a>Form</a>
-              associated with |formIndex| in [[\interaction]]'s |forms| array,
-              otherwise let |form| be the first <a>Form</a> in [[\interaction]]'s
-              |forms| array whose |op| is `"unobserveproperty"` if [[\type]] is
-              `"property"` or whose |op| is `"unsubscribeevent"` if [[\type]] is
-              `"event"`.
+              If |options|' |formIndex| is defined, let |unsubscribeForm| be the
+              <a>Form</a> associated with |formIndex| in [[\interaction]]'s
+              |forms| array.
             </li>
             <li>
-              If |form| is failure, reject |promise| with a {{SyntaxError}} and
+              Otherwise let |unsubscribeForm| be the result of running the
+              <a>find a matching unsubscribe form</a> algorithm given [[\form]].
+            </li>
+            <li>
+              If |unsubscribeForm| is failure, reject |promise| with a {{SyntaxError}} and
               abort these steps.
             </li>
             <li>
-              If [[\name]] is `"property"`, make a request to the underlying
+              If [[\type]] is `"property"`, make a request to the underlying
               platform via the <a>Protocol Bindings</a> to stop observing the
-              <a>Property</a> identified by [[\name]] with |form| and optional
+              <a>Property</a> identified by [[\name]] with |unsubscribeForm| and optional
               URI templates given in |options|' |uriVariables|.
             </li>
             <li>
-              Otherwise, if [[\name]] is `"event"`, make a request to the underlying
+              Otherwise, if [[\type]] is `"event"`, make a request to the underlying
               platform via the <a>Protocol Bindings</a> to unsubscribe from the
-              <a>Event</a> identified by [[\name]] with |form|, with optional URI
+              <a>Event</a> identified by [[\name]] with |unsubscribeForm|, with optional URI
               templates given in |options|' |uriVariables| and optional
               unsubscribe data given in |options|'s |data|.
             </li>
@@ -1826,6 +1827,57 @@
             </li>
           </ol>
         </p>
+      </section>
+      <section><h4>Finding an unsubscribe <a>Form</a></h4>
+        To <dfn>find a matching unsubscribe form</dfn> given |subscribeForm|
+        in the context of a {{Subscription}} object, run the following steps:
+        <ol>
+          <p class="note">
+            This algorithm is under development and is <em>non-normative</em>.
+            Implementations MAY choose another algorithm to find a matching
+            `unsubscribe` <a>Form</a> to a given `subscribe` <a>Form</a>.
+          </p>
+          <li>
+            Let |results| be an empty array.
+          </li>
+          <li>
+            For each |form| in [[\interaction]]'s |forms| array,
+            <ol>
+              <li>
+                Add an <a>internal slot</a> [[\matchLevel]] on |form| and set
+                its value to `0`.
+              </li>
+              <li>
+                If |form|'s |op| is `"unobserveproperty"` if [[\type]] is
+                `"property"` or if |form|'s |op| is `"unsubscribeevent"`
+                if [[\type]] is`"event"`,
+                <ol>
+                  <li>
+                    Set the <a>internal slot</a> [[\matchLevel]] on |form| to 1
+                    and add |form| to |results|.
+                  </li>
+                  <li>
+                    If |form|'s |href| and [[\subscribeForm]]'s |href| are
+                    <a href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain">
+                    same origin-domain</a>, increment |form|'s [[\matchLevel]].
+                  </li>
+                  <li>
+                    If |form|'s |contentType| is equal to [[\subscribeForm]]'s
+                    |contentType| and |form|'s [[\matchLevel]] is greater than 2,
+                    increment |form|'s [[\matchLevel]].
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li>
+            If |results| is empty, return `null` and terminate these steps.
+          </li>
+          <li>
+            Return the first |form| in |results| that has the highest
+            [[\matchLevel]] value.
+          </li>
+        </ol>
       </section>
     </section>
 
