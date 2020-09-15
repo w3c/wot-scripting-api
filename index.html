@@ -1049,6 +1049,28 @@
       The <code>writeAllProperties()</code> method is still under discussion.
       Meanwhile, use the <code>writeMultipleProperties()</code> method instead.
     </p>
+    <section>
+      <h4>Internal slots for ConsumedThing</h4>
+      <p>
+        A {{ConsumedThing}} object has the following <a>internal slots</a>:
+      </p>
+      <table class="simple">
+        <thead>
+         <tr>
+          <th>Internal Slot</th>
+          <th>Initial value</th>
+          <th>Description (<em>non-normative</em>)</th>
+         </tr>
+        </thead>
+        <tbody data-link-for="ConsumedThing">
+         <tr>
+          <td><dfn>[[\td]]</dfn></td>
+          <td>`null`</td>
+          <td>The <a>Thing Description</a> of the {{ConsumedThing}}.</td>
+         </tr>
+        </tbody>
+      </table>
+    </section>
 
     <section>
       <h4>Constructing <code>ConsumedThing</code></h4>
@@ -1072,7 +1094,7 @@
             Let |thing:ConsumedThing| be a new {{ConsumedThing}} object.
           </li>
           <li>
-            Let ||td|| be an <a>internal slot</a> of |thing| and let |td| be its value.
+            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
           </li>
           <li>
             Return |thing|.
@@ -1084,8 +1106,10 @@
     <section>
       <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        Returns the <a>internal slot</a> ||td|| of the {{ConsumedThing}} object that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
-        Applications may consult the <a>Thing</a> metadata stored in ||td|| in order to introspect its capabilities before interacting with it.
+        Returns the <a>internal slot</a> [[\td]] of the {{ConsumedThing}} object
+        that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
+        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
+        order to introspect its capabilities before interacting with it.
       </p>
     </section>
 
@@ -1108,7 +1132,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |propertyName|.
           </li>
           <li>
@@ -1163,7 +1187,7 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readmultipleproperties`.
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be the first <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readmultipleproperties`.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -1185,7 +1209,7 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |schema| be the value of ||td||'s |properties|'s |key|.
+                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
@@ -1221,7 +1245,7 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array, otherwise let |form| be the first <a>Form</a> in ||td||'s |forms| array whose |op| is `readallproperties`.
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be the first <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readallproperties`.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -1246,7 +1270,7 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |schema| be the value of ||td||'s |properties|'s |key|.
+                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
@@ -1277,7 +1301,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |propertyName|.
           </li>
           <li>
@@ -1337,8 +1361,8 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in ||td||'s |forms| array,
-            otherwise let |form| be the first <a>Form</a> in ||td||'s |forms|
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array,
+            otherwise let |form| be the first <a>Form</a> in [[\td]]'s |forms|
             array whose |op| is `writemultipleproperties`.
           </li>
           <li>
@@ -1349,7 +1373,7 @@
             Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
           </li>
           <li>
-            For each |name:string| in |propertyNames|, let |property| be the value of ||td||'s |properties|'s |name|.
+            For each |name:string| in |propertyNames|, let |property| be the value of [[\td]]'s |properties|'s |name|.
             If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
             and abort these steps.
           </li>
@@ -1360,7 +1384,7 @@
           <li>
             Let |schemas:object| be an object and for each string |name:string|
             in |propertyNames| add a property with key |name| and let its value
-            be the value of ||td||'s |properties|'s |name|.
+            be the value of [[\td]]'s |properties|'s |name|.
           </li>
           <li>
             For each key |key:string| in |properties|, take its value as |value|
@@ -1419,24 +1443,24 @@
             set as follows:
             <ul>
               <li>
-                Let |subscription|'s ||type|| be `"property"`.
+                Let |subscription|'s [[\type]] be `"property"`.
               </li>
               <li>
-                Let |subscription|'s ||name|| be the value of |propertyName|.
+                Let |subscription|'s [[\name]] be the value of |propertyName|.
               </li>
               <li>
-                Let |subscription|'s ||interaction|| be the value of ||td||'s
+                Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
                 |properties|'s |propertyName|.
               </li>
               <li>
-                Let |subscription|'s ||form|| be the <a>Form</a> associated with
-                |formIndex| in ||interaction||'s |forms| array if |option|'s
-                |formIndex| is defined, otherwise let ||form|| be the first
-                <a>Form</a> in ||interaction||'s |forms| array whose |op| is
+                Let |subscription|'s [[\form]] be the <a>Form</a> associated with
+                |formIndex| in [[\interaction]]'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let [[\form]] be the first
+                <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
                 `"observeproperty"`.
               </li>
               <li>
-                If |subscription|'s ||form|| is failure, reject |promise| with a
+                If |subscription|'s [[\form]] is failure, reject |promise| with a
                 {{SyntaxError}} and abort these steps.
               </li>
             </ul>
@@ -1460,7 +1484,8 @@
             <ul>
               <li>
                 Let |reply| be the result of running <a>parse interaction response</a>
-                with |value|, ||form|| and ||interaction||. If that throws, reject |promise| with that exception and abort these steps.
+                with |value|, [[\form]] and [[\interaction]].
+                If that throws, reject |promise| with that exception and abort these steps.
               </li>
               <li>
                 Invoke |listener| with |reply|.
@@ -1501,7 +1526,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |actions|'s
+            Let |interaction| be the value of [[\td]]'s |actions|'s
             |actionName|.
           </li>
           <li>
@@ -1564,24 +1589,24 @@
             set as follows:
             <ul>
               <li>
-                Let |subscription|'s ||type|| be `"event"`.
+                Let |subscription|'s [[\type]] be `"event"`.
               </li>
               <li>
-                Let |subscription|'s ||name|| be the value of |eventName|.
+                Let |subscription|'s [[\name]] be the value of |eventName|.
               </li>
               <li>
-                Let |subscription|'s ||interaction|| be the value of ||td||'s
+                Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
                 |events|'s |eventName|.
               </li>
               <li>
-                Let |subscription|'s ||form|| be the <a>Form</a> associated with
-                |formIndex| in ||interaction||'s |forms| array if |option|'s
-                |formIndex| is defined, otherwise let ||form|| be the first
-                <a>Form</a> in ||interaction||'s |forms| array whose |op| is
+                Let |subscription|'s [[\form]] be the <a>Form</a> associated with
+                |formIndex| in [[\interaction]]'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let [[\form]] be the first
+                <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
                 `"subscribeevent"`.
               </li>
               <li>
-                If |subscription|'s ||form|| is failure, reject |promise| with a
+                If |subscription|'s [[\form]] is failure, reject |promise| with a
                 {{SyntaxError}} and abort these steps.
               </li>
             </ul>
@@ -1589,7 +1614,7 @@
           <li>
             Make a request to the underlying platform via the <a>Protocol Bindings</a>
             to subscribe to an <a>Event</a> identified by |eventName:string| with
-            ||form||, optional URI templates given in |options|' |uriVariables|
+            [[\form]], optional URI templates given in |options|' |uriVariables|
             and optional subscription data given in |options|'s |data|.
           </li>
           <li>
@@ -1606,7 +1631,7 @@
               <li>
                 Invoke |listener| with the result of running
                 <a>parse interaction response</a> on the data provided with the
-                <a>Event</a>, ||form|| and ||interaction||.
+                <a>Event</a>, [[\form]] and [[\interaction]].
               </li>
             </ol>
           </li>
@@ -1699,29 +1724,53 @@
       <h3>The <dfn>Subscription</dfn> interface</h3>
       <p>
         Represents a subscription to <a>Property</a> change and <a>Event</a>
-        interactions. It has the following <a>internal slots</a>:
-        <ul>
-          <li>
-            ||type|| is either `"property"` or `"event"`, set by the
-            subscription algorithm,
-          </li>
-          <li>
-            ||name|| is the <a>Property</a> or <a>Event</a> name,
-          </li>
-          <li>
-            ||interaction|| denotes the <a>Thing Description</a> fragment that
-            describes the <a>WoT interaction</a>,
-          </li>
-          <li>
-            ||form|| is the <a>Form</a> associated with the subscription.
-          </li>
-        </ul>
+        interactions.
       </p>
       <p>
         The <dfn>active</dfn> boolean property denotes if the subscription is
         active, i.e. it is not stopped because of an error or because of invocation
         of the <code>stop()</code> method.
       </p>
+      <div>
+        A {{Subscription}} object has the following <a>internal slots</a>:
+        <table class="simple">
+          <thead>
+           <tr>
+            <th>Internal Slot</th>
+            <th>Initial value</th>
+            <th>Description (<em>non-normative</em>)</th>
+           </tr>
+          </thead>
+          <tbody data-link-for="Subscription">
+           <tr>
+            <td><dfn>[[\type]]</dfn></td>
+            <td>`null`</td>
+            <td>
+              Indicates what <a>WoT Interaction</a> the {{Subscription}} refers to.
+              The value can be either `"property"` or `"event"` or `null`.
+            </td>
+           </tr>
+           <tr>
+             <td><dfn>[[\name]]</dfn></td>
+             <td>`null`</td>
+             <td>The <a>Property</a> or <a>Event</a> name.</td>
+           </tr>
+           <tr>
+             <td><dfn>[[\interaction]]</dfn></td>
+             <td>`null`</td>
+             <td>
+              The <a>Thing Description</a> fragment that describes the
+              <a>WoT interaction</a>.
+              </td>
+           </tr>
+           <tr>
+             <td><dfn>[[\form]]</dfn></td>
+             <td>`null`</td>
+             <td>The <a>Form</a> associated with the subscription.</td>
+           </tr>
+          </tbody>
+        </table>
+      </div>
       <section>
         <h4>The <dfn>stop()</dfn> method</h4>
         <p>
@@ -1740,10 +1789,10 @@
             </li>
             <li>
               If |options|' |formIndex| is defined, let |form| be the <a>Form</a>
-              associated with |formIndex| in ||interaction||'s |forms| array,
-              otherwise let |form| be the first <a>Form</a> in ||interaction||'s
-              |forms| array whose |op| is `"unobserveproperty"` if ||type|| is
-              `"property"` or whose |op| is `"unsubscribeevent"` if ||type|| is
+              associated with |formIndex| in [[\interaction]]'s |forms| array,
+              otherwise let |form| be the first <a>Form</a> in [[\interaction]]'s
+              |forms| array whose |op| is `"unobserveproperty"` if [[\type]] is
+              `"property"` or whose |op| is `"unsubscribeevent"` if [[\type]] is
               `"event"`.
             </li>
             <li>
@@ -1751,15 +1800,15 @@
               abort these steps.
             </li>
             <li>
-              If ||name|| is `"property"`, make a request to the underlying
+              If [[\name]] is `"property"`, make a request to the underlying
               platform via the <a>Protocol Bindings</a> to stop observing the
-              <a>Property</a> identified by ||name|| with |form| and optional
+              <a>Property</a> identified by [[\name]] with |form| and optional
               URI templates given in |options|' |uriVariables|.
             </li>
             <li>
-              Otherwise, if ||name|| is `"event"`, make a request to the underlying
+              Otherwise, if [[\name]] is `"event"`, make a request to the underlying
               platform via the <a>Protocol Bindings</a> to unsubscribe from the
-              <a>Event</a> identified by ||name|| with |form|, with optional URI
+              <a>Event</a> identified by [[\name]] with |form|, with optional URI
               templates given in |options|' |uriVariables| and optional
               unsubscribe data given in |options|'s |data|.
             </li>
@@ -1998,7 +2047,7 @@
             Let |thing:ExposedThing| be a new {{ExposedThing}} object.
           </li>
           <li>
-            Let ||td|| be an <a>internal slot</a> of |thing| and let |td| be its value.
+            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
           </li>
           <li>
             Return |thing|.
@@ -2055,7 +2104,7 @@
          The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the ||td|| <a>internal slot</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\td]] <a>internal slot</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -2066,7 +2115,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2074,8 +2123,8 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||readHandler|| on |interaction| to
-            |handler|.
+            Add the <a>internal slot</a> [[\readHandler]] to |interaction| and
+            set it to |handler|.
           </li>
         </ol>
       </div>
@@ -2100,7 +2149,7 @@
             steps with |name:string| and |options:InteractionOptions|:
             <ol>
               <li>
-                Let |interaction| be the value of ||td||'s |properties|'s
+                Let |interaction| be the value of [[\td]]'s |properties|'s
                 |name|.
               </li>
               <li>
@@ -2110,7 +2159,7 @@
                 Let |handler:function| be `null`.
               </li>
               <li>
-                If there is a user provided <a>internal slot</a> ||readHandler||
+                If there is a user provided <a>internal slot</a> [[\readHandler]]
                 on |interaction|, let |handler| be that.
               </li>
               <li>
@@ -2231,7 +2280,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2239,7 +2288,7 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||observeHandler|| on |interaction|
+            Set the <a>internal slot</a> [[\observeHandler]] on |interaction|
             to |handler|.
           </li>
         </ol>
@@ -2261,7 +2310,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of ||td||'s |properties|'s |name|.
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2277,11 +2326,11 @@
                 Let |handler:function| be `null.`
               </li>
               <li>
-                If there is an ||observeHandler|| <a>internal slot</a> associated
+                If there is an [[\observeHandler]] <a>internal slot</a> associated
                 with |name| on |property|, let |handler| be that.
               </li>
               <li>
-                Otherwise, if there is a ||readHandler|| <a>internal slot</a>
+                Otherwise, if there is a [[\readHandler]] <a>internal slot</a>
                 associated with |name| on |property|, let |handler| be that.
               </li>
               <li>
@@ -2294,7 +2343,8 @@
                  If |promise| rejects, abort these steps.
               </li>
               <li>
-                If |promise| resolves with |data|, then for each |observer| in |property|'s <a>internal observer list</a>, run the following
+                If |promise| resolves with |data|, then for each |observer| in
+                |property|'s <a>internal observer list</a>, run the following
                 sub-steps:
                 <ol>
                   <li>
@@ -2340,7 +2390,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2348,7 +2398,7 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||unobserveHandler|| on |interaction|
+            Set the <a>internal slot</a> [[\unobserveHandler]] on |interaction|
             to |handler|.
           </li>
         </ol>
@@ -2370,14 +2420,14 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of ||td||'s |properties|'s |name|.
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
           <li>
-            If there is an ||unobserveHandler|| defined for |name| on |property|,
-            invoke that with |options|, send back a reply following the
-            <a>Protocol Bindings</a> and abort these steps.
+            If there is an [[\unobserveHandler]] of type {{Function}} defined
+            for |name| on |property|, invoke that with |options|, send back a
+            reply following the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Let |sender| be the matching observer found in |property|'s
@@ -2440,7 +2490,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2448,7 +2498,7 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||writeHandler|| on |interaction|
+            Set the <a>internal slot</a> [[\writeHandler]] on |interaction|
             to |handler|.
           </li>
         </ol>
@@ -2472,7 +2522,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2482,7 +2532,7 @@
             Let |handler:function| be `null`.
           </li>
           <li>
-            If there is a user provided <a>internal slot</a> ||writeHandler||
+            If there is a user provided <a>internal slot</a> [[\writeHandler]]
             on |interaction|, let |handler| be that.
           </li>
           <li>
@@ -2567,7 +2617,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |actions|'s
+            Let |interaction| be the value of [[\td]]'s |actions|'s
             |name|.
           </li>
           <li>
@@ -2575,7 +2625,7 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||actionHandler|| on |interaction|
+            Set the <a>internal slot</a> [[\actionHandler]] on |interaction|
             to |action|.
           </li>
         </ol>
@@ -2596,7 +2646,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2606,7 +2656,7 @@
             Let |handler:function| be `null`.
           </li>
           <li>
-            If there is a user provided <a>internal slot</a> ||actionHandler||
+            If there is a user provided <a>internal slot</a> [[\actionHandler]]
             on |interaction|, let |handler| be its value.
           </li>
           <li>
@@ -2679,7 +2729,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2687,7 +2737,7 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||subscribeHandler|| on |interaction|
+            Set the <a>internal slot</a> [[\subscribeHandler]] on |interaction|
             to |handler|.
           </li>
           <li>
@@ -2712,7 +2762,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2720,11 +2770,11 @@
             {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            If |name| has an associated ||subscribeHandler|| <a>internal slot</a>,
+            If |name| has an associated [[\subscribeHandler]] <a>internal slot</a>,
             invoke it with |options| and abort these steps.
           </li>
           <li>
-            Otherwise, if no ||subscribeHandler|| is defined, then implement the
+            Otherwise, if no [[\subscribeHandler]] is defined, then implement the
             default subscriber mechanism:
             <ol>
               <li>
@@ -2765,7 +2815,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2773,7 +2823,7 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||unsubscribeHandler|| on |interaction|
+            Set the <a>internal slot</a> [[\unsubscribeHandler]] on |interaction|
             to |handler|.
           </li>
           <li>
@@ -2798,7 +2848,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2806,7 +2856,7 @@
             {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            If |name| has an associated ||unsubscribeHandler||
+            If |name| has an associated [[\unsubscribeHandler]]
             <a>internal slot</a> that is a function,
             invoke it with |options| and abort these steps.
           </li>
@@ -2849,7 +2899,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2857,7 +2907,7 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> ||eventHandler|| of |interaction| to
+            Set the <a>internal slot</a> [[\eventHandler]] of |interaction| to
             |eventHandler|.
           </li>
           <li>
@@ -2875,14 +2925,14 @@
         following steps:
         <ol>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
             If |data| is not defined or `null`,
             <ol>
               <li>
-                Let |eventHandler| be the value of the ||eventHandler||
+                Let |eventHandler| be the value of the [[\eventHandler]]
                 <a>internal slot</a> of |interaction|.
               </li>
               <li>
@@ -2923,7 +2973,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of ||td||'s |events|'s |name|.
+            Let |interaction| be the value of [[\td]]'s |events|'s |name|.
           </li>
           <li>
             If an <a>Event</a> with the name |name| is not found,
@@ -2952,25 +3002,25 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on the <a>internal slot</a> ||td||.
+            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\td]].
           </li>
           <li>
-            Run the <a>validate a TD</a> on ||td||. If that fails,
+            Run the <a>validate a TD</a> on [[\td]]. If that fails,
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in ||td||'s |properties|,
+            For each <a>Property</a> definition in [[\td]]'s |properties|,
             initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
             in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
-            For each <a>Event</a> definition is ||td||'s |events|,
+            For each <a>Event</a> definition is [[\td]]'s |events|,
             initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
             in order to store subscription request data needed to notify the
             <a>Event</a> listeners.
           </li>
           <li>
-            Set up the <a>WoT Interactions</a> based on introspecting ||td||
+            Set up the <a>WoT Interactions</a> based on introspecting [[\td]]
             as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
             Make a request to the underlying platform to initialize the
             <a>Protocol Bindings</a> and then start serving external requests
