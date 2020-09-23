@@ -1478,7 +1478,7 @@
             Otherwise resolve |promise|.
           </li>
           <li>
-            Whenever the underlying platform receives a notification for this
+            Whenever the underlying platform detects a notification for this
             subscription with a new <a>Property</a> value |value|,
             run the following sub-steps:
             <ul>
@@ -1493,15 +1493,19 @@
             </ul>
           </li>
           <li>
-            Whenever the underlying platform receives an error notification for
-            this subscription with an |error:Error|, run the following sub-steps:
+            Whenever the underlying platform detects an error for
+            this subscription, run the following sub-steps:
             <ul>
               <li>
                 If the error is irrecoverable and stops the subscription, set
                 |subscription|'s |active| to `false` and suppress further notifications.
               </li>
               <li>
-                If |onerror| is a {{Function}}, invoke it with |error|.
+                Let |error| be a new {{NetworkError}} and set its |message|
+                to reflect the underlying error condition.
+              </li>
+              <li>
+                If |onerror| is a {{Function}},  invoke it with |error|.
               </li>
             </ul>
           </li>
@@ -1625,7 +1629,7 @@
             Otherwise resolve |promise|.
           </li>
           <li>
-            Whenever the underlying platform receives a notification for this
+            Whenever the underlying platform detects a notification for this
             <a>Event</a> subscription, run the following sub-steps:
             <ol>
               <li>
@@ -1636,12 +1640,16 @@
             </ol>
           </li>
           <li>
-            Whenever the underlying platform receives an error notification for
-            this subscription with an |error:Error|, run the following sub-steps:
+            Whenever the underlying platform detects an error for
+            this subscription, run the following sub-steps:
             <ul>
               <li>
                 If the error is irrecoverable and stops the subscription, set
                 |subscription|'s |active| to `false` and suppress further notifications.
+              </li>
+              <li>
+                Let |error| be a new {{NetworkError}} and set its |message|
+                to reflect the underlying error condition.
               </li>
               <li>
                 If |onerror| is a {{Function}}, invoke it with |error|.
