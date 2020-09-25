@@ -295,6 +295,6 @@ declare namespace WoT {
 
 }
 
-declare module "WoT" {
+declare module "wot-typescript-definitions" {
     export = WoT;
 }
