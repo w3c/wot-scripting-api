@@ -2055,7 +2055,8 @@
                 EventSubscriptionHandler handler);
         ExposedThing setEventHandler(DOMString name,
                 EventListenerHandler eventHandler);
-        undefined emitEvent(DOMString name, InteractionInput data);
+        Promise&lt;undefined&gt; emitEvent(DOMString name,
+                InteractionInput data);
 
         Promise&lt;undefined&gt; expose();
         Promise&lt;undefined&gt; destroy();
@@ -3010,6 +3011,15 @@
                 Create an <a>Event</a> notification |response| according to the
                 <a>Protocol Bindings</a> from |data| and |subscriber|, including
                 its |options|.
+                If the underlying protocol stack permits conveying event errors and
+                if an error condition has been detected by the UA, create |response|
+                as an error notification according to the <a>Protocol Bindings</a>,
+                using |data|, |subscriber| and its |options|.
+                <p class="note">
+                  The error reporting is protocol specific and it is encapsulated by
+                  implementations. On the client end, the error listener passed with
+                  the subscription will be invoked if the client UA detects the error.
+                </p>
               </li>
               <li>
                 Send |response| to the subscriber identified by |subscriber|.
@@ -3028,14 +3038,17 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let |interaction| be the value of [[\td]]'s |events|'s |name|.
           </li>
           <li>
             If an <a>Event</a> with the name |name| is not found,
-            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+            reject |promise| with {{NotFoundError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform to emit an <a>Event</a>
