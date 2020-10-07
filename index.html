@@ -1018,11 +1018,11 @@
         Promise&lt;Subscription&gt; observeProperty(DOMString name,
                                     InteractionListener listener,
                                     optional ErrorListener onerror,
-                                    optional InteractionOptions options = null);
+                                    optional SubscriptionOptions options = null);
         Promise&lt;Subscription&gt; subscribeEvent(DOMString name,
                                     InteractionListener listener,
                                     optional ErrorListener onerror,
-                                    optional InteractionOptions options = null);
+                                    optional SubscriptionOptions options = null);
         ThingDescription getThingDescription();
       };
 
@@ -1030,6 +1030,10 @@
         unsigned long formIndex;
         object uriVariables;
         any data;
+      };
+
+      dictionary SubscriptionOptions: InteractionOptions{
+        boolean once = false;
       };
 
       [SecureContext, Exposed=(Window,Worker)]
@@ -1488,6 +1492,10 @@
               <li>
                 Invoke |listener| with |reply|.
               </li>
+              <li>
+                If |options|' |once| is `true`, invoke |subscription|'s
+                <a href="#the-stop-method">stop()</a> method with |options|.
+              </li>
             </ul>
           </li>
           <li>
@@ -1504,6 +1512,10 @@
               </li>
               <li>
                 If |onerror| is a {{Function}},  invoke it with |error|.
+              </li>
+              <li>
+                If |options|' |once| is `true`, invoke |subscription|'s
+                <a href="#the-stop-method">stop()</a> method with |options|.
               </li>
             </ul>
           </li>
@@ -1635,6 +1647,10 @@
                 <a>parse interaction response</a> on the data provided with the
                 <a>Event</a>, [[\form]] and [[\interaction]].
               </li>
+              <li>
+                If |options|' |once| is `true`, invoke |subscription|'s
+                <a href="#the-stop-method">stop()</a> method with |options|.
+              </li>
             </ol>
           </li>
           <li>
@@ -1651,6 +1667,10 @@
               </li>
               <li>
                 If |onerror| is a {{Function}}, invoke it with |error|.
+              </li>
+              <li>
+                If |options|' |once| is `true`, invoke |subscription|'s
+                <a href="#the-stop-method">stop()</a> method with |options|.
               </li>
             </ul>
           </li>
@@ -1692,6 +1712,19 @@
       <p>
         The <dfn>data</dfn> property if defined, represents additional opaque
         data that needs to be passed to the interaction.
+      </p>
+    </section>
+
+    <section data-dfn-for="InteractionOptions">
+      <h3>
+        The <dfn>SubscriptionOptions</dfn> dictionary
+      </h3>
+      <p>
+        Extends <a>InteractionOptions</a> for subscriptions.
+      </p>
+      <p>
+         The <dfn>once</dfn> property if not defined, takes the value `false`. If defined as `true`, will cause stopping the
+         subscription after the first notification.
       </p>
     </section>
 
