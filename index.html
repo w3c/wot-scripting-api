@@ -77,23 +77,11 @@
             publisher: "W3C",
             date: "6 February 2017"
           },
-          "WOT-SECURITY-GUIDELINES" : {
+          "WOT-SECURITY" : {
             href: "https://w3c.github.io/wot-security/",
             title: "Web of Things Security and Privacy Guidelines",
             publisher: "W3C",
-            date: "28 August 2017"
-          },
-          "WOT-SECURITY-BEST-PRACTICES" : {
-            href: "https://github.com/w3c/wot-security/blob/master/wot-security-best-practices.md",
-            title: "Web of Things Security and Privacy Best Practices",
-            publisher: "W3C",
-            date: "WIP"
-          },
-          "WOT-SECURITY-TESTING" : {
-            href: "https://github.com/w3c/wot-security/blob/master/wot-security-testing.md",
-            title: "Web of Things Security Testing and Validation",
-            publisher: "W3C",
-            date: "WIP"
+            date: "11 August 2020"
           },
           "TYPESCRIPT": {
             href:"https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md",
@@ -3540,13 +3528,13 @@
   <section> <h2 id="security">Security and Privacy</h2>
     <p>
       A detailed discussion of security and privacy considerations for the Web of Things, including a threat model that can be adapted to various circumstances, is
-      presented in the informative document [[!WOT-SECURITY-GUIDELINES]].
+      presented in the informative document [[!WOT-SECURITY]].
       This section discusses only security and privacy risks and possible mitigations
       directly relevant to the scripts and WoT Scripting API.
     </p>
     <p>
       A suggested set of best practices to improve security for WoT devices and
-      services has been documented in [[!WOT-SECURITY-BEST-PRACTICES]].
+      services has been documented in [[!WOT-SECURITY]].
       That document may be updated as security measures evolve.
       Following these practices does not guarantee security,
       but it might help avoid common known vulnerabilities.
@@ -3588,7 +3576,7 @@
           using WoT interface it exposes.
         </p>
         <dl><dt>Mitigation:</dt><dd>
-          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY-TESTING]].
+          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
         </dd></dl>
       </section>
 
@@ -3617,7 +3605,7 @@
             Post-manufacturing provisioning or update of scripts,
             WoT Scripting Runtime or any related data should be done in a secure fashion.
             A set of recommendations for secure update and post-manufacturing
-            provisioning can be found in [[!WOT-SECURITY-GUIDELINES]].
+            provisioning can be found in [[!WOT-SECURITY]].
         </dd></dl>
       </section>
 
@@ -3646,7 +3634,7 @@
           A script instance may receive data formats defined by the TD, or data formats defined by the applications. While the WoT Scripting Runtime SHOULD perform validation on all input fields defined by the TD, scripts may be still exploited by input data.
         </p>
         <dl><dt>Mitigation:</dt><dd>
-          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY-TESTING]].
+          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
         </dd></dl>
       </section>
 
@@ -3658,25 +3646,10 @@
         <dl><dt>Mitigation:</dt><dd>
           Scripts should avoid heavy functional processing without prior successful
           authentication of requestor. The set of recommended authentication mechanisms
-          can be found in [[!WOT-SECURITY-BEST-PRACTICES]].
+          can be found in [[!WOT-SECURITY]].
         </dd></dl>
       </section>
-
-      <section id="sec-security-consideration-script-stale-td">
-        <h3>Stale TD Security Risk</h3>
-        <p>
-          During the lifetime of a WoT network, a content of a TD can change.
-          This includes its identifier, which might not be an immutable one and might be updated periodically.
-        </p>
-        <dl><dt>Mitigation:</dt><dd>
-          Scripts should use this API to subscribe for notifications
-          on TD changes and do not rely on TD values to remain persistent.
-        </dd></dl>
-        <p class="ednote">
-          While stale TDs can present a potential problem for WoT network operation,
-          it might not be a security risk.
-        </p>
-      </section>
+	  
     </section>
   </section>
 
