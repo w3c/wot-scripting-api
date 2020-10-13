@@ -122,10 +122,6 @@
       This specification is implemented at least by the <a href="http://www.thingweb.io/">Eclipse Thingweb</a>
       project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot/examples">examples</a>.
     </p>
-    <p class="ednote" title="WoT Interaction vs Interaction Affordance">
-      <a>Interaction Affordance</a> it is the correct term when referring Thing capabilities (as explain <a href="https://github.com/w3c/wot-thing-description/issues/282">here</a>). 
-      However, this term is not well understood inside the developers community. Therefore, for the sake of the readability, this document and this API will use the term <a>WoT interaction</a> or, simply, interaction instead. 
-    </p>
   </section>
 
   <section id="sotd">
@@ -3664,7 +3660,13 @@
         <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/wot-thing-description/#form"><dfn>Form</dfn></a> etc.
     </p>
     <p>
-      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym of <a href="https://w3c.github.io/wot-architecture/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://w3c.github.io/wot-architecture/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
+      when referring to <a>Thing</a> capabilities, as explained in
+      <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
+      However, this term is not well understood outside the <a>TD</a> semantic context.
+      Hence for the sake of readability, this document will use the previous term
+      <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
