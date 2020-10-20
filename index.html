@@ -3643,7 +3643,7 @@
           can be found in [[!WOT-SECURITY]].
         </dd></dl>
       </section>
-	  
+
     </section>
   </section>
 
@@ -3882,28 +3882,20 @@
           Working Draft <a href="https://www.w3.org/TR/2018/WD-wot-scripting-api-20181129/">November 2018</a>.
         </li>
         <li>
+          Working draft <a href="https://www.w3.org/TR/2019/WD-wot-scripting-api-20191028/">October 2019</a>.
+        </li>
+        <li>
           This version, introducing the following major changes:
           <ul>
             <li>
-              Remove <code>fetch()</code> for fetching a <a>TD</a> (delegated to external API).
+              Added support for `formIndex`, `InteractionData` including streams.
             </li>
             <li>
-              Remove <code>Observer</code> and use <a href="https://w3ctag.github.io/design-principles/">W3C TAG recommended design patterns</a>.
+              Cleaned up the specification prose, aligned terminology and
+              used modern ReSpec.
             </li>
             <li>
-              Align the discovery API to other similar APIs (such as <a href="https://www.w3.org/TR/generic-sensor/#the-sensor-interface">W3C Generic Sensor API</a>).
-            </li>
-            <li>
-              Remove the large data definition API for constructing <a>TD</a>s and leverage using {{ThingDescription}} instead.
-            </li>
-            <li>
-              Add missing algorithms and rework most existing ones.
-            </li>
-            <li>
-              Allow constructors for {{ConsumedThing}} and {{ExposedThing}}.
-            </li>
-            <li>
-              Add API rationale as an appendix to this document.
+              Improved algorithm descriptions, included illustrative figures.
             </li>
           </ul>
         </li>
