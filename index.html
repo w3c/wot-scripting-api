@@ -3649,7 +3649,7 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn> (same as <dfn>WoT network interface</dfn>), <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
       <a href="https://www.w3.org/TR/wot-thing-description/#dataschema">
         <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/wot-thing-description/#form"><dfn>Form</dfn></a> etc.
     </p>
@@ -3661,6 +3661,9 @@
       However, this term is not well understood outside the <a>TD</a> semantic context.
       Hence for the sake of readability, this document will use the previous term
       <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
+    </p>
+    <p>
+      <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
@@ -3809,11 +3812,11 @@
         closely follows the [[[WOT-TD]]] specification. Based on this, a simple
         API can also be implemented.
         Since Scripting is an optional module in WoT, this leaves room for
-        applications that only use the WoT network interface.
+        applications that only use the <a>WoT network interface</a>.
         Therefore all three approaches above are supported by the [[[WOT-TD]]] specification.
       </p>
       <p>
-        Moreover, the WoT network interface can be implemented in many languages
+        Moreover, the <a>WoT network interface</a> can be implemented in many languages
         and runtimes. Consider this API an example for what needs to be taken
         into consideration when designing a Scripting API for WoT.
       </p>
