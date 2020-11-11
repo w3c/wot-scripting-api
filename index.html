@@ -1118,8 +1118,9 @@
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| whose |op| is `readproperty`.
+            array, otherwise let |form| be a <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `readproperty`, selected by
+            the implementation.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and
@@ -1167,7 +1168,8 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be the first <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readmultipleproperties`.
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readmultipleproperties`, selected by
+            the implementation.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -1225,7 +1227,8 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be the first <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readallproperties`.
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readallproperties`, selected by
+            the implementation.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -1287,8 +1290,9 @@
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| whose |op| is `writeproperty`.
+            array, otherwise let |form| be a <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `writeproperty`, selected by
+            the implementation.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -1342,8 +1346,9 @@
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array,
-            otherwise let |form| be the first <a>Form</a> in [[\td]]'s |forms|
-            array whose |op| is `writemultipleproperties`.
+            otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms|
+            array whose |op| is `writemultipleproperties`, selected by
+            the implementation.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and
@@ -1435,9 +1440,9 @@
               <li>
                 Let |subscription|'s [[\form]] be the <a>Form</a> associated with
                 |formIndex| in [[\interaction]]'s |forms| array if |option|'s
-                |formIndex| is defined, otherwise let [[\form]] be the first
+                |formIndex| is defined, otherwise let [[\form]] be a
                 <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
-                `"observeproperty"`.
+                `"observeproperty"`, selected by the implementation.
               </li>
               <li>
                 If |subscription|'s [[\form]] is failure, reject |promise| with a
@@ -1516,8 +1521,9 @@
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
-            array, otherwise let |form| be the first <a>Form</a> in
-            |interaction|'s |forms| array whose |op| is `invokeaction`.
+            array, otherwise let |form| be a <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `invokeaction`,
+            selected by the implementation.
           </li>
           <li>
             If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
@@ -1585,9 +1591,9 @@
               <li>
                 Let |subscription|'s [[\form]] be the <a>Form</a> associated with
                 |formIndex| in [[\interaction]]'s |forms| array if |option|'s
-                |formIndex| is defined, otherwise let [[\form]] be the first
+                |formIndex| is defined, otherwise let [[\form]] be a
                 <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
-                `"subscribeevent"`.
+                `"subscribeevent"`, selected by the implementation.
               </li>
               <li>
                 If |subscription|'s [[\form]] is failure, reject |promise| with a
@@ -2079,7 +2085,7 @@
         </thead>
         <tbody data-link-for="ExposedThing">
          <tr>
-          <td><dfn>[[\extd]]</dfn></td>
+          <td><strong><em>[[\td]]</em></strong></td>
           <td>`null`</td>
           <td>The <a>Thing Description</a> of the <a>Thing</a>.</td>
          </tr>
@@ -2115,7 +2121,7 @@
             Let |thing:ExposedThing| be a new {{ExposedThing}} object.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\extd]] of |thing| to |td|.
+            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
           </li>
           <li>
             Return |thing|.
@@ -2127,9 +2133,9 @@
     <section data-dfn-for="ExposedThing">
       <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        Returns the <a>internal slot</a> [[\extd]] of the {{ExposedThing}} object
+        Returns the <a>internal slot</a> [[\td]] of the {{ExposedThing}} object
         that represents the <a>Thing Description</a> of the <a>Thing</a>.
-        Applications may consult the <a>Thing</a> metadata stored in [[\extd]] in
+        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
         order to introspect its capabilities before interacting with it.
       </p>
     </section>
@@ -2164,7 +2170,7 @@
          The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\extd]] <a>internal slot</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\td]] <a>internal slot</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -2175,7 +2181,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2209,7 +2215,7 @@
             steps with |name:string| and |options:InteractionOptions|:
             <ol>
               <li>
-                Let |interaction| be the value of [[\extd]]'s |properties|'s
+                Let |interaction| be the value of [[\td]]'s |properties|'s
                 |name|.
               </li>
               <li>
@@ -2340,7 +2346,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2370,7 +2376,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\extd]]'s |properties|'s |name|.
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2413,7 +2419,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2443,7 +2449,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\extd]]'s |properties|'s |name|.
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2480,7 +2486,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\extd]]'s |properties|'s |name|.
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
           </li>
           <li>
             If a <a>Property</a> with the name |name| is not found,
@@ -2574,7 +2580,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2606,7 +2612,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2701,7 +2707,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |actions|'s
+            Let |interaction| be the value of [[\td]]'s |actions|'s
             |name|.
           </li>
           <li>
@@ -2730,7 +2736,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |properties|'s
+            Let |interaction| be the value of [[\td]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2813,7 +2819,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2846,7 +2852,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2899,7 +2905,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2932,7 +2938,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2983,7 +2989,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -3009,7 +3015,7 @@
         following steps:
         <ol>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |events|'s
+            Let |interaction| be the value of [[\td]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -3069,7 +3075,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\extd]]'s |events|'s |name|.
+            Let |interaction| be the value of [[\td]]'s |events|'s |name|.
           </li>
           <li>
             If an <a>Event</a> with the name |name| is not found,
@@ -3098,25 +3104,25 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\extd]].
+            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\td]].
           </li>
           <li>
-            Run the <a>validate a TD</a> on [[\extd]]. If that fails,
+            Run the <a>validate a TD</a> on [[\td]]. If that fails,
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in [[\extd]]'s |properties|,
+            For each <a>Property</a> definition in [[\td]]'s |properties|,
             initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
             in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
-            For each <a>Event</a> definition is [[\extd]]'s |events|,
+            For each <a>Event</a> definition is [[\td]]'s |events|,
             initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
             in order to store subscription request data needed to notify the
             <a>Event</a> listeners.
           </li>
           <li>
-            Set up the <a>WoT Interactions</a> based on introspecting [[\extd]]
+            Set up the <a>WoT Interactions</a> based on introspecting [[\td]]
             as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
             Make a request to the underlying platform to initialize the
             <a>Protocol Bindings</a> and then start serving external requests
