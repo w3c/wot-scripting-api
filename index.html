@@ -2019,7 +2019,7 @@
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
-      interface ExposedThing: ConsumedThing {
+      interface ExposedThing {
         ExposedThing setPropertyReadHandler(DOMString name,
                 PropertyReadHandler handler);
         ExposedThing setPropertyWriteHandler(DOMString name,
@@ -2028,6 +2028,7 @@
                 PropertyReadHandler handler);
         ExposedThing setPropertyUnobserveHandler(DOMString name,
                 PropertyReadHandler handler);
+        Promise&lt;undefined&gt; emitPropertyChange(DOMString name);
 
         ExposedThing setActionHandler(DOMString name, ActionHandler action);
 
@@ -2042,6 +2043,8 @@
 
         Promise&lt;undefined&gt; expose();
         Promise&lt;undefined&gt; destroy();
+
+        ThingDescription getThingDescription();
       };
 
       callback PropertyReadHandler = Promise&lt;any&gt;(
@@ -2060,6 +2063,30 @@
 
       callback EventListenerHandler = Promise&lt;InteractionInput&gt;();
     </pre>
+
+    <section data-dfn-for="ExposedThing">
+      <h4>Internal slots for ExposedThing</h4>
+      <p>
+        An {{ExposedThing}} object has the following <a>internal slots</a>:
+      </p>
+      <table class="simple">
+        <thead>
+         <tr>
+          <th>Internal Slot</th>
+          <th>Initial value</th>
+          <th>Description (<em>non-normative</em>)</th>
+         </tr>
+        </thead>
+        <tbody data-link-for="ExposedThing">
+         <tr>
+          <td><dfn>[[\extd]]</dfn></td>
+          <td>`null`</td>
+          <td>The <a>Thing Description</a> of the <a>Thing</a>.</td>
+         </tr>
+        </tbody>
+      </table>
+    </section>
+
     <section>
       <h3>Constructing {{ExposedThing}}</h3>
       <p>
@@ -2088,7 +2115,7 @@
             Let |thing:ExposedThing| be a new {{ExposedThing}} object.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
+            Set the <a>internal slot</a> [[\extd]] of |thing| to |td|.
           </li>
           <li>
             Return |thing|.
@@ -2096,22 +2123,14 @@
         </ol>
       </div>
     </section>
-    <section>
-      <h3>Methods inherited from {{ConsumedThing}}</h3>
+
+    <section data-dfn-for="ExposedThing">
+      <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        The <code>readProperty()</code>, <code>readMultipleProperties()</code>, <code>readAllProperties()</code>, <code>writeProperty()</code>, <code>writeMultipleProperties()</code>, <code>writeAllProperties()</code> methods have the same algorithmic steps as described in <a href="#the-consumedthing-interface"><code>ConsumedThing</code></a>, with the difference that making a request to the underlying platform MAY be implemented with local methods or libraries and don't necessarily need to involve network operations.
-      </p>
-      <p>
-        The implementation of {{ConsumedThing}} interface in an {{ExposedThing}} provide the <i>default</i> methods to interact with the {{ExposedThing}}.
-      </p>
-      <p>
-        After constructing an {{ExposedThing}}, a script can initialize its <a>Properties</a> and can set up the optional read, write and action request handlers (the default ones are provided by the implementation). The script provided handlers MAY use the default handlers, thereby extending the default behavior, but they can also bypass them, overriding the default behavior. Finally, the script would call <a href="#the-expose-method"><code>expose()</code></a> on the {{ExposedThing}} in order to start serving external requests.
-      </p>
-      <p class="note">
-        The request handlers actually implement the behavior and it is the
-        responsibility of the developers to keep the <a>Thing Description</a>
-        defined in {{ExposedThing}} synchronized with the implementation of the
-        request handlers.
+        Returns the <a>internal slot</a> [[\extd]] of the {{ExposedThing}} object
+        that represents the <a>Thing Description</a> of the <a>Thing</a>.
+        Applications may consult the <a>Thing</a> metadata stored in [[\extd]] in
+        order to introspect its capabilities before interacting with it.
       </p>
     </section>
 
@@ -2145,7 +2164,7 @@
          The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\td]] <a>internal slot</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\extd]] <a>internal slot</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -2156,7 +2175,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of [[\extd]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2190,7 +2209,7 @@
             steps with |name:string| and |options:InteractionOptions|:
             <ol>
               <li>
-                Let |interaction| be the value of [[\td]]'s |properties|'s
+                Let |interaction| be the value of [[\extd]]'s |properties|'s
                 |name|.
               </li>
               <li>
@@ -2321,7 +2340,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of [[\extd]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2351,7 +2370,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of [[\extd]]'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2360,50 +2379,13 @@
             |property|'s <a>internal observer list</a>, in order to be able
             to notify about <a>Property</a> value changes.
           </li>
-          <li>
-            Every time the value of |property| changes, run the following sub-steps:
-            <ol>
-              <li>
-                Let |handler:function| be `null.`
-              </li>
-              <li>
-                If there is an [[\observeHandler]] <a>internal slot</a> associated
-                with |name| on |property|, let |handler| be that.
-              </li>
-              <li>
-                Otherwise, if there is a [[\readHandler]] <a>internal slot</a>
-                associated with |name| on |property|, let |handler| be that.
-              </li>
-              <li>
-                If |handler| is `null`, abort these steps.
-              </li>
-              <li>
-                Let |promise| be the result of invoking |handler| wih |options|.
-              </li>
-              <li>
-                 If |promise| rejects, abort these steps.
-              </li>
-              <li>
-                If |promise| resolves with |data|, then for each |observer| in
-                |property|'s <a>internal observer list</a>, run the following
-                sub-steps:
-                <ol>
-                  <li>
-                    Let |options| be the interaction options saved with |observer|.
-                  </li>
-                  <li>
-                    Create a |reply| from |data| and |options| according to the
-                    <a>Protocol Bindings</a>.
-                  </li>
-                  <li>
-                    Send |reply| to |observer|.
-                  </li>
-                </ol>
-              </li>
-            </ol>
-          </li>
         </ol>
       </div>
+      <p class=note>
+        Every time the value of |property| changes,
+        <a href="#the-emitpropertychange-method">`emitPropertyChange()`</a>
+        needs to be explicitly called by the application script.
+      </p>
     </section>
 
     <section> <h3>The <dfn>setPropertyUnobserveHandler()</dfn> method</h3>
@@ -2431,7 +2413,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of [[\extd]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2461,7 +2443,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of [[\extd]]'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2478,6 +2460,67 @@
           <li>
             Remove |sender| from |property|'s <a>internal observer list</a>
             and send back a reply following the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>emitPropertyChange()</dfn> method</h3>
+      <div>
+        Takes the |name:string| argument, denoting a <a>Property</a> name.
+        Triggers emitting a notification to all observers of the specified
+        <a>Property</a> with the data obtained from the observe handler or the
+        read handler associated with that <a>Property</a>.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |property| be the value of [[\extd]]'s |properties|'s |name|.
+          </li>
+          <li>
+            If a <a>Property</a> with the name |name| is not found,
+            reject |promise| with {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Let |handler:function| be `null.`
+          </li>
+          <li>
+            If there is an [[\observeHandler]] <a>internal slot</a> on |property|, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if there is a [[\readHandler]] <a>internal slot</a>
+            associated with |name| on |property|, let |handler| be that.
+          </li>
+          <li>
+            If |handler| is `null`, abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| wih `null`.
+          </li>
+          <li>
+             If |promise| rejects, abort these steps.
+          </li>
+          <li>
+            If |promise| resolves with |data|, then for each |observer| in
+            |property|'s <a>internal observer list</a>, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |options| be the interaction options saved with |observer|.
+              </li>
+              <li>
+                Create a |reply| from |data| and |options| according to the
+                <a>Protocol Bindings</a>.
+              </li>
+              <li>
+                Send |reply| to |observer|.
+              </li>
+            </ol>
           </li>
         </ol>
       </div>
@@ -2531,7 +2574,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of [[\extd]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2563,7 +2606,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of [[\extd]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2658,7 +2701,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |actions|'s
+            Let |interaction| be the value of [[\extd]]'s |actions|'s
             |name|.
           </li>
           <li>
@@ -2687,7 +2730,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of [[\extd]]'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2770,7 +2813,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of [[\extd]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2803,7 +2846,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of [[\extd]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2856,7 +2899,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of [[\extd]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2889,7 +2932,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of [[\extd]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2940,7 +2983,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of [[\extd]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -2966,7 +3009,7 @@
         following steps:
         <ol>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of [[\extd]]'s |events|'s
             |name|.
           </li>
           <li>
@@ -3026,7 +3069,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s |name|.
+            Let |interaction| be the value of [[\extd]]'s |events|'s |name|.
           </li>
           <li>
             If an <a>Event</a> with the name |name| is not found,
@@ -3055,25 +3098,25 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\td]].
+            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\extd]].
           </li>
           <li>
-            Run the <a>validate a TD</a> on [[\td]]. If that fails,
+            Run the <a>validate a TD</a> on [[\extd]]. If that fails,
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in [[\td]]'s |properties|,
+            For each <a>Property</a> definition in [[\extd]]'s |properties|,
             initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
             in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
-            For each <a>Event</a> definition is [[\td]]'s |events|,
+            For each <a>Event</a> definition is [[\extd]]'s |events|,
             initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
             in order to store subscription request data needed to notify the
             <a>Event</a> listeners.
           </li>
           <li>
-            Set up the <a>WoT Interactions</a> based on introspecting [[\td]]
+            Set up the <a>WoT Interactions</a> based on introspecting [[\extd]]
             as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
             Make a request to the underlying platform to initialize the
             <a>Protocol Bindings</a> and then start serving external requests
@@ -3834,7 +3877,7 @@
     </section>
     <section> <h4>Factory vs constructors</h4>
       <p>
-        The factory methods for consuming and exposing <a>Thing</a>s are asynchronous and fully validate the input <a>TD</a>. In addition, one can also construct {{ConsumedThing}} and {{ExposedThing}} by providing a parsed and validated <a>TD</a>. Platform initialization is then done when needed during the WoT interactions. So applications that prefer validating a <a>TD</a> themselves, may use the constructors, whereas applications that leave validation to implementations and prefer interactions initialized up front SHOULD use the factory methods on the <a>WoT API object</a>.
+        The factory methods for consuming and exposing <a>Thing</a>s are asynchronous and fully validate the input <a>TD</a>. In addition, one can also construct {{ConsumedThing}} and {{ExposedThing}} by providing a parsed and validated <a>TD</a>. Platform initialization is then done when needed during the WoT interactions.
       </p>
     </section>
     <section> <h4>Observers</h4>
