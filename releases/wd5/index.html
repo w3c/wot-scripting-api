@@ -1,0 +1,3972 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Web of Things (WoT) Scripting API</title>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c'
+            async class='remove'></script>
+    <script class='remove'>
+      // See https://github.com/w3c/respec/wiki/ for how to configure ReSpec
+      var respecConfig = {
+        specStatus: "ED",
+        shortName: "wot-scripting-api",
+        group: "wg/wot",
+        copyrightStart:       2017,
+        noLegacyStyle:        true,
+        publishDate:          "",
+        previousPublishDate:  "",
+        previousMaturity:     "",
+        edDraftURI:           "https://w3c.github.io/wot-scripting-api/",
+        crEnd:                "",
+        inlineCSS:            true,
+        noIDLIn:              true,
+        editors: [
+          { name: "Zoltan Kis", w3cid: "57789", company: "Intel", companyURL: "https://www.intel.com/" },
+          { name: "Daniel Peintner", w3cid: "39497", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
+          { name: "Cristiano Aguzzi", w3cid: "105495", company: "Invited Expert", companyURL: "https://github.com/relu91" },
+          { name: "Johannes Hund", w3cid: "74472", note: "Former Editor, when at Siemens AG" },
+          { name: "Kazuaki Nimura", w3cid: "59208", note: "Former Editor, at Fujitsu Ltd." },
+        ],
+        issueBase: "https://www.github.com/w3c/wot-scripting-api/issues/",
+        githubAPI: "https://api.github.com/repos/w3c/wot-scripting-api",
+        otherLinks: [
+          {
+            key: "Repository",
+            data: [{
+                  value: "On GitHub",
+                  href: "https://github.com/w3c/wot-scripting-api"
+              }, {
+                  value: "File a bug",
+                  href: "https://github.com/w3c/wot-scripting-api/issues"
+              },
+            ]
+          },
+          {
+            key: "Contributors",
+            data: [
+                {
+                  value: "Contributors on GitHub",
+                  href: "https://github.com/w3c/wot-scripting-api/graphs/contributors"
+                }
+            ]
+          },
+        ],
+        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates"],
+        localBiblio: {
+          "WOT-ARCHITECTURE" : {
+            href:"https://www.w3.org/TR/2020/REC-wot-architecture-20200409/",
+            title: "Web of Things Architecture",
+            publisher: "W3C",
+            date: "9 April 2020"
+          },
+          "WOT-TD" : {
+            href:"https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/",
+            title: "Web of Things Thing Description",
+            publisher: "W3C",
+            date: "9 April 2020"
+          },
+          "WOT-PROTOCOL-BINDINGS" : {
+            href:"https://w3c.github.io/wot-binding-templates/",
+            title: "Web of Things Binding Templates",
+            publisher: "W3C",
+            date: "22 July 2020"
+          },
+          "WOT-SECURITY" : {
+            href: "https://w3c.github.io/wot-security/",
+            title: "Web of Things Security and Privacy Guidelines",
+            publisher: "W3C",
+            date: "11 August 2020"
+          },
+          "TYPESCRIPT": {
+            href:"https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md",
+            title: "TypeScript Language Specification",
+            publisher: "Microsoft",
+            date: "1 October 2012"
+          },
+          "WEBAPPSEC": {
+            href:"https://w3c.github.io/webappsec/specs/powerfulfeatures",
+            title: "Secure Contexts",
+            publisher: "W3C",
+            date: "17 July 2015"
+          },
+        },
+      };
+    </script>
+  </head>
+  <body>
+
+  <section id="abstract">
+    <p>
+      The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
+    </p>
+    <p>
+      The main <a>Web of Things</a> (WoT) concepts are described in the [[[WOT-ARCHITECTURE]]] specification.
+    </p>
+    <p>
+      Scripting is an optional building block in WoT and it is typically used in gateways or browsers that are able to run a <a>WoT Runtime</a> and
+      <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
+    </p>
+    <p>
+      This specification describes an application programming interface (API) representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Thing</a>s characterized by <a> WoT Interactions</a> specified by a script.
+    </p>
+    <p>
+      The APIs defined in this document deliberately follow the [[[WOT-TD]]] specification closely. It is possible to implement more abstract APIs on top of them, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+    </p>
+    <p class="ednote">
+      This specification is implemented at least by the <a href="http://www.thingweb.io/">Eclipse Thingweb</a>
+      project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot/examples">examples</a>.
+    </p>
+  </section>
+
+  <section id="sotd">
+    <p>
+      Implementers need to be aware that this specification is considered unstable. Vendors interested in implementing this specification before it eventually reaches the Candidate Recommendation phase should subscribe to the <a href="https://github.com/w3c/wot-scripting-api">repository</a> and take part in the discussions.
+    </p>
+    <p class="ednote" title="The W3C WoT WG is asking for feedback">
+      Please contribute to this draft using the <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub Issues</a> page of the <a href="https://github.com/w3c/wot-scripting-api/">WoT Scripting API</a> repository.
+      For feedback on security and privacy considerations, please use the <a href="https://github.com/w3c/wot-security/issues">WoT Security and Privacy</a> Issues.
+    </p>
+  </section>
+
+  <section id="introduction"> <h2>Introduction</h2>
+    <p>
+      WoT provides layered interoperability based on how <a>Thing</a>s are used:
+      "consumed" and "exposed", as defined in the [[[WOT-ARCHITECTURE]]] terminology.
+    </p>
+    <p>
+      By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
+    </p>
+    <div>
+      Exposing a <a>Thing</a> requires:
+      <ul>
+        <li>
+          defining a <a>Thing Description</a> (TD),
+        </li>
+        <li>
+          then instantiating a software stack that implements the <a>WoT Interface</a> specified by the <a>TD</a> in order to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>,
+        </li>
+        <li>
+           then eventually publishing the <a>Thing Description</a> (for instance to a <a>Thing Directory</a> directory for easier discovery).
+        </li>
+      </ul>
+      This specification describes how to expose and consume <a>Thing</a>s by a script. Also, it defines a generic API for <a>Thing</a> discovery.
+    </div>
+    <p class="note">
+      Typically scripts are meant to be used on bridges or gateways that expose and control simpler devices as WoT <a>Thing</a>s and have means to handle (e.g. install, uninstall, update etc.) and run scripts.
+    </p>
+    <p class="note">
+      This specification does not make assumptions on how the <a>WoT Runtime</a> handles and runs scripts, including single or multiple tenancy, script deployment and lifecycle management. The API already supports the generic mechanisms that make it possible to implement script management, for instance by exposing a manager <a>Thing</a> whose <a>Actions</a> (action handlers) implement script lifecycle management operations.
+    </p>
+    <!--
+    <p>
+      For an introduction on how scripts could be used in <a>Web of Things</a>, check the <a href="https://w3c.github.io/wot-scripting-api/primer">Primer</a> document. For some background on API design decisions check the <a href="https://w3c.github.io/wot-scripting-api/rationale">Rationale</a> document.
+    </p>
+    -->
+  </section>
+
+  <section class="informative"> <h3>Use Cases</h3>
+    <p>
+      The following scripting use cases are supported in this specification:
+    </p>
+    <section><h4>Consuming a Thing</h4>
+    <ul>
+      <li>
+        <a>Consume a TD</a>, i.e. create a programmatic object from a
+        <a>Thing Description</a> that exposes <a>WoT Interactions</a>:
+        <ul>
+          <li>Read the value of a <a>Property</a> or a set of properties.</li>
+          <li>Set the value of a <a>Property</a> or a set of properties.</li>
+          <li>Observe value changes of a <a>Property</a>.</li>
+          <li>Invoke an <a>Action</a>.</li>
+          <li>Observe WoT <a>Events</a> emitted by the <a>Thing</a>.</li>
+          <li>
+            Introspect the <a>Thing Description</a>.
+          </li>
+        </ul>
+      </li>
+    </ul>
+    </section>
+
+    <section><h4>Exposing a Thing</h4>
+    <ul>
+      <li>
+        Exposing the <a>Thing</a> includes generating the protocol bindings in
+        order to access lower level functionality.
+      </li>
+      <li>
+        Create a local <a>Thing</a> to be exposed, based on <a>Thing Description</a>.
+      </li>
+      <li>
+        The following use cases can be implemented before creating the
+        <a>Thing</a> by editing the <a>Thing Description</a>:
+        <ul>
+          <li>Add a <a>Property</a> definition to the <a>Thing</a>.</li>
+          <li>Remove a <a>Property</a> definition from the <a>Thing</a>.</li>
+          <li>Add an <a>Action</a> definition to the <a>Thing</a>.</li>
+          <li>Remove an <a>Action</a> definition from the <a>Thing</a>.</li>
+          <li>Add a WoT <a>Event</a> definition to the <a>Thing</a>.</li>
+          <li>Remove a WoT <a>Event</a> definition from the <a>Thing</a>.</li>
+        </ul>
+        <p class="ednote">
+          After evaluating dynamic modifications to <a>Thing Descriptions</a>
+          through several versions of this API, the editors concluded that the
+          simplest way to represent these use cases is to take an existing
+          <a>TD</a>, modify it (i.e. add or remove definitions) and then create
+          a new <a>Thing</a> based on the modified <a>TD</a>.
+        </p>
+      </li>
+      <li>
+        Emit a WoT <a>Event</a>, i.e. notify all subscribed listeners.
+      </li>
+      <li>Register service handlers for external requests:
+        <ul>
+          <li>to retrieve a <a>Property</a> value;</li>
+          <li>to update a <a>Property</a> value;</li>
+          <li>to observe a <a>Property</a>;</li>
+          <li>to unobserve a <a>Property</a>;</li>
+          <li>
+            to invoke an <a>Action</a>: take the parameters from the request, execute the defined action, and return the result;
+          </li>
+          <li>to subscribe to an <a>Event</a>;</li>
+          <li>to unsubscribe from an <a>Event</a>.</li>
+        </ul>
+      </li>
+    </ul>
+    </section>
+
+    <section><h4>Discovery</h4>
+    <ul>
+      <li>Discover <a>Thing</a>s in a network by sending a broadcast request.</li>
+      <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
+      <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth,
+        or within a <a href="https://en.wikipedia.org/wiki/Geo-fence">geo-fence</a>.</li>
+      <li>Discover <a>Thing</a>s by sending a discovery request to a given <a>Thing Directory</a>.</li>
+      <li>Discover <a>Thing</a>s filtered by filters defined on <a>Thing Description</a>s</li>
+      <li>Discover <a>Thing</a>s filtered by semantic queries.</li>
+      <li>Stop or suppress an ongoing discovery process.</li>
+      <li>
+          Optionally specify a timeout to the discovery process after which it is stopped/suppressed.
+      </li>
+    </ul>
+    </section>
+  </section>
+
+  <section id="conformance">
+    <p>
+      This specification describes the conformance criteria for the following classes of <dfn>user agent</dfn> (<dfn>UA</dfn>).
+    </p>
+    <p>
+      Due to requirements of small embedded implementations, splitting WoT client and server interfaces was needed. Then, discovery is a distributed application, but typical scenarios have been covered by a generic discovery API in this specification. This resulted in using 3 conformance classes for a <a>UA</a> that implements this API, one for client, one for server, and one for discovery. An application that uses this API can introspect for the presence of the <code>consume()</code>, <code>produce()</code> and <code>discover()</code> methods on the <a>WoT API object</a> in order to determine which conformance class the <a>UA</a> implements.
+    </p>
+    <dl>
+      <dt>
+        <dfn>WoT Consumer</dfn> <a>UA</a>
+      </dt>
+      <dd>
+        <p>
+          Implementations of this conformance class MUST implement the <code>{{ConsumedThing}}</code> interface and the <code>consume()</code> method on the <a>WoT API object</a>.
+        </p>
+      </dd>
+      <dt>
+        <dfn>WoT Producer</dfn> <a>UA</a>
+      </dt>
+      <dd>
+        <p>
+          Implementations of this conformance class MUST implement <code>{{ExposedThing}}</code> interface and the <code>produce()</code> method on the <a>WoT API object</a>.
+        </p>
+      </dd>
+      <dt>
+        <dfn>WoT Discovery</dfn> <a>UA</a>
+      </dt>
+      <dd>
+        <p>
+          Implementations of this conformance class MUST implement the <code><a>ThingDiscovery</a></code> interface and the <code>discover()</code> method on the <a>WoT API object</a>.
+        </p>
+      </dd>
+    </dl>
+    <p>
+      These conformance classes MAY be implemented in a single <a>UA</a>.
+    </p>
+    <p>
+      This specification can be used for implementing the WoT Scripting API in multiple programming languages. The interface definitions are specified in [[!WEBIDL]].
+    </p>
+    <p>
+      The <a>UA</a> may be implemented in the browser, or in a separate runtime environment, such as <a href="https://nodejs.org/en/">Node.js</a> or in small embedded runtimes.
+    </p>
+    <p>
+      Implementations that use ECMAScript executed in a browser to implement the APIs defined in this document MUST implement them in a manner consistent with the ECMAScript Bindings defined in the Web IDL specification [[!WEBIDL]].
+    </p>
+    <p>
+      Implementations that use TypeScript or ECMAScript in a runtime to implement the APIs defined in this document MUST implement them in a manner consistent with the TypeScript Bindings defined in the TypeScript specification [[!TYPESCRIPT]].
+    </p>
+  </section>
+
+  <section>
+    <h2>The <dfn>ThingDescription</dfn> type</h2>
+    <pre class="idl">
+      typedef object ThingDescription;
+    </pre>
+
+    <p>
+      Represents a <a>Thing Description</a> (<a>TD</a>) as
+      <a href="https://www.w3.org/TR/wot-thing-description/#thing">defined</a> in
+      [[!WOT-TD]]. It is expected to be
+      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON Schema validation</a>.
+    </p>
+    <section> <h3> Fetching a Thing Description</h3>
+      <p>
+        Fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details.
+      </p>
+      <pre class="example" title="Fetching a Thing Description">
+        try {
+          let res = await fetch('https://tds.mythings.biz/sensor11');
+          // ... additional checks possible on res.headers
+          let td = await res.json();
+          let thing = await WOT.consume(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } catch (err) {
+          console.log("Fetching TD failed", err.message);
+        }
+      </pre>
+    </section>
+
+    <section> <h3>Expanding a Thing Description</h3>
+      <p>
+        Note that the [[[WOT-TD]]] specification allows using a shortened <a>Thing Description</a>
+        by the means of <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
+        [[[WOT-TD]]] specification for the properties that are not explicitly defined in a given
+        <a>TD</a>.
+      </p>
+      <div>
+        To <dfn>expand a TD</dfn> given |td:ThingDescription|, run the following steps:
+        <ol>
+          <li>
+            For each item in the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Validating a Thing Description</h3>
+      <p>
+        The [[!WOT-TD]] specification defines how a <a>TD</a> should be validated.
+        Therefore, this API expects the {{ThingDescription}} objects be validated before used as parameters. This specification defines a basic <a>TD</a> validation as follows.
+      </p>
+      <div>
+        To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
+        <ol>
+          <li>
+            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON Schema
+            validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and abort these steps.
+          </li>
+        </ol>
+        <p class="ednote" title="Handling default values">
+          Additional steps may be added to fill the default values of mandatory fields.
+        </p>
+      </div>
+    </section>
+  </section>
+
+  <section data-dfn-for="WOT">
+  <h2>The <dfn>WOT</dfn> namespace</dfn></h2>
+  <p>
+    Defines the <dfn>WoT API object</dfn> as a singleton and contains the API
+    methods, grouped by conformance classes.
+  </p>
+  <pre class="idl">
+    [SecureContext, Exposed=(Window,Worker)]
+    namespace WOT {
+      // methods defined in UA conformance classes
+    };
+  </pre>
+  <section> <h3>The <dfn>consume()</dfn> method</h3>
+    <pre class="idl">
+      partial namespace WOT {
+        Promise&lt;ConsumedThing&gt; consume(ThingDescription td);
+      };
+    </pre>
+    <div>
+      Belongs to the <a>WoT Consumer</a> conformance class. Expects an |td:ThingDescription| argument and returns a {{Promise}} that resolves with a {{ConsumedThing}} object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+        </li>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+        </li>
+        <li>
+          Let |thing:ConsumedThing| be a new {{ConsumedThing}} object constructed from |td|.
+        </li>
+        <li>
+          Set up the <a>WoT Interactions</a> based on introspecting <a>td</a> as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]]. Make a request to the underlying platform to initialize the <a>Protocol Bindings</a>.
+          <p class="ednote">
+            Implementations encapsulate the complexity of how to use the
+            <a>Protocol Bindings</a> for implementing <a>WoT interactions</a>.
+            In the future elements of that could be standardized.
+          </p>
+        </li>
+        <li>
+          Resolve |promise| with |thing|.
+        </li>
+      </ol>
+      <p class="ednote">
+        Note the difference between constructing <a>ConsumedThing</a> and using
+        the <code>consume()</code> method: the latter also initializes the protocol
+        bindings, whereas a simple constructed object will not have <a>WoT Interactions</a>
+        initialized until they are invoked.
+      </p>
+    </div>
+  </section>
+
+  <section> <h3>The <dfn>produce()</dfn> method</h3>
+    <pre class="idl">
+      partial namespace WOT {
+        Promise&lt;ExposedThing&gt; produce(ThingDescription td);
+      };
+    </pre>
+    <div>
+      Belongs to the <a>WoT Producer</a> conformance class. Expects a |td:ThingDescription| argument and returns a {{Promise}} that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+        </li>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+        </li>
+        <li>
+          Let |thing:ExposedThing| be a new {{ExposedThing}} object constructed with |td|.
+        </li>
+        <li>
+          Resolve |promise| with |thing|.
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section> <h3>The <dfn>discover()</dfn> method</h3>
+    <pre class="idl">
+      partial namespace WOT {
+        ThingDiscovery discover(optional ThingFilter filter = null);
+      };
+    </pre>
+    <div>
+      Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
+      <ol>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{"SecurityError"}} and abort these steps.
+        </li>
+        <li>
+          Construct a <a>ThingDiscovery</a> object |discovery:ThingDiscovery| with |filter|.
+        </li>
+        <li>
+          Invoke the <a href="#the-start-method">discovery.start()</a> method.
+        </li>
+        <li>
+          Return |discovery|.
+        </li>
+      </ol>
+    </div>
+  </section>
+  </section> <!-- WoT -->
+
+  <section> <h2>Handling interaction data</h2>
+  <p>
+    As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
+    and include a number of possible <a>Form</a>s, out of which one is selected
+    for the interaction. The
+    <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
+    Form</a> contains a `contentType` to describe the data.
+    For certain content types, a <a>DataSchema</a> is defined, based on
+    <a>JSON Schema</a>, making possible to represent these contents as
+    JavaScript types and eventually set range constraints on the data.
+  </p>
+
+  <section data-dfn-for="InteractionInput">
+    <h2>The <dfn>InteractionInput</dfn> type</h2>
+    <pre class="idl">
+      typedef any DataSchemaValue;
+      typedef (ReadableStream or DataSchemaValue) InteractionInput;
+    </pre>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class and represents the
+      <a>WoT Interaction</a> data provided by application scripts to the UA.
+    </p>
+    <p>
+      <dfn>DataSchemaValue</dfn> is an
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]]
+      (i.e. null, boolean, number, string, array, or object).
+    </p>
+    <p>
+      {{ReadableStream}} is meant to be used for <a>WoT Interactions</a> that
+      don't have a <a>DataSchema</a> in the <a>Thing Description</a>, only a
+      {{Form}}'s `contentType` that can be represented by a stream.
+    </p>
+    <p>
+      In practice, any
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> may be used for <a>WoT Interactions</a> that have a
+      <a>DataSchema</a> defined in the <a>Thing Description</a>,
+      or which can be mapped by implementations to the {{Form}}'s `contentType`
+      defined in the <a>Thing Description</a>.
+    </p>
+    <p>
+      The algorithms in this document specify how exactly input data is used in
+      <a>WoT Interactions</a>.
+    </p>
+  </section>
+
+  <section data-dfn-for="InteractionOutput">
+    <h2>The <dfn>InteractionOutput</dfn> interface</h2>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class.
+      An {{InteractionOutput}} object is always created by the implementations
+      and exposes the data returned from <a>WoT Interactions</a> to application
+      scripts.
+    </p>
+    <p>
+      This interface exposes a convenience function which should cover
+      the vast majority of IoT use cases: the
+      <a href="#the-value-function">value()</a> function. Its implementation
+      will inspect the data, parse it if adheres to a <a>DataSchema</a>, or
+      otherwise fail early, leaving the underlying stream undisturbed so
+      that application scripts could attempt reading the stream themselves, or
+      handling the data as {{ArrayBuffer}}.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface InteractionOutput {
+        readonly attribute ReadableStream? data;
+        readonly attribute boolean dataUsed;
+        readonly attribute Form? form;
+        readonly attribute DataSchema? schema;
+        Promise&lt;ArrayBuffer&gt; arrayBuffer();
+        Promise&lt;any&gt; value();
+      };
+    </pre>
+    <p>
+      The <dfn>data</dfn> property represents the raw payload in
+      <a>WoT Interactions</a> as a {{ReadableStream}}, initially `null`.
+    </p>
+    <p>
+      The <dfn>dataUsed</dfn> property tells whether the data stream has
+      been <a href="https://fetch.spec.whatwg.org/#concept-readablestream-disturbed">
+      disturbed</a>. Initially `false`.
+    </p>
+    <p>
+      The <dfn>form</dfn> attribute represents the <a>Form</a> selected from
+      the <a>Thing Description</a> for this <a>WoT Interaction</a>,
+      initially `null`.
+    </p>
+    <p>
+      The <dfn>schema</dfn> attribute represents the <a>DataSchema</a>
+      (defined in [[WoT-TD]]) of the payload as a {{JSON}} object, initially `null`.
+    </p>
+    <p>
+      The <dfn>[[\value]]</dfn> internal slot represents the parsed value of
+      the <a>WoT Interaction</a>, initially `undefined` (note that `null` is a
+      valid value).
+    </p>
+    <section><h3>The <dfn>value()</dfn> function</h3>
+      Parses the data returned by the <a>WoT Interaction</a> and returns a
+      value with the type described by the interaction <a>DataSchema</a>
+      if that exists, or by the `contentType` of the interaction <a>Form</a>. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
+        </li>
+        <li>
+          If the value of the <a>[[\value]]</a> <a>internal slot</a> is not
+          `undefined`, resolve |promise| with that value and abort these steps.
+        </li>
+        <li>
+          If the value of the |data| property is not a {{ReadableStream}} or if
+          |dataUsed| is `true`, or if |form| is `null` or if |schema| or its
+          |type| are `null` or `undefined`,
+          reject |promise| with {{NotReadableError}} and abort these steps.
+        </li>
+        <li>
+          If |form|'s |contentType| is not `application/json` and if a mapping is
+          not available in the <a>Protocol Bindings</a> from |form|'s |contentType|
+          to [[!JSON-SCHEMA]], reject |promise| with {{NotSupportedError}} and
+          abort these steps.
+        </li>
+        <li>
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
+        </li>
+        <li>
+          Set |dataUsed| to `true`.
+        </li>
+        <li>
+          If |form|'s |contentType| is not `application/json` and if a mapping is
+          available in the <a>Protocol Bindings</a> from |form|'s |contentType|
+          to [[!JSON-SCHEMA]], transform |bytes| with that mapping.
+        </li>
+        <li>
+          Let |json| be the result of running <a>parse JSON from bytes</a> on
+          |bytes|. If that throws, reject |promise| with that exception and
+          abort these steps.
+        </li>
+        <li>
+          Set <a>[[\value]]</a> to the result of running <a>check data schema</a>
+          on |json| and |schema|. If that throws, reject |promise| with that
+          exception and abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with <a>[[\value]]</a>.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
+      When invoked, MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          <a>in parallel</a>.
+        </li>
+        <li>
+          If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
+          reject |promise| with {{NotReadableError}} and abort these steps.
+        </li>
+        <li>
+          Let |reader| be the result of
+          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          getting a reader</a> from |data|. If that threw an exception, reject
+          |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Let |bytes| be the result of <a href=
+          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          reading all bytes</a> from |data| with |reader|.
+        </li>
+        <li>
+          Set |dataUsed| to `true`.
+        </li>
+        <li>
+          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
+          If that throws, reject |promise| with that exception and abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with |arrayBuffer|.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>check data schema</dfn> algorithm</h3>
+      To run the <a>check data schema</a> steps on |payload| and |schema:object|,
+      <ol>
+        <li>
+          Let |type| be |schema|'s |type|.
+        </li>
+        <li>
+          If |type| is `"null"` and if |payload| is not `null`,
+          throw {{TypeError}} and abort these steps, otherwise return `null`.
+        </li>
+        <li>
+          If |type| is `"boolean"` and |payload| is a falsey value or its byte
+          length is 0, return `false`, otherwise return `true`.
+        </li>
+        <li>
+          If |type| is `"integer"` or `"number"`,
+          <ol>
+            <li>
+              If |payload| is not a number, throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              If |form|'s |minimum| is defined and |payload| is smaller, or if |form|'s |maximum| is defined and |payload| is bigger, throw
+              {{RangeError}} and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If |type| is `"string"`, return |payload|.
+        </li>
+        <li>
+          If |type| is `"array"`, run these sub-steps:
+          <ol>
+            <li>
+              If |payload| is not an array, throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              If |form|'s |minItems| is defined and |payload|'s |length| is
+              less than that, or if |form|'s |maxItems| is defined and |payload|'s
+              |length| is more than that, throw {{RangeError}} and abort these steps.
+            </li>
+            <li>
+              Let |payload| be an array of items obtained by running the
+              <a>check data schema</a> steps on each element |item| of |payload|
+              and |schema|'s |items|.
+              If this throws at any stage, re-throw that exception and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If |type| is `"object"`, run these sub-steps:
+          <ol>
+            <li>
+              If |payload| or |schema|'s |properties| is not an object,
+              throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              For each property |key| in |payload|,
+              <ol>
+                <li>Let |prop| be the value of |key|.</li>
+                <li>
+                  Let |propSchema| be the value of |key| in |interaction|'s
+                  |properties|.
+                </li>
+                <li>
+                  Let |prop| be the result of running the
+                  <a>check data schema</a> steps on |prop| and |propSchema|.
+                  If this throws, re-throw that exception and abort these steps.
+                </li>
+              </ol>
+            </li>
+            <li>
+              Let |required| be |schema|'s |required| if that is an array
+              or an empty array otherwise.
+            </li>
+            <li>
+              For each |key| in |required|, if |key| is not present in |payload|,
+              throw {{SyntaxError}} and abort these steps.
+            </li>
+          </ol>
+        </li>
+        <li>
+          Return |payload|.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>create interaction request</dfn> algorithm</h3>
+      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
+      <a>create interaction request</a> given a |source: InteractionInput|, |form:Form| and
+      |schema:object|, run these steps:
+      <ol>
+        <li>
+          Let |idata| be a new an {{InteractionOutput}} object whose |form| is
+          set to |form|, whose |schema| is set to |schema|, whose [[\value]]
+          <a>internal slot</a> is `undefined` and whose |data| is `null`.
+        </li>
+        <li>
+          If |source| is a {{ReadableStream}} object, let |idata|'s |data| be
+          |source|, return |idata| and abort these steps.
+        </li>
+        <li>
+          If |schema| and its |type| are defined and not `null`, run these sub-steps:
+          <ol>
+            <li>
+              If |type| is `"null"` and |source| is not,
+              throw {{TypeError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"boolean"` and |source| is a falsy value, set
+              |idata|'s [[\value]] |value| to `false`, otherwise to `true`.
+            </li>
+            <li>
+              If |type| is `"integer"` or `"number"` and |source| is not a number,
+              or if |form|'s |minimum| is defined and |source| is smaller,
+              or if |form|'s |maximum| is defined and |source| is bigger,
+              throw {{RangeError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"string"` and |source| is not a string, let |idata|'s
+              [[\value]] be the result of running <a>serialize JSON to bytes</a>
+              on |source|.
+              If that is failure, throw {{SyntaxError}} and abort these steps.
+            </li>
+            <li>
+              If |type| is `"array"`, run these sub-steps:
+              <ol>
+                <li>
+                  If |source| is not an array, throw a {{TypeError}} and abort these steps.
+                </li>
+                <li>
+                  Let |length| be the length of |source|.
+                </li>
+                <li>
+                  If |form|'s |minItems| is defined and |length| is less than
+                  that, or if |form|'s |maxItems| is defined and |length| is
+                  more than that, throw {{RangeError}} and abort these steps.
+                </li>
+                <li>
+                  For each |item| in |source|, let |itemschema| be |schema|'s
+                  |items| and let |item| be the result of running the
+                  <a>create interaction request</a> steps on |item|, |form| and
+                  |itemschema|.
+                  If this throws, re-throw that exception and abort these steps.
+                </li>
+                <li>
+                  Set |data|'s [[\value]] to |source|.
+                </li>
+              </ol>
+            </li>
+            <li>
+              If |type| is `"object"`, run these sub-steps:
+              <ol>
+                <li>
+                  If |source| is not an object, throw {{TypeError}} and abort these steps.
+                </li>
+                <li>
+                  If |schema|'s |properties| is not an object,
+                  throw {{TypeError}} and abort these steps.
+                </li>
+                <li>
+                  For each property |key| in |source|,
+                  <ol>
+                    <li>Let |value| be the value of |key|.</li>
+                    <li>Let |propschema| be the value of |key| in |properties|.</li>
+                    <li>
+                      Let |value| be the result of running the
+                      <a>create interaction request</a> steps on |value|, |form|
+                      and |propschema|.
+                      If this throws, re-throw that exception and abort these steps.
+                    </li>
+                  </ol>
+                </li>
+                <li>
+                  If |schema|'s |required| is an array, for each |item| in |required|
+                  check if |item| is a property name in |source|. If an |item| is
+                  not found in |source|, throw {{SyntaxError}} and abort these steps.
+                </li>
+                <li>
+                  Set |data|'s [[\value]] to |source|.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          Set |idata|'s |data| to a new {{ReadableStream}} created from |idata|'s
+          [[\value]] <a>internal slot</a> as its
+          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          underlying source</a>.
+        </li>
+        <li>
+          Return |idata|.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>parse interaction response</dfn> algorithm</h3>
+      For a given <a>ConsumedThing</a> object |thing:ConsumedThing|, in order to
+      <a>parse interaction response</a> given |response|, |form:Form| and
+      |schema:object|, run these steps:
+      <ol>
+        <li>
+          Let |result| be a new {{InteractionOutput}} object.
+        </li>
+        <li>
+          Let |result|'s |schema| be |schema|.
+        </li>
+        <li>
+          Let |result|'s |form| be |form|.
+        </li>
+        <li>
+          Let |result|'s |data| be a new {{ReadableStream}} with the payload data
+          of |response| as its
+          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          underlying source</a>.
+        </li>
+        <li>
+          Let |result|'s |dataUsed| be `false`.
+        </li>
+        <li>
+          Return |result|.
+        </li>
+      </ol>
+    </section>
+  </section>
+  <section> <h3>Using {{InteractionInput}} and {{InteractionOutput}}</h3>
+    <p>
+      As illustrated in the next pictures, the {{InteractionOutput}} interface
+      is used every time implementations provide data to scripts, while
+      {{InteractionInput}} is used when the scripts pass data to the
+      implementation.
+    </p>
+    <figure id="scripting-read">
+      <img src="images/scripting-read-data.png"
+                width="100%"
+                title="Reading data"/>
+      <figcaption>Data structures used when reading data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} reads data, it receives it from the implementation
+      as an {{InteractionOutput}} object.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertyreadhandler-callback">
+      read handler</a> provides the read data to the implementation as
+      {{InteractionInput}}.
+    </p>
+
+    <figure id="scripting-write">
+      <img src="images/scripting-write-data.png"
+                width="100%"
+                title="Writing data"/>
+      <figcaption>Data structures used when writing data</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} writes data, it provides it to the implementation
+      as {{InteractionInput}}.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-propertywritehandler-callback">
+      write handler</a> receives data from to implementation as
+      an {{InteractionOutput}} object.
+    </p>
+
+    <figure id="scripting-action">
+      <img src="images/scripting-action-data.png"
+                width="100%"
+                title="Invoking action"/>
+      <figcaption>Data structures used when invoking an Action</figcaption>
+    </figure>
+    <p>
+      When a {{ConsumedThing}} invokes an <a>Action</a> data, it provides the
+      parameters as {{InteractionInput}} and receives the output of the
+      <a>Action</a> as an {{InteractionOutput}} object.
+    </p>
+    <p>
+      An {{ExposedThing}} <a href="#the-actionhandler-callback">
+      action handler</a> receives arguments from the implementation as
+      an {{InteractionOutput}} object and provides <a>Action</a> output as
+      {{InteractionInput}} to the implementation.
+    </p>
+  </section>
+
+  <section> <h3>Error handling</h3>
+    <p>
+      The algorithms in this API define the errors to be reported to application
+      scripts.
+    </p>
+    <p>
+      The errors reported to the other communication end are mapped and
+      encapsulated by the <a>Protocol Bindings</a>.
+    </p>
+    <figure id="scripting-error-handling">
+      <img src="images/scripting-error-handling.png"
+                width="100%"
+                title="Error handling"/>
+      <figcaption>Error handling in WoT interactions</figcaption>
+    </figure>
+    <p class="ednote">
+      This topic is still being discussed in
+      <a href="https://github.com/w3c/wot-scripting-api/issues/200">Issue #200</a>.
+      A standardized error mapping would be needed in order to ensure consistency
+      in mapping script errors to protocol errors and vice versa. In particular,
+      when algorithms say "error received from the <a>Protocol Bindings</a>",
+      that will be factored out as an explicit error mapping algorithm. Currently,
+      that is encapsulated by implementations.
+    </p>
+  </section>
+
+  </section> <!-- Handling interaction data -->
+
+  <section data-dfn-for="ConsumedThing">
+    <h2>The <dfn>ConsumedThing</dfn> interface</h2>
+    <p>
+      Represents a client API to operate a <a>Thing</a>. Belongs to the
+      <a>WoT Consumer</a> conformance class.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ConsumedThing {
+        constructor(ThingDescription td);
+        Promise&lt;InteractionOutput&gt; readProperty(DOMString propertyName,
+                                    optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
+        Promise&lt;PropertyMap&gt; readMultipleProperties(
+                                    sequence&lt;DOMString&gt; propertyNames,
+                                    optional InteractionOptions options = null);
+        Promise&lt;undefined&gt; writeProperty(DOMString propertyName,
+                                    InteractionInput value,
+                                    optional InteractionOptions options = null);
+        Promise&lt;undefined&gt; writeMultipleProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);
+        /*Promise&lt;undefined&gt; writeAllProperties(PropertyMap valueMap,
+                                    optional InteractionOptions options = null);*/
+        Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
+                                    optional InteractionInput params = null,
+                                    optional InteractionOptions options = null);
+        Promise&lt;Subscription&gt; observeProperty(DOMString name,
+                                    InteractionListener listener,
+                                    optional ErrorListener onerror,
+                                    optional InteractionOptions options = null);
+        Promise&lt;Subscription&gt; subscribeEvent(DOMString name,
+                                    InteractionListener listener,
+                                    optional ErrorListener onerror,
+                                    optional InteractionOptions options = null);
+        ThingDescription getThingDescription();
+      };
+
+      dictionary InteractionOptions {
+        unsigned long formIndex;
+        object uriVariables;
+        any data;
+      };
+
+      [SecureContext, Exposed=(Window,Worker)]
+      interface Subscription {
+        readonly attribute boolean active;
+        Promise&lt;undefined&gt; stop(optional InteractionOptions options = null);
+      };
+
+      typedef object PropertyMap;
+
+      callback InteractionListener = undefined(InteractionOutput data);
+      callback ErrorListener = undefined(Error error);
+    </pre>
+    <p class="ednote" title="Where is the writeAllProperties method?">
+      The <code>writeAllProperties()</code> method is still under discussion.
+      Meanwhile, use the <code>writeMultipleProperties()</code> method instead.
+    </p>
+    <section>
+      <h4>Internal slots for ConsumedThing</h4>
+      <p>
+        A {{ConsumedThing}} object has the following <a>internal slots</a>:
+      </p>
+      <table class="simple">
+        <thead>
+         <tr>
+          <th>Internal Slot</th>
+          <th>Initial value</th>
+          <th>Description (<em>non-normative</em>)</th>
+         </tr>
+        </thead>
+        <tbody data-link-for="ConsumedThing">
+         <tr>
+          <td><dfn>[[\td]]</dfn></td>
+          <td>`null`</td>
+          <td>The <a>Thing Description</a> of the {{ConsumedThing}}.</td>
+         </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h4>Constructing <code>ConsumedThing</code></h4>
+      <p>
+        After <a href="#fetching-a-thing-description">fetching</a> a
+        <a>Thing Description</a> as a JSON object, one can create a
+        {{ConsumedThing}} object.
+      </p>
+      <div>
+        To create {{ConsumedThing}} with the {{ThingDescription}}
+        |td:ThingDescription|, run the following steps:
+        <ol>
+          <li>
+            Run the <a>validate a TD</a> steps on |td|. If that fails,
+            [= exception/throw =] {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Run the <a>expand a TD</a> steps on |td|. If that fails, re-[= exception/throw =] the error and abort these steps.
+          </li>
+          <li>
+            Let |thing:ConsumedThing| be a new {{ConsumedThing}} object.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
+          </li>
+          <li>
+            Return |thing|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>getThingDescription()</dfn> method</h3>
+      <p>
+        Returns the <a>internal slot</a> [[\td]] of the {{ConsumedThing}} object
+        that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
+        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
+        order to introspect its capabilities before interacting with it.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>readProperty()</dfn> method</h3>
+      <div>
+        Reads a <a>Property</a> value. Takes as arguments |propertyName:string|
+        and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with a <a>Property</a> value
+        represented as an {{InteractionOutput}} object or rejects on error.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps
+            <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting
+            context for security reasons, reject |promise| with a
+            {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be a <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `readproperty`, selected by
+            the implementation.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the
+            <a>Protocol Bindings</a>) to retrieve the value of the <a>Property</a>
+            given by |propertyName| using |form| and the optional URI templates
+            given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |response| be the response received to the request.
+          </li>
+          <li>
+            Let |data| be the result of running <a>parse interaction response</a>
+            on |response|, |form| and |interaction|.
+            If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Resolve |promise| with |data|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>readMultipleProperties()</dfn> method</h3>
+      <div>
+        Reads multiple <a>Property</a> values with one request.
+        Takes as arguments |propertyNames: string sequence| and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with a {{PropertyMap}} object
+        that maps keys from |propertyNames| to values returned by this algorithm.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readmultipleproperties`, selected by
+            the implementation.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a>, reject |promise| with a {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            Process the response and for each |key| in |result|, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |value| be the value of |result|'s |key|.
+              </li>
+              <li>
+                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
+              </li>
+              <li>
+                Let |property| be the result of running
+                <a>parse interaction response</a> on |value|, |form| and
+                |schema|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            If the above step throws at any point, reject |promise| with that
+            exception and abort these steps.
+          </li>
+          <li>
+            Resolve |promise| with |result|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>readAllProperties()</dfn> method</h3>
+      <div>
+        Reads all properties of the <a>Thing</a> with one request. Takes |options:InteractionOptions| as optional argument.
+        It returns a {{Promise}} that resolves with a {{PropertyMap}} object that
+        maps keys from <a>Property</a> names to values returned by this algorithm.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readallproperties`, selected by
+            the implementation.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with |form| and optional URI templates given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
+          </li>
+          <li>
+            Process the response and for each |key| in |result|, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |value| be the value of |result|'s |key|.
+              </li>
+              <li>
+                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
+              </li>
+              <li>
+                Let |property| be the result of running
+                <a>parse interaction response</a> on |value|, |form| and
+                |schema|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Resolve |promise| with |result|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>writeProperty()</dfn> method</h3>
+      <div>
+        Writes a single <a>Property</a>. Takes as arguments |propertyName:string|,
+        |value:InteractionInput| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |propertyName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be a <a>Form</a> in
+            |interaction|'s |forms| whose |op| is `writeproperty`, selected by
+            the implementation.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |data| be the result of running the <a>create interaction request</a> steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
+            to write the <a>Property</a> given by |propertyName| using
+            |data:InteractionOutput| and the optional URI templates given in
+            |options|' |uriVariables|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+        </ol>
+      </div>
+      <p class="ednote">
+        As discussed in <a href="https://github.com/w3c/wot-scripting-api/issues/193">
+        Issue #193</a>, the design decision is that write interactions only
+        return success or error, not the written value (optionally).
+        <a>TD</a>s should capture the schema of the <a>Property</a>
+        values, including precision and alternative formats. When a return
+        value is expected from the interaction, an <a>Action</a> should be used
+        instead of a <a>Property</a>.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>writeMultipleProperties()</dfn> method</h3>
+      <div>
+        Writes a multiple <a>Property</a> values with one request.
+        Takes as arguments |properties:object| - as an object with keys being
+        <a>Property</a> names and values as <a>Property</a> values - and optionally
+        |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps
+            <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting
+            context for security reasons, reject |promise| with a
+            {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array,
+            otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms|
+            array whose |op| is `writemultipleproperties`, selected by
+            the implementation.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            abort these steps.
+          </li>
+          <li>
+            Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
+          </li>
+          <li>
+            For each |name:string| in |propertyNames|, let |property| be the value of [[\td]]'s |properties|'s |name|.
+            If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
+            and abort these steps.
+          </li>
+          <li>
+            Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and let its value be
+            `null`.
+          </li>
+          <li>
+            Let |schemas:object| be an object and for each string |name:string|
+            in |propertyNames| add a property with key |name| and let its value
+            be the value of [[\td]]'s |properties|'s |name|.
+          </li>
+          <li>
+            For each key |key:string| in |properties|, take its value as |value|
+            and run the <a>create interaction request</a> steps on |value|, |form|
+            and the value for |schema|'s |key|.
+            If that throws for any |name|, reject <a>promise</a> with that
+            exception and abort these steps.
+          </li>
+          <li>
+            Make a single request to the underlying platform (via the
+            <a>Protocol Bindings</a>) to write each <a>Property</a> provided in
+            |properties| with optional URI templates given in |options|'
+            |uriVariables|.
+          </li>
+          <li>
+            If this cannot be done with a single request with the
+            <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise|
+            with a {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            If the request fails, return the error received from the
+            <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>observeProperty()</dfn> method</h3>
+      <div>
+        Makes a request for <a>Property</a> value change notifications.
+        Takes as arguments |propertyName:string|, |listener:InteractionListener| and
+        optionally |onerror:ErrorListener| and |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves on success and rejects on failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |listener| is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            If |onerror| is not `null` and is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
+            set as follows:
+            <ul>
+              <li>
+                Let |subscription|'s [[\type]] be `"property"`.
+              </li>
+              <li>
+                Let |subscription|'s [[\name]] be the value of |propertyName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
+                |properties|'s |propertyName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\form]] be the <a>Form</a> associated with
+                |formIndex| in [[\interaction]]'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let [[\form]] be a
+                <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
+                `"observeproperty"`, selected by the implementation.
+              </li>
+              <li>
+                If |subscription|'s [[\form]] is failure, reject |promise| with a
+                {{SyntaxError}} and abort these steps.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Make a request to the underlying platform to observe the
+            <a>Property</a> identified by |propertyName| with |form| and
+            optional URI templates given in |options|' |uriVariables|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from
+            the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+          <li>
+            Whenever the underlying platform detects a notification for this
+            subscription with a new <a>Property</a> value |value|,
+            run the following sub-steps:
+            <ul>
+              <li>
+                Let |reply| be the result of running <a>parse interaction response</a>
+                with |value|, [[\form]] and [[\interaction]].
+                If that throws, reject |promise| with that exception and abort these steps.
+              </li>
+              <li>
+                Invoke |listener| with |reply|.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Whenever the underlying platform detects an error for
+            this subscription, run the following sub-steps:
+            <ul>
+              <li>
+                If the error is irrecoverable and stops the subscription, set
+                |subscription|'s |active| to `false` and suppress further notifications.
+              </li>
+              <li>
+                Let |error| be a new {{NetworkError}} and set its |message|
+                to reflect the underlying error condition.
+              </li>
+              <li>
+                If |onerror| is a {{Function}},  invoke it with |error|.
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>invokeAction()</dfn> method</h3>
+      <div>
+        Makes a request for invoking an <a>Action</a> and return the result.
+        Takes as arguments |actionName:string|, optionally
+        |params:InteractionInput| and optionally |options:InteractionOptions|.
+        It returns a {{Promise}} that resolves with the result of the <a>Action</a>
+        represented as an {{InteractionOutput}} object, or rejects with an error.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |actions|'s
+            |actionName|.
+          </li>
+          <li>
+            If |option|'s |formIndex| is defined, let |form| be the
+            <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
+            array, otherwise let |form| be a <a>Form</a> in
+            |interaction|'s |forms| array whose |op| is `invokeaction`,
+            selected by the implementation.
+          </li>
+          <li>
+            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+          </li>
+          <li>
+            Let |args| be the result of running the <a>create interaction request</a> steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s |uriVariables|.
+          </li>
+          <li>
+            If the request fails locally or returns an error over the network, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |value| be the reply returned in the reply.
+          </li>
+          <li>
+            Let |result| be the result of running <a>parse interaction response</a>
+            with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
+          </li>
+          <li>
+            Resolve |promise| with |result|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>subscribeEvent()</dfn> method</h3>
+      <div>
+        Makes a request for subscribing to <a>Event</a> notifications.
+        Takes as arguments |eventName:string|, |listener:WoTListener| and
+        optionally  |onerror:ErrorListener| and |options:InteractionOptions|.
+        It returns a {{Promise}} to signal success or failure.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If |listener| is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            If |onerror| is not `null` and is not a {{Function}}, reject |promise|
+            with a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
+            set as follows:
+            <ul>
+              <li>
+                Let |subscription|'s [[\type]] be `"event"`.
+              </li>
+              <li>
+                Let |subscription|'s [[\name]] be the value of |eventName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
+                |events|'s |eventName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\form]] be the <a>Form</a> associated with
+                |formIndex| in [[\interaction]]'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let [[\form]] be a
+                <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
+                `"subscribeevent"`, selected by the implementation.
+              </li>
+              <li>
+                If |subscription|'s [[\form]] is failure, reject |promise| with a
+                {{SyntaxError}} and abort these steps.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Make a request to the underlying platform via the <a>Protocol Bindings</a>
+            to subscribe to an <a>Event</a> identified by |eventName:string| with
+            [[\form]], optional URI templates given in |options|' |uriVariables|
+            and optional subscription data given in |options|'s |data|.
+          </li>
+          <li>
+            If the request fails, reject |promise| with the error received from
+            the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise|.
+          </li>
+          <li>
+            Whenever the underlying platform detects a notification for this
+            <a>Event</a> subscription, run the following sub-steps:
+            <ol>
+              <li>
+                Invoke |listener| with the result of running
+                <a>parse interaction response</a> on the data provided with the
+                <a>Event</a>, [[\form]] and [[\interaction]].
+              </li>
+            </ol>
+          </li>
+          <li>
+            Whenever the underlying platform detects an error for
+            this subscription, run the following sub-steps:
+            <ul>
+              <li>
+                If the error is irrecoverable and stops the subscription, set
+                |subscription|'s |active| to `false` and suppress further notifications.
+              </li>
+              <li>
+                Let |error| be a new {{NetworkError}} and set its |message|
+                to reflect the underlying error condition.
+              </li>
+              <li>
+                If |onerror| is a {{Function}}, invoke it with |error|.
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section data-dfn-for="InteractionOptions">
+      <h3>
+        The <dfn>InteractionOptions</dfn> dictionary
+      </h3>
+      <p>
+        Holds the interaction options that need to be exposed for application scripts according to the <a>Thing Description</a>.
+      </p>
+      <p>
+        The <dfn>formIndex</dfn> property, if defined, represents an application
+        hint for which <code>Form</code> definition, identified by this index,
+        of the <a>TD</a> to use for the given WoT interaction.
+        Implementations SHOULD use the <code>Form</code> with this index for
+        making the interaction, but MAY override this value if the index is not
+        found or not valid.
+        If not defined, implementations SHOULD attempt to use the
+        <code>Form</code> definitions in order of appearance as listed in the
+        <a>TD</a> for the given Wot Interaction.
+      </p>
+      <p>
+        The <dfn>uriVariables</dfn> property if defined, represents the URI
+        template variables to be used with the WoT Interaction that are represented
+        as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">
+        parsed JSON objects</a> defined in [[!WOT-TD]].
+      </p>
+      <p class="ednote">
+        The support for URI variables comes from the need, exposed by the [[[WOT-TD]]] specification, to be able to describe
+        existing REST-ful endpoints that use them. However, it should be possible to write a Thing Description that would use
+        <a>Action</a>s for representing this kind of interactions and model the URI variables as action parameters. In that case,
+        implementations can serialize the parameters as URI variables, and therefore, the |options| parameter could be
+        dismissed.
+      </p>
+      <p>
+        The <dfn>data</dfn> property if defined, represents additional opaque
+        data that needs to be passed to the interaction.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>PropertyMap</dfn> type</h3>
+      <p>
+        Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
+      </p>
+      <p class="ednote">
+         It could be defined in Web IDL (as well as {{ThingDescription}}) as a <a href="https://heycam.github.io/webidl/#idl-maplike">maplike</a> interface from <i>string</i> to <i>any</i>.
+      </p>
+    </section>
+
+
+    <section>
+      <h3>The <dfn>InteractionListener</dfn> callback</h3>
+      <p>
+        User provided callback that is given an argument of type
+        {{InteractionOutput}} and is used for observing <a>Property</a> changes
+        and handling <a>Event</a> notifications.
+        Since subscribing to <a>Events</a> are WoT interactions and might take
+        options or even data, they are not modelled with software events.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>ErrorListener</dfn> callback</h3>
+      <p>
+        User provided callback that is given an argument of type
+        {{Error}} and is used for conveying critical and non-critical errors
+        from the <a>Protocol Bindings</a> to applications.
+      </p>
+    </section>
+
+    <section data-dfn-for="Subscription">
+      <h3>The <dfn>Subscription</dfn> interface</h3>
+      <p>
+        Represents a subscription to <a>Property</a> change and <a>Event</a>
+        interactions.
+      </p>
+      <p>
+        The <dfn>active</dfn> boolean property denotes if the subscription is
+        active, i.e. it is not stopped because of an error or because of invocation
+        of the <code>stop()</code> method.
+      </p>
+      <section><h4>Internal slots for {{Subscription}}</h4>
+        A {{Subscription}} object has the following <a>internal slots</a>:
+        <table class="simple">
+          <thead>
+           <tr>
+            <th>Internal Slot</th>
+            <th>Initial value</th>
+            <th>Description (<em>non-normative</em>)</th>
+           </tr>
+          </thead>
+          <tbody data-link-for="Subscription">
+           <tr>
+            <td><dfn>[[\type]]</dfn></td>
+            <td>`null`</td>
+            <td>
+              Indicates what <a>WoT Interaction</a> the {{Subscription}} refers to.
+              The value can be either `"property"` or `"event"` or `null`.
+            </td>
+           </tr>
+           <tr>
+             <td><dfn>[[\name]]</dfn></td>
+             <td>`null`</td>
+             <td>The <a>Property</a> or <a>Event</a> name.</td>
+           </tr>
+           <tr>
+             <td><dfn>[[\interaction]]</dfn></td>
+             <td>`null`</td>
+             <td>
+              The <a>Thing Description</a> fragment that describes the
+              <a>WoT interaction</a>.
+              </td>
+           </tr>
+           <tr>
+             <td><dfn>[[\form]]</dfn></td>
+             <td>`null`</td>
+             <td>The <a>Form</a> associated with the subscription.</td>
+           </tr>
+          </tbody>
+        </table>
+      </section>
+      <section>
+        <h4>The <dfn>stop()</dfn> method</h4>
+        <p>
+          Stops delivering notifications for the subscription. It takes an
+          optional parameter |options:InteractionOptions| and returns a {{Promise}}.
+          When invoked, the method MUST execute the following steps:
+          <ol>
+            <li>
+              Return a {{Promise}} |promise:Promise| and execute the next steps
+              <a>in parallel</a>.
+            </li>
+            <li>
+              If invoking this method is not allowed for the current scripting
+              context for security reasons, reject |promise| with a
+              {{SecurityError}} and abort these steps.
+            </li>
+            <li>
+              If |options|' |formIndex| is defined, let |unsubscribeForm| be the
+              <a>Form</a> associated with |formIndex| in [[\interaction]]'s
+              |forms| array.
+            </li>
+            <li>
+              Otherwise let |unsubscribeForm| be the result of running the
+              <a>find a matching unsubscribe form</a> algorithm given [[\form]].
+            </li>
+            <li>
+              If |unsubscribeForm| is failure, reject |promise| with a {{SyntaxError}} and
+              abort these steps.
+            </li>
+            <li>
+              If [[\type]] is `"property"`, make a request to the underlying
+              platform via the <a>Protocol Bindings</a> to stop observing the
+              <a>Property</a> identified by [[\name]] with |unsubscribeForm| and optional
+              URI templates given in |options|' |uriVariables|.
+            </li>
+            <li>
+              Otherwise, if [[\type]] is `"event"`, make a request to the underlying
+              platform via the <a>Protocol Bindings</a> to unsubscribe from the
+              <a>Event</a> identified by [[\name]] with |unsubscribeForm|, with optional URI
+              templates given in |options|' |uriVariables| and optional
+              unsubscribe data given in |options|'s |data|.
+            </li>
+            <li>
+              If the request fails, reject |promise| with the error received from
+              the <a>Protocol Bindings</a> and abort these steps.
+            </li>
+            <li>
+              Otherwise set <a href="#dom-subscription-active">active</a> to
+              `false` and resolve |promise|.
+            </li>
+            <li>
+              If the underlying platform receives further notifications for this
+              subscription, implementations SHOULD silently suppress them.
+            </li>
+          </ol>
+        </p>
+      </section>
+      <section><h4>Finding an unsubscribe <a>Form</a></h4>
+        To <dfn>find a matching unsubscribe form</dfn> given |subscribeForm|
+        in the context of a {{Subscription}} object, run the following steps:
+        <ol>
+          <p class="note">
+            This algorithm is under development and is <em>non-normative</em>.
+            Implementations MAY choose another algorithm to find a matching
+            `unsubscribe` <a>Form</a> to a given `subscribe` <a>Form</a>.
+          </p>
+          <li>
+            Let |results| be an empty array.
+          </li>
+          <li>
+            For each |form| in [[\interaction]]'s |forms| array,
+            <ol>
+              <li>
+                Add an <a>internal slot</a> [[\matchLevel]] on |form| and set
+                its value to `0`.
+              </li>
+              <li>
+                If |form|'s |op| is `"unobserveproperty"` if [[\type]] is
+                `"property"` or if |form|'s |op| is `"unsubscribeevent"`
+                if [[\type]] is`"event"`,
+                <ol>
+                  <li>
+                    Set the <a>internal slot</a> [[\matchLevel]] on |form| to 1
+                    and add |form| to |results|.
+                  </li>
+                  <li>
+                    If |form|'s |href| and [[\subscribeForm]]'s |href| are
+                    <a href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain">
+                    same origin-domain</a>, increment |form|'s [[\matchLevel]].
+                  </li>
+                  <li>
+                    If |form|'s |contentType| is equal to [[\subscribeForm]]'s
+                    |contentType| and |form|'s [[\matchLevel]] is greater than 2,
+                    increment |form|'s [[\matchLevel]].
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li>
+            If |results| is empty, return `null` and terminate these steps.
+          </li>
+          <li>
+            Return the first |form| in |results| that has the highest
+            [[\matchLevel]] value.
+          </li>
+        </ol>
+      </section>
+    </section>
+
+    <section>
+      <h2>ConsumedThing Examples</h2>
+      <p>
+        The next example illustrates how to fetch a <a>TD</a> by URL, create a {{ConsumedThing}}, read metadata (title), read property value, subscribe to property change, subscribe to a WoT event, unsubscribe.
+      </p>
+      <pre class="example" title="Thing Client API example with data value">
+        try {
+          let res = await fetch("https://tds.mythings.org/sensor11");
+          let td = res.json();
+          let thing = new ConsumedThing(td);
+          console.log("Thing " + thing.getThingDescription().title + " consumed.");
+        } catch (e) {
+          console.log("TD fetch error: " + e.message);
+        };
+
+        try {
+          // subscribe to property change for “temperature”
+          await thing.observeProperty("temperature", async (data) => {
+            try {
+              console.log("Temperature changed to: " + await data.value());
+            } catch (error) {
+              console.error("Cannot read the observed property temperature");
+              console.error(error);
+            }
+          });
+          // subscribe to the “ready” event defined in the TD
+          await thing.subscribeEvent("ready", async (eventData) => {
+            try {
+              console.log("Ready; index: " + await eventData.value());
+              // run the “startMeasurement” action defined by TD
+              await thing.invokeAction("startMeasurement", { units: "Celsius" });
+              console.log("Measurement started.");
+            } catch (error) {
+              console.error("Cannot read the ready event or startMeasurement failed");
+              console.error(error)
+            }
+          });
+        } catch (e) {
+          console.log("Error starting measurement.");
+        }
+
+        setTimeout(async () => {
+          try {
+            const temperatureData = await thing.readProperty("temperature")
+            const temperature = await temperatureData.value();
+            console.log("Temperature: " + temperature);
+
+            await thing.unsubscribe("ready");
+            console.log("Unsubscribed from the ‘ready’ event.");
+          } catch (error) {
+            console.log("Error in the cleanup function");
+          }
+        }, 10000);
+      </pre>
+      <p>
+        The following shows an advance usage of {{InteractionOutput}} to read a property without a {{DataSchema}}.
+      </p>
+      <pre class="example" title="Thing Client API example with arrayBuffer">
+        /*
+        * takePicture affordance form:
+        * "form": {
+        *   "op": "invokeaction",
+        *   "href" : "http://camera.example.com:5683/takePicture",
+        *   "response": {
+        *     "contentType": "image/jpeg",
+        *     "contentCoding": "gzip"
+        *   }
+        *}
+        * See https://www.w3.org/TR/wot-thing-description/#example-23
+        */
+        let response;
+        let image;
+        try {
+          response = await thing.invokeAction(“takePicture”));
+          image = await response.value() // throws NotReadableError --> schema not defined
+        } catch(ex) {
+          image = await response.arrayBuffer();
+          // image: ArrayBuffer [0x1 0x2 0x3 0x5 0x15 0x23 ...]
+        }
+      </pre>
+      <p>
+        Finally, the next two examples shows the usage of a {{ReadableStream}} from an {{InteractionOutput}}.
+      </p>
+      <pre class="example" title="Thing Client API example with readable stream (e.g., video stream)">
+        /*{
+        "video": {
+          "description" : "the video stream of this camera",
+          "forms": [
+            {
+              "op": "readproperty",
+              "href": "http://camera.example.com/live",
+              "subprotocol": "hls"
+              "contentType": "video/mp4"
+            }
+          ]
+        }}*/
+
+        const video = await thing.readProperty("video")
+        const reader = video.data.getReader()
+        reader.read().then(function processVideo({ done, value }) {
+          if (done) {
+            console.log("live video stoped");
+            return;
+          }
+          const decoded = decode(value)
+          UI.show(decoded)
+          // Read some more, and call this function again
+          return reader.read().then(processText);
+        });
+      </pre>
+      <p>Here consider that the JSON object is too big to be read wholly in the memory. Therefore,
+        we use streaming processing to get the total number of the events recorded by the remote Web Thing.
+      </p>
+      <pre class="example" title="Thing Client API example with readable stream (e.g., counting json objects)">
+        /*
+        * "eventHistory":
+        * {
+        *   "description" : "A long list of the events recorderd by this thing",
+        *   "type": "array",
+        *   "forms": [
+        *     {
+        *       "op": "readproperty",
+        *       "href": "http://recorder.example.com/eventHistory",
+        *     }
+        *   ]
+        * }
+        */
+
+        // Example of streaming processing: counting json objects
+        let objectCounter = 0
+        const parser = new Parser() //User library for json streaming parsing (i.e. https://github.com/uhop/stream-json/wiki/Parser)
+
+        parser.on('data', data => data.name === 'startObject' && ++objectCounter);
+        parser.on('end', () => console.log(`Found ${objectCounter} objects.`));
+
+        const response = await thing.readProperty(“eventHistory”)
+        await response.data.pipeTo(parser);
+
+        // Found N objects
+      </pre>
+    </section> <!-- Examples -->
+  </section> <!-- ConsumedThing -->
+
+  <section data-dfn-for="ExposedThing">
+    <h2>The <dfn>ExposedThing</dfn> interface</h2>
+    <p>
+      The {{ExposedThing}} interface is the server API to operate the <a>Thing</a> that allows defining request handlers, <a>Property</a>, <a>Action</a>, and <a>Event</a> interactions.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ExposedThing {
+        ExposedThing setPropertyReadHandler(DOMString name,
+                PropertyReadHandler handler);
+        ExposedThing setPropertyWriteHandler(DOMString name,
+                PropertyWriteHandler handler);
+        ExposedThing setPropertyObserveHandler(DOMString name,
+                PropertyReadHandler handler);
+        ExposedThing setPropertyUnobserveHandler(DOMString name,
+                PropertyReadHandler handler);
+        Promise&lt;undefined&gt; emitPropertyChange(DOMString name);
+
+        ExposedThing setActionHandler(DOMString name, ActionHandler action);
+
+        ExposedThing setEventSubscribeHandler(DOMString name,
+                EventSubscriptionHandler handler);
+        ExposedThing setEventUnsubscribeHandler(DOMString name,
+                EventSubscriptionHandler handler);
+        ExposedThing setEventHandler(DOMString name,
+                EventListenerHandler eventHandler);
+        Promise&lt;undefined&gt; emitEvent(DOMString name,
+                InteractionInput data);
+
+        Promise&lt;undefined&gt; expose();
+        Promise&lt;undefined&gt; destroy();
+
+        ThingDescription getThingDescription();
+      };
+
+      callback PropertyReadHandler = Promise&lt;any&gt;(
+              optional InteractionOptions options = null);
+
+      callback PropertyWriteHandler = Promise&lt;undefined&gt;(
+              InteractionOutput value,
+              optional InteractionOptions options = null);
+
+      callback ActionHandler = Promise&lt;InteractionInput&gt;(
+              InteractionOutput params,
+              optional InteractionOptions options = null);
+
+      callback EventSubscriptionHandler = Promise&lt;undefined&gt;(
+              optional InteractionOptions options = null);
+
+      callback EventListenerHandler = Promise&lt;InteractionInput&gt;();
+    </pre>
+
+    <section data-dfn-for="ExposedThing">
+      <h4>Internal slots for ExposedThing</h4>
+      <p>
+        An {{ExposedThing}} object has the following <a>internal slots</a>:
+      </p>
+      <table class="simple">
+        <thead>
+         <tr>
+          <th>Internal Slot</th>
+          <th>Initial value</th>
+          <th>Description (<em>non-normative</em>)</th>
+         </tr>
+        </thead>
+        <tbody data-link-for="ExposedThing">
+         <tr>
+          <td><strong><em>[[\td]]</em></strong></td>
+          <td>`null`</td>
+          <td>The <a>Thing Description</a> of the <a>Thing</a>.</td>
+         </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h3>Constructing {{ExposedThing}}</h3>
+      <p>
+        The {{ExposedThing}} interface extends {{ConsumedThing}}. It
+        is constructed from a full or partial {{ThingDescription}} object.
+      </p>
+      <p class="note">
+         Note that an existing {{ThingDescription}} object can be optionally modified (for instance by adding or removing elements on its |properties|, |actions| and |events| internal properties) and the resulting object can used for constructing an
+         {{ExposedThing}} object. This is the current way of adding and
+         removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions, as illustrated in the <a href="#exposedthing-examples">examples</a>.
+      </p>
+      <p class="note">
+        Before invoking <a href="#dom-exposedthing-expose">expose()</a>, the {{ExposedThing}} object does not serve any requests. This allows first constructing {{ExposedThing}} and then initialize its <a>Properties</a> and service handlers before starting serving requests.
+      </p>
+      <div>
+        To construct an {{ExposedThing}} with the {{ThingDescription}}
+        |td:ThingDescription|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Run the <a>expand a TD</a> steps on |td|. If that fails, re-[= exception/throw =] the error and abort these steps.
+          </li>
+          <li>
+            Let |thing:ExposedThing| be a new {{ExposedThing}} object.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
+          </li>
+          <li>
+            Return |thing|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section data-dfn-for="ExposedThing">
+      <h3>The <dfn>getThingDescription()</dfn> method</h3>
+      <p>
+        Returns the <a>internal slot</a> [[\td]] of the {{ExposedThing}} object
+        that represents the <a>Thing Description</a> of the <a>Thing</a>.
+        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
+        order to introspect its capabilities before interacting with it.
+      </p>
+    </section>
+
+    <section data-dfn-for="PropertyReadHandler">
+      <h3>The <dfn>PropertyReadHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for reading a
+        <a>Property</a> is received and defines what to do with such requests.
+        It returns a {{Promise}} and resolves with an {{ReadableStream}} object or an
+        <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">
+        ECMAScript value</a> conforming to <a>DataSchema</a>, or rejects with an
+        error.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyReadHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for reading the specified <a>Property</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p class="ednote">
+        Note that there is no need to register handlers for handling requests
+        for reading multiple or all <a>Properties</a>. The request and reply
+        are transmitted in a single network request, but the <a>ExposedThing</a>
+        may implement them using multiple calls to the single read handler.
+      </p>
+      <p>
+         The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\td]] <a>internal slot</a>.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Add the <a>internal slot</a> [[\readHandler]] to |interaction| and
+            set it to |handler|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading a Property</h3>
+      <div>
+        When a network request for reading <a>Property</a> |name:string|
+        is received by the implementation with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |value| be the result of running the <dfn>read server property</dfn>
+            steps with |name:string| and |options:InteractionOptions|:
+            <ol>
+              <li>
+                Let |interaction| be the value of [[\td]]'s |properties|'s
+                |name|.
+              </li>
+              <li>
+                If a <a>Property</a> with |name| does not exist, throw  {{NotFoundError}} and abort these steps.
+              </li>
+              <li>
+                Let |handler:function| be `null`.
+              </li>
+              <li>
+                If there is a user provided <a>internal slot</a> [[\readHandler]]
+                on |interaction|, let |handler| be that.
+              </li>
+              <li>
+                Otherwise, if there is a default read handler provided by the implementation, let |handler| be that.
+              </li>
+              <li>
+                If |handler| is `null`, throw {{NotSupportedError}}
+                and abort these steps.
+              </li>
+              <li>
+                Let |value| be the result of invoking |handler| with |options|.
+                If that fails, throw the error and abort these steps.
+              </li>
+              <li>
+                Return |value|.
+                <p class="note">
+                  The |value| returned here SHOULD either conform to <a>DataSchema</a>
+                  or it SHOULD be an {{ReadableStream}} object created by the
+                  |handler|.
+                </p>
+              </li>
+            </ol>
+          </li>
+          <li>
+            If the previous step has thrown an error, send the error back with
+            the reply created by following the <a>Protocol Bindings</a> and abort
+            these steps.
+          </li>
+          <li>
+            Serialize and add the returned |value| to the reply created by
+            following the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading multiple Properties</h3>
+      <div>
+        When a network request for reading multiple <a>Properties</a> given in
+        an object |propertyNames| is received with |options:InteractionOptions|,
+        run the following <dfn>read multiple properties</dfn> steps on |propertyNames| and |options|:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            For each property with key |name| defined in |propertyNames|,
+            <ol>
+              <li>
+                Let |value| be the result of running the <a>read server property</a>
+                steps on |name| and |options|.
+                If that throws, send back the error in the reply created by following the  <a>Protocol Bindings</a> and abort these steps.
+              </li>
+              <li>
+                Set the value of |propertyNames|'s |name| to |value|.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Reply to the request by sending a single reply created from |propertyNames| according to the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for reading all Properties</h3>
+      <div>
+        When a network request for reading all <a>Properties</a> is received
+        with |options:InteractionOptions|, run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |properties| be an object created with all properties defined in
+            the <a>Thing</a> with values set to `null`.
+          </li>
+          <li>
+            Run the <a>read multiple properties</a> steps on |properties| and
+            |options|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyObserveHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
+        Sets the service handler that defines what to do when a request is received
+        for observing the specified <a>Property</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function should implement reading a
+         <a>Property</a> and resolve with an {{InteractionOutput}} object or
+         reject with an error.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\observeHandler]] on |interaction|
+            to |handler|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> observe requests</h3>
+      <div>
+        When a network request for observing a <a>Property</a> |name:string| is
+        received by the implementation with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            If it does not exist, send back a {{NotFoundError}} in the
+            reply and abort these steps.
+          </li>
+          <li>
+            Save the request sender information together with |options| to
+            |property|'s <a>internal observer list</a>, in order to be able
+            to notify about <a>Property</a> value changes.
+          </li>
+        </ol>
+      </div>
+      <p class=note>
+        Every time the value of |property| changes,
+        <a href="#the-emitpropertychange-method">`emitPropertyChange()`</a>
+        needs to be explicitly called by the application script.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyUnobserveHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:PropertyReadHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for unobserving the specified <a>Property</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+        The |handler| callback function should implement what to do when an
+        unobserve request is received by the implementation.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default handler based on the <a>Thing Description</a>.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyReadHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a
+            {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\unobserveHandler]] on |interaction|
+            to |handler|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Property</a> unobserve requests</h3>
+      <div>
+        When a network request for unobserving a <a>Property</a> |name:string|
+        with |options:InteractionOptions| is received by the implementation,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            If it does not exist, send back a {{NotFoundError}} in the
+            reply and abort these steps.
+          </li>
+          <li>
+            If there is an [[\unobserveHandler]] of type {{Function}} defined
+            for |name| on |property|, invoke that with |options|, send back a
+            reply following the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |sender| be the matching observer found in |property|'s
+            <a>internal observer list</a>. If not found, send back a
+            {{NotFoundError}} in the reply and abort these steps.
+          </li>
+          <li>
+            Remove |sender| from |property|'s <a>internal observer list</a>
+            and send back a reply following the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>emitPropertyChange()</dfn> method</h3>
+      <div>
+        Takes the |name:string| argument, denoting a <a>Property</a> name.
+        Triggers emitting a notification to all observers of the specified
+        <a>Property</a> with the data obtained from the observe handler or the
+        read handler associated with that <a>Property</a>.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+          </li>
+          <li>
+            If a <a>Property</a> with the name |name| is not found,
+            reject |promise| with {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Let |handler:function| be `null.`
+          </li>
+          <li>
+            If there is an [[\observeHandler]] <a>internal slot</a> on |property|, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if there is a [[\readHandler]] <a>internal slot</a>
+            associated with |name| on |property|, let |handler| be that.
+          </li>
+          <li>
+            If |handler| is `null`, abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| wih `null`.
+          </li>
+          <li>
+             If |promise| rejects, abort these steps.
+          </li>
+          <li>
+            If |promise| resolves with |data|, then for each |observer| in
+            |property|'s <a>internal observer list</a>, run the following
+            sub-steps:
+            <ol>
+              <li>
+                Let |options| be the interaction options saved with |observer|.
+              </li>
+              <li>
+                Create a |reply| from |data| and |options| according to the
+                <a>Protocol Bindings</a>.
+              </li>
+              <li>
+                Send |reply| to |observer|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section data-dfn-for="PropertyWriteHandler">
+      <h3>The <dfn>PropertyWriteHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for writing a
+        <a>Property</a> is received and defines what to do with such requests.
+        Takes as argument |value:InteractionOutput| and returns a {{Promise}},
+        resolved when the value of the <a>Property</a> - identified by the name
+        provided when setting the handler has been updated -, or rejects
+        with an error if the property is not found or the value cannot be updated.
+      </p>
+      <p class="ednote">
+        Note that the code in this callback function can read the property before updating it in order to find out the old value, if needed. Therefore the old value is not provided to this function.
+      </p>
+      <p class="note">
+        The value is provided by implementations as an {{InteractionOutput}} object
+        in order to be able to represent values that are not described by a
+        <a>DataSchema</a>, such as streams.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setPropertyWriteHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:PropertyWriteHandler|.
+        Sets the service handler that defines what to do when a request is
+        received for writing the <a>Property</a> matched by |name| given when
+        setting the handler.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p class="note">
+        Note that even for readonly <a>Properties</a> it is possible to specify
+        a write handler, as explained in <a href="https://github.com/w3c/wot-scripting-api/issues/199">Issue 199</a>. In this case, the write
+        handler may define in an application-specific way to fail the request.
+      </p>
+      <p>
+        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update if the <a>Property</a> is
+        writeable and notifying observers on change if the <a>Property</a> is
+        observable, based on the <a>Thing Description</a>.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:PropertyWriteHandler|, implementations MUST run the
+        following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> interaction with |name| is not found,
+            [= exception/throw =] {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\writeHandler]] on |interaction|
+            to |handler|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for writing a Property</h3>
+      <div>
+        When a network request for writing a <a>Property</a> |name:string|
+        with a new value |value:InteractionOutput| and |options:InteractionOptions|
+        is received, implementations MUST run the following
+        <dfn>update property steps</dfn>, given |name|, |value|, |options|
+        and |mode| set to `"single"`:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If a <a>Property</a> with |name| does not exist, return a {{NotFoundError}} in the reply and abort these steps.
+          </li>
+          <li>
+            Let |handler:function| be `null`.
+          </li>
+          <li>
+            If there is a user provided <a>internal slot</a> [[\writeHandler]]
+            on |interaction|, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if there is a default write handler provided by the implementation, let |handler| be that.
+          </li>
+          <li>
+            Otherwise, if |handler| is `null`, send back a {{NotSupportedError}}
+            with the reply and abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| with |name| and
+            |options|. If it fails, return the error in the reply and abort these steps.
+          </li>
+          <li>
+            If |mode| is `"single"`, reply to the request reporting success, following the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling requests for writing multiple Properties</h3>
+      <div>
+        When a network request for writing multiple <a>Properties</a> given in an object |propertyNames| is received with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            For each property with key |name| and value |value| defined in |propertyNames|, run the <a>update property steps</a> with |name|, |value|, |options| and |mode| set to `"multiple"`.
+            If that fails, reply to the request with that error and abort these steps.
+          </li>
+          <li>
+            Reply to the request by sending a single reply according to the
+            <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section data-dfn-for="ActionHandler">
+      <h3>The <dfn>ActionHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for invoking an
+        <a>Action</a> is received and defines what to do with such requests.
+        It is invoked with |params:InteractionOutput| and optionally
+        with an |options:InteractionOptions| object.
+        It returns a {{Promise}} that rejects with an error or resolves with
+        the value returned by the <a>Action</a> as {{InteractionInput}}.
+      </p>
+      <p class="note">
+        Application scripts MAY return a {{ReadableStream}} object from an
+        {{ActionHandler}}. Implementations will then use the stream for
+        constructing the <a>Action</a>'s response.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setActionHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |action:ActionHandler|.
+        Sets the handler function that defines what to do when a request is
+        received to invoke the <a>Action</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |action| callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Action</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and |action:ActionHandler|,
+        run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |actions|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Action</a> with name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\actionHandler]] on |interaction|
+            to |action|.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Action</a> requests</h3>
+      <div>
+        When a network request for invoking the <a>Action</a> identified by |name:string| is received with |inputs| and optionally with
+        |options:InteractionOptions|, run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |properties|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Action</a> identified by |name| does not exist, return a {{NotFoundError}} in the reply and abort these steps.
+          </li>
+          <li>
+            Let |handler:function| be `null`.
+          </li>
+          <li>
+            If there is a user provided <a>internal slot</a> [[\actionHandler]]
+            on |interaction|, let |handler| be its value.
+          </li>
+          <li>
+            If |handler| is `null`, return a {{NotSupportedError}} with the reply
+            created by following the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |promise| be the result of invoking |handler| with |name|, |inputs| and |options|.
+          </li>
+          <li>
+            If |promise| rejects, send the error with the reply and abort these
+            steps.
+          </li>
+          <li>
+            When |promise| resolves with |data:InteractionInput|, use |data| to
+            create and send the reply according to the <a>Protocol Bindings</a>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section data-dfn-for="EventListenerHandler">
+      <h3>The <dfn>EventListenerHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an associated <a>Event</a> is triggered
+        and provides the data to be sent with the <a>Event</a> to subscribers.
+        Returns a {{Promise}} that resolves with {{InteractionInput}} value
+        that represents the <a>Event</a> data, or rejects with an error.
+      </p>
+      <p class="note">
+        Applications MAY return {{ReadableStream}} from an {{EventListenerHandler}}
+        Implementations will then use the stream provided in
+        {{InteractionOutput}} when constructing the event notification.
+      </p>
+    </section>
+
+    <section data-dfn-for="EventSubscriptionHandler">
+      <h3>The <dfn>EventSubscriptionHandler</dfn> callback</h3>
+      <p>
+        A function that is called when an external request for subscribing to an
+        <a>Event</a> is received and defines what to do with such requests.
+        It is invoked with an |options:InteractionOptions| object provided by the implementation and coming from subscribers.
+        It returns a {{Promise}} that rejects with an error or resolves when
+        the subscription is accepted.
+      </p>
+    </section>
+
+    <section> <h3>The <dfn>setEventSubscribeHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:EventSubscriptionHandler|.
+        Sets the handler function that defines what to do when a subscription
+        request is received for the specified <a>Event</a> matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function SHOULD implement what to do when an
+         subscribe request is received, for instance necessary initializations.
+         Note that the handler for emitting <a>Events</a> is set separately.
+      </p>
+      <p>
+        There MUST be at most one event subscribe handler for any given
+        <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked given |name:string| and
+        |handler:EventSubscriptionHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\subscribeHandler]] on |interaction|
+            to |handler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Event</a> subscribe requests</h3>
+      <div>
+        When an <a>Event</a> subscription request for |name| is received by the
+        underlying platform with optional |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found, send back a
+            {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            If |name| has an associated [[\subscribeHandler]] <a>internal slot</a>,
+            invoke it with |options| and abort these steps.
+          </li>
+          <li>
+            Otherwise, if no [[\subscribeHandler]] is defined, then implement the
+            default subscriber mechanism:
+            <ol>
+              <li>
+                Let |subscriber| be a tuple formed of |options| (from which
+                |uriVariables| and |data| may be used) and the
+                subscriber information needed to create an <a>Event</a>
+                notification response.
+              </li>
+              <li>
+                Add |subscriber| to the <a>internal listener list</a> of |interaction|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setEventUnsubscribeHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |handler:EventSubscriptionHandler|.
+        Sets the handler function that defines what to do when the specified
+        <a>Event</a> matched by |name| is unsubscribed from.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+         The |handler| callback function SHOULD implement what to do when an
+         unsubscribe request is received.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked with |name:string| and
+        |handler:EventSubscriptionHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\unsubscribeHandler]] on |interaction|
+            to |handler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Event</a> unsubscribe requests</h3>
+      <div>
+        When an <a>Event</a> unsubscribe request for |name| is received by the
+        underlying platform optionally with |options:InteractionOptions|,
+        run the following steps:
+        <ol>
+          <li>
+            If this operation is not supported, send back a {{NotSupportedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            If this operation is not allowed, send back a {{NotAllowedError}}
+            according to the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found, send back a
+            {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            If |name| has an associated [[\unsubscribeHandler]]
+            <a>internal slot</a> that is a function,
+            invoke it with |options| and abort these steps.
+          </li>
+          <li>
+            Otherwise let |subscriber| be the tuple saved in |interaction|'s
+            <a>internal listener list</a>.
+          </li>
+          <li>
+             Remove |subscriber| from |interaction|'s
+            <a>internal listener list</a>.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>setEventHandler()</dfn> method</h3>
+      <p>
+        Takes as arguments |name:string| and |eventHandler:EventListenerHandler|.
+        Sets the event handler function for the specified <a>Event</a>
+        matched by |name|.
+        Throws on error.
+        Returns a reference to |this| object for supporting chaining.
+      </p>
+      <p>
+        The |eventHandler| callback function will implement what to do when the
+        event is emitted. It SHOULD resolve with a value that represents the
+        <a>Event</a> data, or reject with an error.
+      </p>
+      <p>
+        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+      </p>
+      <div>
+        When the method is invoked with |name:string| and
+        |eventHandler:EventListenerHandler|, run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            [= exception/throw =] a {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Set the <a>internal slot</a> [[\eventHandler]] of |interaction| to
+            |eventHandler|.
+          </li>
+          <li>
+            Return `this`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>Handling <a>Events</a></h3>
+      <div>
+        When an <a>Event</a> with name |name| is emitted with
+        |data:InteractionInput| either by the underlying platform or by the
+        <a href="#the-emitevent-method">emitEvent()</a> method, run the
+        following steps:
+        <ol>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |events|'s
+            |name|.
+          </li>
+          <li>
+            If |data| is not defined or `null`,
+            <ol>
+              <li>
+                Let |eventHandler| be the value of the [[\eventHandler]]
+                <a>internal slot</a> of |interaction|.
+              </li>
+              <li>
+                If |eventHandler| is failure, abort these steps.
+              </li>
+              <li>
+                Let |data| be the result of awaiting to resolve the invocation
+                of |eventHandler|. If it rejects, abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>
+            For each |subscriber| in the <a>internal listener list</a> of
+            |interaction|, run the following sub-steps:
+            <ol>
+              <li>
+                Create an <a>Event</a> notification |response| according to the
+                <a>Protocol Bindings</a> from |data| and |subscriber|, including
+                its |options|.
+                If the underlying protocol stack permits conveying event errors and
+                if an error condition has been detected by the UA, create |response|
+                as an error notification according to the <a>Protocol Bindings</a>,
+                using |data|, |subscriber| and its |options|.
+                <p class="note">
+                  The error reporting is protocol specific and it is encapsulated by
+                  implementations. On the client end, the error listener passed with
+                  the subscription will be invoked if the client UA detects the error.
+                </p>
+              </li>
+              <li>
+                Send |response| to the subscriber identified by |subscriber|.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
+      <div>
+        Takes as arguments |name:string| denoting an <a>Event</a> name and
+        |data:InteractionInput|.
+        Triggers emitting the <a>Event</a> with the given data.
+        The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |interaction| be the value of [[\td]]'s |events|'s |name|.
+          </li>
+          <li>
+            If an <a>Event</a> with the name |name| is not found,
+            reject |promise| with {{NotFoundError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to emit an <a>Event</a>
+            with |data|.
+            <p class="note">
+              This will trigger the <a href="#handling-events">handling events</a>
+              steps.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>expose()</dfn> method</h3>
+      <div>
+        Start serving external requests for the <a>Thing</a>, so that <a>WoT Interactions</a> using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\td]].
+          </li>
+          <li>
+            Run the <a>validate a TD</a> on [[\td]]. If that fails,
+            reject |promise| with a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            For each <a>Property</a> definition in [[\td]]'s |properties|,
+            initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
+            in order to store observe request data needed to notify the observers on value changes.
+          </li>
+          <li>
+            For each <a>Event</a> definition is [[\td]]'s |events|,
+            initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
+            in order to store subscription request data needed to notify the
+            <a>Event</a> listeners.
+          </li>
+          <li>
+            Set up the <a>WoT Interactions</a> based on introspecting [[\td]]
+            as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
+            Make a request to the underlying platform to initialize the
+            <a>Protocol Bindings</a> and then start serving external requests
+            for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>,
+            invoke <a>Action</a>s and manage <a>Event</a> subscriptions),
+            based on the <a>Protocol Bindings</a>.
+            Implementations MAY reject this step for any reason (e.g. if they
+            want to enforce further checks and constraints on interaction forms).
+          </li>
+          <li>
+            If there was an error during the request, reject |promise| with an {{Error}} object |error| with |error|'s |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise| and abort these steps.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section> <h3>The <dfn>destroy()</dfn> method</h3>
+      <div>
+        Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Make a request to the underlying platform to stop serving external requests for <a>WoT Interactions</a>, based on the <a>Protocol Bindings</a>.
+          </li>
+          <li>
+            If there was an error during the request, reject |promise| with an {{Error}} object |error| with its |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
+          </li>
+          <li>
+            Otherwise resolve |promise| and abort these steps.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h2>ExposedThing Examples</h2>
+      <p>
+        The next example illustrates how to create an {{ExposedThing}} based on a partial <a>TD</a> object constructed beforehands.
+      </p>
+      <pre class="example highlight" title="Create ExposedThing with a simple Property">
+        try {
+          let temperaturePropertyDefinition = {
+            type: "number",
+            minimum: -50,
+            maximum: 10000
+          };
+          let tdFragment = {
+            properties: {
+              temperature: temperaturePropertyDefinition
+            },
+            actions: {
+              reset: {
+                description: "Reset the temperature sensor",
+                input: {
+                  temperature: temperatureValueDefinition
+                },
+                output: null,
+                forms: []
+              },
+            },
+            events: {
+              onchange: temperatureValueDefinition
+            }
+          };
+          let thing1 = await WOT.produce(tdFragment);
+          // initialize Properties
+          await thing1.writeProperty("temperature", 0);
+          // add service handlers
+          thing1.setPropertyReadHandler("temperature", () => {
+             return readLocalTemperatureSensor();  // Promise
+          });
+          // start serving requests
+          await thing1.expose();
+        } catch (err) {
+           console.log("Error creating ExposedThing: " + err);
+        }
+      </pre>
+
+      <p>
+        The next example illustrates how to add or modify a <a>Property</a> definition on an existing {{ExposedThing}}: take its |td| property, add or modify it, then create another {{ExposedThing}} with that.
+      </p>
+      <pre class="example highlight" title="Add an object Property">
+        try {
+          // create a deep copy of thing1's TD
+          let instance = JSON.parse(JSON.stringify(thing1.td));
+          const statusValueDefinition = {
+            type: "object",
+            properties: {
+              brightness: {
+                type: "number",
+                minimum: 0.0,
+                maximum: 100.0,
+                required: true
+              },
+              rgb: {
+                type: "array",
+                "minItems": 3,
+                "maxItems": 3,
+                items : {
+                    "type" : "number",
+                    "minimum": 0,
+                    "maximum": 255
+                }
+              }
+          };
+          instance["name"] = "mySensor";
+          instance.properties["brightness"] = {
+            type: "number",
+            minimum: 0.0,
+            maximum: 100.0,
+            required: true,
+          };
+          instance.properties["status"] = statusValueDefinition;
+          instance.actions["getStatus"] = {
+            description: "Get status object",
+            input: null,
+            output: {
+              status : statusValueDefinition;
+            },
+            forms: [...]
+          };
+          instance.events["onstatuschange"] = statusValueDefinition;
+          instance.forms = [...];  // update
+          var thing2 = new ExposedThing(instance);
+          // TODO: add service handlers
+          await thing2.expose();
+          });
+        } catch (err) {
+           console.log("Error creating ExposedThing: " + err);
+        }
+      </pre>
+    </section> <!-- ExposedThing Examples -->
+  </section> <!-- ExposedThing -->
+
+  <section data-dfn-for="ThingDiscovery">
+    <h2>The <dfn>ThingDiscovery</dfn> interface</h2>
+    <p>
+      Discovery is a distributed application that requires provisioning and support from participating network nodes (clients, servers, directory services). This API models the client side of typical discovery schemes supported by various IoT deployments.
+    </p>
+    <p>
+      The {{ThingDiscovery}} object is constructed given a filter and provides the properties and methods controlling the discovery process.
+    </p>
+    <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ThingDiscovery {
+        constructor(optional ThingFilter filter = null);
+        readonly attribute ThingFilter? filter;
+        readonly attribute boolean active;
+        readonly attribute boolean done;
+        readonly attribute Error? error;
+        undefined start();
+        Promise&lt;ThingDescription&gt; next();
+        undefined stop();
+      };
+    </pre>
+    <p class="ednote">
+      The {{ThingDiscovery}} interface has a <code>next()</code> method and a <code>done</code> property, but it is not an <a href="https://tc39.es/proposal-async-iteration/">Iterable</a>. Look into <a href="https://github.com/w3c/wot-scripting-api/issues/177">Issue 177</a> for rationale.
+    </p>
+    <p>
+      The <dfn>discovery results</dfn> <a>internal slot</a> is an internal queue for temporarily storing the found {{ThingDescription}} objects until they are consumed by the application using the <a href="#the-next-method">next()</a> method. Implementations MAY optimize the size of this queue based on e.g. the available resources and the frequency of invoking the <a href="#the-next-method">next()</a> method.
+    </p>
+    <p>
+      The <dfn>filter</dfn> property represents the discovery filter of type <a>ThingFilter</a> specified for the discovery.
+    </p>
+    <p>
+      The <dfn>active</dfn> property is `true` when the discovery is actively ongoing on protocol level (i.e. new <a>TD</a>s may still arrive) and `false` otherwise.
+    </p>
+    <p>
+      The <dfn>done</dfn> property is `true` if the discovery has been completed with no more results to report and <a>discovery results</a> is also empty.
+    </p>
+    <p>
+      The <dfn>error</dfn> property represents the last error that occurred during the discovery process. Typically used for critical errors that stop discovery.
+    </p>
+
+    <section><h3>Constructing {{ThingDiscovery}}</h3>
+      <div>
+        To create {{ThingDiscovery}} with a |filter:ThingFilter| or type {{ThingFilter}}, run the following steps:
+        <ol>
+          <li>
+            If |filter| is not an object or `null`, [= exception/throw =] a {{TypeError}} and abort these steps.
+          </li>
+          <li>
+            Let |discovery:ThingDiscovery| be a new {{ThingDiscovery}} object.
+          </li>
+          <li>
+            Set the <a href="#dom-thingdiscovery-filter">filter</a> property to |filter|.
+          </li>
+          <li>
+            Set the <a href="#dom-thingdiscovery-active">active</a> and <a href="#dom-thingdiscovery-done">done</a> properties to `false`. Set the <a href="#dom-thingdiscovery-error">error</a> property to `null`.
+          </li>
+          <li>
+            Return |discovery|.
+          </li>
+        </ol>
+      </div>
+      <p>
+        The <a href="#the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to `true`. The <a href="the-stop-method">stop()</a> method sets the <a href="#dom-thingdiscovery-active">active</a> property to |false|, but <a href="#dom-thingdiscovery-done">done</a> may be still `false` if there are {{ThingDescription}} objects in the <a>discovery results</a> not yet consumed with <a href="#the-next-method">next()</a>.
+      </p>
+      <p>
+         During successive calls of <a href="#the-next-method">next()</a>, the <a href="#dom-thingdiscovery-active">active</a> property may be `true` or `false`, but the <a href="#dom-thingdiscovery-done">done</a> property is set to `false` by <a href="#the-next-method">next()</a> only when both the <a href="#dom-thingdiscovery-active">active</a> property is `false` and <a>discovery results</a> is empty.
+      </p>
+    </section>
+
+    <section data-dfn-for="DiscoveryMethod">
+      <h3>The <dfn>DiscoveryMethod</dfn> enumeration</h3>
+      <pre class="idl">
+        typedef DOMString DiscoveryMethod;
+      </pre>
+      <p>
+        Represents the discovery type to be used:
+      </p>
+      <ul>
+        <li><dfn>"any"</dfn> does not provide any restriction</li>
+        <li>
+          <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
+        </li>
+        <li>
+          <dfn>"directory"</dfn> for discovery based on a service provided by a <a>Thing Directory</a>.
+        </li>
+        <li>
+          <dfn>"multicast"</dfn> for discovering <a>Thing</a>s in the device's network by using a supported multicast protocol.
+        </li>
+      </ul>
+    </section>
+
+    <section data-dfn-for="ThingFilter">
+      <h3>The <dfn>ThingFilter</dfn> dictionary</h3>
+      <p>
+        Represents an object containing the constraints for discovering <a>Thing</a>s as key-value pairs.
+      </p>
+      <pre class="idl">
+        dictionary ThingFilter {
+          (DiscoveryMethod or DOMString) method = "any";
+          USVString? url;
+          USVString? query;
+          object? fragment;
+        };
+      </pre>
+      <p>
+        The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <a href="#the-discoverymethod-enumeration">DiscoveryMethod</a> enumeration that MAY be extended by string values defined by solutions (with no guarantee of interoperability).
+      </p>
+      <p>
+        The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <a href="#dom-thingfilter-method">method</a> is `"directory"`), or otherwise the URL of a directly targeted <a>Thing</a>.
+      </p>
+      <p>
+        The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
+      </p>
+      <p>
+        The <dfn>fragment</dfn> property represents a template object used for matching property by property against discovered <a>Thing</a>s.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>start()</dfn> method</h3>
+      <div>
+        Starts the discovery process. The method MUST run the following steps:
+        <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, set the <a href="#dom-thingdiscovery-error">error</a> property to a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            If discovery is not supported by the implementation, set the <a href="#dom-thingdiscovery-error">error</a> property to {{NotSupportedError}} and abort these steps.
+          </li>
+          <li>
+            Let |filter| denote the <a href="#dom-thingdiscovery-filter">filter</a> property.
+          </li>
+          <li>
+            If the |filter| is defined,
+            <ul>
+              <li>
+                If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, set |this.error| to {{NotSupportedError}} and abort these steps.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Create the <a>discovery results</a> <a>internal slot</a> for storing discovered {{ThingDescription}} objects.
+          </li>
+          <li>
+            Request the underlying platform to start the discovery process, with the following parameters:
+            <ul>
+              <li>
+                If |filter|s <a href="#dom-thingfilter-method">|method|</a> is not defined or the value is `"any"`, use the widest discovery method supported by the underlying platform.
+              </li>
+              <li>
+                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"local"`, use the local <a>Thing Directory</a> for discovery. Usually that defines <a>Thing</a>s deployed in the same device, or connected to the device in slave mode (e.g. sensors connected via Bluetooth or a serial connection).
+              </li>
+              <li>
+                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"directory"`, use the remote <a>Thing Directory</a> specified in |filter.url|.
+              </li>
+              <li>
+                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"multicast"`, use all the multicast discovery protocols supported by the underlying platform.
+              </li>
+            </ul>
+          </li>
+          <li>
+            When the underlying platform has started the discovery process, set the <a href="#dom-thingdiscovery-active">active</a> property to `true`.
+          </li>
+          <li>
+            Whenever a new <a>Thing Description</a> |td:ThingDescription| is discovered by the underlying platform, run the following sub-steps:
+            <ol>
+              <li>
+                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> |td| as a JSON object |json|. If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
+              </li>
+              <li>
+                If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, check if |json| is a match for the query. The matching algorithm is encapsulated by implementations. If that returns `false`, discard |td| and continue the discovery process.
+              </li>
+              <li>
+                If |filter|'s <a href="#dom-thingfilter-fragment">|fragment|</a> is defined, for each property defined in it, check if that property exists in |json|'s properties and has the same value. If this is `false` in any checks, discard |td| and continue the discovery process.
+              </li>
+              <li>
+                Otherwise add |td| to the <a>discovery results</a>.
+              </li>
+              <li>
+                At this point implementations MAY control the flow of the discovery process (depending on memory constraints, for instance temporarily stop discovery if the queue is getting too large, or resume discovery when the queue is emptied sufficiently).
+              </li>
+            </ol>
+          </li>
+          <li>
+            Whenever an error occurs during the discovery process,
+            <ol>
+              <li>
+                Let |error| be a new {{Error}} object. Set |error|'s |name| to `"DiscoveryError"`.
+              </li>
+              <li>
+                 If there was an error code or message provided by the <a>Protocol Bindings</a>, set |error|'s |message| to that value as string.
+              </li>
+              <li>
+                Set <a href="#dom-thingdiscovery-error">error</a> property to |error|.
+              </li>
+              <li>
+                If the error is irrecoverable and discovery has been stopped by the underlying platform, set the <a href="#dom-thingdiscovery-active">active</a> property to `false`.
+              </li>
+            </ol>
+          </li>
+          <li>
+            When the underlying platform reports the discovery process has completed, set the <a href="#dom-thingdiscovery-active">active</a> property to `false`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>next()</dfn> method</h3>
+      <div>
+        Provides the next discovered {{ThingDescription}} object. The method MUST run the following steps:
+        <ol>
+          <li>
+            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          </li>
+          <li>
+            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, wait until the <a>discovery results</a> <a>internal slot</a> is not empty.
+          </li>
+          <li>
+            If <a>discovery results</a> is empty and the <a href="#dom-thingdiscovery-active">active</a> property is `false`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
+          </li>
+          <li>
+            Remove the first {{ThingDescription}} object |td| from <a>discovery results</a>.
+          </li>
+          <li>
+            Resolve |promise| with |td| and abort these steps.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>The <dfn>stop()</dfn> method</h3>
+      <div>
+        Stops or suppresses the discovery process. It might not be supported by all discovery methods and endpoints, however, any further discovery results or errors will be discarded and the discovery is marked inactive. The method MUST run the following steps:
+        <ol>
+          <li>
+            Request the underlying platform to stop the discovery process. If this returns an error, or if it is not possible, for instance when discovery is based on open ended multicast requests, the implementation SHOULD discard subsequent discovered items.
+          </li>
+          <li>
+            Set the <a href="#dom-thingdiscovery-active">active</a> property to `false`.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <h3>Discovery Examples</h3>
+      <p>
+        The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running. Note that the discovery can end (become inactive) before the internal <a>discovery results</a> queue is emptied, so we need to continue reading {{ThingDescription}} objects until done. This is typical with local and directory type discoveries.
+      </p>
+      <pre class="example" title="Discover Things exposed by local hardware">
+        let discovery = new ThingDiscovery({ method: "local" });
+        do {
+          let td = await discovery.next();
+          console.log("Found Thing Description for " + td.title);
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } while (!discovery.done);
+      </pre>
+      <p>
+        The next example finds {{ThingDescription}} objects of <a>Thing</a>s listed in a <a>Thing Directory</a> service. We set a timeout for safety.
+      </p>
+      <pre class="example" title="Discover Things via directory">
+        let discoveryFilter = {
+          method: "directory",
+          url: "http://directory.wotservice.org"
+        };
+        let discovery = new ThingDiscovery(discoveryFilter);
+        setTimeout( () => {
+            discovery.stop();
+            console.log("Discovery stopped after timeout.");
+          },
+          3000);
+        do {
+          let td = await discovery.next();
+          console.log("Found Thing Description for " + td.title);
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } while (!discovery.done);
+        if (discovery.error) {
+          console.log("Discovery stopped because of an error: " + error.message);
+        }
+      </pre>
+      <p>
+        The next example is for an open-ended multicast discovery, which likely won't complete soon (depending on the underlying protocol), so stopping it with a timeout is a good idea. It will likely deliver results one by one.
+      </p>
+      <pre class="example" title="Discover Things in a network">
+        let discovery = new ThingDiscovery({ method: "multicast" });
+        setTimeout( () => {
+            discovery.stop();
+            console.log("Stopped open-ended discovery");
+          },
+          10000);
+        do {
+          let td = await discovery.next();
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
+        } while (!discovery.done);
+      </pre>
+    </section> <!-- Examples -->
+  </section>
+
+  <section> <h2 id="security">Security and Privacy</h2>
+    <p>
+      A detailed discussion of security and privacy considerations for the Web of Things, including a threat model that can be adapted to various circumstances, is
+      presented in the informative document [[!WOT-SECURITY]].
+      This section discusses only security and privacy risks and possible mitigations
+      directly relevant to the scripts and WoT Scripting API.
+    </p>
+    <p>
+      A suggested set of best practices to improve security for WoT devices and
+      services has been documented in [[!WOT-SECURITY]].
+      That document may be updated as security measures evolve.
+      Following these practices does not guarantee security,
+      but it might help avoid common known vulnerabilities.
+    </p>
+    <div>
+      The WoT security risks and possible mitigations are concerning the following groups:
+      <ul>
+        <li>
+          Implementors of WoT Runtimes that do not implement a Scripting Runtime.
+          The [[!WOT-ARCHITECTURE]] document provides generic security guidelines
+          for this group.
+        </li>
+        <li>
+          Implementors of the WoT Scripting API in a WoT Scripting Runtime. This is the main scope and is covered in the
+          <a href="#sec-security-consideration-runtime">
+          Scripting Runtime Security and Privacy Risks</a> sub-section that
+          contains normative text regarding security.
+        </li>
+        <li>
+          WoT script developers, covered in the
+          <a href="#sec-security-consideration-script">
+          Script Security and Privacy Risks</a> sub-section that contains
+          informative recommendations concerning security.
+        </li>
+      </ul>
+    </div>
+
+    <section id="sec-security-consideration-runtime">
+      <h3>Scripting Runtime Security and Privacy Risks</h3>
+      <p>
+        This section is normative and contains specific risks relevant for the WoT Scripting Runtime.
+      </p>
+
+      <section id="sec-security-consideration-input">
+        <h3>Corrupted Input Security and Privacy Risk</h3>
+        <p>
+          A typical way to compromise any process is to send it a corrupted input
+          via one of the exposed interfaces. This can be done to a script instance
+          using WoT interface it exposes.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
+        </dd></dl>
+      </section>
+
+      <section id="sec-security-consideration-device-direct-access">
+        <h3>Physical Device Direct Access Security and Privacy Risk</h3>
+        <p>
+          In case a script is compromised or misbehaving, the underlying physical device (and potentially surrounded environment) can be damaged if a script can use directly exposed native device interfaces. If such interfaces lack safety checks on their inputs, they might bring the underlying physical device (or environment) to an unsafe state (i.e. device overheats and explodes).
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          The WoT Scripting Runtime SHOULD avoid directly exposing the native device interfaces to the script developers. Instead, a WoT Scripting Runtime should provide a hardware abstraction layer for accessing the native device interfaces. Such hardware abstraction layer should refuse to execute commands that might put the device (or environment) to an unsafe state.
+          Additionally, in order to reduce the damage to a physical WoT device in cases a script gets compromised, it is important to minimize the number of interfaces that are exposed or accessible to a particular script based on its functionality.
+        </dd></dl>
+      </section>
+
+      <section id="sec-security-consideration-update-provisioning">
+        <h3>Provisioning and Update Security Risk</h3>
+        <p>
+          If the WoT Scripting Runtime supports post-manufacturing provisioning
+          or updates of scripts, WoT Scripting Runtime or any related data
+          (including security credentials), it can be a major attack vector.
+          An attacker can try to modify any above described element
+          during the update or provisioning process or simply
+          provision attacker's code and data directly.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+            Post-manufacturing provisioning or update of scripts,
+            WoT Scripting Runtime or any related data should be done in a secure fashion.
+            A set of recommendations for secure update and post-manufacturing
+            provisioning can be found in [[!WOT-SECURITY]].
+        </dd></dl>
+      </section>
+
+      <section id="sec-security-consideration-credentials-storage">
+        <h3>Security Credentials Storage Security and Privacy Risk</h3>
+        <p>
+          Typically the WoT Scripting Runtime needs to store the security credentials that are provisioned to a WoT device to operate in WoT network. If an attacker can compromise the confidentiality or integrity of these credentials, then it can obtain access to the WoT assets, impersonate WoT things or devices or create Denial-Of-Service (DoS) attacks.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          The WoT Scripting Runtime should securely store the provisioned security credentials, guaranteeing their integrity and confidentiality.
+          In case there are more than one tenant on a single WoT-enabled device, a WoT Scripting Runtime should guarantee isolation of each tenant provisioned security credentials.
+          Additionally, in order to minimize a risk that provisioned security credentials get compromised, the WoT Scripting Runtime should not expose any API for scripts to query the provisioned security credentials.
+        </dd></dl>
+      </section>
+    </section>
+
+    <section id="sec-security-consideration-script" class="informative">
+      <h3>Script Security and Privacy Risks</h3>
+      <p>
+        This section describes specific risks relevant for script developers.
+      </p>
+
+      <section id="sec-security-consideration-script-input">
+        <h3>Corrupted Script Input Security and Privacy Risk</h3>
+        <p>
+          A script instance may receive data formats defined by the TD, or data formats defined by the applications. While the WoT Scripting Runtime SHOULD perform validation on all input fields defined by the TD, scripts may be still exploited by input data.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
+        </dd></dl>
+      </section>
+
+      <section id="sec-security-consideration-script-processing">
+        <h3>Denial Of Service Security Risk</h3>
+        <p>
+          If a script performs a heavy functional processing on received requests before the request is authenticated, it presents a great risk for Denial-Of-Service (DOS) attacks.
+        </p>
+        <dl><dt>Mitigation:</dt><dd>
+          Scripts should avoid heavy functional processing without prior successful
+          authentication of requestor. The set of recommended authentication mechanisms
+          can be found in [[!WOT-SECURITY]].
+        </dd></dl>
+      </section>
+
+    </section>
+  </section>
+
+  <section> <h2>Terminology and conventions</h2>
+    <p>
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      <a href="https://www.w3.org/TR/wot-thing-description/#dataschema">
+        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/wot-thing-description/#form"><dfn>Form</dfn></a> etc.
+    </p>
+    <p>
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://w3c.github.io/wot-architecture/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
+      when referring to <a>Thing</a> capabilities, as explained in
+      <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
+      However, this term is not well understood outside the <a>TD</a> semantic context.
+      Hence for the sake of readability, this document will use the previous term
+      <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
+    </p>
+    <p>
+      <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>
+    </p>
+    <p>
+      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
+    </p>
+    <p>
+      <dfn>JSON Schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!URL#concept-url">URL</dfn>,
+      <dfn data-cite="!URL#concept-url-scheme">URL scheme</dfn>,
+      <dfn data-cite="!URL#concept-url-host">URL host</dfn>,
+      <dfn data-cite="!URL#concept-url-path">URL path</dfn>,
+      <dfn data-cite="!URL#concept-url">URL record</dfn>,
+      <dfn data-cite="!URL#parse-a-url">parse a URL</dfn>,
+      <dfn data-cite="!URL#absolute-url-string">absolute-URL string</dfn>,
+      <dfn data-cite="!URL#path-absolute-url-string">path-absolute-URL string</dfn>,
+      <dfn data-cite="!URL#concept-basic-url-parser">basic URL parser</dfn>
+      are defined in [[!URL]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!MIMESNIFF#mime-type">MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#parsing-a-mime-type">Parsing a MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#serializing-a-mime-type">Serializing a MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#valid-mime-type">valid MIME type string</dfn>,
+      <dfn data-cite="!MIMESNIFF#json-mime-type">JSON MIME type</dfn>
+      are defined in [[!MIMESNIFF]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!ENCODING#utf-8">UTF-8 encoding</dfn>,
+      <dfn data-cite="!ENCODING#utf-8-decode">UTF-8 decode</dfn>,
+      <dfn data-cite="!ENCODING#encode">encode</dfn>,
+      <dfn data-cite="!ENCODING#decode">decode</dfn>
+      are defined in [[!ENCODING]].
+    </p>
+    <p>
+      <dfn data-cite="!INFRA#string">string</dfn>,
+      <dfn data-cite="!INFRA#parse-json-from-bytes">parse JSON from bytes</dfn> and
+      <dfn data-cite="!INFRA#serialize-json-to-bytes">serialize JSON to bytes</dfn>,
+      are defined in [[!INFRA]].
+    </p>
+    <p>
+      <dfn data-cite="!ECMASCRIPT#sec-promise-objects">{{Promise}}</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-error-objects">Error</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json-object">JSON</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json.parse">JSON.parse</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal method</dfn> and
+      <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slot</dfn> are defined in [[!ECMASCRIPT]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
+      <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing context</dfn>,
+      <dfn data-cite="!HTML#global-object">global object</dfn>,
+      <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
+      executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
+       are defined in [[!HTML5]] and are used in the context of browser implementations.
+    </p>
+    <p>
+      The term
+      <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">
+      <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
+    </p>
+    <p>
+      <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
+      <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
+    </p>
+    <p>
+      The terms <dfn>hyperlink reference</dfn> and <dfn>relation type</dfn> are defined in [[!HTML5]] and <a href="https://tools.ietf.org/html/rfc8288">RFC8288</a>.
+    </p>
+  </section>
+
+  <section class="appendix">
+    <h2>API design rationale</h2>
+    <p>
+      API rationale usually belongs to a separate document, but in the WoT case
+      the complexity of the context justifies including basic rationale here.
+    </p>
+    <section> <h3>Approaches to WoT application development</h3>
+      <p>
+        The WoT Interest Group and Working Group have explored different
+        approaches to application development for WoT that have been all
+        implemented and tested.
+      </p>
+      <section> <h3>No Scripting API</h3>
+        <p>
+          It is possible to develop WoT applications that only use the
+          <a>WoT network interface</a>, typically exposed by a WoT gateway that
+          presents a REST-ful API towards clients and implements IoT protocol
+          plugins that communicate with supported IoT deployments. One such
+          implementation is the
+          <a href="https://iot.mozilla.org/">Mozilla WebThings</a> platform.
+        </p>
+      </section>
+      <section> <h3>Simple Scripting API</h3>
+        <p>
+          WoT <a>Thing</a>s show good synergy with software objects, so a
+          <a>Thing</a> can be represented as a software object, with <a>Properties</a> represented as object properties, <a>Action</a>s as methods, and
+          <a>Event</a>s as events. In addition, metadata is stored in special
+          properties. Consuming and exposing is done with factory methods that
+          produce a software object that directly represents a remote <a>Thing</a>
+          and its interactions. One such implementation is the
+          <a href="https://github.com/draggett/arena-webhub">Arena Web Hub</a>
+          project.
+        </p>
+        <p>
+          In the next example, a <a>Thing</a> that represents interactions with
+          a lock would look like the following: the |status| property
+          and the <code>open()</code> method are directly exposed on the object.
+        </p>
+        <pre class="example" title="Open a lock with a simple API">
+          let lock = await WoT.consume(‘https://td.my.com/lock-00123’);
+          console.log(lock.status);
+          lock.open('withThisKey');
+        </pre>
+      </section>
+      <section> <h3>This API, aligned with the [[[WOT-TD]]] specification</h3>
+        <p>
+          Since the direct mapping of <a>Thing</a>s to software objects have had
+          some challenges, this specification takes another approach that
+          exposes software objects to represent the <a>Thing</a> metadata as
+          data property and the WoT interactions as methods. One implementation
+          is <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>
+          in the the <a href="http://www.thingweb.io/">Eclipse ThingWeb</a> project,
+          which is the current reference implementation of the API specified in
+          this document.
+        </p>
+        <p>
+          The same example now would look like the following: the
+          |status| property and the <code>open()</code> method are
+          represented indirectly.
+        </p>
+        <pre class="example" title="Open a lock">
+          let res = await fetch(‘https://td.my.com/lock-00123’);
+          let td = await res.json();
+          let lock = new ConsumedThing(td);
+          console.log(lock.readProperty(‘status’));
+          lock.invokeAction(‘open’, 'withThisKey');
+        </pre>
+      </section>
+      <p>
+        In conclusion, the WoT WG decided to explore the third option that
+        closely follows the [[[WOT-TD]]] specification. Based on this, a simple
+        API can also be implemented.
+        Since Scripting is an optional module in WoT, this leaves room for
+        applications that only use the <a>WoT network interface</a>.
+        Therefore all three approaches above are supported by the [[[WOT-TD]]] specification.
+      </p>
+      <p>
+        Moreover, the <a>WoT network interface</a> can be implemented in many languages
+        and runtimes. Consider this API an example for what needs to be taken
+        into consideration when designing a Scripting API for WoT.
+      </p>
+    </section>
+    <section> <h4>Fetching and validating a TD</h4>
+      <p>
+        The <code>fetch(url)</code> method has been part of this API in earlier versions. However, now fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details. The reason is that while simple fetch operations (covering most use cases) could be done in this API, when various fetch options were needed, there was no point in duplicating existing work to re-expose those options in this API.
+      </p>
+      <p>
+        Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
+        is defined externally in the [[[WOT-TD]]] specification, that is scoped out, too.
+        This specification expects a <a>TD</a> as
+        <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
+      </p>
+    </section>
+    <section> <h4>Factory vs constructors</h4>
+      <p>
+        The factory methods for consuming and exposing <a>Thing</a>s are asynchronous and fully validate the input <a>TD</a>. In addition, one can also construct {{ConsumedThing}} and {{ExposedThing}} by providing a parsed and validated <a>TD</a>. Platform initialization is then done when needed during the WoT interactions.
+      </p>
+    </section>
+    <section> <h4>Observers</h4>
+      <p>
+        Earlier drafts used the
+        <a href="https://github.com/tc39/proposal-observable">Observer</a>
+        construct, but since it has not become standard, a new design was needed
+        that was light enough for embedded implementations. Therefore observing
+        <a>Property</a> changes and handling WoT <a>Event</a>s is done with
+        callback registrations.
+      </p>
+    </section>
+    <section> <h4>Using Events</h4>
+      <div>
+        This API ended up not using software events at all, for the following
+        reasons:
+        <ul>
+          <li>
+            Subscription to WoT <a>Event</a>s may be different from handling software events (subscription might need parameters, might involve security tokens etc).
+          </li>
+          <li>
+            Most implementations are for Node.js and browser implementations will likely be libraries (because possible dependency management issues in native implementations), using Events has been challenging.
+          </li>
+          <li>
+            Observing <a>Property</a> changes and handling WoT <a>Event</a>s is done with the solution above.
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section> <h4>Polymorphic functions</h4>
+      <p>
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a> definition in the [[[WOT-TD]]] specification.
+      </p>
+    </section>
+  </section>
+
+  <section class="appendix" id="Changes"><h2>Changes</h2>
+    <div>
+      The following is a list of major changes to the document. Major versions of this specification are the following:
+      <ul>
+        <li>
+          First Public Working Draft <a href="https://www.w3.org/TR/2017/WD-wot-scripting-api-20170914/">September 2017</a>.
+        </li>
+        <li>
+          Working Draft <a href="https://www.w3.org/TR/2018/WD-wot-scripting-api-20180405/">April 2018</a>.
+        </li>
+        <li>
+          Working Draft <a href="https://www.w3.org/TR/2018/WD-wot-scripting-api-20181129/">November 2018</a>.
+        </li>
+        <li>
+          Working draft <a href="https://www.w3.org/TR/2019/WD-wot-scripting-api-20191028/">October 2019</a>.
+        </li>
+        <li>
+          This version, introducing the following major changes:
+          <ul>
+            <li>
+              Added support for `formIndex`, `InteractionData` including streams.
+            </li>
+            <li>
+              Cleaned up the specification prose, aligned terminology and
+              used modern ReSpec.
+            </li>
+            <li>
+              Improved algorithm descriptions, included illustrative figures.
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <p>
+      For a complete list of changes, see the <a href="https://github.com/w3c/wot-scripting-api/commits/master">github change log</a>. You can also view the <a href="https://github.com/w3c/wot-scripting-api/issues?page=1&amp;state=closed">recently closed issues</a>.
+    </p>
+  </section>
+
+  <section class="appendix" id="idl-index"> <h3>Full Web IDL</h3>
+    <!-- ReSpec will gather all Web IDL code here. -->
+  </section>
+
+  <section class="appendix"> <h2>Acknowledgements</h2>
+    <p>
+      Special thanks to former editor Johannes Hund (until August 2017, when at Siemens AG) and Kazuaki Nimura (until December 2018) for developing this specification. Also, the editors would like to thank Dave Raggett, Matthias Kovatsch, Michael Koster, Elena Reshetova, Michael McCool as well as the other WoT WG members for their comments, contributions and guidance.
+    </p>
+  </section>
+
+  </body>
+</html>
