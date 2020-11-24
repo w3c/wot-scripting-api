@@ -2614,13 +2614,13 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
             NotSupportedError</code></a> and abort these steps.
           </li>
           <li>Let <var>reader</var> be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-get-reader">getting
+          "https://streams.spec.whatwg.org#readablestream-get-a-reader">getting
           a reader</a> from <var>data</var>. If that threw an
           exception, reject <var data-type="Promise">promise</var>
           with that exception and abort these steps.
           </li>
           <li>Let <var>bytes</var> be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          "https://streams.spec.whatwg.org#readablestream-get-a-reader"> 
             reading all bytes</a> from <var>data</var> with
             <var>reader</var>.
           </li>
@@ -2691,13 +2691,13 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
             NotReadableError</code></a> and abort these steps.
           </li>
           <li>Let <var>reader</var> be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-get-reader">getting
+          "https://streams.spec.whatwg.org#readablestream-get-a-reader">getting
           a reader</a> from <var>data</var>. If that threw an
           exception, reject <var data-type="Promise">promise</var>
           with that exception and abort these steps.
           </li>
           <li>Let <var>bytes</var> be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          "https://streams.spec.whatwg.org#readablestream-get-a-reader">
             reading all bytes</a> from <var>data</var> with
             <var>reader</var>.
           </li>
