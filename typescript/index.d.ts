@@ -1,23 +1,30 @@
 declare namespace WoT {
-    /**
-      * Starts the discovery process that will provide ConsumedThing 
-      * 
-      * @param filter represents the constraints for discovering Things as key-value pairs
-      */
-    export function discover(filter?: ThingFilter): ThingDiscovery;
 
-    /**
-     * Accepts a ThingDescription and returns a ConsumedThing
-     * @param td thing description
-     */
-    export function consume(td: ThingDescription): Promise<ConsumedThing>;
+    export interface WoT {
+        /**
+         * Starts the discovery process that will provide ConsumedThing 
+         * 
+         * @param filter represents the constraints for discovering Things as key-value pairs
+         */
+        // export function
+        discover(filter?: ThingFilter): ThingDiscovery;
 
-    /**
-     * Accepts a ThingDescription and returns a ExposedThing
-     * 
-     * @param td thing description 
-     */
-    export function produce(td: ThingDescription): Promise<ExposedThing>;
+        /**
+         * Accepts a ThingDescription and returns a ConsumedThing
+         * @param td thing description
+         */
+        // export function
+        consume(td: ThingDescription): Promise<ConsumedThing>;
+
+        /**
+         * Accepts a ThingDescription and returns a ExposedThing
+         * 
+         * @param td thing description 
+         */
+        // export function
+        produce(td: ThingDescription): Promise<ExposedThing>;
+    }
+
 
     /**
      * Dictionary that represents the constraints for discovering Things as key-value pairs. 
