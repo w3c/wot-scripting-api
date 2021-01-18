@@ -54,31 +54,31 @@
         xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
-            href:"https://www.w3.org/TR/2020/REC-wot-architecture-20200409/",
-            title: "Web of Things Architecture",
+            href:"https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/",
+            title: "Web of Things Architecture 1.1",
             publisher: "W3C",
-            date: "9 April 2020"
+            date: "24 November 2020"
           },
           "WOT-TD" : {
-            href:"https://www.w3.org/TR/2020/REC-wot-thing-description-20200409/",
-            title: "Web of Things Thing Description",
+            href:"https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/",
+            title: "Web of Things Thing Description 1.1",
             publisher: "W3C",
-            date: "9 April 2020"
+            date: "24 November 2020"
           },
           "WOT-PROTOCOL-BINDINGS" : {
-            href:"https://w3c.github.io/wot-binding-templates/",
+            href: "https://www.w3.org/TR/2020/NOTE-wot-binding-templates-20200130/",
             title: "Web of Things Binding Templates",
             publisher: "W3C",
-            date: "22 July 2020"
+            date: "30 January 2020"
           },
           "WOT-SECURITY" : {
-            href: "https://w3c.github.io/wot-security/",
+              href: "https://www.w3.org/TR/2019/NOTE-wot-security-20191106/",
             title: "Web of Things Security and Privacy Guidelines",
             publisher: "W3C",
-            date: "11 August 2020"
+            date: "6 November 2019"
           },
           "TYPESCRIPT": {
-            href:"https://github.com/Microsoft/TypeScript/blob/master/doc/spec.md",
+            href: "https://www.typescriptlang.org/docs/handbook/intro.html",
             title: "TypeScript Language Specification",
             publisher: "Microsoft",
             date: "1 October 2012"
@@ -114,7 +114,7 @@
     </p>
     <p class="ednote">
       This specification is implemented at least by the <a href="http://www.thingweb.io/">Eclipse Thingweb</a>
-      project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot/examples">examples</a>.
+      project also known as <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>, which is considered the reference open source implementation at the moment. Check its <a href="https://github.com/eclipse/thingweb.node-wot"> source code</a>, including <a href="https://github.com/eclipse/thingweb.node-wot/tree/master/examples">examples</a>.
     </p>
   </section>
 
@@ -252,6 +252,9 @@
   </section>
 
   <section id="conformance">
+    <p class="ednote">
+    This specification used to be a Working Draft which was expected to become a W3C Recommendation. However, it is now a WG Note which contains informative statements only. Therefore we need to consider how to deal with the description within this Conformance section.</p>
+
     <p>
       This specification describes the conformance criteria for the following classes of <dfn>user agent</dfn> (<dfn>UA</dfn>).
     </p>
@@ -309,9 +312,9 @@
 
     <p>
       Represents a <a>Thing Description</a> (<a>TD</a>) as
-      <a href="https://www.w3.org/TR/wot-thing-description/#thing">defined</a> in
+      <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/">defined</a> in
       [[!WOT-TD]]. It is expected to be
-      a <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON Schema validation</a>.
+      a <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">JSON Schema validation</a>.
     </p>
     <section> <h3> Fetching a Thing Description</h3>
       <p>
@@ -333,7 +336,7 @@
     <section> <h3>Expanding a Thing Description</h3>
       <p>
         Note that the [[[WOT-TD]]] specification allows using a shortened <a>Thing Description</a>
-        by the means of <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
+        by the means of <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
         [[[WOT-TD]]] specification for the properties that are not explicitly defined in a given
         <a>TD</a>.
       </p>
@@ -341,7 +344,7 @@
         To <dfn>expand a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            For each item in the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
+            For each item in the <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
           </li>
         </ol>
       </div>
@@ -356,7 +359,7 @@
         To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            If <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#json-schema-for-validation">JSON Schema
+            If <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">JSON Schema
             validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and abort these steps.
           </li>
         </ol>
@@ -474,7 +477,7 @@
     As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
     and include a number of possible <a>Form</a>s, out of which one is selected
     for the interaction. The
-    <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">
+    <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form">
     Form</a> contains a `contentType` to describe the data.
     For certain content types, a <a>DataSchema</a> is defined, based on
     <a>JSON Schema</a>, making possible to represent these contents as
@@ -548,7 +551,8 @@
     </p>
     <p>
       The <dfn>dataUsed</dfn> property tells whether the data stream has
-      been <a href="https://fetch.spec.whatwg.org/#concept-readablestream-disturbed">
+      been <a href="https://streams.spec.whatwg.org#is-readable-stream-disturbed">
+
       disturbed</a>. Initially `false`.
     </p>
     <p>
@@ -592,13 +596,13 @@
         </li>
         <li>
           Let |reader| be the result of
-          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          <a href="https://streams.spec.whatwg.org#readablestream-get-a-reader">
           getting a reader</a> from |data|. If that threw an exception, reject
           |promise| with that exception and abort these steps.
         </li>
         <li>
           Let |bytes| be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          "https://streams.spec.whatwg.org#readablestream-get-a-reader">
           reading all bytes</a> from |data| with |reader|.
         </li>
         <li>
@@ -638,13 +642,13 @@
         </li>
         <li>
           Let |reader| be the result of
-          <a href="https://fetch.spec.whatwg.org/#concept-get-reader">
+          <a href="https://streams.spec.whatwg.org#readablestream-get-a-reader">
           getting a reader</a> from |data|. If that threw an exception, reject
           |promise| with that exception and abort these steps.
         </li>
         <li>
           Let |bytes| be the result of <a href=
-          "https://fetch.spec.whatwg.org/#concept-read-all-bytes-from-readablestream">
+          "https://streams.spec.whatwg.org#readablestream-get-a-reader">
           reading all bytes</a> from |data| with |reader|.
         </li>
         <li>
@@ -1667,7 +1671,7 @@
       <p>
         The <dfn>uriVariables</dfn> property if defined, represents the URI
         template variables to be used with the WoT Interaction that are represented
-        as <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">
+        as <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">
         parsed JSON objects</a> defined in [[!WOT-TD]].
       </p>
       <p class="ednote">
@@ -3699,11 +3703,11 @@
   <section> <h2>Terminology and conventions</h2>
     <p>
       The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
-      <a href="https://www.w3.org/TR/wot-thing-description/#dataschema">
-        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/wot-thing-description/#form"><dfn>Form</dfn></a> etc.
+      <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#dataschema">
+        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn>Form</dfn></a> etc.
     </p>
     <p>
-      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://w3c.github.io/wot-architecture/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2020/WD-wot-architcture11-20201124/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
       An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
       when referring to <a>Thing</a> capabilities, as explained in
       <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
@@ -3727,7 +3731,7 @@
       <dfn data-cite="!URL#concept-url-host">URL host</dfn>,
       <dfn data-cite="!URL#concept-url-path">URL path</dfn>,
       <dfn data-cite="!URL#concept-url">URL record</dfn>,
-      <dfn data-cite="!URL#parse-a-url">parse a URL</dfn>,
+      <dfn data-cite="!URL#url-parsing">parse a URL</dfn>,
       <dfn data-cite="!URL#absolute-url-string">absolute-URL string</dfn>,
       <dfn data-cite="!URL#path-absolute-url-string">path-absolute-URL string</dfn>,
       <dfn data-cite="!URL#concept-basic-url-parser">basic URL parser</dfn>
@@ -3752,8 +3756,8 @@
     </p>
     <p>
       <dfn data-cite="!INFRA#string">string</dfn>,
-      <dfn data-cite="!INFRA#parse-json-from-bytes">parse JSON from bytes</dfn> and
-      <dfn data-cite="!INFRA#serialize-json-to-bytes">serialize JSON to bytes</dfn>,
+      <dfn data-cite="!INFRA#parse-json-bytes-to-a-javascript-value">parse JSON from bytes</dfn> and
+      <dfn data-cite="!INFRA#serialize-a-javascript-value-to-json-bytes">serialize JSON to bytes</dfn>,
       are defined in [[!INFRA]].
     </p>
     <p>
@@ -3878,7 +3882,9 @@
         Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
         is defined externally in the [[[WOT-TD]]] specification, that is scoped out, too.
         This specification expects a <a>TD</a> as
-        <a href="https://infra.spec.whatwg.org/#parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
+        <a href="https://infra.spec.whatwg.org/#
+                 parse-json-bytes-to-a-javascript-value
+                 parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
       </p>
     </section>
     <section> <h4>Factory vs constructors</h4>
@@ -3915,7 +3921,7 @@
     </section>
     <section> <h4>Polymorphic functions</h4>
       <p>
-        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2019/CR-wot-thing-description-20190516/#form">Form</a> definition in the [[[WOT-TD]]] specification.
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form">Form</a> definition in the [[[WOT-TD]]] specification.
       </p>
     </section>
   </section>
