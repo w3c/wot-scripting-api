@@ -1,29 +1,24 @@
 declare namespace WoT {
 
-    export interface WoT {
-        /**
-         * Starts the discovery process that will provide ConsumedThing 
-         * 
-         * @param filter represents the constraints for discovering Things as key-value pairs
-         */
-        // export function
-        discover(filter?: ThingFilter): ThingDiscovery;
+    /**
+     * Starts the discovery process that will provide ConsumedThing 
+     * 
+     * @param filter represents the constraints for discovering Things as key-value pairs
+     */
+    export function discover(filter?: ThingFilter): ThingDiscovery;
 
-        /**
-         * Accepts a ThingDescription and returns a ConsumedThing
-         * @param td thing description
-         */
-        // export function
-        consume(td: ThingDescription): Promise<ConsumedThing>;
+    /**
+     * Accepts a ThingDescription and returns a ConsumedThing
+     * @param td thing description
+     */
+    export function consume(td: ThingDescription): Promise<ConsumedThing>;
 
-        /**
-         * Accepts a ThingDescription and returns a ExposedThing
-         * 
-         * @param td thing description 
-         */
-        // export function
-        produce(td: ThingDescription): Promise<ExposedThing>;
-    }
+    /**
+     * Accepts a ThingDescription and returns a ExposedThing
+     * 
+     * @param td thing description 
+     */
+    export function produce(td: ThingDescription): Promise<ExposedThing>;
 
 
     /**
@@ -204,7 +199,7 @@ declare namespace WoT {
     /**
      * The ExposedThing interface is the server API to operate the Thing that allows defining request handlers, Property, Action, and Event interactions.
      **/
-    export interface ExposedThing extends ConsumedThing {
+    export interface ExposedThing {
         /**
          * Start serving external requests for the Thing, so that WoT Interactions using Properties, Actions and Events will be possible.
          */
