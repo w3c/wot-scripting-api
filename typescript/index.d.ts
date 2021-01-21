@@ -283,6 +283,11 @@ declare namespace WoT {
          * Triggers emitting the Event with the given data. 
          */
         emitEvent(name: string, data: InteractionInput): void;
+
+        /**
+         * Returns the the object that represents the Thing Description.
+         */
+        getThingDescription(): ThingDescription;
     }
 
     export type PropertyReadHandler = (options?: InteractionOptions) => Promise<any>;
