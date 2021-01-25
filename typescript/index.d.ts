@@ -290,9 +290,9 @@ declare namespace WoT {
         getThingDescription(): ThingDescription;
     }
 
-    export type PropertyReadHandler = (options?: InteractionOptions) => Promise<any>;
+    export type PropertyReadHandler = (options?: InteractionOptions) => Promise<InteractionInput>;
 
-    export type PropertyWriteHandler = (value: InteractionOutput, options?: InteractionOptions) => Promise<any>;
+    export type PropertyWriteHandler = (value: InteractionOutput, options?: InteractionOptions) => Promise<void>;
 
     export type ActionHandler = (params: InteractionOutput, options?: InteractionOptions) => Promise<InteractionInput>;
 
