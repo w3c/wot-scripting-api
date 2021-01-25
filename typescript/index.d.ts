@@ -292,11 +292,11 @@ declare namespace WoT {
 
     export type PropertyReadHandler = (options?: InteractionOptions) => Promise<InteractionInput>;
 
-    export type PropertyWriteHandler = (value: InteractionOutput, options?: InteractionOptions) => Promise<undefined>;
+    export type PropertyWriteHandler = (value: InteractionOutput, options?: InteractionOptions) => Promise<void>;
 
     export type ActionHandler = (params: InteractionOutput, options?: InteractionOptions) => Promise<InteractionInput>;
 
-    export type EventSubscriptionHandler = (options?: InteractionOptions) => Promise<undefined>;
+    export type EventSubscriptionHandler = (options?: InteractionOptions) => Promise<void>;
 
     export type EventListenerHandler = () => Promise<InteractionInput>;
 
