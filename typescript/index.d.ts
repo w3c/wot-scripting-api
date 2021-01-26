@@ -86,7 +86,7 @@ declare namespace WoT {
         form?: Form;
         schema?: DataSchema;
         arrayBuffer(): Promise<ArrayBuffer>;
-        value(): Promise<any>;
+        value(): Promise<DataSchemaValue>;
     }
 
     /**
