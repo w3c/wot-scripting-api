@@ -369,106 +369,6 @@
       </div>
     </section>
   </section>
-  <section>
-    <h2>The <dfn>ExposedThingInit</dfn> type</h2>
-    <pre class="idl">
-          typedef object ExposedThingInit;
-    </pre>
-    An <a>ExposedThingInit</a> is a dictionary used for the initialization of an <a>ExposedThing</a>. It represents a <a>Partial TD</a> 
-    as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same 
-    structure of a <a>Thing Description</a> but it may omit some information. The example below shows a serialization of a 
-    <a>ExposedThingInit</a> as a JSON object. It can be noticed that it is not a valid <a>Thing Description</a> because it misses the title, @context,
-    security information, and forms fields. Nevertheless, it could be used by a runtime as an hint to instantiate
-    the correct Thing Description; see <a>implement an ExposedThingInit</a> algorithm for further details.
-    <pre class="example" title="An instance of the ExposedThingInit type">
-      {
-        "properties" : {
-          "temperature":{}
-        }
-      }
-    </pre>
-    <section>
-      <h3>Implement an ExposedThingInit</h3>
-      To <dfn>implement an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as a result,
-      run the following steps:
-      <ol>
-        <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
-        [= exception/throw =] {{SyntaxError}} and abort these steps.</li>
-        <li>Initialize and empty object called |td|</li>
-        <li>
-          For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
-        </li>
-        <li>Search for missing required properties in |td| accordingly to 
-          <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON Schema</a>. 
-          (TODO: possibly expand this step)</li>
-        <li>For each |missing| property run these sub-steps:
-        <ol>
-          <li>If |missing| is listed in the table below then use the algorithm described there to generate
-            a |value| for |missing|. 
-          </li>
-          <li>Otherwise [= exception/throw =] {{SyntaxError}} and abort these steps. 
-            (TODO: we could check for this condition in the validation)</li>
-          <li>Add |missing| to |td| with |value| as value</li>
-        </ol>
-        </li>
-        <li>Return |td|</li>
-        <table class="def">
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Generate algorithm</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>href</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>title</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>@context</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>security</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>forms</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>instance</td>
-              <td>TODO</td>
-            </tr>
-          </tbody>
-        </table>
-      </ol>
-    </section>
-    <section>
-      <h3>Validating an ExposedThingInit</h3>
-      To <dfn>validate an ExposedThingInit</dfn> given |init:ExposedThingInit|, run the following steps:
-      <ol>
-        <li>
-          Parse <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON Schema</a>
-          and load it in object called |schema|
-        </li>
-        <li>
-        For each property |key| in |schema|,
-        <ol>
-          <li>If |key| equals <code>required</code> then remove |key| from |schema|</li>
-        </ol>
-        </li>
-        <li>Return the result of applying |schema| to |init|</li>
-      </ol>
-
-      TODO: is there any property that we should still require? for example flow property is mandatory for oAuth Security scheme. 
-      See also <a>implement an ExposedThingInit</a>
-    </section>
-  </section>
   <section data-dfn-for="WOT">
   <h2>The <dfn>WOT</dfn> namespace</dfn></h2>
   <p>
@@ -522,12 +422,20 @@
 
   <section> <h3>The <dfn>produce()</dfn> method</h3>
     <pre class="idl">
+      typedef object ExposedThingInit;
+
       partial namespace WOT {
         Promise&lt;ExposedThing&gt; produce(ExposedThingInit init);
       };
     </pre>
     <div>
-      Belongs to the <a>WoT Producer</a> conformance class. Expects a |init:ExposedThingInit| argument and returns a {{Promise}} that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
+      Belongs to the <a>WoT Producer</a> conformance class. Expects a |init:ExposedThingInit| argument and returns a {{Promise}} 
+      that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface, 
+      i.e. the ability to define request handlers. The |init:ExposedThingInit| object is an instance of the <a>ExposedThingInit</a> type.
+      Specifically, an <a>ExposedThingInit</a> value is a dictionary used for the initialization of an <a>ExposedThing</a> and
+      it represents a <a>Partial TD</a> as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same
+      structure of a <a>Thing Description</a> but it may omit some information. 
+      The method MUST run the following steps:
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -543,6 +451,92 @@
         </li>
       </ol>
     </div>
+    <section>
+      <h3>Use an ExposedThingInit</h3>
+      To <dfn>use an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as
+      a result,
+      run the following steps:
+      <ol>
+        <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
+          [= exception/throw =] {{SyntaxError}} and abort these steps.</li>
+        <li>Initialize and empty object called |td|</li>
+        <li>
+          For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
+        </li>
+        <li>Search for missing required properties in |td| accordingly to
+          <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
+            Schema</a>.
+          (TODO: possibly expand this step)
+        </li>
+        <li>For each |missing| property run these sub-steps:
+          <ol>
+            <li>If |missing| is listed in the table below then use the algorithm described there to generate
+              a |value| for |missing|.
+            </li>
+            <li>Otherwise [= exception/throw =] {{SyntaxError}} and abort these steps.
+              (TODO: we could check for this condition in the validation)</li>
+            <li>Add |missing| to |td| with |value| as value</li>
+          </ol>
+        </li>
+        <li>Return |td|</li>
+        <table class="def">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Generate algorithm</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>href</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>title</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>@context</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>security</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>forms</td>
+              <td>TODO</td>
+            </tr>
+            <tr>
+              <td>instance</td>
+              <td>TODO</td>
+            </tr>
+          </tbody>
+        </table>
+      </ol>
+    </section>
+    <section>
+      <h3>Validating an ExposedThingInit</h3>
+      To <dfn>validate an ExposedThingInit</dfn> given |init:ExposedThingInit|, run the following steps:
+      <ol>
+        <li>
+          Parse <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
+            Schema</a>
+          and load it in object called |schema|
+        </li>
+        <li>
+          For each property |key| in |schema|,
+          <ol>
+            <li>If |key| equals <code>required</code> then remove |key| from |schema|</li>
+          </ol>
+        </li>
+        <li>Return the result of applying |schema| to |init|</li>
+      </ol>
+    
+      TODO: is there any property that we should still require? for example flow property is mandatory for oAuth Security
+      scheme.
+      See also <a>use an ExposedThingInit</a>
+    </section>
   </section>
 
   <section> <h3>The <dfn>discover()</dfn> method</h3>
@@ -2217,7 +2211,7 @@
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
-          <li>Run the <a>implement an ExposedThingInit</a> steps on |init|. if that fails re-[= exception/throw =] the error and abort these steps. Otherwise store the obtained |td:ThingDescription| </li>
+          <li>Run the <a>use an ExposedThingInit</a> steps on |init|. if that fails re-[= exception/throw =] the error and abort these steps. Otherwise store the obtained |td:ThingDescription| </li>
           <li>
             Run the <a>expand a TD</a> steps on |td|. If that fails, re-[= exception/throw =] the error and abort these steps.
           </li>
@@ -3365,6 +3359,18 @@
         } catch (err) {
            console.log("Error creating ExposedThing: " + err);
         }
+      </pre>
+      <p>The example below shows a serialization of a
+      <a>ExposedThingInit</a> as a JSON object. It can be noticed that it is not a valid <a>Thing Description</a> because it
+      misses the title, @context,
+      security information, and forms fields. Nevertheless, it could be used by a runtime as an hint to instantiate
+      the correct Thing Description; see <a>use an ExposedThingInit</a> algorithm for further details.</p>
+      <pre class="example" title="An instance of the ExposedThingInit type">
+              {
+                "properties" : {
+                  "temperature":{}
+                }
+              }
       </pre>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
