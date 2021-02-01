@@ -374,8 +374,8 @@
     <pre class="idl">
           typedef object ExposedThingInit;
     </pre>
-    An <a>ExposedThingInit</a> is a dictionary used for the initialization of an <a>ExposedThing</a>. It represents an instance
-    of a <a>Partial TD</a> as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same 
+    An <a>ExposedThingInit</a> is a dictionary used for the initialization of an <a>ExposedThing</a>. It represents a <a>Partial TD</a> 
+    as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same 
     structure of a <a>Thing Description</a> but it may omit some information. The example below shows a serialization of a 
     <a>ExposedThingInit</a> as a JSON object. It can be noticed that it is not a valid <a>Thing Description</a> because it misses the title, @context,
     security information, and forms fields. Nevertheless, it could be used by a runtime as an hint to instantiate
