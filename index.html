@@ -463,6 +463,24 @@
         <li>
           For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
         </li>
+        <li>For each |scheme:SecurityScheme| defined in <code>securityDefinitions</code> check if it is supported by the <a>Protocol Bindings</a>. 
+        if not remove scheme </li>
+        <li>if the value of <code>security</code> is defined but it is not contained in <code>securityDefinitions</code> remove 
+        <code>security</code></li>
+        <li>For each |affordance| run the following sub-steps:
+          <ol>
+            <li>For each |form:Form| defined in |affordance| execute:
+              <ol>
+                <li>if |form|'s |contentType:string| is not recognized by the runtime as valid remove |contentType:string| from |form|
+                </li>
+                <li>if |form|'s |href:URL| has an unknown schema remove |href| from |form|.</li>
+                <li>if |form|'s |href:URL| is absolute and its <code>authority</code> it is not recognized by the runtime as a valid
+                  remove |href| from |form|. </li>
+                <li>if |form|'s |href:URL| is already in use by other <a>ExposedThings</a> remove |href| from |form|.</li>
+              </ol>
+            </li>
+          </ol>
+        </li>
         <li>Search for missing required properties in |td| accordingly to
           <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
             Schema</a>.
@@ -470,49 +488,23 @@
         </li>
         <li>For each |missing| property run these sub-steps:
           <ol>
-            <li>If |missing| is listed in the table below then use the algorithm described there to generate
-              a |value| for |missing|.
-            </li>
+            <li>If |missing| is <code>title</code> generate a runtime unique name and assign to <code>title</code>.</li> 
+            <li>If |missing| is <code>@context</code> assign the latest supported Thing Description context URI.</li>
+            <li>If |missing| is <code>instance</code> assign the string <code>1.0.0</code>.</li>
+            <li>If |missing| is <code>forms</code> generate a list of <a>Forms</a> using the available <a>Protocol Bindings</a> and content types
+              encoders. Then assign the obtained list to <code>forms</code>. (TODO: expand?)</li>
+            <li>If |missing| is <code>security</code> assign the label of the first supported <a>SecurityScheme</a> in <code>securityDefinitions</code> field. 
+            If no <a>SecurityScheme</a> is found generate a <a>NoSecurityScheme</a> called <code>nosec</code> and assing the string <code>nosec</code>
+          to <code>security</code>. (TODO: ask for guidance to Security task force)  </li>
+            <li>If |missing| is <code>href</code> define |formStub| as the partial <a>Form</a> that does not have <code>href</code>. Generate a valid |url:URL| using the first <a>Protocol Binding</a> 
+              that satisfy the requirements of |formStub|. Assign |url| to <code>href</code>. If not <a>Protocol Binding</a> can be found remove |formStub| from |td|. </li>
             <li>Otherwise [= exception/throw =] {{SyntaxError}} and abort these steps.
               (TODO: we could check for this condition in the validation)</li>
             <li>Add |missing| to |td| with |value| as value</li>
           </ol>
         </li>
+        <li>Run <a>validate a TD</a> on |td|. If that fails re-[= exception/throw =] the error and abort these steps</li>
         <li>Return |td|</li>
-        <table class="def">
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Generate algorithm</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>href</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>title</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>@context</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>security</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>forms</td>
-              <td>TODO</td>
-            </tr>
-            <tr>
-              <td>instance</td>
-              <td>TODO</td>
-            </tr>
-          </tbody>
-        </table>
       </ol>
     </section>
     <section>
@@ -3810,7 +3802,8 @@
     <p>
       The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
       <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#dataschema">
-        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn>Form</dfn></a> etc.
+        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn data-lt="Forms">Form</dfn></a>,
+        <a href="https://w3c.github.io/wot-thing-description/#securityscheme"><dfn>SecurityScheme</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
     </p>
     <p>
       <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2020/WD-wot-architcture11-20201124/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
