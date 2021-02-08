@@ -77,7 +77,7 @@ declare namespace WoT {
     export type ThingDescription = { [key: string]: any; };
 
 
-    export type DataSchemaValue = any;
+    export type DataSchemaValue = (string | number | any[] | object | null);
     export type InteractionInput = (ReadableStream | DataSchemaValue);
 
     export interface InteractionOutput {
