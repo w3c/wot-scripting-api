@@ -463,8 +463,8 @@
         <li>
           For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
         </li>
-        <li>For each |scheme:SecurityScheme| defined in <code>securityDefinitions</code> check if it is supported by the <a>Protocol Bindings</a>. 
-        if not remove scheme </li>
+        <li>For each |scheme:SecurityScheme| defined in <code>securityDefinitions</code> check if it is supported by at least one <a>Protocol Binding</a>. 
+        If not remove scheme </li>
         <li>if the value of <code>security</code> is defined but it is not contained in <code>securityDefinitions</code> remove 
         <code>security</code></li>
         <li>For each |affordance| run the following sub-steps:
