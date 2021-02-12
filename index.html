@@ -484,7 +484,7 @@
         <li>Search for missing required properties in |td| accordingly to
           <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
             Schema</a>.
-          (TODO: possibly expand this step)
+          <p class="ednote">The editors find this step vague. It will be improved or removed in the next iteration. </p>
         </li>
         <li>For each |missing| property run these sub-steps:
           <ol>
@@ -492,10 +492,13 @@
             <li>If |missing| is <code>@context</code> assign the latest supported Thing Description context URI.</li>
             <li>If |missing| is <code>instance</code> assign the string <code>1.0.0</code>.</li>
             <li>If |missing| is <code>forms</code> generate a list of <a>Forms</a> using the available <a>Protocol Bindings</a> and content types
-              encoders. Then assign the obtained list to <code>forms</code>. (TODO: expand?)</li>
+              encoders. Then assign the obtained list to <code>forms</code>.</li>
             <li>If |missing| is <code>security</code> assign the label of the first supported <a>SecurityScheme</a> in <code>securityDefinitions</code> field. 
             If no <a>SecurityScheme</a> is found generate a <a>NoSecurityScheme</a> called <code>nosec</code> and assing the string <code>nosec</code>
-          to <code>security</code>. (TODO: ask for guidance to Security task force)  </li>
+          to <code>security</code>. 
+          <p class="issue">The discussion about how to properly generate a value for <code>security</code> is still open. 
+            See issue <a href="https://github.com/w3c/wot-scripting-api/issues/299">#299</a> </p>
+          </li>
             <li>If |missing| is <code>href</code> define |formStub| as the partial <a>Form</a> that does not have <code>href</code>. Generate a valid |url:URL| using the first <a>Protocol Binding</a> 
               that satisfy the requirements of |formStub|. Assign |url| to <code>href</code>. If not <a>Protocol Binding</a> can be found remove |formStub| from |td|. </li>
             <li>Add |missing| to |td| with |value| as value</li>
