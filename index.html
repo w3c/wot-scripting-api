@@ -452,8 +452,8 @@
       </ol>
     </div>
     <section>
-      <h3>Use an ExposedThingInit</h3>
-      To <dfn>use an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as
+      <h3>Expand an ExposedThingInit</h3>
+      To <dfn>expand an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as
       a result,
       run the following steps:
       <ol>
@@ -527,7 +527,7 @@
     
       TODO: is there any property that we should still require? for example flow property is mandatory for oAuth Security
       scheme.
-      See also <a>use an ExposedThingInit</a>
+      See also <a>expand an ExposedThingInit</a>
     </section>
   </section>
 
@@ -2203,7 +2203,7 @@
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
-          <li>Run the <a>use an ExposedThingInit</a> steps on |init|. if that fails re-[= exception/throw =] the error and abort these steps. Otherwise store the obtained |td:ThingDescription| </li>
+          <li>Run the <a>expand an ExposedThingInit</a> steps on |init|. if that fails re-[= exception/throw =] the error and abort these steps. Otherwise store the obtained |td:ThingDescription| </li>
           <li>
             Run the <a>expand a TD</a> steps on |td|. If that fails, re-[= exception/throw =] the error and abort these steps.
           </li>
@@ -3356,7 +3356,7 @@
       <a>ExposedThingInit</a> as a JSON object. It can be noticed that it is not a valid <a>Thing Description</a> because it
       misses the title, @context,
       security information, and forms fields. Nevertheless, it could be used by a runtime as an hint to instantiate
-      the correct Thing Description; see <a>use an ExposedThingInit</a> algorithm for further details.</p>
+      the correct Thing Description; see <a>expand an ExposedThingInit</a> algorithm for further details.</p>
       <pre class="example" title="An instance of the ExposedThingInit type">
               {
                 "properties" : {
