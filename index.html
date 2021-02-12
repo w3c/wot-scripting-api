@@ -498,8 +498,6 @@
           to <code>security</code>. (TODO: ask for guidance to Security task force)  </li>
             <li>If |missing| is <code>href</code> define |formStub| as the partial <a>Form</a> that does not have <code>href</code>. Generate a valid |url:URL| using the first <a>Protocol Binding</a> 
               that satisfy the requirements of |formStub|. Assign |url| to <code>href</code>. If not <a>Protocol Binding</a> can be found remove |formStub| from |td|. </li>
-            <li>Otherwise [= exception/throw =] {{SyntaxError}} and abort these steps.
-              (TODO: we could check for this condition in the validation)</li>
             <li>Add |missing| to |td| with |value| as value</li>
           </ol>
         </li>
@@ -516,18 +514,17 @@
             Schema</a>
           and load it in object called |schema|
         </li>
+        <li>let |optional:Array| be a list containing the following strings: <code>title</code>, <code>@context</code>, 
+        <code>instance</code>, <code>forms</code>, <code>security</code>, and <code>href</code>. </li>
         <li>
-          For each property |key| in |schema|,
+          For each property and sub-property |key| in |schema| equals to <code>required</code> execute the following steps:
           <ol>
-            <li>If |key| equals <code>required</code> then remove |key| from |schema|</li>
+            <li>if |key| |value| is an <code>Array</code> then remove all its elements equal to the elements in |optional|</li>
+            <li>if |key| |value| is a <code>string</code> then if |value| is equal to one of the elements in |optional| remove |key| from |schema|</li>
           </ol>
         </li>
         <li>Return the result of applying |schema| to |init|</li>
       </ol>
-    
-      TODO: is there any property that we should still require? for example flow property is mandatory for oAuth Security
-      scheme.
-      See also <a>expand an ExposedThingInit</a>
     </section>
   </section>
 
