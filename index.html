@@ -92,6 +92,65 @@
         },
       };
     </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Add example button selection logic
+        for (const button of document.querySelectorAll(".ds-selector-tabs .selectors button")) {
+          button.onclick = () => {
+            const ex = button.closest(".ds-selector-tabs");
+            ex.querySelector("button.selected").classList.remove("selected");
+            ex.querySelector(".selected").classList.remove("selected");
+            button.classList.add('selected');
+            ex.querySelector("." + button.dataset.selects).classList.add("selected");
+          }
+        }
+      });
+    </script>
+    <style>
+    /* example tab selection */
+  .ds-selector-tabs {
+    padding-bottom: 2em;
+  }
+  .ds-selector-tabs .selectors {
+    padding: 0;
+    border-bottom: 1px solid #ccc;
+    height: 28px;
+  }
+  .ds-selector-tabs .selectors button {
+    display: inline-block;
+    min-width: 54px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    height: 27px;
+    padding: 0 8px;
+    line-height: 27px;
+    transition: all,0.218s;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    color: #666;
+    border: 1px solid transparent;
+  }
+  .ds-selector-tabs .selectors button:first-child {
+    margin-left: 2px;
+  }
+  .ds-selector-tabs .selectors button.selected {
+    color: #202020 !important;
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #fff !important;
+  }
+  .ds-selector-tabs .selectors button:hover {
+    background-color: transparent;
+    color: #202020;
+    cursor: pointer;
+  }
+  .ds-selector-tabs pre:not(.preserve), .ds-selector-tabs table:not(.preserve) {
+    display: none;
+  }
+  .ds-selector-tabs pre.selected, .ds-selector-tabs table.selected {
+    display: block;
+  }
+    </style>
   </head>
   <body>
 
@@ -3357,13 +3416,43 @@
       misses the title, @context,
       security information, and forms fields. Nevertheless, it could be used by a runtime as an hint to instantiate
       the correct Thing Description; see <a>expand an ExposedThingInit</a> algorithm for further details.</p>
-      <pre class="example" title="An instance of the ExposedThingInit type">
-              {
-                "properties" : {
-                  "temperature":{}
-                }
+      <aside class="example ds-selector-tabs" title="TODO">
+        <div class="selectors">
+          <button class="selected" data-selects="init">ExposedThingInit</button>
+          <button data-selects="td">ThingDescription</button>
+        </div>
+        
+        <pre class="selected init" data-transform="updateExample" title="An instance of the ExposedThingInit type">
+          {
+            "properties" : {
+              "temperature":{}
+            }
+          }
+        </pre>
+        <pre class="td" data-transform="updateExample" >
+          {
+            "@context": [
+              "https://www.w3.org/2019/wot/td/v1"
+            ],
+            "title": "Thing-123",
+            "securityDefinitions": {
+              "no_sec": {
+                "scheme": "nosec"
               }
-      </pre>
+            },
+            "security": "no_sec",
+            "properties": {
+              "temperature": {
+                "forms": [{
+                  "href": "http://localhost:8080/properties/temperature",
+                  "contentType": "application/json"
+                }]
+              }
+            }
+          }
+        </pre>
+      </aside>
+     
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
