@@ -585,7 +585,13 @@
             <li>if |key| |value| is a <code>string</code> then if |value| is equal to one of the elements in |optional| remove |key| from |schema|</li>
           </ol>
         </li>
-        <li>Return the result of applying |schema| to |init|</li>
+        <li>Return the result of <a>validating</a> |init| with |schema|
+          <p class="ednote"><dfn>Validating</dfn> steps are still under discussion.
+            Currently this specification reference to the validation process of JSONSchema. Please
+            follow this <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html">document</a> 
+            when validating |init| with |schema|. Notice that the working group is evaluating an alternative formal approach.
+          </p>
+        </li>
       </ol>
     </section>
   </section>
