@@ -574,22 +574,22 @@
         <li>
           Parse <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
             Schema</a>
-          and load it in object called |schema|
+          and load it in object called |exposedThingInitSchema:object|
         </li>
         <li>let |optional:Array| be a list containing the following strings: <code>title</code>, <code>@context</code>, 
         <code>instance</code>, <code>forms</code>, <code>security</code>, and <code>href</code>. </li>
         <li>
-          For each property and sub-property |key| in |schema| equals to <code>required</code> execute the following steps:
+          For each property and sub-property |key| in |exposedThingInitSchema| equals to <code>required</code> execute the following steps:
           <ol>
             <li>if |key| |value| is an <code>Array</code> then remove all its elements equal to the elements in |optional|</li>
-            <li>if |key| |value| is a <code>string</code> then if |value| is equal to one of the elements in |optional| remove |key| from |schema|</li>
+            <li>if |key| |value| is a <code>string</code> then if |value| is equal to one of the elements in |optional| remove |key| from |exposedThingInitSchema|</li>
           </ol>
         </li>
-        <li>Return the result of <a>validating</a> |init| with |schema|
+        <li>Return the result of <a>validating</a> |init| with |exposedThingInitSchema|
           <p class="ednote"><dfn>Validating</dfn> steps are still under discussion.
             Currently this specification reference to the validation process of JSONSchema. Please
             follow this <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html">document</a> 
-            when validating |init| with |schema|. Notice that the working group is evaluating an alternative formal approach.
+            when validating |init| with |exposedThingInitSchema|. Notice that the working group is evaluating an alternative formal approach.
           </p>
         </li>
       </ol>
