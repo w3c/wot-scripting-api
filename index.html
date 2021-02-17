@@ -515,7 +515,7 @@
       To <dfn>expand an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as
       a result,
       run the following steps:
-      <ol>
+      <ol class="algorithm">
         <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
           [= exception/throw =] {{SyntaxError}} and abort these steps.</li>
         <li>Initialize and empty object called |td|</li>
@@ -570,7 +570,7 @@
     <section>
       <h3>Validating an ExposedThingInit</h3>
       To <dfn>validate an ExposedThingInit</dfn> given |init:ExposedThingInit|, run the following steps:
-      <ol>
+      <ol  class="algorithm">
         <li>
           Parse <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
             Schema</a>
@@ -585,8 +585,8 @@
             <li>if |key| |value| is a <code>string</code> then if |value| is equal to one of the elements in |optional| remove |key| from |exposedThingInitSchema|</li>
           </ol>
         </li>
-        <li>Return the result of <a>validating</a> |init| with |exposedThingInitSchema|
-          <p class="ednote"><dfn>Validating</dfn> steps are still under discussion.
+        <li>Return the result of <a>validating an object with JSON Schema</a> given |init| and |exposedThingInitSchema|. 
+          <p class="ednote">The<dfn>validating an object with JSON Schema</dfn> steps are still under discussion.
             Currently this specification reference to the validation process of JSONSchema. Please
             follow this <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html">document</a> 
             when validating |init| with |exposedThingInitSchema|. Notice that the working group is evaluating an alternative formal approach.
