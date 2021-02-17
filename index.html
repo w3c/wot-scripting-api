@@ -3417,12 +3417,16 @@
            console.log("Error creating ExposedThing: " + err);
         }
       </pre>
-      <p>The example below shows a serialization of a
-      <a>ExposedThingInit</a> as a JSON object. It can be noticed that it is not a valid <a>Thing Description</a> because it
-      misses the title, @context,
-      security information, and forms fields. Nevertheless, it could be used by a runtime as an hint to instantiate
-      the correct Thing Description; see <a>expand an ExposedThingInit</a> algorithm for further details.</p>
-      <aside class="example ds-selector-tabs" title="TODO">
+      <p>
+        The following will cover a set of examples for the generation of a <a>Thing Description</a> from 
+        an <a>ExposedThingInit</a> using <a>expand an ExposedThingInit</a> steps. As hypothesis the runtime 
+        supports HTTP and COAP protocol bindings and it is hosted at 192.168.0.1. 
+      </p>
+      <p>
+        The next example shows how to exploit a <a>ExposedThingInit</a> to create a simple <a>Thing Description</a>
+        with one <a>Property</a> with the default values. 
+      </p>
+      <aside class="example ds-selector-tabs" title="Create a Thing Description with one Property afforndace">
         <div class="selectors">
           <button class="selected" data-selects="init">ExposedThingInit</button>
           <button data-selects="td">ThingDescription</button>
@@ -3450,15 +3454,21 @@
             "properties": {
               "temperature": {
                 "forms": [{
-                  "href": "http://localhost:8080/properties/temperature",
+                  "href": "http://192.168.0.1:8080/properties/temperature",
                   "contentType": "application/json"
+                },
+                {
+                "href": "coap://192.168.0.1:9090/properties/temperature",
+                "contentType": "application/json"
                 }]
               }
             }
           }
         </pre>
       </aside>
-     
+     <p class="ednote">
+       TODO: add more examples where the <a>ExposedThingInit</a> contains suggested values that are replaced by the algorithm.
+     </p>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
