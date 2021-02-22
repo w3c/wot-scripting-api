@@ -92,6 +92,65 @@
         },
       };
     </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Add example button selection logic
+        for (const button of document.querySelectorAll(".ds-selector-tabs .selectors button")) {
+          button.onclick = () => {
+            const ex = button.closest(".ds-selector-tabs");
+            ex.querySelector("button.selected").classList.remove("selected");
+            ex.querySelector(".selected").classList.remove("selected");
+            button.classList.add('selected');
+            ex.querySelector("." + button.dataset.selects).classList.add("selected");
+          }
+        }
+      });
+    </script>
+    <style>
+    /* example tab selection */
+  .ds-selector-tabs {
+    padding-bottom: 2em;
+  }
+  .ds-selector-tabs .selectors {
+    padding: 0;
+    border-bottom: 1px solid #ccc;
+    height: 28px;
+  }
+  .ds-selector-tabs .selectors button {
+    display: inline-block;
+    min-width: 54px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    height: 27px;
+    padding: 0 8px;
+    line-height: 27px;
+    transition: all,0.218s;
+    border-top-right-radius: 2px;
+    border-top-left-radius: 2px;
+    color: #666;
+    border: 1px solid transparent;
+  }
+  .ds-selector-tabs .selectors button:first-child {
+    margin-left: 2px;
+  }
+  .ds-selector-tabs .selectors button.selected {
+    color: #202020 !important;
+    border: 1px solid #ccc;
+    border-bottom: 1px solid #fff !important;
+  }
+  .ds-selector-tabs .selectors button:hover {
+    background-color: transparent;
+    color: #202020;
+    cursor: pointer;
+  }
+  .ds-selector-tabs pre:not(.preserve), .ds-selector-tabs table:not(.preserve) {
+    display: none;
+  }
+  .ds-selector-tabs pre.selected, .ds-selector-tabs table.selected {
+    display: block;
+  }
+    </style>
   </head>
   <body>
 
@@ -369,7 +428,6 @@
       </div>
     </section>
   </section>
-
   <section data-dfn-for="WOT">
   <h2>The <dfn>WOT</dfn> namespace</dfn></h2>
   <p>
@@ -423,12 +481,20 @@
 
   <section> <h3>The <dfn>produce()</dfn> method</h3>
     <pre class="idl">
+      typedef object ExposedThingInit;
+
       partial namespace WOT {
-        Promise&lt;ExposedThing&gt; produce(ThingDescription td);
+        Promise&lt;ExposedThing&gt; produce(ExposedThingInit init);
       };
     </pre>
     <div>
-      Belongs to the <a>WoT Producer</a> conformance class. Expects a |td:ThingDescription| argument and returns a {{Promise}} that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface, i.e. the ability to define request handlers. The method MUST run the following steps:
+      Belongs to the <a>WoT Producer</a> conformance class. Expects a |init:ExposedThingInit| argument and returns a {{Promise}} 
+      that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface, 
+      i.e. the ability to define request handlers. The |init:ExposedThingInit| object is an instance of the <a>ExposedThingInit</a> type.
+      Specifically, an <a>ExposedThingInit</a> value is a dictionary used for the initialization of an <a>ExposedThing</a> and
+      it represents a <a>Partial TD</a> as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same
+      structure of a <a>Thing Description</a> but it may omit some information. 
+      The method MUST run the following steps:
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
@@ -437,13 +503,97 @@
           If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
         </li>
         <li>
-          Let |thing:ExposedThing| be a new {{ExposedThing}} object constructed with |td|.
+          Let |thing:ExposedThing| be a new {{ExposedThing}} object constructed with |init|.
         </li>
         <li>
           Resolve |promise| with |thing|.
         </li>
       </ol>
     </div>
+    <section>
+      <h3>Expand an ExposedThingInit</h3>
+      To <dfn>expand an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as
+      a result,
+      run the following steps:
+      <ol class="algorithm">
+        <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
+          [= exception/throw =] {{SyntaxError}} and abort these steps.</li>
+        <li>Initialize and empty object called |td|</li>
+        <li>
+          For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
+        </li>
+        <li>For each |scheme:SecurityScheme| defined in <code>securityDefinitions</code> check if it is supported by at least one <a>Protocol Binding</a>. 
+        If not remove scheme </li>
+        <li>if the value of <code>security</code> is defined but it is not contained in <code>securityDefinitions</code> remove 
+        <code>security</code></li>
+        <li>For each |affordance| run the following sub-steps:
+          <ol>
+            <li>For each |form:Form| defined in |affordance| execute:
+              <ol>
+                <li>if |form|'s |contentType:string| is not recognized by the runtime as valid remove |contentType:string| from |form|
+                </li>
+                <li>if |form|'s |href:URL| has an unknown schema remove |href| from |form|.</li>
+                <li>if |form|'s |href:URL| is absolute and its <code>authority</code> it is not recognized by the runtime as a valid
+                  remove |href| from |form|. </li>
+                <li>if |form|'s |href:URL| is already in use by other <a>ExposedThings</a> remove |href| from |form|.</li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>Search for missing required properties in |td| accordingly to
+          <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
+            Schema</a>.
+          <p class="ednote">The editors find this step vague. It will be improved or removed in the next iteration. </p>
+        </li>
+        <li>For each |missing| property run these sub-steps:
+          <ol>
+            <li>If |missing| is <code>title</code> generate a runtime unique name and assign to <code>title</code>.</li> 
+            <li>If |missing| is <code>@context</code> assign the latest supported Thing Description context URI.</li>
+            <li>If |missing| is <code>instance</code> assign the string <code>1.0.0</code>.</li>
+            <li>If |missing| is <code>forms</code> generate a list of <a>Forms</a> using the available <a>Protocol Bindings</a> and content types
+              encoders. Then assign the obtained list to <code>forms</code>.</li>
+            <li>If |missing| is <code>security</code> assign the label of the first supported <a>SecurityScheme</a> in <code>securityDefinitions</code> field. 
+            If no <a>SecurityScheme</a> is found generate a <a>NoSecurityScheme</a> called <code>nosec</code> and assing the string <code>nosec</code>
+          to <code>security</code>. 
+          <p class="issue">The discussion about how to properly generate a value for <code>security</code> is still open. 
+            See issue <a href="https://github.com/w3c/wot-scripting-api/issues/299">#299</a> </p>
+          </li>
+            <li>If |missing| is <code>href</code> define |formStub| as the partial <a>Form</a> that does not have <code>href</code>. Generate a valid |url:URL| using the first <a>Protocol Binding</a> 
+              that satisfy the requirements of |formStub|. Assign |url| to <code>href</code>. If not <a>Protocol Binding</a> can be found remove |formStub| from |td|. </li>
+            <li>Add |missing| to |td| with |value| as value</li>
+          </ol>
+        </li>
+        <li>Run <a>validate a TD</a> on |td|. If that fails re-[= exception/throw =] the error and abort these steps</li>
+        <li>Return |td|</li>
+      </ol>
+    </section>
+    <section>
+      <h3>Validating an ExposedThingInit</h3>
+      To <dfn>validate an ExposedThingInit</dfn> given |init:ExposedThingInit|, run the following steps:
+      <ol  class="algorithm">
+        <li>
+          Parse <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
+            Schema</a>
+          and load it in object called |exposedThingInitSchema:object|
+        </li>
+        <li>let |optional:Array| be a list containing the following strings: <code>title</code>, <code>@context</code>, 
+        <code>instance</code>, <code>forms</code>, <code>security</code>, and <code>href</code>. </li>
+        <li>
+          For each property and sub-property |key| in |exposedThingInitSchema| equals to <code>required</code> execute the following steps:
+          <ol>
+            <li>if |key| |value| is an <code>Array</code> then remove all its elements equal to the elements in |optional|</li>
+            <li>if |key| |value| is a <code>string</code> then if |value| is equal to one of the elements in |optional| remove |key| from |exposedThingInitSchema|</li>
+          </ol>
+        </li>
+        <li>Return the result of <a>validating an object with JSON Schema</a> given |init| and |exposedThingInitSchema|. 
+          <p class="ednote">The<dfn>validating an object with JSON Schema</dfn> steps are still under discussion.
+            Currently this specification reference to the validation process of JSONSchema. Please
+            follow this <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html">document</a> 
+            when validating |init| with |exposedThingInitSchema|. Notice that the working group is evaluating an alternative formal approach.
+          </p>
+        </li>
+      </ol>
+    </section>
   </section>
 
   <section> <h3>The <dfn>discover()</dfn> method</h3>
@@ -2112,12 +2262,13 @@
         Before invoking <a href="#dom-exposedthing-expose">expose()</a>, the {{ExposedThing}} object does not serve any requests. This allows first constructing {{ExposedThing}} and then initialize its <a>Properties</a> and service handlers before starting serving requests.
       </p>
       <div>
-        To construct an {{ExposedThing}} with the {{ThingDescription}}
-        |td:ThingDescription|, run the following steps:
+        To construct an {{ExposedThing}} with the {{ExposedThingInit}}
+        |init:ExposedThingInit|, run the following steps:
         <ol>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
+          <li>Run the <a>expand an ExposedThingInit</a> steps on |init|. if that fails re-[= exception/throw =] the error and abort these steps. Otherwise store the obtained |td:ThingDescription| </li>
           <li>
             Run the <a>expand a TD</a> steps on |td|. If that fails, re-[= exception/throw =] the error and abort these steps.
           </li>
@@ -3266,6 +3417,58 @@
            console.log("Error creating ExposedThing: " + err);
         }
       </pre>
+      <p>
+        The following will cover a set of examples for the generation of a <a>Thing Description</a> from 
+        an <a>ExposedThingInit</a> using <a>expand an ExposedThingInit</a> steps. As hypothesis the runtime 
+        supports HTTP and COAP protocol bindings and it is hosted at 192.168.0.1. 
+      </p>
+      <p>
+        The next example shows how to exploit a <a>ExposedThingInit</a> to create a simple <a>Thing Description</a>
+        with one <a>Property</a> with the default values. 
+      </p>
+      <aside class="example ds-selector-tabs" title="Create a Thing Description with one Property afforndace">
+        <div class="selectors">
+          <button class="selected" data-selects="init">ExposedThingInit</button>
+          <button data-selects="td">ThingDescription</button>
+        </div>
+        
+        <pre class="selected init" data-transform="updateExample" title="An instance of the ExposedThingInit type">
+          {
+            "properties" : {
+              "temperature":{}
+            }
+          }
+        </pre>
+        <pre class="td" data-transform="updateExample" >
+          {
+            "@context": [
+              "https://www.w3.org/2019/wot/td/v1"
+            ],
+            "title": "Thing-123",
+            "securityDefinitions": {
+              "no_sec": {
+                "scheme": "nosec"
+              }
+            },
+            "security": "no_sec",
+            "properties": {
+              "temperature": {
+                "forms": [{
+                  "href": "http://192.168.0.1:8080/properties/temperature",
+                  "contentType": "application/json"
+                },
+                {
+                "href": "coap://192.168.0.1:9090/properties/temperature",
+                "contentType": "application/json"
+                }]
+              }
+            }
+          }
+        </pre>
+      </aside>
+     <p class="ednote">
+       TODO: add more examples where the <a>ExposedThingInit</a> contains suggested values that are replaced by the algorithm.
+     </p>
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
@@ -3702,9 +3905,10 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
       <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#dataschema">
-        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn>Form</dfn></a> etc.
+        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn data-lt="Forms">Form</dfn></a>,
+        <a href="https://w3c.github.io/wot-thing-description/#securityscheme"><dfn>SecurityScheme</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
     </p>
     <p>
       <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2020/WD-wot-architcture11-20201124/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
