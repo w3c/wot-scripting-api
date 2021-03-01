@@ -488,12 +488,12 @@
       };
     </pre>
     <div>
-      Belongs to the <a>WoT Producer</a> conformance class. Expects a |init:ExposedThingInit| argument and returns a {{Promise}} 
-      that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface, 
+      Belongs to the <a>WoT Producer</a> conformance class. Expects a |init:ExposedThingInit| argument and returns a {{Promise}}
+      that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface,
       i.e. the ability to define request handlers. The |init:ExposedThingInit| object is an instance of the <a>ExposedThingInit</a> type.
       Specifically, an <a>ExposedThingInit</a> value is a dictionary used for the initialization of an <a>ExposedThing</a> and
       it represents a <a>Partial TD</a> as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same
-      structure of a <a>Thing Description</a> but it may omit some information. 
+      structure of a <a>Thing Description</a> but it may omit some information.
       The method MUST run the following steps:
       <ol>
         <li>
@@ -522,9 +522,9 @@
         <li>
           For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
         </li>
-        <li>For each |scheme:SecurityScheme| defined in <code>securityDefinitions</code> check if it is supported by at least one <a>Protocol Binding</a>. 
+        <li>For each |scheme:SecurityScheme| defined in <code>securityDefinitions</code> check if it is supported by at least one <a>Protocol Binding</a>.
         If not remove scheme </li>
-        <li>if the value of <code>security</code> is defined but it is not contained in <code>securityDefinitions</code> remove 
+        <li>if the value of <code>security</code> is defined but it is not contained in <code>securityDefinitions</code> remove
         <code>security</code></li>
         <li>For each |affordance| run the following sub-steps:
           <ol>
@@ -547,18 +547,18 @@
         </li>
         <li>For each |missing| property run these sub-steps:
           <ol>
-            <li>If |missing| is <code>title</code> generate a runtime unique name and assign to <code>title</code>.</li> 
+            <li>If |missing| is <code>title</code> generate a runtime unique name and assign to <code>title</code>.</li>
             <li>If |missing| is <code>@context</code> assign the latest supported Thing Description context URI.</li>
             <li>If |missing| is <code>instance</code> assign the string <code>1.0.0</code>.</li>
             <li>If |missing| is <code>forms</code> generate a list of <a>Forms</a> using the available <a>Protocol Bindings</a> and content types
               encoders. Then assign the obtained list to <code>forms</code>.</li>
-            <li>If |missing| is <code>security</code> assign the label of the first supported <a>SecurityScheme</a> in <code>securityDefinitions</code> field. 
+            <li>If |missing| is <code>security</code> assign the label of the first supported <a>SecurityScheme</a> in <code>securityDefinitions</code> field.
             If no <a>SecurityScheme</a> is found generate a <a>NoSecurityScheme</a> called <code>nosec</code> and assing the string <code>nosec</code>
-          to <code>security</code>. 
-          <p class="issue">The discussion about how to properly generate a value for <code>security</code> is still open. 
+          to <code>security</code>.
+          <p class="issue">The discussion about how to properly generate a value for <code>security</code> is still open.
             See issue <a href="https://github.com/w3c/wot-scripting-api/issues/299">#299</a> </p>
           </li>
-            <li>If |missing| is <code>href</code> define |formStub| as the partial <a>Form</a> that does not have <code>href</code>. Generate a valid |url:URL| using the first <a>Protocol Binding</a> 
+            <li>If |missing| is <code>href</code> define |formStub| as the partial <a>Form</a> that does not have <code>href</code>. Generate a valid |url:URL| using the first <a>Protocol Binding</a>
               that satisfy the requirements of |formStub|. Assign |url| to <code>href</code>. If not <a>Protocol Binding</a> can be found remove |formStub| from |td|. </li>
             <li>Add |missing| to |td| with |value| as value</li>
           </ol>
@@ -576,7 +576,7 @@
             Schema</a>
           and load it in object called |exposedThingInitSchema:object|
         </li>
-        <li>let |optional:Array| be a list containing the following strings: <code>title</code>, <code>@context</code>, 
+        <li>let |optional:Array| be a list containing the following strings: <code>title</code>, <code>@context</code>,
         <code>instance</code>, <code>forms</code>, <code>security</code>, and <code>href</code>. </li>
         <li>
           For each property and sub-property |key| in |exposedThingInitSchema| equals to <code>required</code> execute the following steps:
@@ -585,10 +585,10 @@
             <li>if |key| |value| is a <code>string</code> then if |value| is equal to one of the elements in |optional| remove |key| from |exposedThingInitSchema|</li>
           </ol>
         </li>
-        <li>Return the result of <a>validating an object with JSON Schema</a> given |init| and |exposedThingInitSchema|. 
+        <li>Return the result of <a>validating an object with JSON Schema</a> given |init| and |exposedThingInitSchema|.
           <p class="ednote">The<dfn>validating an object with JSON Schema</dfn> steps are still under discussion.
             Currently this specification reference to the validation process of JSONSchema. Please
-            follow this <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html">document</a> 
+            follow this <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html">document</a>
             when validating |init| with |exposedThingInitSchema|. Notice that the working group is evaluating an alternative formal approach.
           </p>
         </li>
@@ -1137,16 +1137,19 @@
         constructor(ThingDescription td);
         Promise&lt;InteractionOutput&gt; readProperty(DOMString propertyName,
                                     optional InteractionOptions options = null);
-        Promise&lt;PropertyMap&gt; readAllProperties(optional InteractionOptions options = null);
-        Promise&lt;PropertyMap&gt; readMultipleProperties(
+        Promise&lt;PropertyReadMap&gt; readAllProperties(
+                                    optional InteractionOptions options = null);
+        Promise&lt;PropertyReadMap&gt; readMultipleProperties(
                                     sequence&lt;DOMString&gt; propertyNames,
                                     optional InteractionOptions options = null);
         Promise&lt;undefined&gt; writeProperty(DOMString propertyName,
                                     InteractionInput value,
                                     optional InteractionOptions options = null);
-        Promise&lt;undefined&gt; writeMultipleProperties(PropertyMap valueMap,
+        Promise&lt;undefined&gt; writeMultipleProperties(
+                                    PropertyWriteMap valueMap,
                                     optional InteractionOptions options = null);
-        /*Promise&lt;undefined&gt; writeAllProperties(PropertyMap valueMap,
+        /*Promise&lt;undefined&gt; writeAllProperties(
+                                    PropertyWriteMap valueMap,
                                     optional InteractionOptions options = null);*/
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = null,
@@ -1174,7 +1177,15 @@
         Promise&lt;undefined&gt; stop(optional InteractionOptions options = null);
       };
 
-      typedef object PropertyMap;
+      [SecureContext, Exposed=(Window,Worker)]
+      interface PropertyReadMap {
+        readonly maplike&lt;DOMString, InteractionOutput&gt;;
+      };
+
+      [SecureContext, Exposed=(Window,Worker)]
+      interface PropertyWriteMap {
+        readonly maplike&lt;DOMString, InteractionInput&gt;;
+      };
 
       callback InteractionListener = undefined(InteractionOutput data);
       callback ErrorListener = undefined(Error error);
@@ -1310,7 +1321,7 @@
         Reads multiple <a>Property</a> values with one request.
         Takes as arguments |propertyNames: string sequence| and optionally
         |options:InteractionOptions|.
-        It returns a {{Promise}} that resolves with a {{PropertyMap}} object
+        It returns a {{Promise}} that resolves with a {{PropertyReadMap}} object
         that maps keys from |propertyNames| to values returned by this algorithm.
         The method MUST run the following steps:
         <ol>
@@ -1369,7 +1380,7 @@
       <h3>The <dfn>readAllProperties()</dfn> method</h3>
       <div>
         Reads all properties of the <a>Thing</a> with one request. Takes |options:InteractionOptions| as optional argument.
-        It returns a {{Promise}} that resolves with a {{PropertyMap}} object that
+        It returns a {{Promise}} that resolves with a {{PropertyReadMap}} object that
         maps keys from <a>Property</a> names to values returned by this algorithm.
         The method MUST run the following steps:
         <ol>
@@ -1838,15 +1849,24 @@
     </section>
 
     <section>
-      <h3>The <dfn>PropertyMap</dfn> type</h3>
+      <h3>The <dfn>PropertyReadMap</dfn> type</h3>
       <p>
-        Represents a map of <a>Property</a> names as strings to a value that the <a>Property</a> can take. It is used as a property bag for interactions that involve multiple <a>Properties</a> at once.
-      </p>
-      <p class="ednote">
-         It could be defined in Web IDL (as well as {{ThingDescription}}) as a <a href="https://heycam.github.io/webidl/#idl-maplike">maplike</a> interface from <i>string</i> to <i>any</i>.
+        Represents a map of <a>Property</a> names to an <a>InteractionOutput</a>
+        object that represents the value the <a>Property</a> can take. It is
+        used as a property bag for interactions that involve multiple
+        <a>Properties</a> at once.
       </p>
     </section>
 
+    <section>
+      <h3>The <dfn>PropertyWriteMap</dfn> type</h3>
+      <p>
+        Represents a map of <a>Property</a> names to an <a>InteractionInput</a>
+        that represents the value the <a>Property</a> can take. It is
+        used as a property bag for interactions that involve multiple
+        <a>Properties</a> at once.
+      </p>
+    </section>
 
     <section>
       <h3>The <dfn>InteractionListener</dfn> callback</h3>
@@ -3418,20 +3438,20 @@
         }
       </pre>
       <p>
-        The following will cover a set of examples for the generation of a <a>Thing Description</a> from 
-        an <a>ExposedThingInit</a> using <a>expand an ExposedThingInit</a> steps. As hypothesis the runtime 
-        supports HTTP and COAP protocol bindings and it is hosted at 192.168.0.1. 
+        The following will cover a set of examples for the generation of a <a>Thing Description</a> from
+        an <a>ExposedThingInit</a> using <a>expand an ExposedThingInit</a> steps. As hypothesis the runtime
+        supports HTTP and COAP protocol bindings and it is hosted at 192.168.0.1.
       </p>
       <p>
         The next example shows how to exploit a <a>ExposedThingInit</a> to create a simple <a>Thing Description</a>
-        with one <a>Property</a> with the default values. 
+        with one <a>Property</a> with the default values.
       </p>
       <aside class="example ds-selector-tabs" title="Create a Thing Description with one Property afforndace">
         <div class="selectors">
           <button class="selected" data-selects="init">ExposedThingInit</button>
           <button data-selects="td">ThingDescription</button>
         </div>
-        
+
         <pre class="selected init" data-transform="updateExample" title="An instance of the ExposedThingInit type">
           {
             "properties" : {
