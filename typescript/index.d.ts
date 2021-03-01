@@ -138,7 +138,7 @@ declare namespace WoT {
          * It returns a Promise that resolves with the result of the Action represented
          * as an InteractionOutput object, or rejects with an error.
          */
-        invokeAction(actionName: string, params?: InteractionInput, options?: InteractionOptions): Promise<InteractionOutput>;
+        invokeAction(actionName: string, params?: InteractionInput, options?: InteractionOptions): Promise<undefined | InteractionOutput>;
 
         /**
          * Makes a request for Property value change notifications.
@@ -294,7 +294,7 @@ declare namespace WoT {
 
     export type PropertyWriteHandler = (value: InteractionOutput, options?: InteractionOptions) => Promise<void>;
 
-    export type ActionHandler = (params: InteractionOutput, options?: InteractionOptions) => Promise<InteractionInput>;
+    export type ActionHandler = (params: InteractionOutput, options?: InteractionOptions) => Promise<undefined | InteractionInput>;
 
     export type EventSubscriptionHandler = (options?: InteractionOptions) => Promise<void>;
 
