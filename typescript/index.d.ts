@@ -180,8 +180,8 @@ declare namespace WoT {
         data?: any;
     }
 
-    export type PropertyReadMap = Map<string,InteractionOutput>
-    export type PropertyWriteMap = Map<string,InteractionInput>
+    export type PropertyReadMap = Map<string, InteractionOutput>;
+    export type PropertyWriteMap = Map<string, InteractionInput>;
 
     export type WotListener = (data: InteractionOutput) => void;
 
