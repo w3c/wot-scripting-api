@@ -107,7 +107,7 @@ declare namespace WoT {
          * It returns a Promise that resolves with a PropertyMap object that
          * maps keys from Property names to values.
          */
-        readAllProperties(options?: InteractionOptions): Promise<PropertyMap>;
+        readAllProperties(options?: InteractionOptions): Promise<PropertyReadMap>;
 
         /**
          * Reads multiple Property values with one or multiple requests.
@@ -115,7 +115,7 @@ declare namespace WoT {
          * It returns a Promise that resolves with a PropertyMap object that
          * maps keys from propertyNames to values
          */
-        readMultipleProperties(propertyNames: string[], options?: InteractionOptions): Promise<PropertyMap>;
+        readMultipleProperties(propertyNames: string[], options?: InteractionOptions): Promise<PropertyReadMap>;
 
         /**
          * Writes a single Property.
@@ -130,7 +130,7 @@ declare namespace WoT {
          * and values as Property values - and optionally options.
          * It returns a Promise that resolves on success and rejects on failure.
          */
-        writeMultipleProperties(valueMap: PropertyMap, options?: InteractionOptions): Promise<void>;
+        writeMultipleProperties(valueMap: PropertyWriteMap, options?: InteractionOptions): Promise<void>;
 
         /**
          * Makes a request for invoking an Action and return the result.
@@ -180,7 +180,8 @@ declare namespace WoT {
         data?: any;
     }
 
-    export type PropertyMap = object | { [key: string]: any; };
+    export type PropertyReadMap = Map<string, InteractionOutput>;
+    export type PropertyWriteMap = Map<string, InteractionInput>;
 
     export type WotListener = (data: InteractionOutput) => void;
 
