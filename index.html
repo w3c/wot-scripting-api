@@ -3570,15 +3570,13 @@
         Represents the discovery type to be used:
       </p>
       <ul>
-        <li><dfn>"any"</dfn> does not provide any restriction</li>
         <li>
-          <dfn>"local"</dfn> for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
+          <dfn>"direct"</dfn> for fetching the <a>Thing Description</a> of a
+          <a>Thing</a> specified by <a>ThingFilter</a>'s `url`.
         </li>
         <li>
-          <dfn>"directory"</dfn> for discovery based on a service provided by a <a>Thing Directory</a>.
-        </li>
-        <li>
-          <dfn>"multicast"</dfn> for discovering <a>Thing</a>s in the device's network by using a supported multicast protocol.
+          <dfn>"directory"</dfn> for discovery based on a service provided by a
+          <a>Thing Directory</a> specified by <a>ThingFilter</a>'s `url`.
         </li>
       </ul>
     </section>
@@ -3590,24 +3588,31 @@
       </p>
       <pre class="idl">
         dictionary ThingFilter {
-          (DiscoveryMethod or DOMString) method = "any";
+          DiscoveryMethod method = "directory";
           USVString? url;
-          USVString? query;
           object? fragment;
+          <!-- DOMString? query; -->
         };
       </pre>
-      <p>
-        The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <a href="#the-discoverymethod-enumeration">DiscoveryMethod</a> enumeration that MAY be extended by string values defined by solutions (with no guarantee of interoperability).
+      <p class = "ednote">
+        The `DOMString query` property was temporarily removed from
+        <a>ThingFilter</a>, until it is standardized in the WoT Discovery
+        task force.
       </p>
       <p>
-        The <dfn>url</dfn> property represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <a href="#dom-thingfilter-method">method</a> is `"directory"`), or otherwise the URL of a directly targeted <a>Thing</a>.
+        The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <a href="#the-discoverymethod-enumeration">DiscoveryMethod</a> enumeration.
       </p>
       <p>
-        The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
+        The <dfn>url</dfn> property represents the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <a href="#dom-thingfilter-method">method</a> is `"directory"`),
+        or the URL of a directly targeted <a>Thing</a> (if
+        <a href="#dom-thingfilter-method">method</a> is `"direct"`)
       </p>
       <p>
         The <dfn>fragment</dfn> property represents a template object used for matching property by property against discovered <a>Thing</a>s.
       </p>
+      <!--p>
+        The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
+      </p-->
     </section>
 
     <section>
@@ -3624,14 +3629,14 @@
           <li>
             Let |filter| denote the <a href="#dom-thingdiscovery-filter">filter</a> property.
           </li>
-          <li>
+          <!--li>
             If the |filter| is defined,
             <ul>
               <li>
                 If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, set |this.error| to {{NotSupportedError}} and abort these steps.
               </li>
             </ul>
-          </li>
+          </li-->
           <li>
             Create the <a>discovery results</a> <a>internal slot</a> for storing discovered {{ThingDescription}} objects.
           </li>
@@ -3639,16 +3644,10 @@
             Request the underlying platform to start the discovery process, with the following parameters:
             <ul>
               <li>
-                If |filter|s <a href="#dom-thingfilter-method">|method|</a> is not defined or the value is `"any"`, use the widest discovery method supported by the underlying platform.
+                If |filter|s <a href="#dom-thingfilter-method">|method|</a> is not defined or is `"directory"`, use the remote <a>Thing Directory</a> specified in |filter.url|.
               </li>
               <li>
-                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"local"`, use the local <a>Thing Directory</a> for discovery. Usually that defines <a>Thing</a>s deployed in the same device, or connected to the device in slave mode (e.g. sensors connected via Bluetooth or a serial connection).
-              </li>
-              <li>
-                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"directory"`, use the remote <a>Thing Directory</a> specified in |filter.url|.
-              </li>
-              <li>
-                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"multicast"`, use all the multicast discovery protocols supported by the underlying platform.
+                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"direct"`, use the remote <a>Thing</a> specified in |filter.url|.
               </li>
             </ul>
           </li>
@@ -3661,9 +3660,9 @@
               <li>
                 <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> |td| as a JSON object |json|. If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
               </li>
-              <li>
+              <!--li>
                 If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, check if |json| is a match for the query. The matching algorithm is encapsulated by implementations. If that returns `false`, discard |td| and continue the discovery process.
-              </li>
+              </li-->
               <li>
                 If |filter|'s <a href="#dom-thingfilter-fragment">|fragment|</a> is defined, for each property defined in it, check if that property exists in |json|'s properties and has the same value. If this is `false` in any checks, discard |td| and continue the discovery process.
               </li>
@@ -3743,13 +3742,11 @@
       <p>
         The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running. Note that the discovery can end (become inactive) before the internal <a>discovery results</a> queue is emptied, so we need to continue reading {{ThingDescription}} objects until done. This is typical with local and directory type discoveries.
       </p>
-      <pre class="example" title="Discover Things exposed by local hardware">
-        let discovery = new ThingDiscovery({ method: "local" });
+      <pre class="example" title="Fetch the Thing Description of a Thing">
+        let discovery = new ThingDiscovery({ method: "direct" });
         do {
           let td = await discovery.next();
           console.log("Found Thing Description for " + td.title);
-          let thing = new ConsumedThing(td);
-          console.log("Thing name: " + thing.getThingDescription().title);
         } while (!discovery.done);
       </pre>
       <p>
@@ -3757,7 +3754,7 @@
       </p>
       <pre class="example" title="Discover Things via directory">
         let discoveryFilter = {
-          method: "directory",
+          method: "directory", // default value, no need to specify
           url: "http://directory.wotservice.org"
         };
         let discovery = new ThingDiscovery(discoveryFilter);
@@ -3776,7 +3773,7 @@
           console.log("Discovery stopped because of an error: " + error.message);
         }
       </pre>
-      <p>
+      <!--p>
         The next example is for an open-ended multicast discovery, which likely won't complete soon (depending on the underlying protocol), so stopping it with a timeout is a good idea. It will likely deliver results one by one.
       </p>
       <pre class="example" title="Discover Things in a network">
@@ -3791,7 +3788,7 @@
           let thing = new ConsumedThing(td);
           console.log("Thing name: " + thing.getThingDescription().title);
         } while (!discovery.done);
-      </pre>
+      </pre-->
     </section> <!-- Examples -->
   </section>
 
