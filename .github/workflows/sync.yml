@@ -19,6 +19,7 @@ jobs:
           git fetch https://github.com/w3c/wot-thing-description.git
           git checkout FETCH_HEAD -- validation/td-json-schema-validation.json
       - name: Look for changes
+        continue-on-error: true
         run: |
           git diff --no-index --quiet typescript/schema/td-json-schema-validation.json .temp/validation/td-json-schema-validation.json
           echo "::set-output name=changed::$?"
