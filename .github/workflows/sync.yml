@@ -1,0 +1,35 @@
+name: Sync json schema
+
+on:
+  schedule:
+    - cron:  '00 00 * * *'
+  workflow_dispatch:
+    
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download schema
+        run: | 
+          # Retrive json schema from td repository
+          mkdir .temp && cd .temp
+          git init
+          git fetch https://github.com/w3c/wot-thing-description.git
+          git checkout FETCH_HEAD -- validation/td-json-schema-validation.json
+      - name: Look for changes
+        run: |
+          git diff --no-index --quiet typescript/schema/td-json-schema-validation.json .temp/validation/td-json-schema-validation.json
+          echo "::set-output name=changed::$?"
+        id: diff
+      - name: Sync file
+        if: ${{ ! steps.diff.outputs.changed }}
+        run: mv .temp/validation/td-json-schema-validation.json typescript/schema/td-json-schema-validation.json && rm -rf .temp
+      - name: Push changes
+        uses: EndBug/add-and-commit@v7
+        with: 
+          # focus only on the schema just to be sure
+          add: 'typescript/schema'
+          author_name: action_sync
+          message: 'chore(typescript): sync json schema from wot-thing-description.git'
