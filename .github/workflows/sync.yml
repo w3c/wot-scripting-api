@@ -28,6 +28,7 @@ jobs:
         if: ${{ ! steps.diff.outputs.changed }}
         run: mv .temp/validation/td-json-schema-validation.json typescript/schema/td-json-schema-validation.json && rm -rf .temp
       - name: Push changes
+        if: ${{ ! steps.diff.outputs.changed }}
         uses: EndBug/add-and-commit@v7
         with: 
           # focus only on the schema just to be sure
