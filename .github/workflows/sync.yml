@@ -35,3 +35,7 @@ jobs:
           add: 'typescript/schema'
           author_name: action_sync
           message: 'chore(typescript): sync json schema from wot-thing-description.git'
+      - uses: JasonEtco/create-an-issue@v2
+        if: ${{ ! steps.diff.outputs.changed }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
