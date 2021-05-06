@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: Download schema
         run: | 
           # Retrive json schema from td repository
@@ -27,6 +30,12 @@ jobs:
       - name: Sync file
         if: ${{ ! steps.diff.outputs.changed }}
         run: mv .temp/validation/td-json-schema-validation.json typescript/schema/td-json-schema-validation.json && rm -rf .temp
+      - name: Generate types
+        if: ${{ ! steps.diff.outputs.changed }}
+        run: |
+          cd typescript
+          npm install
+          npm run build
       - name: Push changes
         if: ${{ ! steps.diff.outputs.changed }}
         uses: EndBug/add-and-commit@v7
