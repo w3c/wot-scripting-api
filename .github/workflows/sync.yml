@@ -39,3 +39,5 @@ jobs:
         if: ${{ ! steps.diff.outputs.changed }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: .github/publish-ts-issue.md
