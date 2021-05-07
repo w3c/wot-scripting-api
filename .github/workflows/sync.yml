@@ -16,7 +16,7 @@ jobs:
           node-version: '14'
       - name: Download schema
         run: | 
-          # Retrive json schema from td repository
+          # Retrieve json schema from td repository
           mkdir .temp && cd .temp
           git init
           git fetch https://github.com/w3c/wot-thing-description.git
