@@ -26,8 +26,7 @@
             }
         },
         "security": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -39,8 +38,7 @@
             ]
         },
         "scopes": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -67,17 +65,13 @@
             ]
         },
         "thing-context": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "array",
-                    "items": [
-                        {
-                            "$ref": "#/definitions/thing-context-w3c-uri"
-                        }
-                    ],
+                    "items": [{
+                        "$ref": "#/definitions/thing-context-w3c-uri"
+                    }],
                     "additionalItems": {
-                        "anyOf": [
-                            {
+                        "anyOf": [{
                                 "$ref": "#/definitions/anyUri"
                             },
                             {
@@ -92,20 +86,15 @@
             ]
         },
         "type_declaration": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "string",
-                    "not": {
-                        "const": "tm:ThingModel"
-                    }
+                    "not": {"const":"tm:ThingModel"}
                 },
                 {
                     "type": "array",
                     "items": {
                         "type": "string",
-                        "not": {
-                            "const": "tm:ThingModel"
-                        }
+                        "not": {"const":"tm:ThingModel"}
                     }
                 }
             ]
@@ -152,10 +141,10 @@
                     "type": "string"
                 },
                 "const": {},
-                "contentEncoding": {
+                "contentEncoding":{
                     "type": "string"
                 },
-                "contentMediaType": {
+                "contentMediaType":{
                     "type": "string"
                 },
                 "type": {
@@ -171,8 +160,7 @@
                     ]
                 },
                 "items": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "$ref": "#/definitions/dataSchema"
                         },
                         {
@@ -197,23 +185,16 @@
                 "maximum": {
                     "type": "number"
                 },
-                "minLength": {
+                "minLength":{
                     "type": "integer",
                     "minimum": 0
                 },
-                "maxLength": {
+                "maxLength":{
                     "type": "integer",
                     "minimum": 0
                 },
-                "multipleOf": {
-                    "oneOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "number"
-                        }
-                    ]
+                "multipleOf":{
+                    "oneOf":[{"type": "integer"},{"type": "number"}]
                 },
                 "properties": {
                     "additionalProperties": {
@@ -232,8 +213,7 @@
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "readproperty",
@@ -309,8 +289,7 @@
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "invokeaction"
@@ -380,8 +359,7 @@
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "subscribeevent",
@@ -453,8 +431,7 @@
             "type": "object",
             "properties": {
                 "op": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "type": "string",
                             "enum": [
                                 "readallproperties",
@@ -601,8 +578,7 @@
                     ]
                 },
                 "items": {
-                    "oneOf": [
-                        {
+                    "oneOf": [{
                             "$ref": "#/definitions/dataSchema"
                         },
                         {
@@ -627,23 +603,16 @@
                 "maximum": {
                     "type": "number"
                 },
-                "minLength": {
+                "minLength":{
                     "type": "integer",
                     "minimum": 0
                 },
-                "maxLength": {
+                "maxLength":{
                     "type": "integer",
                     "minimum": 0
                 },
-                "multipleOf": {
-                    "oneOf": [
-                        {
-                            "type": "integer"
-                        },
-                        {
-                            "type": "number"
-                        }
-                    ]
+                "multipleOf":{
+                    "oneOf":[{"type": "integer"},{"type": "number"}]
                 },
                 "properties": {
                     "additionalProperties": {
@@ -832,8 +801,7 @@
             ]
         },
         "securityScheme": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "object",
                     "properties": {
                         "@type": {
@@ -884,7 +852,7 @@
                             "type": "array",
                             "minItems": 2,
                             "items": {
-                                "type": "string"
+                               "type": "string"
                             }
                         }
                     },
@@ -917,7 +885,7 @@
                             "type": "array",
                             "minItems": 2,
                             "items": {
-                                "type": "string"
+                               "type": "string"
                             }
                         }
                     },
@@ -1153,8 +1121,7 @@
                             "$ref": "#/definitions/anyUri"
                         },
                         "scopes": {
-                            "oneOf": [
-                                {
+                            "oneOf": [{
                                     "type": "array",
                                     "items": {
                                         "type": "string"
@@ -1268,8 +1235,7 @@
             "format": "date-time"
         },
         "security": {
-            "oneOf": [
-                {
+            "oneOf": [{
                     "type": "string"
                 },
                 {
