@@ -1,0 +1,52 @@
+name: Sync json schema
+
+on:
+  schedule:
+    - cron:  '00 00 * * *'
+  workflow_dispatch:
+    
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Download schema
+        run: | 
+          # Retrieve json schema from td repository
+          mkdir .temp && cd .temp
+          git init
+          git fetch https://github.com/w3c/wot-thing-description.git
+          git checkout FETCH_HEAD -- validation/td-json-schema-validation.json
+      - name: Look for changes
+        continue-on-error: true
+        run: |
+          git diff --no-index --quiet typescript/schema/td-json-schema-validation.json .temp/validation/td-json-schema-validation.json
+          echo "::set-output name=changed::$?"
+        id: diff
+      - name: Sync file
+        if: ${{ ! steps.diff.outputs.changed }}
+        run: mv .temp/validation/td-json-schema-validation.json typescript/schema/td-json-schema-validation.json && rm -rf .temp
+      - name: Generate types
+        if: ${{ ! steps.diff.outputs.changed }}
+        run: |
+          cd typescript
+          npm install
+          npm run build
+      - name: Push changes
+        if: ${{ ! steps.diff.outputs.changed }}
+        uses: EndBug/add-and-commit@v7
+        with: 
+          # focus only on the schema just to be sure
+          add: 'typescript/schema'
+          author_name: action_sync
+          message: 'chore(typescript): sync json schema from wot-thing-description.git'
+      - uses: JasonEtco/create-an-issue@v2
+        if: ${{ ! steps.diff.outputs.changed }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: .github/publish-ts-issue.md
