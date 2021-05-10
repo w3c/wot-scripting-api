@@ -1,3 +1,4 @@
+import {ThingDescription as ThingDescriptionSchema} from './thing-description';
 declare namespace WoT {
 
     /**
@@ -74,7 +75,7 @@ declare namespace WoT {
      * WoT provides a unified representation for data exchange between Things, standardized in the Wot Things Description specification.
      * In this version of the API, Thing Descriptions is expected to be a parsed JSON object.
      */
-    export type ThingDescription = { [key: string]: any; };
+    export type ThingDescription = ThingDescriptionSchema;
 
 
     export type DataSchemaValue = (null | boolean | number | string | object | DataSchemaValue[]);
