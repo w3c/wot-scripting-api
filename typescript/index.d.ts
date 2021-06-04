@@ -1,4 +1,8 @@
-import {ThingDescription as ThingDescriptionSchema} from './thing-description';
+type DeepPartial<T> = T extends object ? {
+    [P in keyof T]?: T[P] extends Array<infer I>
+    ? Array<DeepPartial<I>>
+    : DeepPartial<T[P]>
+} : T;
 declare namespace WoT {
 
     /**
@@ -15,11 +19,12 @@ declare namespace WoT {
     export function consume(td: ThingDescription): Promise<ConsumedThing>;
 
     /**
-     * Accepts a ThingDescription and returns a ExposedThing
+     * Accepts an init dictionary similar to a ThingDescription.
+     * It returns a ExposedThing
      * 
-     * @param td thing description 
+     * @param ptd Partial thing description 
      */
-    export function produce(td: ThingDescription): Promise<ExposedThing>;
+    export function produce(ptd: PartialThingDescription): Promise<ExposedThing>;
 
 
     /**
@@ -75,7 +80,8 @@ declare namespace WoT {
      * WoT provides a unified representation for data exchange between Things, standardized in the Wot Things Description specification.
      * In this version of the API, Thing Descriptions is expected to be a parsed JSON object.
      */
-    export type ThingDescription = ThingDescriptionSchema;
+    export type ThingDescription = import("./thing-description").ThingDescription;
+    export type PartialThingDescription = DeepPartial<ThingDescription>;
 
 
     export type DataSchemaValue = (null | boolean | number | string | object | DataSchemaValue[]);
