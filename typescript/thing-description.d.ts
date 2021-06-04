@@ -132,7 +132,7 @@ export type ThingContextW3CUri = "https://www.w3.org/2019/wot/td/v1" | "http://w
 /**
  * JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values
  */
-export interface WoTTDSchema02June2021 {
+export interface ThingDescription {
   id?: string;
   title: Title;
   titles?: Titles;

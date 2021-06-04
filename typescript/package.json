@@ -21,7 +21,7 @@
   "types": "index.d.ts",
   "dependencies": {},
   "scripts": {
-    "build": "json2ts schema/td-json-schema-validation.json | sed -e 's/WoTTDSchema16February2021/ThingDescription/' > thing-description.d.ts"
+    "build": "json2ts schema/td-json-schema-validation.json | sed -e 's/WoTTDSchema02June2021/ThingDescription/' > thing-description.d.ts"
   },
   "devDependencies": {
     "json-schema-to-typescript": "^10.1.4"
