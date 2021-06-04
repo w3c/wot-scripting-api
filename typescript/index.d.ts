@@ -24,7 +24,7 @@ declare namespace WoT {
      * 
      * @param ptd Partial thing description 
      */
-    export function produce(ptd: PartialThingDescription): Promise<ExposedThing>;
+    export function produce(init: ExposedThingInit): Promise<ExposedThing>;
 
 
     /**
@@ -81,7 +81,7 @@ declare namespace WoT {
      * In this version of the API, Thing Descriptions is expected to be a parsed JSON object.
      */
     export type ThingDescription = import("./thing-description").ThingDescription;
-    export type PartialThingDescription = DeepPartial<ThingDescription>;
+    export type ExposedThingInit = DeepPartial<ThingDescription>;
 
 
     export type DataSchemaValue = (null | boolean | number | string | object | DataSchemaValue[]);
