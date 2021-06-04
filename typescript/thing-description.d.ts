@@ -9,7 +9,7 @@ export type Title = string;
 export type TypeDeclaration = string | string[];
 export type Description = string;
 export type AnyUri = string;
-export type Subprotocol = "longpoll" | "websub" | "sse";
+export type Subprotocol = string;
 export type Security = string[] | string;
 export type Scopes = string[] | string;
 export type LinkElement = BaseLinkElement & {
@@ -18,7 +18,7 @@ export type LinkElement = BaseLinkElement & {
   [k: string]: unknown;
 };
 export type IconLinkElement = BaseLinkElement & {
-  rel?: "icon";
+  rel: "icon";
   sizes?: string;
   [k: string]: unknown;
 };
@@ -37,7 +37,7 @@ export type SecurityScheme =
       descriptions?: Descriptions;
       proxy?: AnyUri;
       scheme: "combo";
-      oneOf?: [string, string, ...string[]];
+      oneOf: [string, string, ...string[]];
       [k: string]: unknown;
     }
   | {
@@ -46,7 +46,7 @@ export type SecurityScheme =
       descriptions?: Descriptions;
       proxy?: AnyUri;
       scheme: "combo";
-      allOf?: [string, string, ...string[]];
+      allOf: [string, string, ...string[]];
       [k: string]: unknown;
     }
   | {
@@ -130,9 +130,9 @@ export type ThingContext =
 export type ThingContextW3CUri = "https://www.w3.org/2019/wot/td/v1" | "http://www.w3.org/ns/td";
 
 /**
- * JSON Schema for validating TD instances against the TD model. TD instances can be with or without terms that have default values
+ * JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values
  */
-export interface ThingDescription {
+export interface WoTTDSchema02June2021 {
   id?: string;
   title: Title;
   titles?: Titles;
@@ -156,6 +156,9 @@ export interface ThingDescription {
   base?: AnyUri;
   securityDefinitions: {
     [k: string]: SecurityScheme;
+  };
+  schemaDefinitions?: {
+    [k: string]: DataSchema;
   };
   support?: AnyUri;
   created?: string;
@@ -220,9 +223,7 @@ export interface FormElementProperty {
   };
   additionalResponses?: {
     contentType?: string;
-    schema?: {
-      [k: string]: DataSchema;
-    };
+    schema?: string;
     [k: string]: unknown;
   }[];
   [k: string]: unknown;
@@ -287,9 +288,7 @@ export interface FormElementAction {
   };
   additionalResponses?: {
     contentType?: string;
-    schema?: {
-      [k: string]: DataSchema;
-    };
+    schema?: string;
     [k: string]: unknown;
   }[];
   [k: string]: unknown;
@@ -323,9 +322,7 @@ export interface FormElementEvent {
   };
   additionalResponses?: {
     contentType?: string;
-    schema?: {
-      [k: string]: DataSchema;
-    };
+    schema?: string;
     [k: string]: unknown;
   }[];
   [k: string]: unknown;
@@ -367,9 +364,7 @@ export interface FormElementRoot {
   };
   additionalResponses?: {
     contentType?: string;
-    schema?: {
-      [k: string]: DataSchema;
-    };
+    schema?: string;
     [k: string]: unknown;
   }[];
   [k: string]: unknown;
