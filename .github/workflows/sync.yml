@@ -40,8 +40,8 @@ jobs:
         if: ${{ ! steps.diff.outputs.changed }}
         uses: EndBug/add-and-commit@v7
         with: 
-          # focus only on the schema just to be sure
-          add: 'typescript/schema'
+          # focus only on the schema and the generated file just to be sure
+          add: '["typescript/schema","typescript/thing-description.d.ts"]'
           author_name: action_sync
           message: 'chore(typescript): sync json schema from wot-thing-description.git'
       - uses: JasonEtco/create-an-issue@v2
