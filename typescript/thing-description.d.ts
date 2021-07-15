@@ -12,6 +12,12 @@ export type AnyUri = string;
 export type Subprotocol = string;
 export type Security = string[] | string;
 export type Scopes = string[] | string;
+export type AdditionalResponsesDefinition = {
+  contentType?: string;
+  schema?: string;
+  success?: boolean;
+  [k: string]: unknown;
+}[];
 export type LinkElement = BaseLinkElement & {
   [k: string]: unknown;
 } & {
@@ -221,11 +227,7 @@ export interface FormElementProperty {
     contentType?: string;
     [k: string]: unknown;
   };
-  additionalResponses?: {
-    contentType?: string;
-    schema?: string;
-    [k: string]: unknown;
-  }[];
+  additionalResponses?: AdditionalResponsesDefinition;
   [k: string]: unknown;
 }
 export interface DataSchema {
@@ -286,11 +288,7 @@ export interface FormElementAction {
     contentType?: string;
     [k: string]: unknown;
   };
-  additionalResponses?: {
-    contentType?: string;
-    schema?: string;
-    [k: string]: unknown;
-  }[];
+  additionalResponses?: AdditionalResponsesDefinition;
   [k: string]: unknown;
 }
 export interface EventElement {
@@ -320,11 +318,7 @@ export interface FormElementEvent {
     contentType?: string;
     [k: string]: unknown;
   };
-  additionalResponses?: {
-    contentType?: string;
-    schema?: string;
-    [k: string]: unknown;
-  }[];
+  additionalResponses?: AdditionalResponsesDefinition;
   [k: string]: unknown;
 }
 export interface BaseLinkElement {
@@ -343,6 +337,8 @@ export interface FormElementRoot {
         | "writemultipleproperties"
         | "observeallproperties"
         | "unobserveallproperties"
+        | "subscribeallevents"
+        | "unsubscribeallevents"
       )
     | (
         | "readallproperties"
@@ -351,6 +347,8 @@ export interface FormElementRoot {
         | "writemultipleproperties"
         | "observeallproperties"
         | "unobserveallproperties"
+        | "subscribeallevents"
+        | "unsubscribeallevents"
       )[];
   href: AnyUri;
   contentType?: string;
@@ -362,10 +360,6 @@ export interface FormElementRoot {
     contentType?: string;
     [k: string]: unknown;
   };
-  additionalResponses?: {
-    contentType?: string;
-    schema?: string;
-    [k: string]: unknown;
-  }[];
+  additionalResponses?: AdditionalResponsesDefinition;
   [k: string]: unknown;
 }
