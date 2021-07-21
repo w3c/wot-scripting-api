@@ -1,6 +1,12 @@
-# Specification 'Web of Things (WoT) Scripting API'
+# Web of Things (WoT) Scripting API
+[![Follow on Twitter](https://img.shields.io/twitter/follow/W3C_WoT.svg?label=follow+W3C_WoT)](https://twitter.com/W3C_WoT)
+[![Stack Exchange questions](https://img.shields.io/stackexchange/stackoverflow/t/web-of-things?style=plastic)]( https://stackoverflow.com/questions/tagged/web-of-things)
 
-The main deliverable is the [WoT Scripting API Specification](http://w3c.github.io/wot-scripting-api/).
+General information about the Web of Things can be found on https://www.w3.org/WoT/.
+  
+---
+
+The main deliverable being developed in this repository is the [WoT Scripting API Specification](http://w3c.github.io/wot-scripting-api/).
 
 Releases for [published versions](https://www.w3.org/TR/wot-scripting-api/) are found in [releases](./releases/).
 
