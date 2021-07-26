@@ -1,0 +1,30 @@
+{
+  "name": "wot-thing-description-types",
+  "version": "1.1.0-26-July-2021",
+  "description": "Official Typescript definition type for W3C Thing Description",
+  "types": "thing-description.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/w3c/wot-scripting-api.git#main"
+  },
+  "keywords": [
+    "WebOfThings",
+    "InternetOfThings",
+    "WoT",
+    "IoT",
+    "types"
+  ],
+  "author": "W3C Web of Things Working Group",
+  "license": "W3C-20150513",
+  "bugs": {
+    "url": "https://github.com/w3c/wot-scripting-api/issues"
+  },
+  "homepage": "https://github.com/w3c/wot-scripting-api#readme",
+  "scripts": {
+    "build": "json2ts schema/td-json-schema-validation.json > thing-description.d.ts"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^10.1.4"
+  },
+  "main": "index.js"
+}

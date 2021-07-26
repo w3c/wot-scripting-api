@@ -80,7 +80,7 @@ declare namespace WoT {
      * WoT provides a unified representation for data exchange between Things, standardized in the Wot Things Description specification.
      * In this version of the API, Thing Descriptions is expected to be a parsed JSON object.
      */
-    export type ThingDescription = import("./thing-description").ThingDescription;
+    export type ThingDescription = import("wot-thing-description-types").ThingDescription;
     export type ExposedThingInit = DeepPartial<ThingDescription>;
 
 

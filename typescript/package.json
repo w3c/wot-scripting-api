@@ -1,29 +1,25 @@
 {
-  "name": "wot-typescript-definitions",
-  "version": "0.8.0-SNAPSHOT.16",
-  "description": "TypeScript definitions for the W3C WoT Scripting API",
-  "author": "W3C Web of Things Working Group",
-  "license": "W3C-20150513",
-  "repository": "https://github.com/w3c/wot-scripting-api/tree/master/typescript",
+  "name": "wot-typescript",
+  "version": "1.0.0",
+  "description": "A collection of Web of Things utilities for typescript",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w3c/wot-scripting-api/tree/main/typescript"
+  },
   "keywords": [
     "Web",
-    "W3C",
+    "of",
+    "Things",
     "WoT",
-    "IoT",
-    "things",
-    "scripting",
-    "typescript",
-    "types"
+    "types",
+    "type"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "types": "index.d.ts",
-  "dependencies": {},
-  "scripts": {
-    "build": "json2ts schema/td-json-schema-validation.json | sed -e 's/WoTTDSchema02June2021/ThingDescription/' > thing-description.d.ts"
-  },
-  "devDependencies": {
-    "json-schema-to-typescript": "^10.1.4"
-  }
+  "author": "W3C Web of Things Working Group",
+  "license": "W3C-20150513",
+  "workspaces": [
+    "thing-description",
+    "scripting-api"
+  ]
 }
