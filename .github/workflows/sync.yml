@@ -24,24 +24,24 @@ jobs:
       - name: Look for changes
         continue-on-error: true
         run: |
-          git diff --no-index --quiet typescript/schema/td-json-schema-validation.json .temp/validation/td-json-schema-validation.json
+          git diff --no-index --quiet typescript/thing-description/schema/td-json-schema-validation.json .temp/validation/td-json-schema-validation.json
           echo "::set-output name=changed::$?"
         id: diff
       - name: Sync file
         if: ${{ ! steps.diff.outputs.changed }}
-        run: mv .temp/validation/td-json-schema-validation.json typescript/schema/td-json-schema-validation.json && rm -rf .temp
+        run: mv .temp/validation/td-json-schema-validation.json typescript/thing-description/schema/td-json-schema-validation.json && rm -rf .temp
       - name: Generate types
         if: ${{ ! steps.diff.outputs.changed }}
         run: |
           cd typescript
           npm install
-          npm run build
+          npm run build --workspace=thing-description
       - name: Push changes
         if: ${{ ! steps.diff.outputs.changed }}
         uses: EndBug/add-and-commit@v7
         with: 
           # focus only on the schema and the generated file just to be sure
-          add: '["typescript/schema","typescript/thing-description.d.ts"]'
+          add: '["typescript/thing-description/schema","typescript/thing-description/thing-description.d.ts"]'
           author_name: action_sync
           message: 'chore(typescript): sync json schema from wot-thing-description.git'
       - uses: JasonEtco/create-an-issue@v2
