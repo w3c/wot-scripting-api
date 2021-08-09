@@ -18,6 +18,7 @@ export type AdditionalResponsesDefinition = {
   success?: boolean;
   [k: string]: unknown;
 }[];
+export type MultipleOfDefinition = number;
 export type LinkElement = BaseLinkElement & {
   [k: string]: unknown;
 } & {
@@ -203,7 +204,7 @@ export interface PropertyElement {
   maximum?: number;
   minLength?: number;
   maxLength?: number;
-  multipleOf?: number;
+  multipleOf?: MultipleOfDefinition;
   properties?: {
     [k: string]: DataSchema;
   };
@@ -253,7 +254,7 @@ export interface DataSchema {
   maximum?: number;
   minLength?: number;
   maxLength?: number;
-  multipleOf?: number;
+  multipleOf?: MultipleOfDefinition;
   properties?: {
     [k: string]: DataSchema;
   };
