@@ -18,7 +18,7 @@ If you want to make a full text review on the spec or other files, follow the st
 
 ## TypeScript Definitions
 
-The specification uses WebIDL definitions, but TypeScript definititions are also available (see https://github.com/w3c/wot-scripting-api/blob/master/typescript/index.d.ts).
+The specification uses WebIDL definitions, but [TypeScript definititions](./typescript) are also available.
 
 ## Task Force Meeting Logistics
 
