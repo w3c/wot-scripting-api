@@ -26,6 +26,6 @@ See https://www.w3.org/WoT/IG/wiki/WG_WoT_Scripting_API_WebConf.
 
 ## Technical Matrix
 
-We use [labels](https://github.com/w3c/wot-scripting-api/issues) to categorize our work items.
+We use [labels](https://github.com/w3c/wot-scripting-api/labels) to categorize our work items.
 
 
