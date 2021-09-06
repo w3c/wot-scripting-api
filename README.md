@@ -23,3 +23,9 @@ The specification uses WebIDL definitions, but [TypeScript definititions](./type
 ## Task Force Meeting Logistics
 
 See https://www.w3.org/WoT/IG/wiki/WG_WoT_Scripting_API_WebConf. 
+
+## Technical Matrix
+
+We use [labels](https://github.com/w3c/wot-scripting-api/labels) to categorize our work items.
+
+
