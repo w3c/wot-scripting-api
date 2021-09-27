@@ -278,7 +278,7 @@ export interface ActionElement {
   [k: string]: unknown;
 }
 export interface FormElementAction {
-  op?: "invokeaction" | "invokeaction"[];
+  op?: ("invokeaction" | "queryaction" | "cancelaction") | ("invokeaction" | "queryaction" | "cancelaction")[];
   href: AnyUri;
   contentType?: string;
   contentCoding?: string;
@@ -338,6 +338,7 @@ export interface FormElementRoot {
         | "writemultipleproperties"
         | "observeallproperties"
         | "unobserveallproperties"
+        | "queryallactions"
         | "subscribeallevents"
         | "unsubscribeallevents"
       )
@@ -348,6 +349,7 @@ export interface FormElementRoot {
         | "writemultipleproperties"
         | "observeallproperties"
         | "unobserveallproperties"
+        | "queryallactions"
         | "subscribeallevents"
         | "unsubscribeallevents"
       )[];
