@@ -1281,6 +1281,10 @@
             |propertyName|.
           </li>
           <li>
+            If |interaction| is  <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+            and abort this steps.
+          </li>
+          <li>
             If |option|'s |formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be a <a>Form</a> in
@@ -1453,6 +1457,10 @@
             |propertyName|.
           </li>
           <li>
+            If |interaction| is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+            and abort this steps.
+          </li>
+          <li>
             If |option|'s |formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in |interaction|'s |forms|
             array, otherwise let |form| be a <a>Form</a> in
@@ -1613,6 +1621,10 @@
                 If |subscription|'s [[\form]] is failure, reject |promise| with a
                 {{SyntaxError}} and abort these steps.
               </li>
+              <li>
+                If |subscription|'s [[\interaction]] is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+                and abort this steps.
+              </li>
             </ul>
           </li>
           <li>
@@ -1682,6 +1694,10 @@
           <li>
             Let |interaction| be the value of [[\td]]'s |actions|'s
             |actionName|.
+          </li>
+          <li>
+            If |interaction| is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+            and abort this steps.
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
@@ -1763,6 +1779,10 @@
               <li>
                 If |subscription|'s [[\form]] is failure, reject |promise| with a
                 {{SyntaxError}} and abort these steps.
+              </li>
+              <li>
+                If |subscription|'s [[\interaction]] is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+                and abort this steps.
               </li>
             </ul>
           </li>
