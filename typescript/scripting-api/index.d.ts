@@ -152,7 +152,7 @@ declare namespace WoT {
          * Takes as arguments propertyName, listener and optionally options.
          * It returns a Promise that resolves on success and rejects on failure. 
          */
-        observeProperty(name: string, listener: WotListener, options?: InteractionOptions): Promise<void>;
+        observeProperty(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<void>;
 
         /**
          * Makes a request for Property value change notifications.
@@ -166,7 +166,7 @@ declare namespace WoT {
          * Takes as arguments eventName, listener and optionally options.
          * It returns a Promise to signal success or failure.
          */
-        subscribeEvent(name: string, listener: WotListener, options?: InteractionOptions): Promise<void>;
+        subscribeEvent(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<void>;
 
         /**
          * Makes a request for unsubscribing from Event notifications.
@@ -191,6 +191,7 @@ declare namespace WoT {
     export type PropertyWriteMap = Map<string, InteractionInput>;
 
     export type WotListener = (data: InteractionOutput) => void;
+    export type ErrorListener = (error: Error) => void;
 
     export interface InteractionData {
         data?: ReadableStream;
