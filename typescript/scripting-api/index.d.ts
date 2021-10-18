@@ -96,6 +96,11 @@ declare namespace WoT {
         value(): Promise<DataSchemaValue>;
     }
 
+    export interface Subscription {
+        active:boolean,
+        stop(options?: InteractionOptions):Promise<void>
+    }
+
     /**
      * The ConsumedThing interface instance represents a client API to operate a Thing.
      */
@@ -152,28 +157,14 @@ declare namespace WoT {
          * Takes as arguments propertyName, listener and optionally options.
          * It returns a Promise that resolves on success and rejects on failure. 
          */
-        observeProperty(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<void>;
-
-        /**
-         * Makes a request for Property value change notifications.
-         * Takes as arguments propertyName, listener and optionally options.
-         * It returns a Promise that resolves on success and rejects on failure.
-         */
-        unobserveProperty(name: string): Promise<void>;
+        observeProperty(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<Subscription>;
 
         /**
          * Makes a request for subscribing to Event notifications.
          * Takes as arguments eventName, listener and optionally options.
          * It returns a Promise to signal success or failure.
          */
-        subscribeEvent(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<void>;
-
-        /**
-         * Makes a request for unsubscribing from Event notifications.
-         * Takes as arguments eventName and optionally options.
-         * It returns a Promise to signal success or failure.
-         */
-        unsubscribeEvent(name: string): Promise<void>;
+        subscribeEvent(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<Subscription>;
 
         /**
          * Returns the the object that represents the Thing Description.
