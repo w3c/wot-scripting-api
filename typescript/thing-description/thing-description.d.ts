@@ -18,6 +18,9 @@ export type AdditionalResponsesDefinition = {
   success?: boolean;
   [k: string]: unknown;
 }[];
+export type DataSchemaType =
+  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
+  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")[];
 export type MultipleOfDefinition = number;
 export type LinkElement = BaseLinkElement & {
   [k: string]: unknown;
@@ -196,7 +199,7 @@ export interface PropertyElement {
   enum?: [unknown, ...unknown[]];
   format?: string;
   const?: unknown;
-  type?: "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
+  type?: DataSchemaType;
   items?: DataSchema | DataSchema[];
   maxItems?: number;
   minItems?: number;
@@ -246,7 +249,7 @@ export interface DataSchema {
   const?: unknown;
   contentEncoding?: string;
   contentMediaType?: string;
-  type?: "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
+  type?: DataSchemaType;
   items?: DataSchema | DataSchema[];
   maxItems?: number;
   minItems?: number;
