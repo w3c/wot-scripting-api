@@ -10,4 +10,6 @@ We currently provide two TypeScript definition files:
 
 Run `npm publish --workspaces` in `typescript` folder.
 
+Note: to publish just a subfolder use `npm publish --workspaces -w ./<subfolder>`
+
 Requirement: npm version 7+
