@@ -314,3 +314,77 @@ export interface OAuth2SecurityScheme {
   flow?: string | ("code" | "client" | "device");
   [k: string]: unknown;
 }
+export interface NoSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "nosec";
+  [k: string]: unknown;
+}
+export interface BasicSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "basic";
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface DigestSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "digest";
+  qop?: "auth" | "auth-int";
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface ApiKeySecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "apikey";
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface BearerSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "bearer";
+  authorization?: AnyUri;
+  alg?: string;
+  format?: string;
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface PskSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "psk";
+  identity?: string;
+  [k: string]: unknown;
+}
+export interface OAuth2SecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "oauth2";
+  authorization?: AnyUri;
+  token?: AnyUri;
+  refresh?: AnyUri;
+  scopes?: string[] | string;
+  flow?: string | ("code" | "client" | "device");
+  [k: string]: unknown;
+}
