@@ -362,6 +362,99 @@
       Implementations that use TypeScript or ECMAScript in a runtime to implement the APIs defined in this document MUST implement them in a manner consistent with the TypeScript Bindings defined in the TypeScript specification [[!TYPESCRIPT]].
     </p>
   </section>
+  
+  <section> <h2>Terminology and conventions</h2>
+    <p>
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#dataschema">
+        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn data-lt="Forms">Form</dfn></a>,
+        <a href="https://w3c.github.io/wot-thing-description/#securityscheme"><dfn>SecurityScheme</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
+    </p>
+    <p>
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
+      when referring to <a>Thing</a> capabilities, as explained in
+      <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
+      However, this term is not well understood outside the <a>TD</a> semantic context.
+      Hence for the sake of readability, this document will use the previous term
+      <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
+    </p>
+    <p>
+      <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>
+    </p>
+    <p>
+      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
+    </p>
+    <p>
+      <dfn>JSON Schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!URL#concept-url">URL</dfn>,
+      <dfn data-cite="!URL#concept-url-scheme">URL scheme</dfn>,
+      <dfn data-cite="!URL#concept-url-host">URL host</dfn>,
+      <dfn data-cite="!URL#concept-url-path">URL path</dfn>,
+      <dfn data-cite="!URL#concept-url">URL record</dfn>,
+      <dfn data-cite="!URL#url-parsing">parse a URL</dfn>,
+      <dfn data-cite="!URL#absolute-url-string">absolute-URL string</dfn>,
+      <dfn data-cite="!URL#path-absolute-url-string">path-absolute-URL string</dfn>,
+      <dfn data-cite="!URL#concept-basic-url-parser">basic URL parser</dfn>
+      are defined in [[!URL]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!MIMESNIFF#mime-type">MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#parsing-a-mime-type">Parsing a MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#serializing-a-mime-type">Serializing a MIME type</dfn>,
+      <dfn data-cite="!MIMESNIFF#valid-mime-type">valid MIME type string</dfn>,
+      <dfn data-cite="!MIMESNIFF#json-mime-type">JSON MIME type</dfn>
+      are defined in [[!MIMESNIFF]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!ENCODING#utf-8">UTF-8 encoding</dfn>,
+      <dfn data-cite="!ENCODING#utf-8-decode">UTF-8 decode</dfn>,
+      <dfn data-cite="!ENCODING#encode">encode</dfn>,
+      <dfn data-cite="!ENCODING#decode">decode</dfn>
+      are defined in [[!ENCODING]].
+    </p>
+    <p>
+      <dfn data-cite="!INFRA#string">string</dfn>,
+      <dfn data-cite="!INFRA#parse-json-bytes-to-a-javascript-value">parse JSON from bytes</dfn> and
+      <dfn data-cite="!INFRA#serialize-a-javascript-value-to-json-bytes">serialize JSON to bytes</dfn>,
+      are defined in [[!INFRA]].
+    </p>
+    <p>
+      <dfn data-cite="!ECMASCRIPT#sec-promise-objects">{{Promise}}</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-error-objects">Error</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json-object">JSON</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-json.parse">JSON.parse</dfn>,
+      <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal method</dfn> and
+      <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slot</dfn> are defined in [[!ECMASCRIPT]].
+    </p>
+    <p>
+      The terms
+      <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
+      <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing context</dfn>,
+      <dfn data-cite="!HTML#global-object">global object</dfn>,
+      <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
+      executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
+       are defined in [[!HTML5]] and are used in the context of browser implementations.
+    </p>
+    <p>
+      The term
+      <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">
+      <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
+    </p>
+    <p>
+      <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
+      <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
+    </p>
+    <p>
+      The terms <dfn>hyperlink reference</dfn> and <dfn>relation type</dfn> are defined in [[!HTML5]] and <a href="https://tools.ietf.org/html/rfc8288">RFC8288</a>.
+    </p>
+  </section>
 
   <section>
     <h2>The <dfn>ThingDescription</dfn> type</h2>
@@ -3938,99 +4031,6 @@
       </section>
 
     </section>
-  </section>
-
-  <section> <h2>Terminology and conventions</h2>
-    <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
-      <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#dataschema">
-        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn data-lt="Forms">Form</dfn></a>,
-        <a href="https://w3c.github.io/wot-thing-description/#securityscheme"><dfn>SecurityScheme</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
-    </p>
-    <p>
-      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
-      An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
-      when referring to <a>Thing</a> capabilities, as explained in
-      <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
-      However, this term is not well understood outside the <a>TD</a> semantic context.
-      Hence for the sake of readability, this document will use the previous term
-      <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
-    </p>
-    <p>
-      <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>
-    </p>
-    <p>
-      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
-    </p>
-    <p>
-      <dfn>JSON Schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
-    </p>
-    <p>
-      The terms
-      <dfn data-cite="!URL#concept-url">URL</dfn>,
-      <dfn data-cite="!URL#concept-url-scheme">URL scheme</dfn>,
-      <dfn data-cite="!URL#concept-url-host">URL host</dfn>,
-      <dfn data-cite="!URL#concept-url-path">URL path</dfn>,
-      <dfn data-cite="!URL#concept-url">URL record</dfn>,
-      <dfn data-cite="!URL#url-parsing">parse a URL</dfn>,
-      <dfn data-cite="!URL#absolute-url-string">absolute-URL string</dfn>,
-      <dfn data-cite="!URL#path-absolute-url-string">path-absolute-URL string</dfn>,
-      <dfn data-cite="!URL#concept-basic-url-parser">basic URL parser</dfn>
-      are defined in [[!URL]].
-    </p>
-    <p>
-      The terms
-      <dfn data-cite="!MIMESNIFF#mime-type">MIME type</dfn>,
-      <dfn data-cite="!MIMESNIFF#parsing-a-mime-type">Parsing a MIME type</dfn>,
-      <dfn data-cite="!MIMESNIFF#serializing-a-mime-type">Serializing a MIME type</dfn>,
-      <dfn data-cite="!MIMESNIFF#valid-mime-type">valid MIME type string</dfn>,
-      <dfn data-cite="!MIMESNIFF#json-mime-type">JSON MIME type</dfn>
-      are defined in [[!MIMESNIFF]].
-    </p>
-    <p>
-      The terms
-      <dfn data-cite="!ENCODING#utf-8">UTF-8 encoding</dfn>,
-      <dfn data-cite="!ENCODING#utf-8-decode">UTF-8 decode</dfn>,
-      <dfn data-cite="!ENCODING#encode">encode</dfn>,
-      <dfn data-cite="!ENCODING#decode">decode</dfn>
-      are defined in [[!ENCODING]].
-    </p>
-    <p>
-      <dfn data-cite="!INFRA#string">string</dfn>,
-      <dfn data-cite="!INFRA#parse-json-bytes-to-a-javascript-value">parse JSON from bytes</dfn> and
-      <dfn data-cite="!INFRA#serialize-a-javascript-value-to-json-bytes">serialize JSON to bytes</dfn>,
-      are defined in [[!INFRA]].
-    </p>
-    <p>
-      <dfn data-cite="!ECMASCRIPT#sec-promise-objects">{{Promise}}</dfn>,
-      <dfn data-cite="!ECMASCRIPT#sec-error-objects">Error</dfn>,
-      <dfn data-cite="!ECMASCRIPT#sec-json-object">JSON</dfn>,
-      <dfn data-cite="!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn>,
-      <dfn data-cite="!ECMASCRIPT#sec-json.parse">JSON.parse</dfn>,
-      <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal method</dfn> and
-      <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slot</dfn> are defined in [[!ECMASCRIPT]].
-    </p>
-    <p>
-      The terms
-      <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
-      <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing context</dfn>,
-      <dfn data-cite="!HTML#global-object">global object</dfn>,
-      <dfn data-cite="!HTML#current-settings-object">current settings object</dfn>,
-      executing algorithms <dfn data-cite="!HTML#in-parallel">in parallel</dfn>
-       are defined in [[!HTML5]] and are used in the context of browser implementations.
-    </p>
-    <p>
-      The term
-      <a href="https://w3c.github.io/webappsec/specs/powerfulfeatures/#secure-context">
-      <dfn>secure context</dfn></a> is defined in [[!WEBAPPSEC]].
-    </p>
-    <p>
-      <dfn>IANA media type</dfn>s (formerly known as MIME types) are defined in
-      <a href="http://tools.ietf.org/html/rfc2046">RFC2046</a>.
-    </p>
-    <p>
-      The terms <dfn>hyperlink reference</dfn> and <dfn>relation type</dfn> are defined in [[!HTML5]] and <a href="https://tools.ietf.org/html/rfc8288">RFC8288</a>.
-    </p>
   </section>
 
   <section class="appendix">
