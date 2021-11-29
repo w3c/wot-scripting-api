@@ -51,7 +51,7 @@
             ]
           },
         ],
-        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates"],
+        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
             href:"https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/",
@@ -380,7 +380,7 @@
       <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
     </p>
     <p>
-      <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>
+      <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>.
     </p>
     <p>
       <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
@@ -388,6 +388,7 @@
     <p>
       <dfn>JSON Schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
     </p>
+	<!--
     <p>
       The terms
       <dfn data-cite="!URL#concept-url">URL</dfn>,
@@ -424,6 +425,7 @@
       <dfn data-cite="!INFRA#serialize-a-javascript-value-to-json-bytes">serialize JSON to bytes</dfn>,
       are defined in [[!INFRA]].
     </p>
+	-->
     <p>
       <dfn data-cite="!ECMASCRIPT#sec-promise-objects">{{Promise}}</dfn>,
       <dfn data-cite="!ECMASCRIPT#sec-error-objects">Error</dfn>,
@@ -433,6 +435,7 @@
       <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal method</dfn> and
       <dfn data-cite="!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal slot</dfn> are defined in [[!ECMASCRIPT]].
     </p>
+	<!--
     <p>
       The terms
       <dfn data-cite="!HTML#browsing-context">browsing context</dfn>,
@@ -454,6 +457,7 @@
     <p>
       The terms <dfn>hyperlink reference</dfn> and <dfn>relation type</dfn> are defined in [[!HTML5]] and <a href="https://tools.ietf.org/html/rfc8288">RFC8288</a>.
     </p>
+	-->
   </section>
 
   <section>
@@ -543,7 +547,7 @@
       Belongs to the <a>WoT Consumer</a> conformance class. Expects an |td:ThingDescription| argument and returns a {{Promise}} that resolves with a {{ConsumedThing}} object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
       <ol>
         <li>
-          Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
           If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -590,7 +594,7 @@
       The method MUST run the following steps:
       <ol>
         <li>
-          Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+          Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
           If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -819,7 +823,7 @@
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps
-          <a>in parallel</a>.
+          [=in parallel=].
         </li>
         <li>
           If the value of the <a>[[\value]]</a> <a>internal slot</a> is not
@@ -877,7 +881,7 @@
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps
-          <a>in parallel</a>.
+          [=in parallel=].
         </li>
         <li>
           If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
@@ -1362,7 +1366,7 @@
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps
-            <a>in parallel</a>.
+            [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting
@@ -1423,7 +1427,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -1482,7 +1486,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -1540,7 +1544,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -1602,7 +1606,7 @@
         <ol>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps
-            <a>in parallel</a>.
+            [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting
@@ -1676,7 +1680,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -1779,7 +1783,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -1835,7 +1839,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -2061,7 +2065,7 @@
           <ol>
             <li>
               Return a {{Promise}} |promise:Promise| and execute the next steps
-              <a>in parallel</a>.
+              [=in parallel=].
             </li>
             <li>
               If invoking this method is not allowed for the current scripting
@@ -2768,7 +2772,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -3357,7 +3361,7 @@
         The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -3386,7 +3390,7 @@
         Start serving external requests for the <a>Thing</a>, so that <a>WoT Interactions</a> using <a>Properties</a>, <a>Action</a>s and <a>Event</a>s will be possible. The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -3435,7 +3439,7 @@
         Stop serving external requests for the <a>Thing</a> and destroy the object. Note that eventual unregistering should be done before invoking this method. The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
@@ -3817,7 +3821,7 @@
         Provides the next discovered {{ThingDescription}} object. The method MUST run the following steps:
         <ol>
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps <a>in parallel</a>.
+            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
             If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, wait until the <a>discovery results</a> <a>internal slot</a> is not empty.
