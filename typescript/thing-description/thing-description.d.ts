@@ -18,6 +18,9 @@ export type AdditionalResponsesDefinition = {
   success?: boolean;
   [k: string]: unknown;
 }[];
+export type DataSchemaType =
+  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
+  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")[];
 export type MultipleOfDefinition = number;
 export type LinkElement = BaseLinkElement & {
   [k: string]: unknown;
@@ -30,14 +33,15 @@ export type IconLinkElement = BaseLinkElement & {
   [k: string]: unknown;
 };
 export type SecurityScheme =
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "nosec";
-      [k: string]: unknown;
-    }
+  | NoSecurityScheme
+  | ComboSecurityScheme
+  | BasicSecurityScheme
+  | DigestSecurityScheme
+  | ApiKeySecurityScheme
+  | BearerSecurityScheme
+  | PskSecurityScheme
+  | OAuth2SecurityScheme;
+export type ComboSecurityScheme =
   | {
       "@type"?: TypeDeclaration;
       description?: Description;
@@ -54,72 +58,6 @@ export type SecurityScheme =
       proxy?: AnyUri;
       scheme: "combo";
       allOf: [string, string, ...string[]];
-      [k: string]: unknown;
-    }
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "basic";
-      in?: "header" | "query" | "body" | "cookie";
-      name?: string;
-      [k: string]: unknown;
-    }
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "digest";
-      qop?: "auth" | "auth-int";
-      in?: "header" | "query" | "body" | "cookie";
-      name?: string;
-      [k: string]: unknown;
-    }
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "apikey";
-      in?: "header" | "query" | "body" | "cookie";
-      name?: string;
-      [k: string]: unknown;
-    }
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "bearer";
-      authorization?: AnyUri;
-      alg?: string;
-      format?: string;
-      in?: "header" | "query" | "body" | "cookie";
-      name?: string;
-      [k: string]: unknown;
-    }
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "psk";
-      identity?: string;
-      [k: string]: unknown;
-    }
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "oauth2";
-      authorization?: AnyUri;
-      token?: AnyUri;
-      refresh?: AnyUri;
-      scopes?: string[] | string;
-      flow?: "code";
       [k: string]: unknown;
     };
 export type ThingContext =
@@ -196,7 +134,7 @@ export interface PropertyElement {
   enum?: [unknown, ...unknown[]];
   format?: string;
   const?: unknown;
-  type?: "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
+  type?: DataSchemaType;
   items?: DataSchema | DataSchema[];
   maxItems?: number;
   minItems?: number;
@@ -224,11 +162,12 @@ export interface FormElementProperty {
   subprotocol?: Subprotocol;
   security?: Security;
   scopes?: Scopes;
-  response?: {
-    contentType?: string;
-    [k: string]: unknown;
-  };
+  response?: ExpectedResponse;
   additionalResponses?: AdditionalResponsesDefinition;
+  [k: string]: unknown;
+}
+export interface ExpectedResponse {
+  contentType?: string;
   [k: string]: unknown;
 }
 export interface DataSchema {
@@ -246,7 +185,7 @@ export interface DataSchema {
   const?: unknown;
   contentEncoding?: string;
   contentMediaType?: string;
-  type?: "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
+  type?: DataSchemaType;
   items?: DataSchema | DataSchema[];
   maxItems?: number;
   minItems?: number;
@@ -285,10 +224,7 @@ export interface FormElementAction {
   subprotocol?: Subprotocol;
   security?: Security;
   scopes?: Scopes;
-  response?: {
-    contentType?: string;
-    [k: string]: unknown;
-  };
+  response?: ExpectedResponse;
   additionalResponses?: AdditionalResponsesDefinition;
   [k: string]: unknown;
 }
@@ -315,10 +251,7 @@ export interface FormElementEvent {
   subprotocol?: Subprotocol;
   security?: Security;
   scopes?: Scopes;
-  response?: {
-    contentType?: string;
-    [k: string]: unknown;
-  };
+  response?: ExpectedResponse;
   additionalResponses?: AdditionalResponsesDefinition;
   [k: string]: unknown;
 }
@@ -359,10 +292,81 @@ export interface FormElementRoot {
   subprotocol?: Subprotocol;
   security?: Security;
   scopes?: Scopes;
-  response?: {
-    contentType?: string;
-    [k: string]: unknown;
-  };
+  response?: ExpectedResponse;
   additionalResponses?: AdditionalResponsesDefinition;
+  [k: string]: unknown;
+}
+export interface NoSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "nosec";
+  [k: string]: unknown;
+}
+export interface BasicSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "basic";
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface DigestSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "digest";
+  qop?: "auth" | "auth-int";
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface ApiKeySecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "apikey";
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface BearerSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "bearer";
+  authorization?: AnyUri;
+  alg?: string;
+  format?: string;
+  in?: "header" | "query" | "body" | "cookie";
+  name?: string;
+  [k: string]: unknown;
+}
+export interface PskSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "psk";
+  identity?: string;
+  [k: string]: unknown;
+}
+export interface OAuth2SecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "oauth2";
+  authorization?: AnyUri;
+  token?: AnyUri;
+  refresh?: AnyUri;
+  scopes?: string[] | string;
+  flow?: string | ("code" | "client" | "device");
   [k: string]: unknown;
 }
