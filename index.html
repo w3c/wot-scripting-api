@@ -1836,8 +1836,16 @@
         Takes as arguments |eventName:string|, |listener:WoTListener| and
         optionally  |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} to signal success or failure.
+        <p class="ednote">
+          This algorithm allow for only one active {{Subscription}} per <a>Event</a>. If a new
+          {{Subscription}} is made while an existing {{Subscription}} is active the runtime 
+          will throw an {{NotAllowedError}}. 
+        </p>
         The method MUST run the following steps:
         <ol>
+          <li>
+            Let |thing| be the reference of this {{ConsumedThing}} object. 
+          </li>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
@@ -1853,6 +1861,10 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
+            if |thing| [[\activeSubscriptions]] contains |eventName|, reject |promise| with 
+            a {{NotAllowedError}} and abort these steps.
+          </li>
+          <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
             set as follows:
             <ul>
@@ -1865,6 +1877,9 @@
               <li>
                 Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
                 |events|'s |eventName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\thing]] be the value of |thing|.
               </li>
               <li>
                 Let |subscription|'s [[\form]] be the <a>Form</a> associated with
@@ -1894,7 +1909,7 @@
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise|.
+            Otherwise add |eventName| to ConsumedThing's [[\activeSubscriptions]] set and resolve |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
@@ -2053,6 +2068,11 @@
              <td>`null`</td>
              <td>The <a>Form</a> associated with the subscription.</td>
            </tr>
+           <tr>
+             <td><dfn>[[\thing]]</dfn></td>
+             <td>`null`</td>
+             <td>The <a>ConsumedThing</a> associated with the subscription.</td>
+           </tr>
           </tbody>
         </table>
       </section>
@@ -2103,8 +2123,18 @@
               the <a>Protocol Bindings</a> and abort these steps.
             </li>
             <li>
-              Otherwise set <a href="#dom-subscription-active">active</a> to
-              `false` and resolve |promise|.
+              Otherwise:
+              <ul>
+                <li>
+                  set <a href="#dom-subscription-active">active</a> to `false`.
+                </li>
+                <li>
+                  if [[\type]] is `"event"`, remove [[\name]] from [[\thing]]'s [[\activeSubscriptions]] .
+                </li>
+                <li>
+                  resolve |promise|.
+                </li>
+              </ul> 
             </li>
             <li>
               If the underlying platform receives further notifications for this
