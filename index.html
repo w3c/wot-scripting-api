@@ -1677,8 +1677,16 @@
         Takes as arguments |propertyName:string|, |listener:InteractionListener| and
         optionally |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} that resolves on success and rejects on failure.
+        <p class="ednote">
+          This algorithm allow for only one active {{Subscription}} per <a>Property</a>. If a new
+          {{Subscription}} is made while an existing {{Subscription}} is active the runtime
+          will throw an {{NotAllowedError}}.
+        </p>
         The method MUST run the following steps:
         <ol>
+          <li>
+            Let |thing| be the reference of this {{ConsumedThing}} object.
+          </li>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
@@ -1694,6 +1702,10 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
+            if |thing| [[\activeObservations]] contains |propertyName|, reject |promise| with
+            a {{NotAllowedError}} and abort these steps.
+          </li>
+          <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
             set as follows:
             <ul>
@@ -1706,6 +1718,9 @@
               <li>
                 Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
                 |properties|'s |propertyName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\thing]] be the value of |thing|.
               </li>
               <li>
                 Let |subscription|'s [[\form]] be the <a>Form</a> associated with
@@ -1734,7 +1749,7 @@
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise|.
+            Otherwise add |propertyName| to |thing|'s' [[\activeObservations]] set and resolve |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
@@ -1909,7 +1924,7 @@
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise add |eventName| to |thing|'s [[\activeSubscriptions]] set and resolve |promise|.
+            Otherwise add |eventName| to ConsumedThing's [[\activeSubscriptions]] set and resolve |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
@@ -2130,6 +2145,9 @@
                 </li>
                 <li>
                   if [[\type]] is `"event"`, remove [[\name]] from [[\thing]]'s [[\activeSubscriptions]] .
+                </li>
+                <li>
+                  if [[\type]] is `"property"`, remove [[\name]] from [[\thing]]'s [[\activeObservations]] .
                 </li>
                 <li>
                   resolve |promise|.
