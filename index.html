@@ -1292,7 +1292,7 @@
       Meanwhile, use the <code>writeMultipleProperties()</code> method instead.
     </p>
     <section>
-      <h4>Internal slots for ConsumedThing</h4>
+      <h4>Internal slots for {{ConsumedThing}}</h4>
       <p>
         A {{ConsumedThing}} object has the following <a>internal slots</a>:
       </p>
@@ -1310,6 +1310,16 @@
           <td>`null`</td>
           <td>The <a>Thing Description</a> of the {{ConsumedThing}}.</td>
          </tr>
+        <tr>
+          <td><dfn>[[\activeSubscriptions]]</dfn></td>
+          <td>`{}`</td>
+          <td>A {{Set}} containing the names of active {{Subscription}}'s for an <a>Event</a></td>
+        </tr>
+        <tr>
+          <td><dfn>[[\activeObservations]]</dfn></td>
+          <td>`{}`</td>
+          <td>A {{Set}} containing the names of active {{Subscription}}'s for an <a>Property</a></td>
+        </tr>
         </tbody>
       </table>
     </section>
