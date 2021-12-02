@@ -28,4 +28,6 @@ See https://www.w3.org/WoT/IG/wiki/WG_WoT_Scripting_API_WebConf.
 
 We use [labels](https://github.com/w3c/wot-scripting-api/labels) to categorize our work items.
 
+## Editors Tools
 
+* [Search Cross References for ReSpec](https://respec.org/xref/)
