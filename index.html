@@ -51,7 +51,7 @@
             ]
           },
         ],
-        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra"],
+        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra", "ecmascript"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
             href:"https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/",
@@ -460,7 +460,7 @@
 	-->
   </section>
 
-  <section>
+  <section data-cite="webidl">
     <h2>The <dfn>ThingDescription</dfn> type</h2>
     <pre class="idl">
       typedef object ThingDescription;
@@ -525,7 +525,7 @@
       </div>
     </section>
   </section>
-  <section data-dfn-for="WOT">
+  <section data-dfn-for="WOT" data-cite="webidl">
   <h2>The <dfn>WOT</dfn> namespace</dfn></h2>
   <p>
     Defines the <dfn>WoT API object</dfn> as a singleton and contains the API
@@ -719,7 +719,7 @@
   </section>
   </section> <!-- WoT -->
 
-  <section> <h2>Handling interaction data</h2>
+  <section data-cite="webidl"> <h2>Handling interaction data</h2>
   <p>
     As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
     and include a number of possible <a>Form</a>s, out of which one is selected
@@ -1222,7 +1222,7 @@
 
   </section> <!-- Handling interaction data -->
 
-  <section data-dfn-for="ConsumedThing">
+  <section data-cite="webidl" data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
       Represents a client API to operate a <a>Thing</a>. Belongs to the
@@ -1292,7 +1292,7 @@
       Meanwhile, use the <code>writeMultipleProperties()</code> method instead.
     </p>
     <section>
-      <h4>Internal slots for ConsumedThing</h4>
+      <h4>Internal slots for {{ConsumedThing}}</h4>
       <p>
         A {{ConsumedThing}} object has the following <a>internal slots</a>:
       </p>
@@ -1310,6 +1310,16 @@
           <td>`null`</td>
           <td>The <a>Thing Description</a> of the {{ConsumedThing}}.</td>
          </tr>
+        <tr>
+          <td><dfn>[[\activeSubscriptions]]</dfn></td>
+          <td>`{}`</td>
+          <td>A {{Set}} containing the names of active {{Subscription}}'s for an <a>Event</a></td>
+        </tr>
+        <tr>
+          <td><dfn>[[\activeObservations]]</dfn></td>
+          <td>`{}`</td>
+          <td>A {{Set}} containing the names of active {{Subscription}}'s for an <a>Property</a></td>
+        </tr>
         </tbody>
       </table>
     </section>
@@ -1677,8 +1687,16 @@
         Takes as arguments |propertyName:string|, |listener:InteractionListener| and
         optionally |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} that resolves on success and rejects on failure.
+        <p class="ednote">
+          This algorithm allows for only one active {{Subscription}} per <a>Property</a>. If a new
+          {{Subscription}} is made while an existing {{Subscription}} is active the runtime
+          will throw an {{NotAllowedError}}.
+        </p>
         The method MUST run the following steps:
         <ol>
+          <li>
+            Let |thing| be the reference of this {{ConsumedThing}} object.
+          </li>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
@@ -1694,6 +1712,10 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
+            if |thing| [[\activeObservations]] contains |propertyName|, reject |promise| with
+            a {{NotAllowedError}} and abort these steps.
+          </li>
+          <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
             set as follows:
             <ul>
@@ -1706,6 +1728,9 @@
               <li>
                 Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
                 |properties|'s |propertyName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\thing]] be the value of |thing|.
               </li>
               <li>
                 Let |subscription|'s [[\form]] be the <a>Form</a> associated with
@@ -1734,7 +1759,7 @@
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise|.
+            Otherwise add |propertyName| to |thing|'s' [[\activeObservations]] set and resolve |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
@@ -1836,8 +1861,16 @@
         Takes as arguments |eventName:string|, |listener:WoTListener| and
         optionally  |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} to signal success or failure.
+        <p class="ednote">
+          This algorithm allows for only one active {{Subscription}} per <a>Event</a>. If a new
+          {{Subscription}} is made while an existing {{Subscription}} is active the runtime 
+          will throw an {{NotAllowedError}}. 
+        </p>
         The method MUST run the following steps:
         <ol>
+          <li>
+            Let |thing| be the reference of this {{ConsumedThing}} object. 
+          </li>
           <li>
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
@@ -1853,6 +1886,10 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
+            if |thing| [[\activeSubscriptions]] contains |eventName|, reject |promise| with 
+            a {{NotAllowedError}} and abort these steps.
+          </li>
+          <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
             set as follows:
             <ul>
@@ -1865,6 +1902,9 @@
               <li>
                 Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
                 |events|'s |eventName|.
+              </li>
+              <li>
+                Let |subscription|'s [[\thing]] be the value of |thing|.
               </li>
               <li>
                 Let |subscription|'s [[\form]] be the <a>Form</a> associated with
@@ -1894,7 +1934,7 @@
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise|.
+            Otherwise add |eventName| to |thing|'s [[\activeSubscriptions]] set and resolve |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
@@ -2053,6 +2093,11 @@
              <td>`null`</td>
              <td>The <a>Form</a> associated with the subscription.</td>
            </tr>
+           <tr>
+             <td><dfn>[[\thing]]</dfn></td>
+             <td>`null`</td>
+             <td>The <a>ConsumedThing</a> associated with the subscription.</td>
+           </tr>
           </tbody>
         </table>
       </section>
@@ -2103,8 +2148,21 @@
               the <a>Protocol Bindings</a> and abort these steps.
             </li>
             <li>
-              Otherwise set <a href="#dom-subscription-active">active</a> to
-              `false` and resolve |promise|.
+              Otherwise:
+              <ul>
+                <li>
+                  set <a href="#dom-subscription-active">active</a> to `false`.
+                </li>
+                <li>
+                  if [[\type]] is `"event"`, remove [[\name]] from [[\thing]]'s [[\activeSubscriptions]] .
+                </li>
+                <li>
+                  if [[\type]] is `"property"`, remove [[\name]] from [[\thing]]'s [[\activeObservations]] .
+                </li>
+                <li>
+                  resolve |promise|.
+                </li>
+              </ul> 
             </li>
             <li>
               If the underlying platform receives further notifications for this
@@ -2309,7 +2367,7 @@
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
 
-  <section data-dfn-for="ExposedThing">
+  <section data-cite="webidl" data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
     <p>
       The {{ExposedThing}} interface is the server API to operate the <a>Thing</a> that allows defining request handlers, <a>Property</a>, <a>Action</a>, and <a>Event</a> interactions.
@@ -3609,7 +3667,7 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section data-dfn-for="ThingDiscovery">
+  <section data-cite="webidl" data-dfn-for="ThingDiscovery">
     <h2>The <dfn>ThingDiscovery</dfn> interface</h2>
     <p>
       Discovery is a distributed application that requires provisioning and support from participating network nodes (clients, servers, directory services). This API models the client side of typical discovery schemes supported by various IoT deployments.
