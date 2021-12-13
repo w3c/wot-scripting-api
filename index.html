@@ -51,7 +51,7 @@
             ]
           },
         ],
-        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra"],
+        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra", "ecmascript"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
             href:"https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/",
@@ -460,7 +460,7 @@
 	-->
   </section>
 
-  <section>
+  <section data-cite="webidl">
     <h2>The <dfn>ThingDescription</dfn> type</h2>
     <pre class="idl">
       typedef object ThingDescription;
@@ -525,7 +525,7 @@
       </div>
     </section>
   </section>
-  <section data-dfn-for="WOT">
+  <section data-dfn-for="WOT" data-cite="webidl">
   <h2>The <dfn>WOT</dfn> namespace</dfn></h2>
   <p>
     Defines the <dfn>WoT API object</dfn> as a singleton and contains the API
@@ -719,7 +719,7 @@
   </section>
   </section> <!-- WoT -->
 
-  <section> <h2>Handling interaction data</h2>
+  <section data-cite="webidl"> <h2>Handling interaction data</h2>
   <p>
     As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
     and include a number of possible <a>Form</a>s, out of which one is selected
@@ -1222,7 +1222,7 @@
 
   </section> <!-- Handling interaction data -->
 
-  <section data-dfn-for="ConsumedThing">
+  <section data-cite="webidl" data-dfn-for="ConsumedThing">
     <h2>The <dfn>ConsumedThing</dfn> interface</h2>
     <p>
       Represents a client API to operate a <a>Thing</a>. Belongs to the
@@ -2367,7 +2367,7 @@
     </section> <!-- Examples -->
   </section> <!-- ConsumedThing -->
 
-  <section data-dfn-for="ExposedThing">
+  <section data-cite="webidl" data-dfn-for="ExposedThing">
     <h2>The <dfn>ExposedThing</dfn> interface</h2>
     <p>
       The {{ExposedThing}} interface is the server API to operate the <a>Thing</a> that allows defining request handlers, <a>Property</a>, <a>Action</a>, and <a>Event</a> interactions.
@@ -3667,7 +3667,7 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section data-dfn-for="ThingDiscovery">
+  <section data-cite="webidl" data-dfn-for="ThingDiscovery">
     <h2>The <dfn>ThingDiscovery</dfn> interface</h2>
     <p>
       Discovery is a distributed application that requires provisioning and support from participating network nodes (clients, servers, directory services). This API models the client side of typical discovery schemes supported by various IoT deployments.
