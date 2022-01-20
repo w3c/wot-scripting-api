@@ -3746,11 +3746,11 @@
       </p>
       <ul>
         <li>
-          <dfn>"direct"</dfn> for fetching the <a>Thing Description</a> of a
+          "<dfn>direct</dfn>" for fetching the <a>Thing Description</a> of a
           <a>Thing</a> specified by <a>ThingFilter</a>'s `url`.
         </li>
         <li>
-          <dfn>"directory"</dfn> for discovery based on a service provided by a
+          "<dfn>directory</dfn>" for discovery based on a service provided by a
           <a>Thing Directory</a> specified by <a>ThingFilter</a>'s `url`.
         </li>
       </ul>
@@ -3778,9 +3778,9 @@
         The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <a href="#the-discoverymethod-enumeration">DiscoveryMethod</a> enumeration.
       </p>
       <p>
-        The <dfn>url</dfn> property represents the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <a href="#dom-thingfilter-method">method</a> is `"directory"`),
+        The <dfn>url</dfn> property represents the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <a href="#dom-thingfilter-method">method</a> is {{DiscoveryMethod/[["directory"]]}}),
         or the URL of a directly targeted <a>Thing</a> (if
-        <a href="#dom-thingfilter-method">method</a> is `"direct"`)
+        <a href="#dom-thingfilter-method">method</a> is {{DiscoveryMethod/[["direct"]]}})
       </p>
       <p>
         The <dfn>fragment</dfn> property represents a template object used for matching property by property against discovered <a>Thing</a>s.
