@@ -1346,7 +1346,7 @@
             Let |thing:ConsumedThing| be a new {{ConsumedThing}} object.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
+            Set the <a>internal slot</a> {{ConsumedThing/[[td]]}} of |thing| to |td|.
           </li>
           <li>
             Return |thing|.
@@ -1712,7 +1712,7 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            if |thing| [[\activeObservations]] contains |propertyName|, reject |promise| with
+            if |thing| {{ConsumedThing/[[activeObservations]]}} contains |propertyName|, reject |promise| with
             a {{NotAllowedError}} and abort these steps.
           </li>
           <li>
@@ -1720,31 +1720,31 @@
             set as follows:
             <ul>
               <li>
-                Let |subscription|'s [[\type]] be `"property"`.
+                Let |subscription|'s {{Subscription/[[type]]}} be `"property"`.
               </li>
               <li>
-                Let |subscription|'s [[\name]] be the value of |propertyName|.
+                Let |subscription|'s {{Subscription/[[name]]}} be the value of |propertyName|.
               </li>
               <li>
-                Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
+                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of [[\td]]'s
                 |properties|'s |propertyName|.
               </li>
               <li>
-                Let |subscription|'s [[\thing]] be the value of |thing|.
+                Let |subscription|'s {{Subscription/[[thing]]}} be the value of |thing|.
               </li>
               <li>
-                Let |subscription|'s [[\form]] be the <a>Form</a> associated with
-                |formIndex| in [[\interaction]]'s |forms| array if |option|'s
-                |formIndex| is defined, otherwise let [[\form]] be a
-                <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
+                Let |subscription|'s {{Subscription/[[form]]}} be the <a>Form</a> associated with
+                |formIndex| in {{Subscription/[[interaction]]}}'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let {{Subscription/[[form]]}} be a
+                <a>Form</a> in {{Subscription/[[interaction]]}}'s |forms| array whose |op| is
                 `"observeproperty"`, selected by the implementation.
               </li>
               <li>
-                If |subscription|'s [[\form]] is failure, reject |promise| with a
+                If |subscription|'s {{Subscription/[[form]]}} is failure, reject |promise| with a
                 {{SyntaxError}} and abort these steps.
               </li>
               <li>
-                If |subscription|'s [[\interaction]] is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+                If |subscription|'s {{Subscription/[[interaction]]}} is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
                 and abort this steps.
               </li>
             </ul>
@@ -1759,7 +1759,7 @@
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise add |propertyName| to |thing|'s' [[\activeObservations]] set and resolve |promise|.
+            Otherwise add |propertyName| to |thing|'s' {{ConsumedThing/[[activeObservations]]}} set and resolve |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
@@ -1768,7 +1768,7 @@
             <ul>
               <li>
                 Let |reply| be the result of running <a>parse interaction response</a>
-                with |value|, [[\form]] and [[\interaction]].
+                with |value|, {{Subscription/[[form]]}} and {{Subscription/[[interaction]]}}.
                 If that throws, reject |promise| with that exception and abort these steps.
               </li>
               <li>
@@ -1886,7 +1886,7 @@
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            if |thing| [[\activeSubscriptions]] contains |eventName|, reject |promise| with 
+            if |thing| {{ConsumedThing/[[activeSubscriptions]]}} contains |eventName|, reject |promise| with 
             a {{NotAllowedError}} and abort these steps.
           </li>
           <li>
@@ -1894,31 +1894,31 @@
             set as follows:
             <ul>
               <li>
-                Let |subscription|'s [[\type]] be `"event"`.
+                Let |subscription|'s {{Subscription/[[type]]}} be `"event"`.
               </li>
               <li>
-                Let |subscription|'s [[\name]] be the value of |eventName|.
+                Let |subscription|'s {{Subscription/[[name]]}} be the value of |eventName|.
               </li>
               <li>
-                Let |subscription|'s [[\interaction]] be the value of [[\td]]'s
+                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of [[\td]]'s
                 |events|'s |eventName|.
               </li>
               <li>
-                Let |subscription|'s [[\thing]] be the value of |thing|.
+                Let |subscription|'s {{Subscription/[[thing]]}} be the value of |thing|.
               </li>
               <li>
-                Let |subscription|'s [[\form]] be the <a>Form</a> associated with
-                |formIndex| in [[\interaction]]'s |forms| array if |option|'s
-                |formIndex| is defined, otherwise let [[\form]] be a
-                <a>Form</a> in [[\interaction]]'s |forms| array whose |op| is
+                Let |subscription|'s {{Subscription/[[form]]}} be the <a>Form</a> associated with
+                |formIndex| in {{Subscription/[[interaction]]}}'s |forms| array if |option|'s
+                |formIndex| is defined, otherwise let {{Subscription/[[form]]}} be a
+                <a>Form</a> in {{Subscription/[[interaction]]}}'s |forms| array whose |op| is
                 `"subscribeevent"`, selected by the implementation.
               </li>
               <li>
-                If |subscription|'s [[\form]] is failure, reject |promise| with a
+                If |subscription|'s {{Subscription/[[form]]}} is failure, reject |promise| with a
                 {{SyntaxError}} and abort these steps.
               </li>
               <li>
-                If |subscription|'s [[\interaction]] is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+                If |subscription|'s {{Subscription/[[interaction]]}} is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
                 and abort this steps.
               </li>
             </ul>
@@ -1926,7 +1926,7 @@
           <li>
             Make a request to the underlying platform via the <a>Protocol Bindings</a>
             to subscribe to an <a>Event</a> identified by |eventName:string| with
-            [[\form]], optional URI templates given in |options|' |uriVariables|
+            {{Subscription/[[form]]}}, optional URI templates given in |options|' |uriVariables|
             and optional subscription data given in |options|'s |data|.
           </li>
           <li>
@@ -1934,7 +1934,7 @@
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise add |eventName| to |thing|'s [[\activeSubscriptions]] set and resolve |promise|.
+            Otherwise add |eventName| to |thing|'s {{ConsumedThing/[[activeSubscriptions]]}} set and resolve |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
@@ -1943,7 +1943,7 @@
               <li>
                 Invoke |listener| with the result of running
                 <a>parse interaction response</a> on the data provided with the
-                <a>Event</a>, [[\form]] and [[\interaction]].
+                <a>Event</a>, {{Subscription/[[form]]}} and {{Subscription/[[interaction]]}}.
               </li>
             </ol>
           </li>
@@ -2119,27 +2119,27 @@
             </li>
             <li>
               If |options|' |formIndex| is defined, let |unsubscribeForm| be the
-              <a>Form</a> associated with |formIndex| in [[\interaction]]'s
+              <a>Form</a> associated with |formIndex| in {{Subscription/[[interaction]]}}'s
               |forms| array.
             </li>
             <li>
               Otherwise let |unsubscribeForm| be the result of running the
-              <a>find a matching unsubscribe form</a> algorithm given [[\form]].
+              <a>find a matching unsubscribe form</a> algorithm given {{Subscription/[[form]]}}.
             </li>
             <li>
               If |unsubscribeForm| is failure, reject |promise| with a {{SyntaxError}} and
               abort these steps.
             </li>
             <li>
-              If [[\type]] is `"property"`, make a request to the underlying
+              If {{Subscription/[[type]]}} is `"property"`, make a request to the underlying
               platform via the <a>Protocol Bindings</a> to stop observing the
-              <a>Property</a> identified by [[\name]] with |unsubscribeForm| and optional
+              <a>Property</a> identified by {{Subscription/[[name]]}} with |unsubscribeForm| and optional
               URI templates given in |options|' |uriVariables|.
             </li>
             <li>
-              Otherwise, if [[\type]] is `"event"`, make a request to the underlying
+              Otherwise, if {{Subscription/[[type]]}} is `"event"`, make a request to the underlying
               platform via the <a>Protocol Bindings</a> to unsubscribe from the
-              <a>Event</a> identified by [[\name]] with |unsubscribeForm|, with optional URI
+              <a>Event</a> identified by {{Subscription/[[name]]}} with |unsubscribeForm|, with optional URI
               templates given in |options|' |uriVariables| and optional
               unsubscribe data given in |options|'s |data|.
             </li>
@@ -2154,10 +2154,10 @@
                   set <a href="#dom-subscription-active">active</a> to `false`.
                 </li>
                 <li>
-                  if [[\type]] is `"event"`, remove [[\name]] from [[\thing]]'s [[\activeSubscriptions]] .
+                  if {{Subscription/[[type]]}} is `"event"`, remove {{Subscription/[[name]]}} from {{Subscription/[[thing]]}}'s {{ConsumedThing/[[activeSubscriptions]]}} .
                 </li>
                 <li>
-                  if [[\type]] is `"property"`, remove [[\name]] from [[\thing]]'s [[\activeObservations]] .
+                  if {{Subscription/[[type]]}} is `"property"`, remove {{Subscription/[[name]]}} from {{Subscription/[[thing]]}}'s {{ConsumedThing/[[activeObservations]]}} .
                 </li>
                 <li>
                   resolve |promise|.
@@ -2184,16 +2184,16 @@
             Let |results| be an empty array.
           </li>
           <li>
-            For each |form| in [[\interaction]]'s |forms| array,
+            For each |form| in {{Subscription/[[interaction]]}}'s |forms| array,
             <ol>
               <li>
                 Add an <a>internal slot</a> [[\matchLevel]] on |form| and set
                 its value to `0`.
               </li>
               <li>
-                If |form|'s |op| is `"unobserveproperty"` if [[\type]] is
+                If |form|'s |op| is `"unobserveproperty"` if {{Subscription/[[type]]}} is
                 `"property"` or if |form|'s |op| is `"unsubscribeevent"`
-                if [[\type]] is`"event"`,
+                if {{Subscription/[[type]]}} is`"event"`,
                 <ol>
                   <li>
                     Set the <a>internal slot</a> [[\matchLevel]] on |form| to 1
