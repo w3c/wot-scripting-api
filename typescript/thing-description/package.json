@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/w3c/wot-scripting-api#readme",
   "scripts": {
-    "build": "json2ts schema/td-json-schema-validation.json > thing-description.d.ts"
+    "build": "json2ts --unreachableDefinitions --input schema/td-json-schema-validation.json  --output thing-description.d.ts"
   },
   "devDependencies": {
     "json-schema-to-typescript": "^10.1.4"
