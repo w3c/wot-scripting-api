@@ -8,6 +8,7 @@
 export type Title = string;
 export type TypeDeclaration = string | string[];
 export type Description = string;
+export type FormElementProperty = FormElementBase;
 export type AnyUri = string;
 export type Subprotocol = string;
 export type Security = string[] | string;
@@ -22,6 +23,8 @@ export type DataSchemaType =
   | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
   | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")[];
 export type MultipleOfDefinition = number;
+export type FormElementAction = FormElementBase;
+export type FormElementEvent = FormElementBase;
 export type LinkElement = BaseLinkElement & {
   [k: string]: unknown;
 } & {
@@ -32,6 +35,7 @@ export type IconLinkElement = BaseLinkElement & {
   sizes?: string;
   [k: string]: unknown;
 };
+export type FormElementRoot = FormElementBase;
 export type SecurityScheme =
   | NoSecurityScheme
   | ComboSecurityScheme
@@ -152,10 +156,8 @@ export interface PropertyElement {
 export interface Descriptions {
   [k: string]: string;
 }
-export interface FormElementProperty {
-  op?:
-    | ("readproperty" | "writeproperty" | "observeproperty" | "unobserveproperty")
-    | ("readproperty" | "writeproperty" | "observeproperty" | "unobserveproperty")[];
+export interface FormElementBase {
+  op?: string | string[];
   href: AnyUri;
   contentType?: string;
   contentCoding?: string;
@@ -216,18 +218,6 @@ export interface ActionElement {
   idempotent?: boolean;
   [k: string]: unknown;
 }
-export interface FormElementAction {
-  op?: ("invokeaction" | "queryaction" | "cancelaction") | ("invokeaction" | "queryaction" | "cancelaction")[];
-  href: AnyUri;
-  contentType?: string;
-  contentCoding?: string;
-  subprotocol?: Subprotocol;
-  security?: Security;
-  scopes?: Scopes;
-  response?: ExpectedResponse;
-  additionalResponses?: AdditionalResponsesDefinition;
-  [k: string]: unknown;
-}
 export interface EventElement {
   "@type"?: TypeDeclaration;
   description?: Description;
@@ -243,57 +233,11 @@ export interface EventElement {
   cancellation?: DataSchema;
   [k: string]: unknown;
 }
-export interface FormElementEvent {
-  op?: ("subscribeevent" | "unsubscribeevent") | ("subscribeevent" | "unsubscribeevent")[];
-  href: AnyUri;
-  contentType?: string;
-  contentCoding?: string;
-  subprotocol?: Subprotocol;
-  security?: Security;
-  scopes?: Scopes;
-  response?: ExpectedResponse;
-  additionalResponses?: AdditionalResponsesDefinition;
-  [k: string]: unknown;
-}
 export interface BaseLinkElement {
   href: AnyUri;
   type?: string;
   rel?: string;
   anchor?: AnyUri;
-  [k: string]: unknown;
-}
-export interface FormElementRoot {
-  op?:
-    | (
-        | "readallproperties"
-        | "writeallproperties"
-        | "readmultipleproperties"
-        | "writemultipleproperties"
-        | "observeallproperties"
-        | "unobserveallproperties"
-        | "queryallactions"
-        | "subscribeallevents"
-        | "unsubscribeallevents"
-      )
-    | (
-        | "readallproperties"
-        | "writeallproperties"
-        | "readmultipleproperties"
-        | "writemultipleproperties"
-        | "observeallproperties"
-        | "unobserveallproperties"
-        | "queryallactions"
-        | "subscribeallevents"
-        | "unsubscribeallevents"
-      )[];
-  href: AnyUri;
-  contentType?: string;
-  contentCoding?: string;
-  subprotocol?: Subprotocol;
-  security?: Security;
-  scopes?: Scopes;
-  response?: ExpectedResponse;
-  additionalResponses?: AdditionalResponsesDefinition;
   [k: string]: unknown;
 }
 export interface NoSecurityScheme {
