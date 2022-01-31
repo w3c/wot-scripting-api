@@ -650,7 +650,7 @@
             <li>If |missing| is <code>forms</code> generate a list of <a>Forms</a> using the available <a>Protocol Bindings</a> and content types
               encoders. Then assign the obtained list to <code>forms</code>.</li>
             <li>If |missing| is <code>security</code> assign the label of the first supported <a>SecurityScheme</a> in <code>securityDefinitions</code> field.
-            If no <a>SecurityScheme</a> is found generate a <a>NoSecurityScheme</a> called <code>nosec</code> and assing the string <code>nosec</code>
+            If no <a>SecurityScheme</a> is found generate a <a>NoSecurityScheme</a> called <code>nosec</code> and assign the string <code>nosec</code>
           to <code>security</code>.
           <p class="issue">The discussion about how to properly generate a value for <code>security</code> is still open.
             See issue <a href="https://github.com/w3c/wot-scripting-api/issues/299">#299</a> </p>
@@ -683,7 +683,7 @@
           </ol>
         </li>
         <li>Return the result of <a>validating an object with JSON Schema</a> given |init| and |exposedThingInitSchema|.
-          <p class="ednote">The<dfn>validating an object with JSON Schema</dfn> steps are still under discussion.
+          <p class="ednote">The <dfn>validating an object with JSON Schema</dfn> steps are still under discussion.
             Currently this specification reference to the validation process of JSONSchema. Please
             follow this <a href="https://json-schema.org/draft/2019-09/json-schema-validation.html">document</a>
             when validating |init| with |exposedThingInitSchema|. Notice that the working group is evaluating an alternative formal approach.
@@ -1389,7 +1389,7 @@
           </li>
           <li>
             If |interaction| is  <code>undefined</code>, reject |promise| with a {{NotFoundError}}
-            and abort this steps.
+            and abort these steps.
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
@@ -1565,7 +1565,7 @@
           </li>
           <li>
             If |interaction| is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
-            and abort this steps.
+            and abort these steps.
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
@@ -1819,7 +1819,7 @@
           </li>
           <li>
             If |interaction| is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
-            and abort this steps.
+            and abort these steps.
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
@@ -2341,7 +2341,7 @@
         /*
         * "eventHistory":
         * {
-        *   "description" : "A long list of the events recorderd by this thing",
+        *   "description" : "A long list of the events recorded by this thing",
         *   "type": "array",
         *   "forms": [
         *     {
@@ -2856,7 +2856,7 @@
             If |handler| is `null`, abort these steps.
           </li>
           <li>
-            Let |promise| be the result of invoking |handler| wih `null`.
+            Let |promise| be the result of invoking |handler| with `null`.
           </li>
           <li>
              If |promise| rejects, abort these steps.
@@ -3518,7 +3518,7 @@
     <section>
       <h2>ExposedThing Examples</h2>
       <p>
-        The next example illustrates how to create an {{ExposedThing}} based on a partial <a>TD</a> object constructed beforehands.
+        The next example illustrates how to create an {{ExposedThing}} based on a partial <a>TD</a> object constructed beforehand.
       </p>
       <pre class="example highlight" title="Create ExposedThing with a simple Property">
         try {
@@ -3621,7 +3621,7 @@
         The next example shows how to exploit a <a>ExposedThingInit</a> to create a simple <a>Thing Description</a>
         with one <a>Property</a> with the default values.
       </p>
-      <aside class="example ds-selector-tabs" title="Create a Thing Description with one Property afforndace">
+      <aside class="example ds-selector-tabs" title="Create a Thing Description with one Property affordance">
         <div class="selectors">
           <button class="selected" data-selects="init">ExposedThingInit</button>
           <button data-selects="td">ThingDescription</button>
@@ -3979,7 +3979,7 @@
       services has been documented in [[!WOT-SECURITY]].
       That document may be updated as security measures evolve.
       Following these practices does not guarantee security,
-      but it might help avoid common known vulnerabilities.
+      but it might help avoid commonly known vulnerabilities.
     </p>
     <div>
       The WoT security risks and possible mitigations are concerning the following groups:
