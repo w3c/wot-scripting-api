@@ -20,6 +20,7 @@
         crEnd:                "",
         inlineCSS:            true,
         noIDLIn:              true,
+		noRecTrack:           true,
         editors: [
           { name: "Zoltan Kis", w3cid: "57789", company: "Intel", companyURL: "https://www.intel.com/" },
           { name: "Daniel Peintner", w3cid: "39497", company: "Siemens AG", companyURL: "https://www.siemens.com/" },
@@ -315,7 +316,7 @@
     This specification used to be a Working Draft which was expected to become a W3C Recommendation. However, it is now a WG Note which contains informative statements only. Therefore we need to consider how to deal with the description within this Conformance section.</p>
 
     <p>
-      This specification describes the conformance criteria for the following classes of <dfn>user agent</dfn> (<dfn>UA</dfn>).
+      This specification describes the conformance criteria for the following classes of [= user agent =] (<dfn>UA</dfn>).
     </p>
     <p>
       Due to requirements of small embedded implementations, splitting WoT client and server interfaces was needed. Then, discovery is a distributed application, but typical scenarios have been covered by a generic discovery API in this specification. This resulted in using 3 conformance classes for a <a>UA</a> that implements this API, one for client, one for server, and one for discovery. An application that uses this API can introspect for the presence of the <code>consume()</code>, <code>produce()</code> and <code>discover()</code> methods on the <a>WoT API object</a> in order to determine which conformance class the <a>UA</a> implements.
@@ -381,9 +382,6 @@
     </p>
     <p>
       <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>.
-    </p>
-    <p>
-      <dfn>JSON-LD</dfn> is defined in [[!JSON-LD]] as a JSON document that is augmented with support for Linked Data.
     </p>
     <p>
       <dfn>JSON Schema</dfn> is defined in <a href="https://json-schema.org/specification.html">these specifications</a>.
