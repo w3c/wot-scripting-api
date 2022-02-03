@@ -2,9 +2,10 @@
 
 TypeScript definition files can be used by implementations such as [Eclipse Thingweb](https://projects.eclipse.org/projects/iot.thingweb).
 
-We currently provide two TypeScript definition files:
+We currently provide the following TypeScript definition files:
 * [WoT Scripting API](./scripting-api)
 * [WoT Thing Description](./thing-description)
+* [WoT Thing Model](./thing-model)
 
 ## Notes on NPM publishing
 
