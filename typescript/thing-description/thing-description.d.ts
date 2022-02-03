@@ -76,7 +76,10 @@ export type ThingContext =
       )[]
     ]
   | ThingContextW3CUri;
-export type ThingContextW3CUri = "https://www.w3.org/2019/wot/td/v1" | "http://www.w3.org/ns/td";
+export type ThingContextW3CUri =
+  | "https://www.w3.org/2019/wot/td/v1"
+  | "http://www.w3.org/ns/td"
+  | "https://www.w3.org/2022/wot/td/v1.1";
 
 /**
  * JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values
@@ -138,12 +141,15 @@ export interface PropertyElement {
   enum?: [unknown, ...unknown[]];
   format?: string;
   const?: unknown;
+  default?: unknown;
   type?: DataSchemaType;
   items?: DataSchema | DataSchema[];
   maxItems?: number;
   minItems?: number;
   minimum?: number;
   maximum?: number;
+  exclusiveMinimum?: number;
+  exclusiveMaximum?: number;
   minLength?: number;
   maxLength?: number;
   multipleOf?: MultipleOfDefinition;
@@ -185,6 +191,7 @@ export interface DataSchema {
   enum?: [unknown, ...unknown[]];
   format?: string;
   const?: unknown;
+  default?: unknown;
   contentEncoding?: string;
   contentMediaType?: string;
   type?: DataSchemaType;
@@ -193,6 +200,8 @@ export interface DataSchema {
   minItems?: number;
   minimum?: number;
   maximum?: number;
+  exclusiveMinimum?: number;
+  exclusiveMaximum?: number;
   minLength?: number;
   maxLength?: number;
   multipleOf?: MultipleOfDefinition;
