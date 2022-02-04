@@ -247,12 +247,15 @@ export interface PropertyElement {
   enum?: [unknown, ...unknown[]];
   format?: string;
   const?: unknown;
+  default?: unknown;
   type?: DataSchemaType;
   items?: DataSchema | DataSchema[];
   maxItems?: number | string;
   minItems?: number | string;
   minimum?: number | string;
   maximum?: number | string;
+  exclusiveMinimum?: number;
+  exclusiveMaximum?: number;
   minLength?: number | string;
   maxLength?: number | string;
   multipleOf?: MultipleOfDefinition;
@@ -311,6 +314,7 @@ export interface DataSchema {
   enum?: [unknown, ...unknown[]];
   format?: string;
   const?: unknown;
+  default?: unknown;
   contentEncoding?: string;
   contentMediaType?: string;
   type?: DataSchemaType;
@@ -319,6 +323,8 @@ export interface DataSchema {
   minItems?: number | string;
   minimum?: number | string;
   maximum?: number | string;
+  exclusiveMinimum?: number;
+  exclusiveMaximum?: number;
   minLength?: number | string;
   maxLength?: number | string;
   multipleOf?: MultipleOfDefinition;
