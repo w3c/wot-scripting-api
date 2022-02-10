@@ -3751,6 +3751,9 @@
           "<dfn>directory</dfn>" for discovery based on a service provided by a
           <a>Thing Directory</a> specified by <a>ThingFilter</a>'s `url`.
         </li>
+        <li>
+          "<dfn>local</dfn>" for discovering <a>Thing</a>s defined in the same device or connected to the device by wired or wireless means.
+        </li>
       </ul>
     </section>
 
@@ -3761,7 +3764,7 @@
       </p>
       <pre class="idl">
         dictionary ThingFilter {
-          DiscoveryMethod method = "directory";
+          DiscoveryMethod method = "local";
           USVString? url;
           object? fragment;
           <!-- DOMString? query; -->
@@ -3817,7 +3820,10 @@
             Request the underlying platform to start the discovery process, with the following parameters:
             <ul>
               <li>
-                If |filter|s <a href="#dom-thingfilter-method">|method|</a> is not defined or is `"directory"`, use the remote <a>Thing Directory</a> specified in |filter.url|.
+              If |filter|s <a href="#dom-thingfilter-method">|method|</a> is not defined or the value is `"local"`, use the widest discovery method supported by the underlying platform.
+              </li>
+              <li>
+                If |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"directory"`, use the remote <a>Thing Directory</a> specified in |filter.url|.
               </li>
               <li>
                 Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"direct"`, use the remote <a>Thing</a> specified in |filter.url|.
@@ -3915,11 +3921,13 @@
       <p>
         The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running. Note that the discovery can end (become inactive) before the internal <a>discovery results</a> queue is emptied, so we need to continue reading {{ThingDescription}} objects until done. This is typical with local and directory type discoveries.
       </p>
-      <pre class="example" title="Fetch the Thing Description of a Thing">
-        let discovery = new ThingDiscovery({ method: "direct" });
+      <pre class="example" title="Discover Things exposed by local hardware">
+        let discovery = new ThingDiscovery({ method: "local" });
         do {
           let td = await discovery.next();
           console.log("Found Thing Description for " + td.title);
+          let thing = new ConsumedThing(td);
+          console.log("Thing name: " + thing.getThingDescription().title);
         } while (!discovery.done);
       </pre>
       <p>
@@ -3927,7 +3935,7 @@
       </p>
       <pre class="example" title="Discover Things via directory">
         let discoveryFilter = {
-          method: "directory", // default value, no need to specify
+          method: "directory",
           url: "http://directory.wotservice.org"
         };
         let discovery = new ThingDiscovery(discoveryFilter);
