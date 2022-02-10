@@ -19,9 +19,7 @@ export type AdditionalResponsesDefinition = {
   success?: boolean;
   [k: string]: unknown;
 }[];
-export type DataSchemaType =
-  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
-  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")[];
+export type DataSchemaType = "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
 export type MultipleOfDefinition = number;
 export type FormElementAction = FormElementBase;
 export type FormElementEvent = FormElementBase;
@@ -115,7 +113,11 @@ export interface ThingDescription {
   support?: AnyUri;
   created?: string;
   modified?: string;
+  profile?: AnyUri | [AnyUri, ...AnyUri[]];
   security: string | [string, ...string[]];
+  uriVariables?: {
+    [k: string]: DataSchema;
+  };
   "@type"?: TypeDeclaration;
   "@context": ThingContext;
   [k: string]: unknown;
@@ -239,6 +241,7 @@ export interface EventElement {
   };
   subscription?: DataSchema;
   data?: DataSchema;
+  dataResponse?: DataSchema;
   cancellation?: DataSchema;
   [k: string]: unknown;
 }
