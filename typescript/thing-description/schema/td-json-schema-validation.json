@@ -1,8 +1,9 @@
 {
     "title": "Thing Description",
-    "version": "1.1-29-December-2021",
+    "version": "1.1-28-January-2022",
     "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
     "$schema ": "http://json-schema.org/draft-07/schema#",
+    "$id":"https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/td-json-schema-validation.json",
     "definitions": {
       "anyUri": {
         "type": "string",
@@ -113,34 +114,15 @@
         ]
       },
       "dataSchema-type": {
-        "oneOf": [
-          {
-            "type": "string",
-            "enum": [
-              "boolean",
-              "integer",
-              "number",
-              "string",
-              "object",
-              "array",
-              "null"
-            ]
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                "boolean",
-                "integer",
-                "number",
-                "string",
-                "object",
-                "array",
-                "null"
-              ]
-            }
-          }
+        "type": "string",
+        "enum": [
+          "boolean",
+          "integer",
+          "number",
+          "string",
+          "object",
+          "array",
+          "null"
         ]
       },
       "dataSchema": {
@@ -678,6 +660,9 @@
             "$ref": "#/definitions/dataSchema"
           },
           "data": {
+            "$ref": "#/definitions/dataSchema"
+          },
+          "dataResponse": {
             "$ref": "#/definitions/dataSchema"
           },
           "cancellation": {
@@ -1248,6 +1233,20 @@
         "type": "string",
         "format": "date-time"
       },
+      "profile": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/anyUri"
+          },
+          {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/definitions/anyUri"
+            }
+          }
+        ]
+      },
       "security": {
         "oneOf": [
           {
@@ -1261,6 +1260,12 @@
             }
           }
         ]
+      },
+      "uriVariables": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/definitions/dataSchema"
+        }
       },
       "@type": {
         "$ref": "#/definitions/type_declaration"

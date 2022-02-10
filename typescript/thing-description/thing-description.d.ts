@@ -59,9 +59,7 @@ export type AdditionalResponsesDefinition = {
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "dataSchema-type".
  */
-export type DataSchemaType =
-  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
-  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")[];
+export type DataSchemaType = "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "multipleOfDefinition".
@@ -198,7 +196,11 @@ export interface ThingDescription {
   support?: AnyUri;
   created?: string;
   modified?: string;
+  profile?: AnyUri | [AnyUri, ...AnyUri[]];
   security: string | [string, ...string[]];
+  uriVariables?: {
+    [k: string]: DataSchema;
+  };
   "@type"?: TypeDeclaration;
   "@context": ThingContext;
   [k: string]: unknown;
@@ -354,6 +356,7 @@ export interface EventElement {
   };
   subscription?: DataSchema;
   data?: DataSchema;
+  dataResponse?: DataSchema;
   cancellation?: DataSchema;
   [k: string]: unknown;
 }
