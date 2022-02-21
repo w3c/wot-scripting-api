@@ -54,6 +54,7 @@ jobs:
           filename: .github/publish-ts-issue.md
   sync-tm:
     runs-on: ubuntu-latest
+    needs: [sync-td]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -89,7 +90,6 @@ jobs:
           add: '["typescript/thing-model/schema","typescript/thing-model/thing-model.d.ts"]'
           author_name: action_sync
           message: 'chore(typescript): sync thing model json schema from wot-thing-description.git'
-          pull: '--rebase'
       - uses: JasonEtco/create-an-issue@v2
         if: ${{ ! steps.diff.outputs.changed }}
         env:
