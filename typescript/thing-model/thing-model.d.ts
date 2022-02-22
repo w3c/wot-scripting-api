@@ -55,13 +55,8 @@ export type AdditionalResponsesDefinition = {
   success?: boolean;
   [k: string]: unknown;
 }[];
-/**
- * This interface was referenced by `ThingModel`'s JSON-Schema
- * via the `definition` "dataSchema-type".
- */
-export type DataSchemaType =
-  | ((("boolean" | "integer" | "number" | "string" | "object" | "array" | "null") | string) & string)
-  | ((("boolean" | "integer" | "number" | "string" | "object" | "array" | "null") | string) & string)[];
+export type DataSchemaType = ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null") | string;
+export type DataSchemaType1 = string;
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "multipleOfDefinition".
@@ -212,7 +207,11 @@ export interface ThingModel {
   support?: AnyUri;
   created?: string;
   modified?: string;
+  profile?: AnyUri | [AnyUri, ...AnyUri[]];
   security?: string | [string, ...string[]];
+  uriVariables?: {
+    [k: string]: DataSchema;
+  };
   "@type": TmTypeDeclaration;
   "@context": ThingContext;
   "tm:required"?: TmRequired;
@@ -248,7 +247,7 @@ export interface PropertyElement {
   format?: string;
   const?: unknown;
   default?: unknown;
-  type?: DataSchemaType;
+  type?: DataSchemaType & DataSchemaType1;
   items?: DataSchema | DataSchema[];
   maxItems?: number | string;
   minItems?: number | string;
@@ -317,7 +316,7 @@ export interface DataSchema {
   default?: unknown;
   contentEncoding?: string;
   contentMediaType?: string;
-  type?: DataSchemaType;
+  type?: DataSchemaType & DataSchemaType1;
   items?: DataSchema | DataSchema[];
   maxItems?: number | string;
   minItems?: number | string;
@@ -372,6 +371,7 @@ export interface EventElement {
   };
   subscription?: DataSchema;
   data?: DataSchema;
+  dataResponse?: DataSchema;
   cancellation?: DataSchema;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
