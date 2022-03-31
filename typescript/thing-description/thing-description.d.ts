@@ -36,6 +36,7 @@ export type IconLinkElement = BaseLinkElement & {
 export type FormElementRoot = FormElementBase;
 export type SecurityScheme =
   | NoSecurityScheme
+  | AutoSecurityScheme
   | ComboSecurityScheme
   | BasicSecurityScheme
   | DigestSecurityScheme
@@ -260,13 +261,21 @@ export interface NoSecurityScheme {
   scheme: "nosec";
   [k: string]: unknown;
 }
+export interface AutoSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "auto";
+  [k: string]: unknown;
+}
 export interface BasicSecurityScheme {
   "@type"?: TypeDeclaration;
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
   scheme: "basic";
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "auto";
   name?: string;
   [k: string]: unknown;
 }
@@ -277,7 +286,7 @@ export interface DigestSecurityScheme {
   proxy?: AnyUri;
   scheme: "digest";
   qop?: "auth" | "auth-int";
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "auto";
   name?: string;
   [k: string]: unknown;
 }
@@ -300,7 +309,7 @@ export interface BearerSecurityScheme {
   authorization?: AnyUri;
   alg?: string;
   format?: string;
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "auto";
   name?: string;
   [k: string]: unknown;
 }
