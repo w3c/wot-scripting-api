@@ -66,7 +66,7 @@ export type ComboSecurityScheme =
 export type ThingContext =
   | []
   | [
-      ThingContextW3CUri,
+      ThingContextTdUriV11,
       ...(
         | AnyUri
         | {
@@ -74,11 +74,9 @@ export type ThingContext =
           }
       )[]
     ]
-  | ThingContextW3CUri;
-export type ThingContextW3CUri =
-  | "https://www.w3.org/2019/wot/td/v1"
-  | "http://www.w3.org/ns/td"
-  | "https://www.w3.org/2022/wot/td/v1.1";
+  | "https://www.w3.org/2022/wot/td/v1.1"
+  | [unknown, unknown, ...unknown[]];
+export type ThingContextTdUriV11 = "https://www.w3.org/2022/wot/td/v1.1";
 
 /**
  * JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values
