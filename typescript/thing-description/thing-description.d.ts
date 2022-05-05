@@ -43,7 +43,8 @@ export type SecurityScheme =
   | ApiKeySecurityScheme
   | BearerSecurityScheme
   | PskSecurityScheme
-  | OAuth2SecurityScheme;
+  | OAuth2SecurityScheme
+  | AdditionalSecurityScheme;
 export type ComboSecurityScheme =
   | {
       "@type"?: TypeDeclaration;
@@ -331,5 +332,16 @@ export interface OAuth2SecurityScheme {
   refresh?: AnyUri;
   scopes?: string[] | string;
   flow?: string | ("code" | "client" | "device");
+  [k: string]: unknown;
+}
+/**
+ * Applies to additional SecuritySchemes not defined in the WoT TD specification.
+ */
+export interface AdditionalSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: string;
   [k: string]: unknown;
 }
