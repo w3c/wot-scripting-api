@@ -15,6 +15,11 @@
       "type": "object",
       "additionalProperties": {
         "type": "string"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "title": {
@@ -24,6 +29,11 @@
       "type": "object",
       "additionalProperties": {
         "type": "string"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "security": {
@@ -60,20 +70,26 @@
         "sse"
       ]
     },
-    "thing-context-w3c-uri": {
+    "thing-context-td-uri-v1": {
       "type": "string",
-      "enum": [
-        "https://www.w3.org/2019/wot/td/v1",
-        "http://www.w3.org/ns/td"
-      ]
+      "const": "https://www.w3.org/2019/wot/td/v1"
+    },
+    "thing-context-td-uri-v1.1": {
+      "type": "string",
+      "const": "https://www.w3.org/2022/wot/td/v1.1"
+    },
+    "thing-context-td-uri-temp": {
+      "type": "string",
+      "const": "http://www.w3.org/ns/td"
     },
     "thing-context": {
-      "oneOf": [
+      "anyOf": [
         {
+          "$comment": "New context URI with other vocabularies after it but not the old one",
           "type": "array",
           "items": [
             {
-              "$ref": "#/definitions/thing-context-w3c-uri"
+              "$ref": "#/definitions/thing-context-td-uri-v1.1"
             }
           ],
           "additionalItems": {
@@ -84,11 +100,41 @@
               {
                 "type": "object"
               }
-            ]
+            ],
+            "not": {
+              "$ref": "#/definitions/thing-context-td-uri-v1"
+            }
           }
         },
         {
-          "$ref": "#/definitions/thing-context-w3c-uri"
+          "$comment": "Only the new context URI",
+          "$ref": "#/definitions/thing-context-td-uri-v1.1"
+        },
+        {
+          "$comment": "Old context URI, followed by the new one and possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
+          "type": "array",
+          "prefixItems": [
+            {
+              "$ref": "#/definitions/thing-context-td-uri-v1"
+            },
+            {
+              "$ref": "#/definitions/thing-context-td-uri-v1.1"
+            }
+          ],
+          "minItems": 2,
+          "contains": {
+            "$ref": "#/definitions/thing-context-td-uri-v1.1"
+          },
+          "additionalItems": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/anyUri"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          }
         }
       ]
     },
@@ -120,8 +166,7 @@
           ]
         },
         {
-          "type": "string",
-          "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+          "$ref": "#/definitions/placeholder-pattern"
         }
       ]
     },
@@ -149,8 +194,7 @@
               "type": "boolean"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -160,8 +204,7 @@
               "type": "boolean"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -213,8 +256,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -225,8 +267,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -236,8 +277,7 @@
               "type": "number"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -247,8 +287,7 @@
               "type": "number"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -265,8 +304,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -277,8 +315,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -298,6 +335,11 @@
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -328,8 +370,7 @@
           "exclusiveMinimum": 0
         },
         {
-          "type": "string",
-          "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+          "$ref": "#/definitions/placeholder-pattern"
         }
       ]
     },
@@ -338,6 +379,11 @@
       "properties": {
         "contentType": {
           "type": "string"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -382,7 +428,12 @@
           "$ref": "#/definitions/additionalResponsesDefinition"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "form_element_property": {
       "allOf": [
@@ -406,8 +457,7 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                  "$ref": "#/definitions/placeholder-pattern"
                 }
               ]
             },
@@ -425,8 +475,7 @@
                     ]
                   },
                   {
-                    "type": "string",
-                    "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                    "$ref": "#/definitions/placeholder-pattern"
                   }
                 ]
               }
@@ -437,7 +486,12 @@
           "$ref": "#/definitions/tm_ref"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "form_element_action": {
       "allOf": [
@@ -460,8 +514,7 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                  "$ref": "#/definitions/placeholder-pattern"
                 }
               ]
             },
@@ -478,8 +531,7 @@
                     ]
                   },
                   {
-                    "type": "string",
-                    "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                    "$ref": "#/definitions/placeholder-pattern"
                   }
                 ]
               }
@@ -490,7 +542,12 @@
           "$ref": "#/definitions/tm_ref"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "form_element_event": {
       "allOf": [
@@ -512,8 +569,7 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                  "$ref": "#/definitions/placeholder-pattern"
                 }
               ]
             },
@@ -529,8 +585,7 @@
                     ]
                   },
                   {
-                    "type": "string",
-                    "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                    "$ref": "#/definitions/placeholder-pattern"
                   }
                 ]
               }
@@ -541,7 +596,12 @@
           "$ref": "#/definitions/tm_ref"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "form_element_root": {
       "allOf": [
@@ -570,8 +630,7 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                  "$ref": "#/definitions/placeholder-pattern"
                 }
               ]
             },
@@ -594,8 +653,7 @@
                     ]
                   },
                   {
-                    "type": "string",
-                    "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                    "$ref": "#/definitions/placeholder-pattern"
                   }
                 ]
               }
@@ -606,7 +664,12 @@
           "$ref": "#/definitions/tm_ref"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "form": {
       "$comment": "This is NOT for validation purposes but for automatic generation of TS types. For more info, please see: https://github.com/w3c/wot-thing-description/pull/1319#issuecomment-994950057",
@@ -654,6 +717,11 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/dataSchema"
+          },
+          "propertyNames": {
+            "not": {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           }
         },
         "observable": {
@@ -662,8 +730,7 @@
               "type": "boolean"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -673,8 +740,7 @@
               "type": "boolean"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -684,8 +750,7 @@
               "type": "boolean"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -731,8 +796,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -743,8 +807,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -754,8 +817,7 @@
               "type": "number"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -765,8 +827,7 @@
               "type": "number"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -783,8 +844,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -795,8 +855,7 @@
               "minimum": 0
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -818,7 +877,12 @@
           "$ref": "#/definitions/tm_ref"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "action_element": {
       "type": "object",
@@ -849,6 +913,11 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/dataSchema"
+          },
+          "propertyNames": {
+            "not": {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           }
         },
         "input": {
@@ -863,8 +932,7 @@
               "type": "boolean"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -874,8 +942,7 @@
               "type": "boolean"
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -883,7 +950,12 @@
           "$ref": "#/definitions/tm_ref"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "event_element": {
       "type": "object",
@@ -914,6 +986,11 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/dataSchema"
+          },
+          "propertyNames": {
+            "not": {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           }
         },
         "subscription": {
@@ -932,7 +1009,12 @@
           "$ref": "#/definitions/tm_ref"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "base_link_element": {
       "type": "object",
@@ -950,7 +1032,12 @@
           "$ref": "#/definitions/anyUri"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "link_element": {
       "allOf": [
@@ -981,8 +1068,7 @@
                     ]
                   },
                   {
-                    "type": "string",
-                    "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                    "$ref": "#/definitions/placeholder-pattern"
                   }
                 ]
               }
@@ -1015,6 +1101,46 @@
         }
       ]
     },
+    "additionalSecurityScheme": {
+      "description": "Applies to additional SecuritySchemes not defined in the WoT TD specification.",
+      "$comment": "Additional SecuritySchemes should always be defined via a context extension, using a prefixed value for the scheme. This prefix (e.g. 'ace', see the example below) must contain at least one character in order to reference a valid JSON-LD context extension.",
+      "examples": [
+        {
+          "scheme": "ace:ACESecurityScheme",
+          "ace:as": "coaps://as.example.com/token",
+          "ace:audience": "coaps://rs.example.com",
+          "ace:scopes": [
+            "limited",
+            "special"
+          ],
+          "ace:cnonce": true
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "pattern": ".+:.*"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
+    },
     "noSecurityScheme": {
       "type": "object",
       "properties": {
@@ -1039,13 +1165,52 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
+    },
+    "autoSecurityScheme": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "$ref": "#/definitions/type_declaration"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "descriptions": {
+          "$ref": "#/definitions/descriptions"
+        },
+        "proxy": {
+          "$ref": "#/definitions/anyUri"
+        },
+        "scheme": {
+          "type": "string",
+          "anyOf": [
+            {
+              "enum": [
+                "auto"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -1075,8 +1240,7 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                  "$ref": "#/definitions/placeholder-pattern"
                 }
               ]
             },
@@ -1116,8 +1280,7 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                  "$ref": "#/definitions/placeholder-pattern"
                 }
               ]
             },
@@ -1159,8 +1322,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1172,12 +1334,12 @@
                 "header",
                 "query",
                 "body",
-                "cookie"
+                "cookie",
+                "auto"
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1186,6 +1348,11 @@
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -1213,8 +1380,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1228,8 +1394,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1241,12 +1406,12 @@
                 "header",
                 "query",
                 "body",
-                "cookie"
+                "cookie",
+                "auto"
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1255,6 +1420,11 @@
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -1282,8 +1452,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1299,8 +1468,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1309,6 +1477,11 @@
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -1336,8 +1509,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1358,12 +1530,12 @@
                 "header",
                 "query",
                 "body",
-                "cookie"
+                "cookie",
+                "auto"
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1372,6 +1544,11 @@
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -1399,8 +1576,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1409,6 +1585,11 @@
         },
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -1436,8 +1617,7 @@
               ]
             },
             {
-              "type": "string",
-              "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+              "$ref": "#/definitions/placeholder-pattern"
             }
           ]
         },
@@ -1479,8 +1659,7 @@
                   ]
                 },
                 {
-                  "type": "string",
-                  "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+                  "$ref": "#/definitions/placeholder-pattern"
                 }
               ]
             }
@@ -1489,12 +1668,20 @@
         "tm:ref": {
           "$ref": "#/definitions/tm_ref"
         }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "securityScheme": {
       "anyOf": [
         {
           "$ref": "#/definitions/noSecurityScheme"
+        },
+        {
+          "$ref": "#/definitions/autoSecurityScheme"
         },
         {
           "$ref": "#/definitions/comboSecurityScheme"
@@ -1516,6 +1703,9 @@
         },
         {
           "$ref": "#/definitions/oAuth2SecurityScheme"
+        },
+        {
+          "$ref": "#/definitions/additionalSecurityScheme"
         }
       ]
     },
@@ -1535,6 +1725,10 @@
           }
         }
       ]
+    },
+    "placeholder-pattern": {
+      "type": "string",
+      "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
     },
     "tm_required": {
       "type": "array",
@@ -1563,18 +1757,33 @@
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/property_element"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "actions": {
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/action_element"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "events": {
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/event_element"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "description": {
@@ -1588,6 +1797,11 @@
       "properties": {
         "instance": {
           "type": "string"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -1619,6 +1833,11 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/definitions/securityScheme"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "schemaDefinitions": {
@@ -1626,6 +1845,11 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/definitions/dataSchema"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "support": {
@@ -1669,6 +1893,11 @@
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/dataSchema"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "@type": {
@@ -1682,6 +1911,11 @@
     }
   },
   "additionalProperties": true,
+  "propertyNames": {
+    "not": {
+      "$ref": "#/definitions/placeholder-pattern"
+    }
+  },
   "required": [
     "@context",
     "@type"
