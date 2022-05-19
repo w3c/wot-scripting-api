@@ -227,6 +227,7 @@ export interface ActionElement {
   output?: DataSchema;
   safe?: boolean;
   idempotent?: boolean;
+  synchronous?: boolean;
   [k: string]: unknown;
 }
 export interface EventElement {
