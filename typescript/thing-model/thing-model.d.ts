@@ -372,6 +372,7 @@ export interface ActionElement {
   output?: DataSchema;
   safe?: boolean | PlaceholderPattern;
   idempotent?: boolean | PlaceholderPattern;
+  synchronous?: boolean | PlaceholderPattern;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
