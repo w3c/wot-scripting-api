@@ -3676,14 +3676,13 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscovery {
-        constructor(optional ThingFilter filter = null);
+        constructor(ThingFilter filter);
         readonly attribute ThingFilter? filter;
         readonly attribute boolean active;
         readonly attribute boolean done;
         readonly attribute Error? error;
-        undefined start();
-        Promise&lt;ThingDescription&gt; next();
         undefined stop();
+        async iterable&lt;ThingDescription&gt;;
       };
     </pre>
     <p class="ednote">
@@ -3761,8 +3760,8 @@
       </p>
       <pre class="idl">
         dictionary ThingFilter {
-          DiscoveryMethod method = "directory";
-          USVString? url;
+          DiscoveryMethod method = "direct";
+          required USVString url;
           object? fragment;
           <!-- DOMString? query; -->
         };
