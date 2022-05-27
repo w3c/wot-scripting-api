@@ -243,6 +243,12 @@ declare namespace WoT {
          * Returns a reference to the same object for supporting chaining.
          */
         setPropertyUnobserveHandler(name: string, handler: PropertyReadHandler): ExposedThing;
+		
+        /**
+         * Takes as arguments name denoting a Property name.
+         * Triggers emitting a notification to all observers. 
+         */
+        emitPropertyChange(name: string): void;
 
         /**
          * Takes name as string argument and handler as argument of type ActionHandler.
