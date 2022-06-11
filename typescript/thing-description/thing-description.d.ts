@@ -76,7 +76,9 @@ export type ThingContext =
       )[]
     ]
   | "https://www.w3.org/2022/wot/td/v1.1"
-  | [unknown, unknown, ...unknown[]];
+  | [unknown, unknown, ...unknown[]]
+  | [unknown, ...unknown[]]
+  | "https://www.w3.org/2019/wot/td/v1";
 export type ThingContextTdUriV11 = "https://www.w3.org/2022/wot/td/v1.1";
 
 /**
