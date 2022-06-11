@@ -150,7 +150,9 @@ export type ThingContext =
       )[]
     ]
   | "https://www.w3.org/2022/wot/td/v1.1"
-  | [unknown, unknown, ...unknown[]];
+  | [unknown, unknown, ...unknown[]]
+  | [unknown, ...unknown[]]
+  | "https://www.w3.org/2019/wot/td/v1";
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "thing-context-td-uri-v1.1".
