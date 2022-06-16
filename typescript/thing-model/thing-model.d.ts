@@ -166,7 +166,9 @@ export type ThingContext =
       )[]
     ]
   | "https://www.w3.org/2022/wot/td/v1.1"
-  | [unknown, unknown, ...unknown[]];
+  | [unknown, unknown, ...unknown[]]
+  | [unknown, ...unknown[]]
+  | "https://www.w3.org/2019/wot/td/v1";
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "thing-context-td-uri-v1.1".
@@ -263,7 +265,7 @@ export interface PropertyElement {
   readOnly?: boolean | PlaceholderPattern;
   oneOf?: DataSchema[];
   unit?: string;
-  enum?: [unknown, ...unknown[]];
+  enum?: [unknown, ...unknown[]] | PlaceholderPattern;
   format?: string;
   const?: unknown;
   default?: unknown;
@@ -281,7 +283,7 @@ export interface PropertyElement {
   properties?: {
     [k: string]: DataSchema;
   };
-  required?: string[];
+  required?: string[] | PlaceholderPattern;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
@@ -330,7 +332,7 @@ export interface DataSchema {
   readOnly?: boolean | PlaceholderPattern;
   oneOf?: DataSchema[];
   unit?: string;
-  enum?: [unknown, ...unknown[]];
+  enum?: [unknown, ...unknown[]] | PlaceholderPattern;
   format?: string;
   const?: unknown;
   default?: unknown;
@@ -350,7 +352,7 @@ export interface DataSchema {
   properties?: {
     [k: string]: DataSchema;
   };
-  required?: string[];
+  required?: string[] | PlaceholderPattern;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
