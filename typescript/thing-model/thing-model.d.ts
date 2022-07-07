@@ -476,7 +476,7 @@ export interface ApiKeySecurityScheme {
   descriptions?: Descriptions;
   proxy?: AnyUri;
   scheme?: ("apikey" | PlaceholderPattern) & string;
-  in?: (("header" | "query" | "body" | "cookie") | PlaceholderPattern) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "uri" | "auto") | PlaceholderPattern) & string;
   name?: string;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
