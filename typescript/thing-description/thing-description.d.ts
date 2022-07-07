@@ -447,7 +447,7 @@ export interface ApiKeySecurityScheme {
   descriptions?: Descriptions;
   proxy?: AnyUri;
   scheme: "apikey";
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "uri" | "auto";
   name?: string;
   [k: string]: unknown;
 }
