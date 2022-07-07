@@ -1,6 +1,6 @@
 {
   "name": "wot-thing-description-types",
-  "version": "1.1.0-16-June-2022",
+  "version": "1.1.0-06-July-2022",
   "description": "Official Typescript definition type for W3C Thing Description",
   "types": "thing-description.d.ts",
   "repository": {
