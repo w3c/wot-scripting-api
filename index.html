@@ -2848,15 +2848,15 @@
             If a <a>Property</a> with the name |name| is not found,
             reject |promise| with {{NotFoundError}} and abort these steps.
           </li>
+		  <!--
+			Do we need a dedicated emitPropertChange handler instead of using readHandler?
+			see https://github.com/w3c/wot-scripting-api/issues/407
+		  -->
           <li>
             Let |handler:function| be `null.`
           </li>
           <li>
-            If there is an [[\observeHandler]] <a>internal slot</a> on |property|, let |handler| be that.
-          </li>
-          <li>
-            Otherwise, if there is a [[\readHandler]] <a>internal slot</a>
-            associated with |name| on |property|, let |handler| be that.
+            If there is an [[\readHandler]] <a>internal slot</a> on |property|, let |handler| be that.
           </li>
           <li>
             If |handler| is `null`, abort these steps.
