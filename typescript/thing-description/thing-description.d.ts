@@ -28,6 +28,7 @@ export type LinkElement = BaseLinkElement & {
 } & {
   [k: string]: unknown;
 };
+export type Bcp47String = string;
 export type IconLinkElement = BaseLinkElement & {
   rel: "icon";
   sizes?: string;
@@ -253,6 +254,7 @@ export interface BaseLinkElement {
   type?: string;
   rel?: string;
   anchor?: AnyUri;
+  hreflang?: Bcp47String | Bcp47String[];
   [k: string]: unknown;
 }
 export interface NoSecurityScheme {
