@@ -84,6 +84,11 @@ export type LinkElement = BaseLinkElement & {
 };
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * via the `definition` "bcp47_string".
+ */
+export type Bcp47String = string;
+/**
+ * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "icon_link_element".
  */
 export type IconLinkElement = BaseLinkElement & {
@@ -382,6 +387,7 @@ export interface BaseLinkElement {
   type?: string;
   rel?: string;
   anchor?: AnyUri;
+  hreflang?: Bcp47String | Bcp47String[];
   [k: string]: unknown;
 }
 /**
