@@ -93,6 +93,11 @@ export type LinkElement = BaseLinkElement & {
 };
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "bcp47_string".
+ */
+export type Bcp47String = string;
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "icon_link_element".
  */
 export type IconLinkElement = BaseLinkElement & {
@@ -213,10 +218,12 @@ export interface ThingModel {
   };
   description?: Description;
   descriptions?: Descriptions;
-  version?: {
-    instance?: string;
-    [k: string]: unknown;
-  };
+  version?:
+    | {
+        instance?: string;
+        [k: string]: unknown;
+      }
+    | PlaceholderPattern;
   links?: (LinkElement | IconLinkElement)[];
   forms?: [FormElementRoot, ...FormElementRoot[]];
   base?: AnyUri;
@@ -408,6 +415,7 @@ export interface BaseLinkElement {
   type?: string;
   rel?: string;
   anchor?: AnyUri;
+  hreflang?: Bcp47String | Bcp47String[];
   [k: string]: unknown;
 }
 /**
