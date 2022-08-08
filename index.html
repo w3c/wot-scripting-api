@@ -78,6 +78,12 @@
             publisher: "W3C",
             date: "6 November 2019"
           },
+          "WOT-USE-CASES" : {
+            href:"https://www.w3.org/TR/2021/NOTE-wot-usecases-20210518/",
+            title: "Web of Things Use Cases and Requirements",
+            publisher: "W3C",
+            date: "18 May 2021"
+          },
           "TYPESCRIPT": {
             href: "https://www.typescriptlang.org/docs/handbook/intro.html",
             title: "TypeScript Language Specification",
@@ -224,9 +230,11 @@
     -->
   </section>
 
-  <section class="informative"> <h3>Use Cases</h3>
+  <section class="informative"> <h3>Use Case Scenarios</h3>
     <p>
-      The following scripting use cases are supported in this specification:
+      The business use cases listed in the [[WOT-USE-CASES]] document may be
+      implemented using this API, based on the scripting use case scenarios
+      described here.
     </p>
     <section><h4>Consuming a Thing</h4>
     <ul>
@@ -741,8 +749,8 @@
     </p>
     <p>
       <dfn>DataSchemaValue</dfn> is an
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]]
-      (i.e. null, boolean, number, string, array, or object).
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]].
+	  The possible values MUST be of type <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-null-type">null</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-boolean-type">boolean</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-number-type">number</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-string-type">string</a>, <a href="https://262.ecma-international.org/11.0/#sec-array-objects">array</a>, or <a href="https://262.ecma-international.org/11.0/#sec-object-type">object</a>.
     </p>
     <p>
       {{ReadableStream}} is meant to be used for <a>WoT Interactions</a> that
@@ -2840,15 +2848,15 @@
             If a <a>Property</a> with the name |name| is not found,
             reject |promise| with {{NotFoundError}} and abort these steps.
           </li>
+		  <!--
+			Do we need a dedicated emitPropertChange handler instead of using readHandler?
+			see https://github.com/w3c/wot-scripting-api/issues/407
+		  -->
           <li>
             Let |handler:function| be `null.`
           </li>
           <li>
-            If there is an [[\observeHandler]] <a>internal slot</a> on |property|, let |handler| be that.
-          </li>
-          <li>
-            Otherwise, if there is a [[\readHandler]] <a>internal slot</a>
-            associated with |name| on |property|, let |handler| be that.
+            If there is an [[\readHandler]] <a>internal slot</a> on |property|, let |handler| be that.
           </li>
           <li>
             If |handler| is `null`, abort these steps.

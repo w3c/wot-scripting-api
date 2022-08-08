@@ -44,6 +44,7 @@ jobs:
           add: '["typescript/thing-description/schema","typescript/thing-description/thing-description.d.ts"]'
           author_name: action_sync
           message: 'chore(typescript): sync thing description json schema from wot-thing-description.git'
+          pull: '--rebase --autostash'
       - uses: JasonEtco/create-an-issue@v2
         if: ${{ ! steps.diff.outputs.changed }}
         env:
@@ -88,6 +89,7 @@ jobs:
           add: '["typescript/thing-model/schema","typescript/thing-model/thing-model.d.ts"]'
           author_name: action_sync
           message: 'chore(typescript): sync thing model json schema from wot-thing-description.git'
+          pull: '--rebase --autostash'
       - uses: JasonEtco/create-an-issue@v2
         if: ${{ ! steps.diff.outputs.changed }}
         env:

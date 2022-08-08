@@ -59,9 +59,7 @@ export type AdditionalResponsesDefinition = {
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "dataSchema-type".
  */
-export type DataSchemaType =
-  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
-  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")[];
+export type DataSchemaType = "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "multipleOfDefinition".
@@ -86,6 +84,11 @@ export type LinkElement = BaseLinkElement & {
 };
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * via the `definition` "bcp47_string".
+ */
+export type Bcp47String = string;
+/**
+ * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "icon_link_element".
  */
 export type IconLinkElement = BaseLinkElement & {
@@ -104,13 +107,15 @@ export type FormElementRoot = FormElementBase;
  */
 export type SecurityScheme =
   | NoSecurityScheme
+  | AutoSecurityScheme
   | ComboSecurityScheme
   | BasicSecurityScheme
   | DigestSecurityScheme
   | ApiKeySecurityScheme
   | BearerSecurityScheme
   | PskSecurityScheme
-  | OAuth2SecurityScheme;
+  | OAuth2SecurityScheme
+  | AdditionalSecurityScheme;
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "comboSecurityScheme".
@@ -141,7 +146,7 @@ export type ComboSecurityScheme =
 export type ThingContext =
   | []
   | [
-      ThingContextW3CUri,
+      ThingContextTdUriV11,
       ...(
         | AnyUri
         | {
@@ -149,15 +154,25 @@ export type ThingContext =
           }
       )[]
     ]
-  | ThingContextW3CUri;
+  | "https://www.w3.org/2022/wot/td/v1.1"
+  | [unknown, unknown, ...unknown[]]
+  | [unknown, ...unknown[]]
+  | "https://www.w3.org/2019/wot/td/v1";
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "thing-context-w3c-uri".
+ * via the `definition` "thing-context-td-uri-v1.1".
  */
-export type ThingContextW3CUri =
-  | "https://www.w3.org/2019/wot/td/v1"
-  | "http://www.w3.org/ns/td"
-  | "https://www.w3.org/2022/wot/td/v1.1";
+export type ThingContextTdUriV11 = "https://www.w3.org/2022/wot/td/v1.1";
+/**
+ * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * via the `definition` "thing-context-td-uri-v1".
+ */
+export type ThingContextTdUriV1 = "https://www.w3.org/2019/wot/td/v1";
+/**
+ * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * via the `definition` "thing-context-td-uri-temp".
+ */
+export type ThingContextTdUriTemp = "http://www.w3.org/ns/td";
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "form".
@@ -198,7 +213,11 @@ export interface ThingDescription {
   support?: AnyUri;
   created?: string;
   modified?: string;
+  profile?: AnyUri | [AnyUri, ...AnyUri[]];
   security: string | [string, ...string[]];
+  uriVariables?: {
+    [k: string]: DataSchema;
+  };
   "@type"?: TypeDeclaration;
   "@context": ThingContext;
   [k: string]: unknown;
@@ -336,6 +355,7 @@ export interface ActionElement {
   output?: DataSchema;
   safe?: boolean;
   idempotent?: boolean;
+  synchronous?: boolean;
   [k: string]: unknown;
 }
 /**
@@ -354,6 +374,7 @@ export interface EventElement {
   };
   subscription?: DataSchema;
   data?: DataSchema;
+  dataResponse?: DataSchema;
   cancellation?: DataSchema;
   [k: string]: unknown;
 }
@@ -366,6 +387,7 @@ export interface BaseLinkElement {
   type?: string;
   rel?: string;
   anchor?: AnyUri;
+  hreflang?: Bcp47String | Bcp47String[];
   [k: string]: unknown;
 }
 /**
@@ -382,6 +404,18 @@ export interface NoSecurityScheme {
 }
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * via the `definition` "autoSecurityScheme".
+ */
+export interface AutoSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: "auto";
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "basicSecurityScheme".
  */
 export interface BasicSecurityScheme {
@@ -390,7 +424,7 @@ export interface BasicSecurityScheme {
   descriptions?: Descriptions;
   proxy?: AnyUri;
   scheme: "basic";
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "auto";
   name?: string;
   [k: string]: unknown;
 }
@@ -405,7 +439,7 @@ export interface DigestSecurityScheme {
   proxy?: AnyUri;
   scheme: "digest";
   qop?: "auth" | "auth-int";
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "auto";
   name?: string;
   [k: string]: unknown;
 }
@@ -419,7 +453,7 @@ export interface ApiKeySecurityScheme {
   descriptions?: Descriptions;
   proxy?: AnyUri;
   scheme: "apikey";
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "uri" | "auto";
   name?: string;
   [k: string]: unknown;
 }
@@ -436,7 +470,7 @@ export interface BearerSecurityScheme {
   authorization?: AnyUri;
   alg?: string;
   format?: string;
-  in?: "header" | "query" | "body" | "cookie";
+  in?: "header" | "query" | "body" | "cookie" | "auto";
   name?: string;
   [k: string]: unknown;
 }
@@ -468,5 +502,19 @@ export interface OAuth2SecurityScheme {
   refresh?: AnyUri;
   scopes?: string[] | string;
   flow?: string | ("code" | "client" | "device");
+  [k: string]: unknown;
+}
+/**
+ * Applies to additional SecuritySchemes not defined in the WoT TD specification.
+ *
+ * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * via the `definition` "additionalSecurityScheme".
+ */
+export interface AdditionalSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme: string;
   [k: string]: unknown;
 }

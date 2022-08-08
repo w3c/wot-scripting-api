@@ -57,16 +57,18 @@ export type AdditionalResponsesDefinition = {
 }[];
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
- * via the `definition` "dataSchema-type".
+ * via the `definition` "placeholder-pattern".
  */
+export type PlaceholderPattern = string;
 export type DataSchemaType =
-  | ((("boolean" | "integer" | "number" | "string" | "object" | "array" | "null") | string) & string)
-  | ((("boolean" | "integer" | "number" | "string" | "object" | "array" | "null") | string) & string)[];
+  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
+  | PlaceholderPattern;
+export type DataSchemaType1 = string;
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "multipleOfDefinition".
  */
-export type MultipleOfDefinition = number | string;
+export type MultipleOfDefinition = number | PlaceholderPattern;
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "tm_ref".
@@ -91,6 +93,11 @@ export type LinkElement = BaseLinkElement & {
 };
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "bcp47_string".
+ */
+export type Bcp47String = string;
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "icon_link_element".
  */
 export type IconLinkElement = BaseLinkElement & {
@@ -109,13 +116,15 @@ export type FormElementRoot = FormElementBase;
  */
 export type SecurityScheme =
   | NoSecurityScheme
+  | AutoSecurityScheme
   | ComboSecurityScheme
   | BasicSecurityScheme
   | DigestSecurityScheme
   | ApiKeySecurityScheme
   | BearerSecurityScheme
   | PskSecurityScheme
-  | OAuth2SecurityScheme;
+  | OAuth2SecurityScheme
+  | AdditionalSecurityScheme;
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "comboSecurityScheme".
@@ -126,7 +135,7 @@ export type ComboSecurityScheme =
       description?: Description;
       descriptions?: Descriptions;
       proxy?: AnyUri;
-      scheme?: ("combo" | string) & string;
+      scheme?: ("combo" | PlaceholderPattern) & string;
       oneOf?: [string, string, ...string[]];
       "tm:ref"?: TmRef;
       [k: string]: unknown;
@@ -136,7 +145,7 @@ export type ComboSecurityScheme =
       description?: Description;
       descriptions?: Descriptions;
       proxy?: AnyUri;
-      scheme?: ("combo" | string) & string;
+      scheme?: ("combo" | PlaceholderPattern) & string;
       allOf?: [string, string, ...string[]];
       "tm:ref"?: TmRef;
       [k: string]: unknown;
@@ -153,7 +162,7 @@ export type TmTypeDeclaration = "tm:ThingModel" | string[];
 export type ThingContext =
   | []
   | [
-      ThingContextW3CUri,
+      ThingContextTdUriV11,
       ...(
         | AnyUri
         | {
@@ -161,17 +170,30 @@ export type ThingContext =
           }
       )[]
     ]
-  | ThingContextW3CUri;
+  | "https://www.w3.org/2022/wot/td/v1.1"
+  | [unknown, unknown, ...unknown[]]
+  | [unknown, ...unknown[]]
+  | "https://www.w3.org/2019/wot/td/v1";
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
- * via the `definition` "thing-context-w3c-uri".
+ * via the `definition` "thing-context-td-uri-v1.1".
  */
-export type ThingContextW3CUri = "https://www.w3.org/2019/wot/td/v1" | "http://www.w3.org/ns/td";
+export type ThingContextTdUriV11 = "https://www.w3.org/2022/wot/td/v1.1";
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "tm_required".
  */
 export type TmRequired = string[];
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "thing-context-td-uri-v1".
+ */
+export type ThingContextTdUriV1 = "https://www.w3.org/2019/wot/td/v1";
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "thing-context-td-uri-temp".
+ */
+export type ThingContextTdUriTemp = "http://www.w3.org/ns/td";
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "form".
@@ -196,10 +218,12 @@ export interface ThingModel {
   };
   description?: Description;
   descriptions?: Descriptions;
-  version?: {
-    instance?: string;
-    [k: string]: unknown;
-  };
+  version?:
+    | {
+        instance?: string;
+        [k: string]: unknown;
+      }
+    | PlaceholderPattern;
   links?: (LinkElement | IconLinkElement)[];
   forms?: [FormElementRoot, ...FormElementRoot[]];
   base?: AnyUri;
@@ -212,7 +236,11 @@ export interface ThingModel {
   support?: AnyUri;
   created?: string;
   modified?: string;
+  profile?: AnyUri | [AnyUri, ...AnyUri[]];
   security?: string | [string, ...string[]];
+  uriVariables?: {
+    [k: string]: DataSchema;
+  };
   "@type": TmTypeDeclaration;
   "@context": ThingContext;
   "tm:required"?: TmRequired;
@@ -239,30 +267,30 @@ export interface PropertyElement {
   uriVariables?: {
     [k: string]: DataSchema;
   };
-  observable?: boolean | string;
-  writeOnly?: boolean | string;
-  readOnly?: boolean | string;
+  observable?: boolean | PlaceholderPattern;
+  writeOnly?: boolean | PlaceholderPattern;
+  readOnly?: boolean | PlaceholderPattern;
   oneOf?: DataSchema[];
   unit?: string;
-  enum?: [unknown, ...unknown[]];
+  enum?: [unknown, ...unknown[]] | PlaceholderPattern;
   format?: string;
   const?: unknown;
   default?: unknown;
-  type?: DataSchemaType;
+  type?: DataSchemaType & DataSchemaType1;
   items?: DataSchema | DataSchema[];
-  maxItems?: number | string;
-  minItems?: number | string;
-  minimum?: number | string;
-  maximum?: number | string;
+  maxItems?: number | PlaceholderPattern;
+  minItems?: number | PlaceholderPattern;
+  minimum?: number | PlaceholderPattern;
+  maximum?: number | PlaceholderPattern;
   exclusiveMinimum?: number;
   exclusiveMaximum?: number;
-  minLength?: number | string;
-  maxLength?: number | string;
+  minLength?: number | PlaceholderPattern;
+  maxLength?: number | PlaceholderPattern;
   multipleOf?: MultipleOfDefinition;
   properties?: {
     [k: string]: DataSchema;
   };
-  required?: string[];
+  required?: string[] | PlaceholderPattern;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
@@ -307,31 +335,31 @@ export interface DataSchema {
   title?: Title;
   descriptions?: Descriptions;
   titles?: Titles;
-  writeOnly?: boolean | string;
-  readOnly?: boolean | string;
+  writeOnly?: boolean | PlaceholderPattern;
+  readOnly?: boolean | PlaceholderPattern;
   oneOf?: DataSchema[];
   unit?: string;
-  enum?: [unknown, ...unknown[]];
+  enum?: [unknown, ...unknown[]] | PlaceholderPattern;
   format?: string;
   const?: unknown;
   default?: unknown;
   contentEncoding?: string;
   contentMediaType?: string;
-  type?: DataSchemaType;
+  type?: DataSchemaType & DataSchemaType1;
   items?: DataSchema | DataSchema[];
-  maxItems?: number | string;
-  minItems?: number | string;
-  minimum?: number | string;
-  maximum?: number | string;
+  maxItems?: number | PlaceholderPattern;
+  minItems?: number | PlaceholderPattern;
+  minimum?: number | PlaceholderPattern;
+  maximum?: number | PlaceholderPattern;
   exclusiveMinimum?: number;
   exclusiveMaximum?: number;
-  minLength?: number | string;
-  maxLength?: number | string;
+  minLength?: number | PlaceholderPattern;
+  maxLength?: number | PlaceholderPattern;
   multipleOf?: MultipleOfDefinition;
   properties?: {
     [k: string]: DataSchema;
   };
-  required?: string[];
+  required?: string[] | PlaceholderPattern;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
@@ -351,8 +379,9 @@ export interface ActionElement {
   };
   input?: DataSchema;
   output?: DataSchema;
-  safe?: boolean | string;
-  idempotent?: boolean | string;
+  safe?: boolean | PlaceholderPattern;
+  idempotent?: boolean | PlaceholderPattern;
+  synchronous?: boolean | PlaceholderPattern;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
@@ -372,6 +401,7 @@ export interface EventElement {
   };
   subscription?: DataSchema;
   data?: DataSchema;
+  dataResponse?: DataSchema;
   cancellation?: DataSchema;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
@@ -385,6 +415,7 @@ export interface BaseLinkElement {
   type?: string;
   rel?: string;
   anchor?: AnyUri;
+  hreflang?: Bcp47String | Bcp47String[];
   [k: string]: unknown;
 }
 /**
@@ -396,8 +427,20 @@ export interface NoSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme?: ("nosec" | string) & string;
+  scheme?: ("nosec" | PlaceholderPattern) & string;
   "tm:ref"?: TmRef;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "autoSecurityScheme".
+ */
+export interface AutoSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme?: ("auto" | PlaceholderPattern) & string;
   [k: string]: unknown;
 }
 /**
@@ -409,8 +452,8 @@ export interface BasicSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme?: ("basic" | string) & string;
-  in?: (("header" | "query" | "body" | "cookie") | string) & string;
+  scheme?: ("basic" | PlaceholderPattern) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "auto") | PlaceholderPattern) & string;
   name?: string;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
@@ -424,9 +467,9 @@ export interface DigestSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme?: ("digest" | string) & string;
-  qop?: (("auth" | "auth-int") | string) & string;
-  in?: (("header" | "query" | "body" | "cookie") | string) & string;
+  scheme?: ("digest" | PlaceholderPattern) & string;
+  qop?: (("auth" | "auth-int") | PlaceholderPattern) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "auto") | PlaceholderPattern) & string;
   name?: string;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
@@ -440,8 +483,8 @@ export interface ApiKeySecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme?: ("apikey" | string) & string;
-  in?: (("header" | "query" | "body" | "cookie") | string) & string;
+  scheme?: ("apikey" | PlaceholderPattern) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "uri" | "auto") | PlaceholderPattern) & string;
   name?: string;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
@@ -455,11 +498,11 @@ export interface BearerSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme?: ("bearer" | string) & string;
+  scheme?: ("bearer" | PlaceholderPattern) & string;
   authorization?: AnyUri;
   alg?: string;
   format?: string;
-  in?: (("header" | "query" | "body" | "cookie") | string) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "auto") | PlaceholderPattern) & string;
   name?: string;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
@@ -473,7 +516,7 @@ export interface PskSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme?: ("psk" | string) & string;
+  scheme?: ("psk" | PlaceholderPattern) & string;
   identity?: string;
   "tm:ref"?: TmRef;
   [k: string]: unknown;
@@ -487,12 +530,26 @@ export interface OAuth2SecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme?: ("oauth2" | string) & string;
+  scheme?: ("oauth2" | PlaceholderPattern) & string;
   authorization?: AnyUri;
   token?: AnyUri;
   refresh?: AnyUri;
   scopes?: string[] | string;
-  flow?: string | ((("code" | "client" | "device") | string) & string);
+  flow?: string | ((("code" | "client" | "device") | PlaceholderPattern) & string);
   "tm:ref"?: TmRef;
+  [k: string]: unknown;
+}
+/**
+ * Applies to additional SecuritySchemes not defined in the WoT TD specification.
+ *
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "additionalSecurityScheme".
+ */
+export interface AdditionalSecurityScheme {
+  "@type"?: TypeDeclaration;
+  description?: Description;
+  descriptions?: Descriptions;
+  proxy?: AnyUri;
+  scheme?: string;
   [k: string]: unknown;
 }
