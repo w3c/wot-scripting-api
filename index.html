@@ -1364,9 +1364,9 @@
     <section>
       <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        Returns the <a>internal slot</a> [[\td]] of the {{ConsumedThing}} object
+        Returns the {{ConsumedThing/[[td]]}} of the {{ConsumedThing}} object
         that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
-        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
+        Applications may consult the <a>Thing</a> metadata stored in {{ConsumedThing/[[td]]}} in
         order to introspect its capabilities before interacting with it.
       </p>
     </section>
@@ -1390,7 +1390,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s
             |propertyName|.
           </li>
           <li>
@@ -1450,7 +1450,7 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readmultipleproperties`, selected by
+            <a>Form</a> associated with |formIndex| in {{ConsumedThing/[[td]]}}'s |forms| array, otherwise let |form| be a <a>Form</a> in {{ConsumedThing/[[td]]}}'s |forms| array whose |op| is `readmultipleproperties`, selected by
             the implementation.
           </li>
           <li>
@@ -1473,7 +1473,7 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
+                Let |schema| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
@@ -1509,7 +1509,7 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readallproperties`, selected by
+            <a>Form</a> associated with |formIndex| in {{ConsumedThing/[[td]]}}'s |forms| array, otherwise let |form| be a <a>Form</a> in {{ConsumedThing/[[td]]}}'s |forms| array whose |op| is `readallproperties`, selected by
             the implementation.
           </li>
           <li>
@@ -1535,7 +1535,7 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
+                Let |schema| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
@@ -1566,7 +1566,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s
             |propertyName|.
           </li>
           <li>
@@ -1631,8 +1631,8 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array,
-            otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms|
+            <a>Form</a> associated with |formIndex| in {{ConsumedThing/[[td]]}}'s |forms| array,
+            otherwise let |form| be a <a>Form</a> in {{ConsumedThing/[[td]]}}'s |forms|
             array whose |op| is `writemultipleproperties`, selected by
             the implementation.
           </li>
@@ -1644,7 +1644,7 @@
             Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
           </li>
           <li>
-            For each |name:string| in |propertyNames|, let |property| be the value of [[\td]]'s |properties|'s |name|.
+            For each |name:string| in |propertyNames|, let |property| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |name|.
             If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
             and abort these steps.
           </li>
@@ -1655,7 +1655,7 @@
           <li>
             Let |schemas:object| be an object and for each string |name:string|
             in |propertyNames| add a property with key |name| and let its value
-            be the value of [[\td]]'s |properties|'s |name|.
+            be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |name|.
           </li>
           <li>
             For each key |key:string| in |properties|, take its value as |value|
@@ -1732,7 +1732,7 @@
                 Let |subscription|'s {{Subscription/[[name]]}} be the value of |propertyName|.
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of [[\td]]'s
+                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of {{ConsumedThing/[[td]]}}'s
                 |properties|'s |propertyName|.
               </li>
               <li>
@@ -1820,7 +1820,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |actions|'s
+            Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |actions|'s
             |actionName|.
           </li>
           <li>
@@ -1906,7 +1906,7 @@
                 Let |subscription|'s {{Subscription/[[name]]}} be the value of |eventName|.
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of [[\td]]'s
+                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of {{ConsumedThing/[[td]]}}'s
                 |events|'s |eventName|.
               </li>
               <li>
@@ -2439,11 +2439,11 @@
          </tr>
         </thead>
         <tbody data-link-for="ExposedThing">
-         <tr>
-          <td><strong><em>[[\td]]</em></strong></td>
-          <td>`null`</td>
-          <td>The <a>Thing Description</a> of the <a>Thing</a>.</td>
-         </tr>
+          <tr>
+            <td><dfn>[[\td]]</dfn></td>
+            <td>`null`</td>
+            <td>The <a>Thing Description</a> of the {{ExposedThing}}.</td>
+          </tr>
         </tbody>
       </table>
     </section>
@@ -2477,7 +2477,7 @@
             Let |thing:ExposedThing| be a new {{ExposedThing}} object.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
+            Set the {{ExposedThing/[[td]]}} of |thing| to |td|.
           </li>
           <li>
             Return |thing|.
@@ -2489,9 +2489,9 @@
     <section data-dfn-for="ExposedThing">
       <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        Returns the <a>internal slot</a> [[\td]] of the {{ExposedThing}} object
+        Returns the {{ExposedThing/[[td]]}} of the {{ExposedThing}} object
         that represents the <a>Thing Description</a> of the <a>Thing</a>.
-        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
+        Applications may consult the <a>Thing</a> metadata stored in {{ExposedThing/[[td]]}} in
         order to introspect its capabilities before interacting with it.
       </p>
     </section>
@@ -2526,7 +2526,7 @@
          The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\td]] <a>internal slot</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the {{ExposedThing/[[td]]}} <a>internal slot</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -2537,7 +2537,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2571,7 +2571,7 @@
             steps with |name:string| and |options:InteractionOptions|:
             <ol>
               <li>
-                Let |interaction| be the value of [[\td]]'s |properties|'s
+                Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
                 |name|.
               </li>
               <li>
@@ -2702,7 +2702,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2732,7 +2732,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of {{ExposedThing/[[td]]}}'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2775,7 +2775,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2805,7 +2805,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of {{ExposedThing/[[td]]}}'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2842,7 +2842,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of {{ExposedThing/[[td]]}}'s |properties|'s |name|.
           </li>
           <li>
             If a <a>Property</a> with the name |name| is not found,
@@ -2936,7 +2936,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2968,7 +2968,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -3063,7 +3063,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |actions|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |actions|'s
             |name|.
           </li>
           <li>
@@ -3092,7 +3092,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -3175,7 +3175,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3208,7 +3208,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3261,7 +3261,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3294,7 +3294,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3345,7 +3345,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3371,7 +3371,7 @@
         following steps:
         <ol>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3431,7 +3431,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s |name|.
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s |name|.
           </li>
           <li>
             If an <a>Event</a> with the name |name| is not found,
@@ -3460,25 +3460,25 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\td]].
+            Run the <a>expand a TD</a> steps on the {{ExposedThing/[[td]]}}.
           </li>
           <li>
-            Run the <a>validate a TD</a> on [[\td]]. If that fails,
+            Run the <a>validate a TD</a> on {{ExposedThing/[[td]]}}. If that fails,
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in [[\td]]'s |properties|,
+            For each <a>Property</a> definition in {{ExposedThing/[[td]]}}'s |properties|,
             initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
             in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
-            For each <a>Event</a> definition is [[\td]]'s |events|,
+            For each <a>Event</a> definition is {{ExposedThing/[[td]]}}'s |events|,
             initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
             in order to store subscription request data needed to notify the
             <a>Event</a> listeners.
           </li>
           <li>
-            Set up the <a>WoT Interactions</a> based on introspecting [[\td]]
+            Set up the <a>WoT Interactions</a> based on introspecting {{ExposedThing/[[td]]}}
             as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
             Make a request to the underlying platform to initialize the
             <a>Protocol Bindings</a> and then start serving external requests
