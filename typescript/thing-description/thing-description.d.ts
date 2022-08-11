@@ -11,7 +11,7 @@ export type Description = string;
 export type FormElementProperty = FormElementBase;
 export type AnyUri = string;
 export type Subprotocol = string;
-export type Security = string[] | string;
+export type Security = [string, ...string[]] | string;
 export type Scopes = string[] | string;
 export type AdditionalResponsesDefinition = {
   contentType?: string;
