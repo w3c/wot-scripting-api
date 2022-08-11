@@ -416,6 +416,7 @@ export interface BaseLinkElement {
   rel?: string;
   anchor?: AnyUri;
   hreflang?: Bcp47String | Bcp47String[];
+  instanceName?: string;
   [k: string]: unknown;
 }
 /**
