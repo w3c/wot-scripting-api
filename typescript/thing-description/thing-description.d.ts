@@ -39,7 +39,7 @@ export type Subprotocol = string;
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "security".
  */
-export type Security = string[] | string;
+export type Security = [string, ...string[]] | string;
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema
  * via the `definition` "scopes".
