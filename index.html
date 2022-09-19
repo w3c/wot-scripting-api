@@ -3728,10 +3728,10 @@
         </ol>
       </div>
       <p>
-        The <a href="#the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to `true`. The <a href="#the-stop-method">stop()</a> method sets the <a href="#dom-thingdiscovery-active">active</a> property to |false|, but <a href="#dom-thingdiscovery-done">done</a> may be still `false` if there are {{ThingDescription}} objects which can be yielded by the `Symbol.AsyncIterator`.
+        The <a href="#the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to `true`. The <a href="#the-stop-method">stop()</a> method sets the <a href="#dom-thingdiscovery-active">active</a> property to |false|, but <a href="#dom-thingdiscovery-done">done</a> may be still `false` if there are {{ThingDescription}} objects which can be yielded by the {{Symbol/asyncIterator}}.
       </p>
       <p>
-         During successive calls of <a href="#the-next-method">next()</a>, the <a href="#dom-thingdiscovery-active">active</a> property may be `true` or `false`, but the <a href="#dom-thingdiscovery-done">done</a> property is set to `false` by <a href="#the-next-method">next()</a> only when both the <a href="#dom-thingdiscovery-active">active</a> property is `false` and the `done` property in the object yielded by `Symbol.AsyncIterator` is set to `true`.
+         During successive calls of <a href="#the-next-method">next()</a>, the <a href="#dom-thingdiscovery-active">active</a> property may be `true` or `false`, but the <a href="#dom-thingdiscovery-done">done</a> property is set to `false` by <a href="#the-next-method">next()</a> only when both the <a href="#dom-thingdiscovery-active">active</a> property is `false` and the `done` property in the object yielded by the {{Symbol/asyncIterator}} is set to `true`.
       </p>
     </section>
 
@@ -3843,7 +3843,7 @@
                 If |filter|'s <a href="#dom-thingfilter-fragment">|fragment|</a> is defined, for each property defined in it, check if that property exists in |json|'s properties and has the same value. If this is `false` in any checks, discard |td| and continue the discovery process.
               </li>
               <li>
-                Otherwise return a `Symbol.AsyncIterator` and yield the |td|.
+                Otherwise return a {{Symbol/asyncIterator}} and yield the |td|.
               </li>
               <li>
                 At this point implementations MAY control the flow of the discovery process (depending on memory constraints, for instance temporarily stop discovery if the queue is getting too large, or resume discovery when the queue is emptied sufficiently).
@@ -3883,10 +3883,10 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, call the `next` method on the Discovery object's `Symbol.AsyncIterator`.
+            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, call the `next` method on the Discovery object's {{Symbol/asyncIterator}}.
           </li>
           <li>
-            If the `value` property in the yielded result from the `Symbol.AsyncIterator` is undefined and the `done` property is set to `true`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
+            If the `value` property in the yielded result from the {{Symbol/asyncIterator}} is undefined and the `done` property is set to `true`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
           </li>
           <li>
             Resolve |promise| with |td| and abort these steps.
@@ -3914,7 +3914,7 @@
       <h3>Discovery Examples</h3>
       <p>
         The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running
-        Using the `Symbol.AsyncIterator` provided by the Discovery object, we can iterate asynchronously over the results and perform operations with the obtained {{ThingDescription}} objects.
+        Using the {{Symbol/asyncIterator}} provided by the Discovery object, we can iterate asynchronously over the results and perform operations with the obtained {{ThingDescription}} objects.
       </p>
       <pre class="example" title="Fetch the Thing Description of a Thing">
         let discovery = new ThingDiscovery({ method: "direct" });
