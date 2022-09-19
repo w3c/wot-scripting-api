@@ -3833,6 +3833,7 @@
             <ol>
               <li>
                 Retrieve |td| as a JSON object using the <a>Protocol Binding</a> specified in the |filter.url| property.
+                In the case of an HTTP(S) Binding, this process could use the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> for the |td|'s retrieval.
                 If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
               </li>
               <!--li>
