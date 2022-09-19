@@ -3681,6 +3681,8 @@
         readonly attribute boolean active;
         readonly attribute boolean done;
         readonly attribute Error? error;
+        undefined start();
+        Promise&lt;ThingDescription&gt; next();
         undefined stop();
         async iterable&lt;ThingDescription&gt;;
       };
@@ -3809,9 +3811,9 @@
               </li>
             </ul>
           </li-->
-          <li>
+          <!-- <li>
             Create the <a>discovery results</a> <a>internal slot</a> for storing discovered {{ThingDescription}} objects.
-          </li>
+          </li> -->
           <li>
             Request the underlying platform to start the discovery process, with the following parameters:
             <ul>
@@ -3830,7 +3832,8 @@
             Whenever a new <a>Thing Description</a> |td:ThingDescription| is discovered by the underlying platform, run the following sub-steps:
             <ol>
               <li>
-                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> |td| as a JSON object |json|. If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
+                Retrieve |td| as a JSON object using the <a>Protocol Binding</a> specified by the |filter|'s <dfn>url</dfn> property.
+                If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
               </li>
               <!--li>
                 If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, check if |json| is a match for the query. The matching algorithm is encapsulated by implementations. If that returns `false`, discard |td| and continue the discovery process.
@@ -3839,7 +3842,7 @@
                 If |filter|'s <a href="#dom-thingfilter-fragment">|fragment|</a> is defined, for each property defined in it, check if that property exists in |json|'s properties and has the same value. If this is `false` in any checks, discard |td| and continue the discovery process.
               </li>
               <li>
-                Otherwise add |td| to the <a>discovery results</a>.
+                Otherwise return an {{@@asyncIterator}} and yield the |td|.
               </li>
               <li>
                 At this point implementations MAY control the flow of the discovery process (depending on memory constraints, for instance temporarily stop discovery if the queue is getting too large, or resume discovery when the queue is emptied sufficiently).
@@ -3879,13 +3882,10 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, wait until the <a>discovery results</a> <a>internal slot</a> is not empty.
+            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, call the `next` method on the Discovery object's Symbol.AsyncIterator.
           </li>
           <li>
-            If <a>discovery results</a> is empty and the <a href="#dom-thingdiscovery-active">active</a> property is `false`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
-          </li>
-          <li>
-            Remove the first {{ThingDescription}} object |td| from <a>discovery results</a>.
+            If the `value` property in the yielded result from the Symbol.AsyncIterator is undefined and the `done` property is set to `true`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
           </li>
           <li>
             Resolve |promise| with |td| and abort these steps.
