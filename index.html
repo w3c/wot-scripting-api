@@ -3913,14 +3913,14 @@
     <section>
       <h3>Discovery Examples</h3>
       <p>
-        The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running. Note that the discovery can end (become inactive) before the internal <a>discovery results</a> queue is emptied, so we need to continue reading {{ThingDescription}} objects until done. This is typical with local and directory type discoveries.
+        The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running
+        Using the `Symbol.AsyncIterator` provided by the Discovery object, we can iterate asynchronously over the results and perform operations with the obtained {{ThingDescription}} objects.
       </p>
       <pre class="example" title="Fetch the Thing Description of a Thing">
         let discovery = new ThingDiscovery({ method: "direct" });
-        do {
-          let td = await discovery.next();
+        for await (let td of discovery) {
           console.log("Found Thing Description for " + td.title);
-        } while (!discovery.done);
+        }
       </pre>
       <p>
         The next example finds {{ThingDescription}} objects of <a>Thing</a>s listed in a <a>Thing Directory</a> service. We set a timeout for safety.
