@@ -621,7 +621,7 @@
       <ol class="algorithm">
         <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
           [= exception/throw =] {{SyntaxError}} and abort these steps.</li>
-        <li>Initialize and empty object called |td|</li>
+        <li>Initialize an empty object called |td|</li>
         <li>
           For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
         </li>
