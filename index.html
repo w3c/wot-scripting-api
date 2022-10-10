@@ -3684,8 +3684,8 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscovery {
-        constructor(optional ThingFilter filter = null);
-        readonly attribute ThingFilter? filter;
+        constructor(ThingFilter filter);
+        readonly attribute ThingFilter filter;
         readonly attribute boolean active;
         readonly attribute boolean done;
         readonly attribute Error? error;
