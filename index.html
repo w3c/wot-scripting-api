@@ -3769,8 +3769,8 @@
       </p>
       <pre class="idl">
         dictionary ThingFilter {
-          DiscoveryMethod method = "directory";
-          USVString? url;
+          DiscoveryMethod method = "direct";
+          required USVString url;
           object? fragment;
           <!-- DOMString? query; -->
         };
