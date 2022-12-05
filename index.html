@@ -212,7 +212,7 @@
           then instantiating a software stack that implements the <a>WoT Interface</a> specified by the <a>TD</a> in order to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>,
         </li>
         <li>
-           then eventually publishing the <a>Thing Description</a> (for instance to a <a>Thing Directory</a> directory for easier discovery).
+           then eventually publishing the <a>Thing Description</a> (for instance to a <a>TD Directory</a> directory for easier discovery).
         </li>
       </ul>
       This specification describes how to expose and consume <a>Thing</a>s by a script. Also, it defines a generic API for <a>Thing</a> discovery.
@@ -308,7 +308,7 @@
       <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
       <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth,
         or within a <a href="https://en.wikipedia.org/wiki/Geo-fence">geo-fence</a>.</li>
-      <li>Discover <a>Thing</a>s by sending a discovery request to a given <a>Thing Directory</a>.</li>
+      <li>Discover <a>Thing</a>s by sending a discovery request to a given <a>TD Directory</a>.</li>
       <li>Discover <a>Thing</a>s filtered by filters defined on <a>Thing Description</a>s</li>
       <li>Discover <a>Thing</a>s filtered by semantic queries.</li>
       <li>Stop or suppress an ongoing discovery process.</li>
@@ -751,7 +751,7 @@
       };
     </pre>
     <div>
-      Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that given a <a>Thing Directory</a> URL, will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
+      Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that given a <a>TD Directory</a> URL, will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
@@ -3736,7 +3736,7 @@
       <tr>
         <td>[[\url]]</td>
         <td>`undefined`</td>
-        <td>A {{URL}} representing the <a>Thing Directory</a> in a discovery.</td>
+        <td>A {{URL}} representing the <a>TD Directory</a> in a discovery.</td>
       </tr>
       </tbody>
     </table>
@@ -3798,12 +3798,12 @@
         <a>ThingFilter</a>, until it is standardized in the WoT Discovery
         task force. It represented a query string accepted by the implementation,
         for instance a SPARQL or JSON query. Support was to be implemented locally
-        in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
+        in the <a>WoT Runtime</a> or remotely as a service in a <a>TD Directory</a>.
       </p>
       <p class="ednote">
         The |url:USVString| property was removed. It used to represent the target
         entity serving the discovery request, for instance the URL of a
-        <a>Thing Directory</a>, or the URL of a directly targeted <a>Thing</a>,
+        <a>TD Directory</a>, or the URL of a directly targeted <a>Thing</a>,
         but these are implemented by dedicated methods now.
       </p>
     </section>
@@ -3978,7 +3978,7 @@
         console.log("Found Thing Description for " + td.title);
       </pre>
       <p>
-        The next example finds {{ThingDescription}} objects of <a>Thing</a>s listed in a <a>Thing Directory</a> service. We set a timeout for safety.
+        The next example finds {{ThingDescription}} objects of <a>Thing</a>s listed in a <a>TD Directory</a> service. We set a timeout for safety.
       </p>
       <pre class="example" title="Discover Things via directory">
         let discovery = WOT.exploreDirectory("http://directory.wotservice.org");
