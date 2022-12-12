@@ -66,6 +66,12 @@
             publisher: "W3C",
             date: "24 November 2020"
           },
+          "WOT-DISCOVERY" : {
+            href:"https://www.w3.org/TR/2022/WD-wot-discovery-20220810/",
+            title: "Web of Things (WoT) Discovery",
+            publisher: "W3C",
+            date: "10 August 2022"
+          },
           "WOT-PROTOCOL-BINDINGS" : {
             href: "https://www.w3.org/TR/2020/NOTE-wot-binding-templates-20200130/",
             title: "Web of Things Binding Templates",
@@ -170,7 +176,7 @@
     </p>
     <p>
       Scripting is an optional building block in WoT and it is typically used in gateways or browsers that are able to run a <a>WoT Runtime</a> and
-      <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
+      <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">TD Directory</a>.
     </p>
     <p>
       This specification describes an application programming interface (API) representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Thing</a>s characterized by <a> WoT Interactions</a> specified by a script.
@@ -726,15 +732,20 @@
           Let |discovery:ThingDiscoveryProcess| be a new {{ThingDiscoveryProcess}} object.
         </li>
         <li>
-          Set |discovery|'s [[\filter]] <a>internal slot</a> to |filter:ThingFilter| or
-          `undefined`.
+          Set |discovery|'s {{ThingDiscoveryProcess/[[filter]]}} to |filter:ThingFilter|.
         </li>
         <li>
-          Set |discovery|'s [[\url]] <a>internal slot</a> to `undefined`.
+          Set |discovery|'s {{ThingDiscoveryProcess/[[url]]}} to `undefined`.
         </li>
         <li>
-          Invoke the <a>generic discovery</a>
-          algorithm given |discovery:ThingDiscoveryProcess| and <code>`"generic"`</code>.
+          If |filter| is not supported by the implementation, or if discovery
+          cannot be started by the underlying platform,
+          reject |promise| with {{NotSupportedError}} and abort these steps.
+        </li>
+        <li>
+          Request the underlying platform to start the <a>discovery process</a>
+          by any means supported and provisioned in the <a>WoT Runtime</a> for which
+          the script has access to, passing |discovery| to it.
         </li>
         <li>
           Resolve |promise| with |discovery|.
@@ -767,15 +778,38 @@
           Let |discovery:ThingDiscoveryProcess| be a new {{ThingDiscoveryProcess}} object.
         </li>
         <li>
-          Set |discovery|'s [[\url]] <a>internal slot</a> to |url:USVString|.
+          Set |discovery|'s {{ThingDiscoveryProcess/[[url]]}} to |url:USVString|.
         </li>
         <li>
-          Set |discovery|'s [[\filter]] <a>internal slot</a> to |filter:ThingFilter|
-          or `undefined`.
+          Set |discovery|'s {{ThingDiscoveryProcess/[[filter]]}} to |filter:ThingFilter|.
         </li>
         <li>
-          Invoke the <a href="#the-generic-discovery-algorithm">generic discovery</a>
-          algorithm given |discovery:ThingDiscoveryProcess| and <code>`"directory"`</code>.
+          Request the underlying platform to start the directory discovery process.
+          <p class="note">
+            This is a placeholder for more details in the discovery algorithm.
+            Implementations should follow the procedures described in the
+            [[WOT-DISCOVERY]] and [WOT-PROTOCOL-BINDINGS] specifications.
+            Some normative steps are indicated below.
+          </p>
+          <ol>
+            <li>
+              If |url| is not a <a>TD Directory</a> or if the underlying
+              implementation cannot support the <a>Protocol Binding</a>
+              indicated by |url|, reject |promise|
+              with {{NotSupportedError}} and terminate these steps.
+            </li>
+            <li>
+              If |filter| is not supported by the implementation, reject |promise|
+              with {{NotSupportedError}} and terminate these steps.
+            </li>
+            <li>
+              Run the <a>discovery process</a> given |discovery|.
+              <p class="note">
+                From this point on, errors are recorded only on
+                {{ThingDiscoveryProcess/error}}, but don't affect |promise| any longer.
+              </p>
+            </li>
+          </ol>
         </li>
         <li>
           Resolve |promise| with |discovery|.
@@ -799,7 +833,9 @@
           Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          If invoking this method is not allowed for the current scripting
+          context for security reasons, reject |promise| with a {{SecurityError}}
+          and abort these steps.
         </li>
         <li>
           If fetching a <a>Thing Description</a> is not supported by the
@@ -3729,12 +3765,12 @@
       </thead>
       <tbody data-link-for="ThingDiscoveryProcess">
        <tr>
-        <td>[[\filter]]</td>
+        <td><dfn>[[\filter]]</dfn></td>
         <td>`undefined`</td>
         <td>The {{ThingFilter}} object used in discovery.</td>
        </tr>
       <tr>
-        <td>[[\url]]</td>
+        <td><dfn>[[\url]]</dfn></td>
         <td>`undefined`</td>
         <td>A {{URL}} representing the <a>TD Directory</a> in a discovery.</td>
       </tr>
@@ -3764,13 +3800,13 @@
             Let |discovery:ThingDiscoveryProcess| be a new {{ThingDiscoveryProcess}} object.
           </li>
           <li>
-            Set the [[\filter]] <a>internal slot</a> to |filter|.
+            Set |discovery|.{{ThingDiscoveryProcess/[[filter]]}} to |filter|.
           </li>
           <li>
-            Set the {{ThingDiscoveryProcess/done}} property to `false`.
+            Set |discovery|.{{ThingDiscoveryProcess/done}} to `false`.
           </li>
           <li>
-            Set the {{ThingDiscoveryProcess/error}} property to `null`.
+            Set |discovery|.{{ThingDiscoveryProcess/error}} to `null`.
           </li>
           <li>
             Return |discovery|.
@@ -3809,49 +3845,25 @@
     </section>
 
     <section>
-      <h3>The <dfn data-lt="generic-discovery">generic discovery</dfn> algorithm</h3>
+      <h3>The <dfn data-lt="discovery-process">discovery process</dfn> algorithm</h3>
       <div>
-        Starts a generic discovery process by any means supported by the underlying
-        implementation, for instance by using multicast, preconfigured directory, etc.
-        The method, given |discovery:ThingDiscoveryProcess| and |discoveryMethod|
-        MUST run the following steps:
+        Describes what to do during a discovery process that has already started.
+        The algorithm, given |discovery:ThingDiscoveryProcess|, runs the following steps:
         <ol>
           <li>
-            Let |filter| denote the [[\filter]] internal slot of |discovery|.
-          </li>
-          <li>
-            If |discoveryMethod| is `"generic"`, request the underlying platform
-            to start the discovery process by any means supported and
-            preconfigured in the <a>WoT Runtime</a> for which the script has
-            access to, passing |filter| to it.
-          </li>
-          <li>
-            Otherwise if |discoveryMethod| is `"directory"`,
-            <ol>
-              <li>
-                Let |url:USVString| denote the [[\url]] <a>internal slot</a>
-                of |discovery|.
-              </li>
-              <li>
-                Request the underlying platform to start the directory discovery
-                passing |url| and |filter| to it.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Whenever a new link to a <a>Thing Description</a> |url:USVString|
+            Whenever a new |link| to a <a>Thing Description</a>
             is discovered and provided by the underlying platform, run the following
             sub-steps:
             <ol>
               <li>
                 Retrieve |td:ThingDescription| as a JSON object, using the <a>Protocol Binding</a>
-                used by the underlying discovery process (as specified by |url|).
+                used by the underlying discovery process (as specified by |link|).
                 In the case of an HTTP(S) Binding, this process could use the
                 <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a>
                 for the |td|'s retrieval.
               </li>
               <li>
-                If that fails, set the {{ThingDiscoveryProcess/error}}
+                If that fails, set the |discovery|.{{ThingDiscoveryProcess/error}}
                 property to {{SyntaxError}}, discard |td| and continue the discovery process.
               </li>
             </ol>
@@ -3872,9 +3884,9 @@
                 If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, check if |json| is a match for the query. The matching algorithm is encapsulated by implementations. If that returns `false`, discard |td| and continue the discovery process.
               </li-->
               <li>
-                If |filter|'s <a href="#dom-thingfilter-fragment">|fragment|</a>
-                is defined,
-                <ol> for each property defined in |fragment|,
+                If |discovery|.{{ThingDiscoveryProcess/[[filter]]}}.{{ThingFilter/fragment}}
+                [=map/exists=], then for each property defined in it,
+                <ol>
                   <li>
                      Check if that property exists in |json|'s properties and has the same value.
                   </li>
@@ -3882,6 +3894,7 @@
                     If this is `false` in any checks, discard |td|, discard these
                     sub-steps and continue the discovery process.
                   </li>
+                </ol>
               </li>
               <li>
                 Yield |td| using {{Symbol/asyncIterator}}.
@@ -3892,7 +3905,8 @@
             </ol>
           </li>
           <li>
-            Whenever an error occurs during the discovery process,
+            Whenever an error occurs during the discovery process, run the following
+            sub-steps:
             <p class="note">
               The last error is retained. Implementations MAY choose to stop the
               discovery process if they consider it should be reported.
@@ -3907,20 +3921,16 @@
                  <a>Protocol Bindings</a>, set |error|'s |message| to that value as string.
               </li>
               <li>
-                Set {{ThingDiscoveryProcess/error}} property to |error|.
+                Set |discovery|.{{ThingDiscoveryProcess/error}} to |error|.
               </li>
               <li>
                 If the error is irrecoverable and discovery has been stopped by
                 the underlying platform, or if the implementation decided to
-                stop the discovery process and report the error, continue to the
-                next step.
+                stop the discovery process and report the error, set
+                |discovery|.{{ThingDiscoveryProcess/done}} to `true` and
+                terminate these steps.
               </li>
             </ol>
-          </li>
-          <li>
-            If the discovery process has been stopped for any reason (completion
-            or error), set the {{ThingDiscoveryProcess/done}} property to `true`
-            and terminate these steps.
           </li>
         </ol>
       </div>
