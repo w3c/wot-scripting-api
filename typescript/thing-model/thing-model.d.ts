@@ -181,9 +181,11 @@ export type ThingContext =
 export type ThingContextTdUriV11 = "https://www.w3.org/2022/wot/td/v1.1";
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
- * via the `definition` "tm_required".
+ * via the `definition` "tm_optional".
  */
-export type TmRequired = string[];
+export type TmOptional = (string & {
+  [k: string]: unknown;
+})[];
 /**
  * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "thing-context-td-uri-v1".
@@ -220,7 +222,7 @@ export interface ThingModel {
   descriptions?: Descriptions;
   version?:
     | {
-        instance?: string;
+        model?: string;
         [k: string]: unknown;
       }
     | PlaceholderPattern;
@@ -243,7 +245,7 @@ export interface ThingModel {
   };
   "@type": TmTypeDeclaration;
   "@context": ThingContext;
-  "tm:required"?: TmRequired;
+  "tm:optional"?: TmOptional;
   [k: string]: unknown;
 }
 /**
@@ -416,6 +418,7 @@ export interface BaseLinkElement {
   rel?: string;
   anchor?: AnyUri;
   hreflang?: Bcp47String | Bcp47String[];
+  instanceName?: string;
   [k: string]: unknown;
 }
 /**

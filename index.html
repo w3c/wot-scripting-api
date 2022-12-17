@@ -621,7 +621,7 @@
       <ol class="algorithm">
         <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
           [= exception/throw =] {{SyntaxError}} and abort these steps.</li>
-        <li>Initialize and empty object called |td|</li>
+        <li>Initialize an empty object called |td|</li>
         <li>
           For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
         </li>
@@ -2397,8 +2397,6 @@
                 EventSubscriptionHandler handler);
         ExposedThing setEventUnsubscribeHandler(DOMString name,
                 EventSubscriptionHandler handler);
-        ExposedThing setEventHandler(DOMString name,
-                EventListenerHandler eventHandler);
         Promise&lt;undefined&gt; emitEvent(DOMString name,
                 InteractionInput data);
 
@@ -2422,7 +2420,6 @@
       callback EventSubscriptionHandler = Promise&lt;undefined&gt;(
               optional InteractionOptions options = null);
 
-      callback EventListenerHandler = Promise&lt;InteractionInput&gt;();
     </pre>
 
     <section data-dfn-for="ExposedThing">
@@ -3124,21 +3121,6 @@
       </div>
     </section>
 
-    <section data-dfn-for="EventListenerHandler">
-      <h3>The <dfn>EventListenerHandler</dfn> callback</h3>
-      <p>
-        A function that is called when an associated <a>Event</a> is triggered
-        and provides the data to be sent with the <a>Event</a> to subscribers.
-        Returns a {{Promise}} that resolves with {{InteractionInput}} value
-        that represents the <a>Event</a> data, or rejects with an error.
-      </p>
-      <p class="note">
-        Applications MAY return {{ReadableStream}} from an {{EventListenerHandler}}
-        Implementations will then use the stream provided in
-        {{InteractionOutput}} when constructing the event notification.
-      </p>
-    </section>
-
     <section data-dfn-for="EventSubscriptionHandler">
       <h3>The <dfn>EventSubscriptionHandler</dfn> callback</h3>
       <p>
@@ -3320,75 +3302,17 @@
         </ol>
       </div>
     </section>
-
-    <section> <h3>The <dfn>setEventHandler()</dfn> method</h3>
-      <p>
-        Takes as arguments |name:string| and |eventHandler:EventListenerHandler|.
-        Sets the event handler function for the specified <a>Event</a>
-        matched by |name|.
-        Throws on error.
-        Returns a reference to |this| object for supporting chaining.
-      </p>
-      <p>
-        The |eventHandler| callback function will implement what to do when the
-        event is emitted. It SHOULD resolve with a value that represents the
-        <a>Event</a> data, or reject with an error.
-      </p>
-      <p>
-        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
-      </p>
-      <div>
-        When the method is invoked with |name:string| and
-        |eventHandler:EventListenerHandler|, run the following steps:
-        <ol>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
-            |name|.
-          </li>
-          <li>
-            If an <a>Event</a> with the name |name| is not found,
-            [= exception/throw =] a {{NotFoundError}} and abort these steps.
-          </li>
-          <li>
-            Set the <a>internal slot</a> [[\eventHandler]] of |interaction| to
-            |eventHandler|.
-          </li>
-          <li>
-            Return `this`.
-          </li>
-        </ol>
-      </div>
-    </section>
-
+    
     <section> <h3>Handling <a>Events</a></h3>
       <div>
         When an <a>Event</a> with name |name| is emitted with
-        |data:InteractionInput| either by the underlying platform or by the
+        |data:InteractionInput| by the
         <a href="#the-emitevent-method">emitEvent()</a> method, run the
         following steps:
         <ol>
           <li>
             Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
-          </li>
-          <li>
-            If |data| is not defined or `null`,
-            <ol>
-              <li>
-                Let |eventHandler| be the value of the [[\eventHandler]]
-                <a>internal slot</a> of |interaction|.
-              </li>
-              <li>
-                If |eventHandler| is failure, abort these steps.
-              </li>
-              <li>
-                Let |data| be the result of awaiting to resolve the invocation
-                of |eventHandler|. If it rejects, abort these steps.
-              </li>
-            </ol>
           </li>
           <li>
             For each |subscriber| in the <a>internal listener list</a> of
@@ -3398,6 +3322,12 @@
                 Create an <a>Event</a> notification |response| according to the
                 <a>Protocol Bindings</a> from |data| and |subscriber|, including
                 its |options|.
+              </li>
+              <li>
+                  If |data| is `undefined`, assume that the notification |response| 
+                  will contain an empty data payload as specified by <a>Protocol Bindings</a>. 
+              </li>
+              <li>
                 If the underlying protocol stack permits conveying event errors and
                 if an error condition has been detected by the UA, create |response|
                 as an error notification according to the <a>Protocol Bindings</a>,
@@ -3439,11 +3369,8 @@
           </li>
           <li>
             Make a request to the underlying platform to emit an <a>Event</a>
-            with |data|.
-            <p class="note">
-              This will trigger the <a href="#handling-events">handling events</a>
-              steps.
-            </p>
+            with |data|. Call the <a href="#handling-events">handling events</a>
+            steps.
           </li>
         </ol>
       </div>
@@ -3692,13 +3619,11 @@
         undefined start();
         Promise&lt;ThingDescription&gt; next();
         undefined stop();
+        async iterable&lt;ThingDescription&gt;;
       };
     </pre>
     <p class="ednote">
       The {{ThingDiscovery}} interface has a <code>next()</code> method and a <code>done</code> property, but it is not an <a href="https://tc39.es/proposal-async-iteration/">Iterable</a>. Look into <a href="https://github.com/w3c/wot-scripting-api/issues/177">Issue 177</a> for rationale.
-    </p>
-    <p>
-      The <dfn>discovery results</dfn> <a>internal slot</a> is an internal queue for temporarily storing the found {{ThingDescription}} objects until they are consumed by the application using the <a href="#the-next-method">next()</a> method. Implementations MAY optimize the size of this queue based on e.g. the available resources and the frequency of invoking the <a href="#the-next-method">next()</a> method.
     </p>
     <p>
       The <dfn>filter</dfn> property represents the discovery filter of type <a>ThingFilter</a> specified for the discovery.
@@ -3711,6 +3636,9 @@
     </p>
     <p>
       The <dfn>error</dfn> property represents the last error that occurred during the discovery process. Typically used for critical errors that stop discovery.
+    </p>
+    <p>
+      <!-- TODO: Mention AsyncIterator/AsyncIterable? -->
     </p>
 
     <section><h3>Constructing {{ThingDiscovery}}</h3>
@@ -3735,10 +3663,10 @@
         </ol>
       </div>
       <p>
-        The <a href="#the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to `true`. The <a href="#the-stop-method">stop()</a> method sets the <a href="#dom-thingdiscovery-active">active</a> property to |false|, but <a href="#dom-thingdiscovery-done">done</a> may be still `false` if there are {{ThingDescription}} objects in the <a>discovery results</a> not yet consumed with <a href="#the-next-method">next()</a>.
+        The <a href="#the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to `true`. The <a href="#the-stop-method">stop()</a> method sets the <a href="#dom-thingdiscovery-active">active</a> property to |false|, but <a href="#dom-thingdiscovery-done">done</a> may be still `false` if there are {{ThingDescription}} objects which can be yielded by the {{Symbol/asyncIterator}}.
       </p>
       <p>
-         During successive calls of <a href="#the-next-method">next()</a>, the <a href="#dom-thingdiscovery-active">active</a> property may be `true` or `false`, but the <a href="#dom-thingdiscovery-done">done</a> property is set to `false` by <a href="#the-next-method">next()</a> only when both the <a href="#dom-thingdiscovery-active">active</a> property is `false` and <a>discovery results</a> is empty.
+         During successive calls of <a href="#the-next-method">next()</a>, the <a href="#dom-thingdiscovery-active">active</a> property may be `true` or `false`, but the <a href="#dom-thingdiscovery-done">done</a> property is set to `false` by <a href="#the-next-method">next()</a> only when both the <a href="#dom-thingdiscovery-active">active</a> property is `false` and the `done` property in the object yielded by the {{Symbol/asyncIterator}} is set to `true`.
       </p>
     </section>
 
@@ -3818,9 +3746,9 @@
               </li>
             </ul>
           </li-->
-          <li>
+          <!-- <li>
             Create the <a>discovery results</a> <a>internal slot</a> for storing discovered {{ThingDescription}} objects.
-          </li>
+          </li> -->
           <li>
             Request the underlying platform to start the discovery process, with the following parameters:
             <ul>
@@ -3839,7 +3767,9 @@
             Whenever a new <a>Thing Description</a> |td:ThingDescription| is discovered by the underlying platform, run the following sub-steps:
             <ol>
               <li>
-                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> |td| as a JSON object |json|. If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
+                Retrieve |td| as a JSON object using the <a>Protocol Binding</a> specified in the |filter.url| property.
+                In the case of an HTTP(S) Binding, this process could use the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> for the |td|'s retrieval.
+                If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
               </li>
               <!--li>
                 If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, check if |json| is a match for the query. The matching algorithm is encapsulated by implementations. If that returns `false`, discard |td| and continue the discovery process.
@@ -3848,7 +3778,7 @@
                 If |filter|'s <a href="#dom-thingfilter-fragment">|fragment|</a> is defined, for each property defined in it, check if that property exists in |json|'s properties and has the same value. If this is `false` in any checks, discard |td| and continue the discovery process.
               </li>
               <li>
-                Otherwise add |td| to the <a>discovery results</a>.
+                Otherwise return a {{Symbol/asyncIterator}} and yield the |td|.
               </li>
               <li>
                 At this point implementations MAY control the flow of the discovery process (depending on memory constraints, for instance temporarily stop discovery if the queue is getting too large, or resume discovery when the queue is emptied sufficiently).
@@ -3888,13 +3818,10 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, wait until the <a>discovery results</a> <a>internal slot</a> is not empty.
+            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, call the `next` method on the Discovery object's {{Symbol/asyncIterator}}.
           </li>
           <li>
-            If <a>discovery results</a> is empty and the <a href="#dom-thingdiscovery-active">active</a> property is `false`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
-          </li>
-          <li>
-            Remove the first {{ThingDescription}} object |td| from <a>discovery results</a>.
+            If the `value` property in the yielded result from the {{Symbol/asyncIterator}} is undefined and the `done` property is set to `true`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
           </li>
           <li>
             Resolve |promise| with |td| and abort these steps.
@@ -3921,14 +3848,14 @@
     <section>
       <h3>Discovery Examples</h3>
       <p>
-        The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running. Note that the discovery can end (become inactive) before the internal <a>discovery results</a> queue is emptied, so we need to continue reading {{ThingDescription}} objects until done. This is typical with local and directory type discoveries.
+        The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running
+        Using the {{Symbol/asyncIterator}} provided by the Discovery object, we can iterate asynchronously over the results and perform operations with the obtained {{ThingDescription}} objects.
       </p>
       <pre class="example" title="Fetch the Thing Description of a Thing">
         let discovery = new ThingDiscovery({ method: "direct" });
-        do {
-          let td = await discovery.next();
+        for await (let td of discovery) {
           console.log("Found Thing Description for " + td.title);
-        } while (!discovery.done);
+        }
       </pre>
       <p>
         The next example finds {{ThingDescription}} objects of <a>Thing</a>s listed in a <a>Thing Directory</a> service. We set a timeout for safety.
