@@ -2441,6 +2441,31 @@
             <td>`null`</td>
             <td>The <a>Thing Description</a> of the {{ExposedThing}}.</td>
           </tr>
+          <tr>
+            <td><dfn>[[\readHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{PropertyReadHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\writeHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{PropertyWriteHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\observeHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{PropertyReadHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\unobserveHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{Function}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\actionHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with action names as keys and {{ActionHandler}}s as values</td>
+          </tr>
         </tbody>
       </table>
     </section>
@@ -2542,8 +2567,7 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Add the <a>internal slot</a> [[\readHandler]] to |interaction| and
-            set it to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[readHandlers]]}} <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2578,8 +2602,8 @@
                 Let |handler:function| be `null`.
               </li>
               <li>
-                If there is a user provided <a>internal slot</a> [[\readHandler]]
-                on |interaction|, let |handler| be that.
+                If there is a user provided {{PropertyReadHandler}} in {{ExposedThing/[[readHandlers]]}} <a>internal slot</a> 
+                for |interaction|, let |handler| be that.
               </li>
               <li>
                 Otherwise, if there is a default read handler provided by the implementation, let |handler| be that.
@@ -2707,8 +2731,8 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\observeHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[observeHandlers]]}} 
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2780,8 +2804,8 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\unobserveHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[unobserveHandlers]]}} 
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2807,8 +2831,8 @@
             reply and abort these steps.
           </li>
           <li>
-            If there is an [[\unobserveHandler]] of type {{Function}} defined
-            for |name| on |property|, invoke that with |options|, send back a
+            If there is a user provided {{Function}} in {{ExposedThing/[[observeHandlers]]}} <a>internal slot</a>
+            for |interaction|, invoke that with |options|, send back a
             reply following the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
@@ -2853,7 +2877,8 @@
             Let |handler:function| be `null.`
           </li>
           <li>
-            If there is an [[\readHandler]] <a>internal slot</a> on |property|, let |handler| be that.
+            If there is a user provided {{PropertyReadHandler}} in {{ExposedThing/[[readHandlers]]}}
+            <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
             If |handler| is `null`, abort these steps.
@@ -2941,8 +2966,8 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\writeHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[writeHandlers]]}} 
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2975,8 +3000,8 @@
             Let |handler:function| be `null`.
           </li>
           <li>
-            If there is a user provided <a>internal slot</a> [[\writeHandler]]
-            on |interaction|, let |handler| be that.
+            If there is a user provided {{PropertyWriteHandler}} in {{ExposedThing/[[writeHandlers]]}}
+            <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
             Otherwise, if there is a default write handler provided by the implementation, let |handler| be that.
@@ -3068,8 +3093,8 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\actionHandler]] on |interaction|
-            to |action|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[actionHandlers]]}}
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -3099,8 +3124,8 @@
             Let |handler:function| be `null`.
           </li>
           <li>
-            If there is a user provided <a>internal slot</a> [[\actionHandler]]
-            on |interaction|, let |handler| be its value.
+            If there is a user provided {{ActionHandler}} in {{ExposedThing/[[actionHandlers]]}}
+            <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
             If |handler| is `null`, return a {{NotSupportedError}} with the reply
