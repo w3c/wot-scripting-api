@@ -277,10 +277,10 @@ declare namespace WoT {
         setEventUnsubscribeHandler(name: string, handler: EventSubscriptionHandler): ExposedThing;
 
         /**
-         * Takes as arguments name denoting an Event name and data.
-         * Triggers emitting the Event with the given data. 
+         * Takes as arguments name denoting an Event name and optionally data.
+         * Triggers emitting the Event with optional data.
          */
-        emitEvent(name: string, data: InteractionInput): void;
+        emitEvent(name: string, data?: InteractionInput): void;
 
         /**
          * Returns the the object that represents the Thing Description.

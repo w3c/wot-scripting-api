@@ -2536,7 +2536,7 @@
         ExposedThing setEventUnsubscribeHandler(DOMString name,
                 EventSubscriptionHandler handler);
         Promise&lt;undefined&gt; emitEvent(DOMString name,
-                InteractionInput data);
+                optional InteractionInput data);
 
         Promise&lt;undefined&gt; expose();
         Promise&lt;undefined&gt; destroy();
@@ -3488,8 +3488,8 @@
     <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
       <div>
         Takes as arguments |name:string| denoting an <a>Event</a> name and
-        |data:InteractionInput|.
-        Triggers emitting the <a>Event</a> with the given data.
+        optionally |data:InteractionInput|.
+        Triggers emitting the <a>Event</a> with the optional data.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -3507,7 +3507,7 @@
           </li>
           <li>
             Make a request to the underlying platform to emit an <a>Event</a>
-            with |data|. Call the <a href="#handling-events">handling events</a>
+            with optional |data|. Call the <a href="#handling-events">handling events</a>
             steps.
           </li>
         </ol>
