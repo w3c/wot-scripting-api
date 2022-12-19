@@ -738,9 +738,13 @@
           Set |discovery|'s {{ThingDiscoveryProcess/[[url]]}} to `undefined`.
         </li>
         <li>
-          If |filter| is not supported by the implementation, or if discovery
-          cannot be started by the underlying platform,
-          reject |promise| with {{NotSupportedError}} and abort these steps.
+          If filters in general are not supported by the implementation and
+          |filter| is not `undefined` or `null`, reject |promise|
+          with {{NotSupportedError}} and abort these steps.
+        </li>
+        <li>
+          If discovery cannot be started by the underlying platform,
+          reject |promise| with {{OperationError}} and abort these steps.
         </li>
         <li>
           Request the underlying platform to start the <a>discovery process</a>
@@ -799,8 +803,9 @@
               with {{NotSupportedError}} and terminate these steps.
             </li>
             <li>
-              If |filter| is not supported by the implementation, reject |promise|
-              with {{NotSupportedError}} and terminate these steps.
+              If filters in general are not supported by the implementation and
+              |filter| is not `undefined` or `null`, reject |promise|
+              with {{NotSupportedError}} and abort these steps.
             </li>
             <li>
               Run the <a>discovery process</a> given |discovery|.
