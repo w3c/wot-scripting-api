@@ -7,7 +7,7 @@ on:
     
 
 jobs:
-  sync:
+  sync-td:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -43,10 +43,57 @@ jobs:
           # focus only on the schema and the generated file just to be sure
           add: '["typescript/thing-description/schema","typescript/thing-description/thing-description.d.ts"]'
           author_name: action_sync
-          message: 'chore(typescript): sync json schema from wot-thing-description.git'
+          message: 'chore(typescript): sync thing description json schema from wot-thing-description.git'
+          pull: '--rebase --autostash'
       - uses: JasonEtco/create-an-issue@v2
         if: ${{ ! steps.diff.outputs.changed }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE_NAME: thing-description
+        with:
+          filename: .github/publish-ts-issue.md
+  sync-tm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Download schema
+        run: | 
+          # Retrieve json schema from td repository
+          mkdir .temp && cd .temp
+          git init
+          git fetch https://github.com/w3c/wot-thing-description.git
+          git checkout FETCH_HEAD -- validation/tm-json-schema-validation.json
+      - name: Look for changes
+        continue-on-error: true
+        run: |
+          git diff --no-index --quiet typescript/thing-model/schema/tm-json-schema-validation.json .temp/validation/tm-json-schema-validation.json
+          echo "::set-output name=changed::$?"
+        id: diff
+      - name: Sync file
+        if: ${{ ! steps.diff.outputs.changed }}
+        run: mv .temp/validation/tm-json-schema-validation.json typescript/thing-model/schema/tm-json-schema-validation.json && rm -rf .temp
+      - name: Generate types
+        if: ${{ ! steps.diff.outputs.changed }}
+        run: |
+          cd typescript
+          npm install
+          npm run build --workspace=thing-model
+      - name: Push changes
+        if: ${{ ! steps.diff.outputs.changed }}
+        uses: EndBug/add-and-commit@v7
+        with: 
+          # focus only on the schema and the generated file just to be sure
+          add: '["typescript/thing-model/schema","typescript/thing-model/thing-model.d.ts"]'
+          author_name: action_sync
+          message: 'chore(typescript): sync thing model json schema from wot-thing-description.git'
+          pull: '--rebase --autostash'
+      - uses: JasonEtco/create-an-issue@v2
+        if: ${{ ! steps.diff.outputs.changed }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE_NAME: thing-model
         with:
           filename: .github/publish-ts-issue.md

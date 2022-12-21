@@ -6,47 +6,47 @@
  */
 
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "title".
  */
 export type Title = string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "type_declaration".
  */
 export type TypeDeclaration = string | string[];
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "description".
  */
 export type Description = string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "form_element_property".
  */
 export type FormElementProperty = FormElementBase;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "anyUri".
  */
 export type AnyUri = string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "subprotocol".
  */
 export type Subprotocol = string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "security".
  */
-export type Security = [string, ...string[]] | string;
+export type Security = string[] | string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "scopes".
  */
 export type Scopes = string[] | string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "additionalResponsesDefinition".
  */
 export type AdditionalResponsesDefinition = {
@@ -56,39 +56,48 @@ export type AdditionalResponsesDefinition = {
   [k: string]: unknown;
 }[];
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "dataSchema-type".
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "placeholder-pattern".
  */
-export type DataSchemaType = "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
+export type PlaceholderPattern = string;
+export type DataSchemaType =
+  | ("boolean" | "integer" | "number" | "string" | "object" | "array" | "null")
+  | PlaceholderPattern;
+export type DataSchemaType1 = string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "multipleOfDefinition".
  */
-export type MultipleOfDefinition = number;
+export type MultipleOfDefinition = number | PlaceholderPattern;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "tm_ref".
+ */
+export type TmRef = string;
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "form_element_action".
  */
 export type FormElementAction = FormElementBase;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "form_element_event".
  */
 export type FormElementEvent = FormElementBase;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "link_element".
  */
 export type LinkElement = BaseLinkElement & {
   [k: string]: unknown;
 };
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "bcp47_string".
  */
 export type Bcp47String = string;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "icon_link_element".
  */
 export type IconLinkElement = BaseLinkElement & {
@@ -97,12 +106,12 @@ export type IconLinkElement = BaseLinkElement & {
   [k: string]: unknown;
 };
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "form_element_root".
  */
 export type FormElementRoot = FormElementBase;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "securityScheme".
  */
 export type SecurityScheme =
@@ -117,7 +126,7 @@ export type SecurityScheme =
   | OAuth2SecurityScheme
   | AdditionalSecurityScheme;
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "comboSecurityScheme".
  */
 export type ComboSecurityScheme =
@@ -126,8 +135,9 @@ export type ComboSecurityScheme =
       description?: Description;
       descriptions?: Descriptions;
       proxy?: AnyUri;
-      scheme: "combo";
-      oneOf: [string, string, ...string[]];
+      scheme?: ("combo" | PlaceholderPattern) & string;
+      oneOf?: [string, string, ...string[]];
+      "tm:ref"?: TmRef;
       [k: string]: unknown;
     }
   | {
@@ -135,12 +145,18 @@ export type ComboSecurityScheme =
       description?: Description;
       descriptions?: Descriptions;
       proxy?: AnyUri;
-      scheme: "combo";
-      allOf: [string, string, ...string[]];
+      scheme?: ("combo" | PlaceholderPattern) & string;
+      allOf?: [string, string, ...string[]];
+      "tm:ref"?: TmRef;
       [k: string]: unknown;
     };
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "tm_type_declaration".
+ */
+export type TmTypeDeclaration = "tm:ThingModel" | string[];
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "thing-context".
  */
 export type ThingContext =
@@ -159,32 +175,39 @@ export type ThingContext =
   | [unknown, ...unknown[]]
   | "https://www.w3.org/2019/wot/td/v1";
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "thing-context-td-uri-v1.1".
  */
 export type ThingContextTdUriV11 = "https://www.w3.org/2022/wot/td/v1.1";
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
+ * via the `definition` "tm_optional".
+ */
+export type TmOptional = (string & {
+  [k: string]: unknown;
+})[];
+/**
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "thing-context-td-uri-v1".
  */
 export type ThingContextTdUriV1 = "https://www.w3.org/2019/wot/td/v1";
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "thing-context-td-uri-temp".
  */
 export type ThingContextTdUriTemp = "http://www.w3.org/ns/td";
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "form".
  */
 export type Form = FormElementProperty | FormElementAction | FormElementEvent | FormElementRoot;
 
 /**
- * JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values
+ * JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema.
  */
-export interface ThingDescription {
+export interface ThingModel {
   id?: string;
-  title: Title;
+  title?: Title;
   titles?: Titles;
   properties?: {
     [k: string]: PropertyElement;
@@ -197,14 +220,16 @@ export interface ThingDescription {
   };
   description?: Description;
   descriptions?: Descriptions;
-  version?: {
-    instance: string;
-    [k: string]: unknown;
-  };
+  version?:
+    | {
+        model?: string;
+        [k: string]: unknown;
+      }
+    | PlaceholderPattern;
   links?: (LinkElement | IconLinkElement)[];
   forms?: [FormElementRoot, ...FormElementRoot[]];
   base?: AnyUri;
-  securityDefinitions: {
+  securityDefinitions?: {
     [k: string]: SecurityScheme;
   };
   schemaDefinitions?: {
@@ -214,23 +239,24 @@ export interface ThingDescription {
   created?: string;
   modified?: string;
   profile?: AnyUri | [AnyUri, ...AnyUri[]];
-  security: string | [string, ...string[]];
+  security?: string | [string, ...string[]];
   uriVariables?: {
     [k: string]: DataSchema;
   };
-  "@type"?: TypeDeclaration;
+  "@type": TmTypeDeclaration;
   "@context": ThingContext;
+  "tm:optional"?: TmOptional;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "titles".
  */
 export interface Titles {
   [k: string]: string;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "property_element".
  */
 export interface PropertyElement {
@@ -239,50 +265,51 @@ export interface PropertyElement {
   descriptions?: Descriptions;
   title?: Title;
   titles?: Titles;
-  forms: [FormElementProperty, ...FormElementProperty[]];
+  forms?: [FormElementProperty, ...FormElementProperty[]];
   uriVariables?: {
     [k: string]: DataSchema;
   };
-  observable?: boolean;
-  writeOnly?: boolean;
-  readOnly?: boolean;
+  observable?: boolean | PlaceholderPattern;
+  writeOnly?: boolean | PlaceholderPattern;
+  readOnly?: boolean | PlaceholderPattern;
   oneOf?: DataSchema[];
   unit?: string;
-  enum?: [unknown, ...unknown[]];
+  enum?: [unknown, ...unknown[]] | PlaceholderPattern;
   format?: string;
   const?: unknown;
   default?: unknown;
-  type?: DataSchemaType;
+  type?: DataSchemaType & DataSchemaType1;
   items?: DataSchema | DataSchema[];
-  maxItems?: number;
-  minItems?: number;
-  minimum?: number;
-  maximum?: number;
+  maxItems?: number | PlaceholderPattern;
+  minItems?: number | PlaceholderPattern;
+  minimum?: number | PlaceholderPattern;
+  maximum?: number | PlaceholderPattern;
   exclusiveMinimum?: number;
   exclusiveMaximum?: number;
-  minLength?: number;
-  maxLength?: number;
+  minLength?: number | PlaceholderPattern;
+  maxLength?: number | PlaceholderPattern;
   multipleOf?: MultipleOfDefinition;
   properties?: {
     [k: string]: DataSchema;
   };
-  required?: string[];
+  required?: string[] | PlaceholderPattern;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "descriptions".
  */
 export interface Descriptions {
   [k: string]: string;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "form_element_base".
  */
 export interface FormElementBase {
   op?: string | string[];
-  href: AnyUri;
+  href?: AnyUri;
   contentType?: string;
   contentCoding?: string;
   subprotocol?: Subprotocol;
@@ -293,7 +320,7 @@ export interface FormElementBase {
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "expectedResponse".
  */
 export interface ExpectedResponse {
@@ -301,7 +328,7 @@ export interface ExpectedResponse {
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "dataSchema".
  */
 export interface DataSchema {
@@ -310,35 +337,36 @@ export interface DataSchema {
   title?: Title;
   descriptions?: Descriptions;
   titles?: Titles;
-  writeOnly?: boolean;
-  readOnly?: boolean;
+  writeOnly?: boolean | PlaceholderPattern;
+  readOnly?: boolean | PlaceholderPattern;
   oneOf?: DataSchema[];
   unit?: string;
-  enum?: [unknown, ...unknown[]];
+  enum?: [unknown, ...unknown[]] | PlaceholderPattern;
   format?: string;
   const?: unknown;
   default?: unknown;
   contentEncoding?: string;
   contentMediaType?: string;
-  type?: DataSchemaType;
+  type?: DataSchemaType & DataSchemaType1;
   items?: DataSchema | DataSchema[];
-  maxItems?: number;
-  minItems?: number;
-  minimum?: number;
-  maximum?: number;
+  maxItems?: number | PlaceholderPattern;
+  minItems?: number | PlaceholderPattern;
+  minimum?: number | PlaceholderPattern;
+  maximum?: number | PlaceholderPattern;
   exclusiveMinimum?: number;
   exclusiveMaximum?: number;
-  minLength?: number;
-  maxLength?: number;
+  minLength?: number | PlaceholderPattern;
+  maxLength?: number | PlaceholderPattern;
   multipleOf?: MultipleOfDefinition;
   properties?: {
     [k: string]: DataSchema;
   };
-  required?: string[];
+  required?: string[] | PlaceholderPattern;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "action_element".
  */
 export interface ActionElement {
@@ -347,19 +375,20 @@ export interface ActionElement {
   descriptions?: Descriptions;
   title?: Title;
   titles?: Titles;
-  forms: [FormElementAction, ...FormElementAction[]];
+  forms?: [FormElementAction, ...FormElementAction[]];
   uriVariables?: {
     [k: string]: DataSchema;
   };
   input?: DataSchema;
   output?: DataSchema;
-  safe?: boolean;
-  idempotent?: boolean;
-  synchronous?: boolean;
+  safe?: boolean | PlaceholderPattern;
+  idempotent?: boolean | PlaceholderPattern;
+  synchronous?: boolean | PlaceholderPattern;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "event_element".
  */
 export interface EventElement {
@@ -368,7 +397,7 @@ export interface EventElement {
   descriptions?: Descriptions;
   title?: Title;
   titles?: Titles;
-  forms: [FormElementEvent, ...FormElementEvent[]];
+  forms?: [FormElementEvent, ...FormElementEvent[]];
   uriVariables?: {
     [k: string]: DataSchema;
   };
@@ -376,22 +405,24 @@ export interface EventElement {
   data?: DataSchema;
   dataResponse?: DataSchema;
   cancellation?: DataSchema;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "base_link_element".
  */
 export interface BaseLinkElement {
-  href: AnyUri;
+  href?: AnyUri;
   type?: string;
   rel?: string;
   anchor?: AnyUri;
   hreflang?: Bcp47String | Bcp47String[];
+  instanceName?: string;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "noSecurityScheme".
  */
 export interface NoSecurityScheme {
@@ -399,11 +430,12 @@ export interface NoSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "nosec";
+  scheme?: ("nosec" | PlaceholderPattern) & string;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "autoSecurityScheme".
  */
 export interface AutoSecurityScheme {
@@ -411,11 +443,11 @@ export interface AutoSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "auto";
+  scheme?: ("auto" | PlaceholderPattern) & string;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "basicSecurityScheme".
  */
 export interface BasicSecurityScheme {
@@ -423,13 +455,14 @@ export interface BasicSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "basic";
-  in?: "header" | "query" | "body" | "cookie" | "auto";
+  scheme?: ("basic" | PlaceholderPattern) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "auto") | PlaceholderPattern) & string;
   name?: string;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "digestSecurityScheme".
  */
 export interface DigestSecurityScheme {
@@ -437,14 +470,15 @@ export interface DigestSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "digest";
-  qop?: "auth" | "auth-int";
-  in?: "header" | "query" | "body" | "cookie" | "auto";
+  scheme?: ("digest" | PlaceholderPattern) & string;
+  qop?: (("auth" | "auth-int") | PlaceholderPattern) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "auto") | PlaceholderPattern) & string;
   name?: string;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "apiKeySecurityScheme".
  */
 export interface ApiKeySecurityScheme {
@@ -452,13 +486,14 @@ export interface ApiKeySecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "apikey";
-  in?: "header" | "query" | "body" | "cookie" | "uri" | "auto";
+  scheme?: ("apikey" | PlaceholderPattern) & string;
+  in?: (("header" | "query" | "body" | "cookie" | "uri" | "auto") | PlaceholderPattern) & string;
   name?: string;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "bearerSecurityScheme".
  */
 export interface BearerSecurityScheme {
@@ -466,16 +501,17 @@ export interface BearerSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "bearer";
+  scheme?: ("bearer" | PlaceholderPattern) & string;
   authorization?: AnyUri;
   alg?: string;
   format?: string;
-  in?: "header" | "query" | "body" | "cookie" | "auto";
+  in?: (("header" | "query" | "body" | "cookie" | "auto") | PlaceholderPattern) & string;
   name?: string;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "pskSecurityScheme".
  */
 export interface PskSecurityScheme {
@@ -483,12 +519,13 @@ export interface PskSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "psk";
+  scheme?: ("psk" | PlaceholderPattern) & string;
   identity?: string;
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "oAuth2SecurityScheme".
  */
 export interface OAuth2SecurityScheme {
@@ -496,18 +533,19 @@ export interface OAuth2SecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: "oauth2";
+  scheme?: ("oauth2" | PlaceholderPattern) & string;
   authorization?: AnyUri;
   token?: AnyUri;
   refresh?: AnyUri;
   scopes?: string[] | string;
-  flow?: string | ("code" | "client" | "device");
+  flow?: string | ((("code" | "client" | "device") | PlaceholderPattern) & string);
+  "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
 /**
  * Applies to additional SecuritySchemes not defined in the WoT TD specification.
  *
- * This interface was referenced by `ThingDescription`'s JSON-Schema
+ * This interface was referenced by `ThingModel`'s JSON-Schema
  * via the `definition` "additionalSecurityScheme".
  */
 export interface AdditionalSecurityScheme {
@@ -515,6 +553,6 @@ export interface AdditionalSecurityScheme {
   description?: Description;
   descriptions?: Descriptions;
   proxy?: AnyUri;
-  scheme: string;
+  scheme?: string;
   [k: string]: unknown;
 }

@@ -243,6 +243,12 @@ declare namespace WoT {
          * Returns a reference to the same object for supporting chaining.
          */
         setPropertyUnobserveHandler(name: string, handler: PropertyReadHandler): ExposedThing;
+		
+        /**
+         * Takes as arguments name denoting a Property name.
+         * Triggers emitting a notification to all observers. 
+         */
+        emitPropertyChange(name: string): void;
 
         /**
          * Takes name as string argument and handler as argument of type ActionHandler.
@@ -271,18 +277,10 @@ declare namespace WoT {
         setEventUnsubscribeHandler(name: string, handler: EventSubscriptionHandler): ExposedThing;
 
         /**
-         * Takes as arguments name and eventHandler.
-         * Sets the event handler function for the specified Event matched by name.
-         * Throws on error.
-         * Returns a reference to the same object for supporting chaining.
+         * Takes as arguments name denoting an Event name and optionally data.
+         * Triggers emitting the Event with optional data.
          */
-        setEventHandler(name: string, handler: EventListenerHandler): ExposedThing;
-
-        /**
-         * Takes as arguments name denoting an Event name and data.
-         * Triggers emitting the Event with the given data. 
-         */
-        emitEvent(name: string, data: InteractionInput): void;
+        emitEvent(name: string, data?: InteractionInput): void;
 
         /**
          * Returns the the object that represents the Thing Description.
@@ -297,8 +295,6 @@ declare namespace WoT {
     export type ActionHandler = (params: InteractionOutput, options?: InteractionOptions) => Promise<undefined | InteractionInput>;
 
     export type EventSubscriptionHandler = (options?: InteractionOptions) => Promise<void>;
-
-    export type EventListenerHandler = () => Promise<InteractionInput>;
 
 }
 

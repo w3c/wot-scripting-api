@@ -1,8 +1,8 @@
 {
-  "name": "wot-thing-description-types",
+  "name": "wot-thing-model-types",
   "version": "1.1.0-13-October-2022",
-  "description": "Official Typescript definition type for W3C Thing Description",
-  "types": "thing-description.d.ts",
+  "description": "Official Typescript definition type for W3C Thing Model Description",
+  "types": "thing-model.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/w3c/wot-scripting-api.git#main"
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/w3c/wot-scripting-api#readme",
   "scripts": {
-    "build": "json2ts --unreachableDefinitions --input schema/td-json-schema-validation.json  --output thing-description.d.ts"
+    "build": "json2ts --unreachableDefinitions --input schema/tm-json-schema-validation.json  --output thing-model.d.ts"
   },
   "devDependencies": {
     "json-schema-to-typescript": "^10.1.4"

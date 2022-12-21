@@ -21,6 +21,7 @@
   "license": "W3C-20150513",
   "workspaces": [
     "thing-description",
+    "thing-model",
     "scripting-api"
   ]
 }

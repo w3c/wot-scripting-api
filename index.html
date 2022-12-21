@@ -52,7 +52,7 @@
             ]
           },
         ],
-        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra", "ecmascript"],
+        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra", "url", "ecmascript"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
             href:"https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/",
@@ -66,6 +66,12 @@
             publisher: "W3C",
             date: "24 November 2020"
           },
+          "WOT-DISCOVERY" : {
+            href:"https://www.w3.org/TR/2022/WD-wot-discovery-20220810/",
+            title: "Web of Things (WoT) Discovery",
+            publisher: "W3C",
+            date: "10 August 2022"
+          },
           "WOT-PROTOCOL-BINDINGS" : {
             href: "https://www.w3.org/TR/2020/NOTE-wot-binding-templates-20200130/",
             title: "Web of Things Binding Templates",
@@ -77,6 +83,12 @@
             title: "Web of Things Security and Privacy Guidelines",
             publisher: "W3C",
             date: "6 November 2019"
+          },
+          "WOT-USE-CASES" : {
+            href:"https://www.w3.org/TR/2021/NOTE-wot-usecases-20210518/",
+            title: "Web of Things Use Cases and Requirements",
+            publisher: "W3C",
+            date: "18 May 2021"
           },
           "TYPESCRIPT": {
             href: "https://www.typescriptlang.org/docs/handbook/intro.html",
@@ -164,7 +176,7 @@
     </p>
     <p>
       Scripting is an optional building block in WoT and it is typically used in gateways or browsers that are able to run a <a>WoT Runtime</a> and
-      <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">Thing Directory</a>.
+      <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/script-manager">script management</a>, providing a convenient way to extend WoT support to new types of endpoints and implement WoT applications such as <a href="https://github.com/w3c/wot-scripting-api/tree/master/applications/thing-directory">TD Directory</a>.
     </p>
     <p>
       This specification describes an application programming interface (API) representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Thing</a>s characterized by <a> WoT Interactions</a> specified by a script.
@@ -206,7 +218,7 @@
           then instantiating a software stack that implements the <a>WoT Interface</a> specified by the <a>TD</a> in order to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>,
         </li>
         <li>
-           then eventually publishing the <a>Thing Description</a> (for instance to a <a>Thing Directory</a> directory for easier discovery).
+           then eventually publishing the <a>Thing Description</a> (for instance to a <a>TD Directory</a> directory for easier discovery).
         </li>
       </ul>
       This specification describes how to expose and consume <a>Thing</a>s by a script. Also, it defines a generic API for <a>Thing</a> discovery.
@@ -224,9 +236,11 @@
     -->
   </section>
 
-  <section class="informative"> <h3>Use Cases</h3>
+  <section class="informative"> <h3>Use Case Scenarios</h3>
     <p>
-      The following scripting use cases are supported in this specification:
+      The business use cases listed in the [[WOT-USE-CASES]] document may be
+      implemented using this API, based on the scripting use case scenarios
+      described here.
     </p>
     <section><h4>Consuming a Thing</h4>
     <ul>
@@ -300,7 +314,7 @@
       <li>Discover <a>Thing</a>s running in the local <a>WoT Runtime</a>.</li>
       <li>Discover nearby <a>Thing</a>s, for instance connected by NFC or Bluetooth,
         or within a <a href="https://en.wikipedia.org/wiki/Geo-fence">geo-fence</a>.</li>
-      <li>Discover <a>Thing</a>s by sending a discovery request to a given <a>Thing Directory</a>.</li>
+      <li>Discover <a>Thing</a>s by sending a discovery request to a given <a>TD Directory</a>.</li>
       <li>Discover <a>Thing</a>s filtered by filters defined on <a>Thing Description</a>s</li>
       <li>Discover <a>Thing</a>s filtered by semantic queries.</li>
       <li>Stop or suppress an ongoing discovery process.</li>
@@ -343,7 +357,11 @@
       </dt>
       <dd>
         <p>
-          Implementations of this conformance class MUST implement the <code><a>ThingDiscovery</a></code> interface and the <code>discover()</code> method on the <a>WoT API object</a>.
+          Implementations of this conformance class MUST implement the
+          <code><a>ThingDiscoveryProcess</a></code> interface, the
+          <code>discover()</code> method, the <code>exploreDirectory()</code> method,
+          and the <code>requestThingDescription()</code> method on the
+          <a>WoT API object</a>.
         </p>
       </dd>
     </dl>
@@ -366,7 +384,7 @@
   
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>Thing Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
       <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#dataschema">
         <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn data-lt="Forms">Form</dfn></a>,
         <a href="https://w3c.github.io/wot-thing-description/#securityscheme"><dfn>SecurityScheme</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
@@ -613,7 +631,7 @@
       <ol class="algorithm">
         <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
           [= exception/throw =] {{SyntaxError}} and abort these steps.</li>
-        <li>Initialize and empty object called |td|</li>
+        <li>Initialize an empty object called |td|</li>
         <li>
           For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
         </li>
@@ -694,27 +712,155 @@
   <section> <h3>The <dfn>discover()</dfn> method</h3>
     <pre class="idl">
       partial namespace WOT {
-        ThingDiscovery discover(optional ThingFilter filter = null);
+        Promise&lt;ThingDiscoveryProcess&gt; discover(optional ThingFilter filter = null);
       };
     </pre>
     <div>
       Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
       <ol>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{"SecurityError"}} and abort these steps.
+          Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
-          Construct a <a>ThingDiscovery</a> object |discovery:ThingDiscovery| with |filter|.
+          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
         </li>
         <li>
-          Invoke the <a href="#the-start-method">discovery.start()</a> method.
+          If discovery is not supported by the implementation, reject |promise|
+          with {{NotSupportedError}} and abort these steps.
         </li>
         <li>
-          Return |discovery|.
+          Let |discovery:ThingDiscoveryProcess| be a new {{ThingDiscoveryProcess}} object.
+        </li>
+        <li>
+          Set |discovery|'s {{ThingDiscoveryProcess/[[filter]]}} to |filter:ThingFilter|.
+        </li>
+        <li>
+          Set |discovery|'s {{ThingDiscoveryProcess/[[url]]}} to `undefined`.
+        </li>
+        <li>
+          If filters in general are not supported by the implementation and
+          |filter| is not `undefined` or `null`, reject |promise|
+          with {{NotSupportedError}} and abort these steps.
+        </li>
+        <li>
+          If discovery cannot be started by the underlying platform,
+          reject |promise| with {{OperationError}} and abort these steps.
+        </li>
+        <li>
+          Request the underlying platform to start the <a>discovery process</a>
+          by any means supported and provisioned in the <a>WoT Runtime</a> for which
+          the script has access to, passing |discovery| to it.
+        </li>
+        <li>
+          Resolve |promise| with |discovery|.
         </li>
       </ol>
     </div>
   </section>
+
+  <section> <h3>The <dfn>exploreDirectory()</dfn> method</h3>
+    <pre class="idl">
+      partial namespace WOT {
+        Promise&lt;ThingDiscoveryProcess&gt; exploreDirectory(USVString url,
+            optional ThingFilter filter = null);
+      };
+    </pre>
+    <div>
+      Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that given a <a>TD Directory</a> URL, will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
+        </li>
+        <li>
+          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+        </li>
+        <li>
+          If directory discovery is not supported by the implementation, reject |promise|
+          with {{NotSupportedError}} and abort these steps.
+        </li>
+        <li>
+          Let |discovery:ThingDiscoveryProcess| be a new {{ThingDiscoveryProcess}} object.
+        </li>
+        <li>
+          Set |discovery|'s {{ThingDiscoveryProcess/[[url]]}} to |url:USVString|.
+        </li>
+        <li>
+          Set |discovery|'s {{ThingDiscoveryProcess/[[filter]]}} to |filter:ThingFilter|.
+        </li>
+        <li>
+          Request the underlying platform to start the directory discovery process.
+          <p class="note">
+            This is a placeholder for more details in the discovery algorithm.
+            Implementations should follow the procedures described in the
+            [[WOT-DISCOVERY]] and [WOT-PROTOCOL-BINDINGS] specifications.
+            Some normative steps are indicated below.
+          </p>
+          <ol>
+            <li>
+              If |url| is not a <a>TD Directory</a> or if the underlying
+              implementation cannot support the <a>Protocol Binding</a>
+              indicated by |url|, reject |promise|
+              with {{NotSupportedError}} and terminate these steps.
+            </li>
+            <li>
+              If filters in general are not supported by the implementation and
+              |filter| is not `undefined` or `null`, reject |promise|
+              with {{NotSupportedError}} and abort these steps.
+            </li>
+            <li>
+              Run the <a>discovery process</a> given |discovery|.
+              <p class="note">
+                From this point on, errors are recorded only on
+                {{ThingDiscoveryProcess/error}}, but don't affect |promise| any longer.
+              </p>
+            </li>
+          </ol>
+        </li>
+        <li>
+          Resolve |promise| with |discovery|.
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section> <h3>The <dfn>requestThingDescription()</dfn> method</h3>
+    <pre class="idl">
+      partial namespace WOT {
+        Promise&lt;ThingDescription&gt; requestThingDescription(USVString url);
+      };
+    </pre>
+    <div>
+      Belongs to the <a>WoT Discovery</a> conformance class.
+      Requests a <a>Thing Description</a> from the given URL.
+      The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
+        </li>
+        <li>
+          If invoking this method is not allowed for the current scripting
+          context for security reasons, reject |promise| with a {{SecurityError}}
+          and abort these steps.
+        </li>
+        <li>
+          If fetching a <a>Thing Description</a> is not supported by the
+          implementation, reject |promise| with {{NotSupportedError}} and
+          abort these steps.
+        </li>
+        <li>
+          Let |td:ThingDescription| be the result of invoking the underlying
+          platform to retrieve the <a>Thing Description</a> using the
+            <a>Protocol Binding</a> specified by |url|.
+          If retrieving |td| fails, reject |promise| with {{NotFoundError}} and
+          abort these steps.
+        </li>
+        <li>
+          Resolve |promise| with |td|.
+        </li>
+      </ol>
+    </div>
+  </section>
+
   </section> <!-- WoT -->
 
   <section data-cite="webidl"> <h2>Handling interaction data</h2>
@@ -741,8 +887,8 @@
     </p>
     <p>
       <dfn>DataSchemaValue</dfn> is an
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]]
-      (i.e. null, boolean, number, string, array, or object).
+      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]].
+	  The possible values MUST be of type <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-null-type">null</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-boolean-type">boolean</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-number-type">number</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-string-type">string</a>, <a href="https://262.ecma-international.org/11.0/#sec-array-objects">array</a>, or <a href="https://262.ecma-international.org/11.0/#sec-object-type">object</a>.
     </p>
     <p>
       {{ReadableStream}} is meant to be used for <a>WoT Interactions</a> that
@@ -1356,9 +1502,9 @@
     <section>
       <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        Returns the <a>internal slot</a> [[\td]] of the {{ConsumedThing}} object
+        Returns the {{ConsumedThing/[[td]]}} of the {{ConsumedThing}} object
         that represents the <a>Thing Description</a> of the {{ConsumedThing}}.
-        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
+        Applications may consult the <a>Thing</a> metadata stored in {{ConsumedThing/[[td]]}} in
         order to introspect its capabilities before interacting with it.
       </p>
     </section>
@@ -1382,7 +1528,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s
             |propertyName|.
           </li>
           <li>
@@ -1442,7 +1588,7 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readmultipleproperties`, selected by
+            <a>Form</a> associated with |formIndex| in {{ConsumedThing/[[td]]}}'s |forms| array, otherwise let |form| be a <a>Form</a> in {{ConsumedThing/[[td]]}}'s |forms| array whose |op| is `readmultipleproperties`, selected by
             the implementation.
           </li>
           <li>
@@ -1465,7 +1611,7 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
+                Let |schema| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
@@ -1501,7 +1647,7 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array, otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms| array whose |op| is `readallproperties`, selected by
+            <a>Form</a> associated with |formIndex| in {{ConsumedThing/[[td]]}}'s |forms| array, otherwise let |form| be a <a>Form</a> in {{ConsumedThing/[[td]]}}'s |forms| array whose |op| is `readallproperties`, selected by
             the implementation.
           </li>
           <li>
@@ -1527,7 +1673,7 @@
                 Let |value| be the value of |result|'s |key|.
               </li>
               <li>
-                Let |schema| be the value of [[\td]]'s |properties|'s |key|.
+                Let |schema| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |key|.
               </li>
               <li>
                 Let |property| be the result of running
@@ -1558,7 +1704,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s
             |propertyName|.
           </li>
           <li>
@@ -1623,8 +1769,8 @@
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
-            <a>Form</a> associated with |formIndex| in [[\td]]'s |forms| array,
-            otherwise let |form| be a <a>Form</a> in [[\td]]'s |forms|
+            <a>Form</a> associated with |formIndex| in {{ConsumedThing/[[td]]}}'s |forms| array,
+            otherwise let |form| be a <a>Form</a> in {{ConsumedThing/[[td]]}}'s |forms|
             array whose |op| is `writemultipleproperties`, selected by
             the implementation.
           </li>
@@ -1636,7 +1782,7 @@
             Let |propertyNames| be an array of |string| with as elements the keys of the |properties| object.
           </li>
           <li>
-            For each |name:string| in |propertyNames|, let |property| be the value of [[\td]]'s |properties|'s |name|.
+            For each |name:string| in |propertyNames|, let |property| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |name|.
             If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
             and abort these steps.
           </li>
@@ -1647,7 +1793,7 @@
           <li>
             Let |schemas:object| be an object and for each string |name:string|
             in |propertyNames| add a property with key |name| and let its value
-            be the value of [[\td]]'s |properties|'s |name|.
+            be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |name|.
           </li>
           <li>
             For each key |key:string| in |properties|, take its value as |value|
@@ -1724,7 +1870,7 @@
                 Let |subscription|'s {{Subscription/[[name]]}} be the value of |propertyName|.
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of [[\td]]'s
+                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of {{ConsumedThing/[[td]]}}'s
                 |properties|'s |propertyName|.
               </li>
               <li>
@@ -1812,7 +1958,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |actions|'s
+            Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |actions|'s
             |actionName|.
           </li>
           <li>
@@ -1898,7 +2044,7 @@
                 Let |subscription|'s {{Subscription/[[name]]}} be the value of |eventName|.
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of [[\td]]'s
+                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of {{ConsumedThing/[[td]]}}'s
                 |events|'s |eventName|.
               </li>
               <li>
@@ -2389,10 +2535,8 @@
                 EventSubscriptionHandler handler);
         ExposedThing setEventUnsubscribeHandler(DOMString name,
                 EventSubscriptionHandler handler);
-        ExposedThing setEventHandler(DOMString name,
-                EventListenerHandler eventHandler);
         Promise&lt;undefined&gt; emitEvent(DOMString name,
-                InteractionInput data);
+                optional InteractionInput data);
 
         Promise&lt;undefined&gt; expose();
         Promise&lt;undefined&gt; destroy();
@@ -2414,7 +2558,6 @@
       callback EventSubscriptionHandler = Promise&lt;undefined&gt;(
               optional InteractionOptions options = null);
 
-      callback EventListenerHandler = Promise&lt;InteractionInput&gt;();
     </pre>
 
     <section data-dfn-for="ExposedThing">
@@ -2431,11 +2574,36 @@
          </tr>
         </thead>
         <tbody data-link-for="ExposedThing">
-         <tr>
-          <td><strong><em>[[\td]]</em></strong></td>
-          <td>`null`</td>
-          <td>The <a>Thing Description</a> of the <a>Thing</a>.</td>
-         </tr>
+          <tr>
+            <td><dfn>[[\td]]</dfn></td>
+            <td>`null`</td>
+            <td>The <a>Thing Description</a> of the {{ExposedThing}}.</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\readHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{PropertyReadHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\writeHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{PropertyWriteHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\observeHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{PropertyReadHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\unobserveHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and {{Function}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\actionHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with action names as keys and {{ActionHandler}}s as values</td>
+          </tr>
         </tbody>
       </table>
     </section>
@@ -2469,7 +2637,7 @@
             Let |thing:ExposedThing| be a new {{ExposedThing}} object.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\td]] of |thing| to |td|.
+            Set the {{ExposedThing/[[td]]}} of |thing| to |td|.
           </li>
           <li>
             Return |thing|.
@@ -2481,9 +2649,9 @@
     <section data-dfn-for="ExposedThing">
       <h3>The <dfn>getThingDescription()</dfn> method</h3>
       <p>
-        Returns the <a>internal slot</a> [[\td]] of the {{ExposedThing}} object
+        Returns the {{ExposedThing/[[td]]}} of the {{ExposedThing}} object
         that represents the <a>Thing Description</a> of the <a>Thing</a>.
-        Applications may consult the <a>Thing</a> metadata stored in [[\td]] in
+        Applications may consult the <a>Thing</a> metadata stored in {{ExposedThing/[[td]]}} in
         order to introspect its capabilities before interacting with it.
       </p>
     </section>
@@ -2518,7 +2686,7 @@
          The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the [[\td]] <a>internal slot</a>.
+        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the {{ExposedThing/[[td]]}} <a>internal slot</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -2529,7 +2697,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2537,8 +2705,7 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Add the <a>internal slot</a> [[\readHandler]] to |interaction| and
-            set it to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[readHandlers]]}} <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2563,7 +2730,7 @@
             steps with |name:string| and |options:InteractionOptions|:
             <ol>
               <li>
-                Let |interaction| be the value of [[\td]]'s |properties|'s
+                Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
                 |name|.
               </li>
               <li>
@@ -2573,8 +2740,8 @@
                 Let |handler:function| be `null`.
               </li>
               <li>
-                If there is a user provided <a>internal slot</a> [[\readHandler]]
-                on |interaction|, let |handler| be that.
+                If there is a user provided {{PropertyReadHandler}} in {{ExposedThing/[[readHandlers]]}} <a>internal slot</a> 
+                for |interaction|, let |handler| be that.
               </li>
               <li>
                 Otherwise, if there is a default read handler provided by the implementation, let |handler| be that.
@@ -2694,7 +2861,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2702,8 +2869,8 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\observeHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[observeHandlers]]}} 
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2724,7 +2891,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of {{ExposedThing/[[td]]}}'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
@@ -2767,7 +2934,7 @@
             {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2775,8 +2942,8 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\unobserveHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[unobserveHandlers]]}} 
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2797,13 +2964,13 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of {{ExposedThing/[[td]]}}'s |properties|'s |name|.
             If it does not exist, send back a {{NotFoundError}} in the
             reply and abort these steps.
           </li>
           <li>
-            If there is an [[\unobserveHandler]] of type {{Function}} defined
-            for |name| on |property|, invoke that with |options|, send back a
+            If there is a user provided {{Function}} in {{ExposedThing/[[unobserveHandlers]]}} <a>internal slot</a>
+            for |interaction|, invoke that with |options|, send back a
             reply following the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
@@ -2834,21 +3001,22 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |property| be the value of [[\td]]'s |properties|'s |name|.
+            Let |property| be the value of {{ExposedThing/[[td]]}}'s |properties|'s |name|.
           </li>
           <li>
             If a <a>Property</a> with the name |name| is not found,
             reject |promise| with {{NotFoundError}} and abort these steps.
           </li>
+		  <!--
+			Do we need a dedicated emitPropertChange handler instead of using readHandler?
+			see https://github.com/w3c/wot-scripting-api/issues/407
+		  -->
           <li>
             Let |handler:function| be `null.`
           </li>
           <li>
-            If there is an [[\observeHandler]] <a>internal slot</a> on |property|, let |handler| be that.
-          </li>
-          <li>
-            Otherwise, if there is a [[\readHandler]] <a>internal slot</a>
-            associated with |name| on |property|, let |handler| be that.
+            If there is a user provided {{PropertyReadHandler}} in {{ExposedThing/[[readHandlers]]}}
+            <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
             If |handler| is `null`, abort these steps.
@@ -2928,7 +3096,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2936,8 +3104,8 @@
             [= exception/throw =] {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\writeHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[writeHandlers]]}} 
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -2960,7 +3128,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -2970,8 +3138,8 @@
             Let |handler:function| be `null`.
           </li>
           <li>
-            If there is a user provided <a>internal slot</a> [[\writeHandler]]
-            on |interaction|, let |handler| be that.
+            If there is a user provided {{PropertyWriteHandler}} in {{ExposedThing/[[writeHandlers]]}}
+            <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
             Otherwise, if there is a default write handler provided by the implementation, let |handler| be that.
@@ -3055,7 +3223,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |actions|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |actions|'s
             |name|.
           </li>
           <li>
@@ -3063,8 +3231,8 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\actionHandler]] on |interaction|
-            to |action|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[actionHandlers]]}}
+            <a>internal slot</a>.
           </li>
         </ol>
       </div>
@@ -3084,7 +3252,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |properties|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |properties|'s
             |name|.
           </li>
           <li>
@@ -3094,8 +3262,8 @@
             Let |handler:function| be `null`.
           </li>
           <li>
-            If there is a user provided <a>internal slot</a> [[\actionHandler]]
-            on |interaction|, let |handler| be its value.
+            If there is a user provided {{ActionHandler}} in {{ExposedThing/[[actionHandlers]]}}
+            <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
             If |handler| is `null`, return a {{NotSupportedError}} with the reply
@@ -3114,21 +3282,6 @@
           </li>
         </ol>
       </div>
-    </section>
-
-    <section data-dfn-for="EventListenerHandler">
-      <h3>The <dfn>EventListenerHandler</dfn> callback</h3>
-      <p>
-        A function that is called when an associated <a>Event</a> is triggered
-        and provides the data to be sent with the <a>Event</a> to subscribers.
-        Returns a {{Promise}} that resolves with {{InteractionInput}} value
-        that represents the <a>Event</a> data, or rejects with an error.
-      </p>
-      <p class="note">
-        Applications MAY return {{ReadableStream}} from an {{EventListenerHandler}}
-        Implementations will then use the stream provided in
-        {{InteractionOutput}} when constructing the event notification.
-      </p>
     </section>
 
     <section data-dfn-for="EventSubscriptionHandler">
@@ -3167,7 +3320,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3200,7 +3353,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3253,7 +3406,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3286,7 +3439,7 @@
             according to the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
           </li>
           <li>
@@ -3312,75 +3465,17 @@
         </ol>
       </div>
     </section>
-
-    <section> <h3>The <dfn>setEventHandler()</dfn> method</h3>
-      <p>
-        Takes as arguments |name:string| and |eventHandler:EventListenerHandler|.
-        Sets the event handler function for the specified <a>Event</a>
-        matched by |name|.
-        Throws on error.
-        Returns a reference to |this| object for supporting chaining.
-      </p>
-      <p>
-        The |eventHandler| callback function will implement what to do when the
-        event is emitted. It SHOULD resolve with a value that represents the
-        <a>Event</a> data, or reject with an error.
-      </p>
-      <p>
-        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
-      </p>
-      <div>
-        When the method is invoked with |name:string| and
-        |eventHandler:EventListenerHandler|, run the following steps:
-        <ol>
-          <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
-            |name|.
-          </li>
-          <li>
-            If an <a>Event</a> with the name |name| is not found,
-            [= exception/throw =] a {{NotFoundError}} and abort these steps.
-          </li>
-          <li>
-            Set the <a>internal slot</a> [[\eventHandler]] of |interaction| to
-            |eventHandler|.
-          </li>
-          <li>
-            Return `this`.
-          </li>
-        </ol>
-      </div>
-    </section>
-
+    
     <section> <h3>Handling <a>Events</a></h3>
       <div>
         When an <a>Event</a> with name |name| is emitted with
-        |data:InteractionInput| either by the underlying platform or by the
+        |data:InteractionInput| by the
         <a href="#the-emitevent-method">emitEvent()</a> method, run the
         following steps:
         <ol>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
             |name|.
-          </li>
-          <li>
-            If |data| is not defined or `null`,
-            <ol>
-              <li>
-                Let |eventHandler| be the value of the [[\eventHandler]]
-                <a>internal slot</a> of |interaction|.
-              </li>
-              <li>
-                If |eventHandler| is failure, abort these steps.
-              </li>
-              <li>
-                Let |data| be the result of awaiting to resolve the invocation
-                of |eventHandler|. If it rejects, abort these steps.
-              </li>
-            </ol>
           </li>
           <li>
             For each |subscriber| in the <a>internal listener list</a> of
@@ -3390,6 +3485,12 @@
                 Create an <a>Event</a> notification |response| according to the
                 <a>Protocol Bindings</a> from |data| and |subscriber|, including
                 its |options|.
+              </li>
+              <li>
+                  If |data| is `undefined`, assume that the notification |response| 
+                  will contain an empty data payload as specified by <a>Protocol Bindings</a>. 
+              </li>
+              <li>
                 If the underlying protocol stack permits conveying event errors and
                 if an error condition has been detected by the UA, create |response|
                 as an error notification according to the <a>Protocol Bindings</a>,
@@ -3412,8 +3513,8 @@
     <section> <h3>The <dfn>emitEvent()</dfn> method</h3>
       <div>
         Takes as arguments |name:string| denoting an <a>Event</a> name and
-        |data:InteractionInput|.
-        Triggers emitting the <a>Event</a> with the given data.
+        optionally |data:InteractionInput|.
+        Triggers emitting the <a>Event</a> with the optional data.
         The method MUST run the following steps:
         <ol>
           <li>
@@ -3423,7 +3524,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Let |interaction| be the value of [[\td]]'s |events|'s |name|.
+            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s |name|.
           </li>
           <li>
             If an <a>Event</a> with the name |name| is not found,
@@ -3431,11 +3532,8 @@
           </li>
           <li>
             Make a request to the underlying platform to emit an <a>Event</a>
-            with |data|.
-            <p class="note">
-              This will trigger the <a href="#handling-events">handling events</a>
-              steps.
-            </p>
+            with optional |data|. Call the <a href="#handling-events">handling events</a>
+            steps.
           </li>
         </ol>
       </div>
@@ -3452,25 +3550,25 @@
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            Run the <a>expand a TD</a> steps on the <a>internal slot</a> [[\td]].
+            Run the <a>expand a TD</a> steps on the {{ExposedThing/[[td]]}}.
           </li>
           <li>
-            Run the <a>validate a TD</a> on [[\td]]. If that fails,
+            Run the <a>validate a TD</a> on {{ExposedThing/[[td]]}}. If that fails,
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in [[\td]]'s |properties|,
+            For each <a>Property</a> definition in {{ExposedThing/[[td]]}}'s |properties|,
             initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
             in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
-            For each <a>Event</a> definition is [[\td]]'s |events|,
+            For each <a>Event</a> definition is {{ExposedThing/[[td]]}}'s |events|,
             initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
             in order to store subscription request data needed to notify the
             <a>Event</a> listeners.
           </li>
           <li>
-            Set up the <a>WoT Interactions</a> based on introspecting [[\td]]
+            Set up the <a>WoT Interactions</a> based on introspecting {{ExposedThing/[[td]]}}
             as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
             Make a request to the underlying platform to initialize the
             <a>Protocol Bindings</a> and then start serving external requests
@@ -3665,93 +3763,86 @@
     </section> <!-- ExposedThing Examples -->
   </section> <!-- ExposedThing -->
 
-  <section data-cite="webidl" data-dfn-for="ThingDiscovery">
-    <h2>The <dfn>ThingDiscovery</dfn> interface</h2>
+  <section data-cite="webidl" data-dfn-for="ThingDiscoveryProcess">
+    <h2>The <dfn>ThingDiscoveryProcess</dfn> interface</h2>
     <p>
       Discovery is a distributed application that requires provisioning and support from participating network nodes (clients, servers, directory services). This API models the client side of typical discovery schemes supported by various IoT deployments.
     </p>
     <p>
-      The {{ThingDiscovery}} object is constructed given a filter and provides the properties and methods controlling the discovery process.
+      The {{ThingDiscoveryProcess}} object provides the properties and methods
+      controlling the discovery process and returning the results.
     </p>
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
-      interface ThingDiscovery {
+      interface ThingDiscoveryProcess {
         constructor(optional ThingFilter filter = null);
-        readonly attribute ThingFilter? filter;
-        readonly attribute boolean active;
         readonly attribute boolean done;
         readonly attribute Error? error;
-        undefined start();
-        Promise&lt;ThingDescription&gt; next();
         undefined stop();
+        async iterable&lt;ThingDescription&gt;;
       };
     </pre>
-    <p class="ednote">
-      The {{ThingDiscovery}} interface has a <code>next()</code> method and a <code>done</code> property, but it is not an <a href="https://tc39.es/proposal-async-iteration/">Iterable</a>. Look into <a href="https://github.com/w3c/wot-scripting-api/issues/177">Issue 177</a> for rationale.
-    </p>
     <p>
-      The <dfn>discovery results</dfn> <a>internal slot</a> is an internal queue for temporarily storing the found {{ThingDescription}} objects until they are consumed by the application using the <a href="#the-next-method">next()</a> method. Implementations MAY optimize the size of this queue based on e.g. the available resources and the frequency of invoking the <a href="#the-next-method">next()</a> method.
+      The {{ThingDiscoveryProcess}} object has the following <a>internal slot</a>s.
     </p>
+    <table class="simple">
+      <thead>
+       <tr>
+        <th>Internal Slot</th>
+        <th>Initial value</th>
+        <th>Description (<em>non-normative</em>)</th>
+       </tr>
+      </thead>
+      <tbody data-link-for="ThingDiscoveryProcess">
+       <tr>
+        <td><dfn>[[\filter]]</dfn></td>
+        <td>`undefined`</td>
+        <td>The {{ThingFilter}} object used in discovery.</td>
+       </tr>
+      <tr>
+        <td><dfn>[[\url]]</dfn></td>
+        <td>`undefined`</td>
+        <td>A {{URL}} representing the <a>TD Directory</a> in a discovery.</td>
+      </tr>
+      </tbody>
+    </table>
     <p>
-      The <dfn>filter</dfn> property represents the discovery filter of type <a>ThingFilter</a> specified for the discovery.
-    </p>
-    <p>
-      The <dfn>active</dfn> property is `true` when the discovery is actively ongoing on protocol level (i.e. new <a>TD</a>s may still arrive) and `false` otherwise.
-    </p>
-    <p>
-      The <dfn>done</dfn> property is `true` if the discovery has been completed with no more results to report and <a>discovery results</a> is also empty.
+      The <dfn>done</dfn> property is `true` if the discovery has been stopped
+      or completed with no more results to report.
     </p>
     <p>
       The <dfn>error</dfn> property represents the last error that occurred during the discovery process. Typically used for critical errors that stop discovery.
     </p>
+    <p>
+      The {{ThingDiscoveryProcess}} object implements the
+      <a href="https://tc39.es/ecma262/#sec-symbol.asynciterator">async iterator</a>
+      concept.
+    </p>
 
-    <section><h3>Constructing {{ThingDiscovery}}</h3>
+    <section><h3>Constructing {{ThingDiscoveryProcess}}</h3>
       <div>
-        To create {{ThingDiscovery}} with a |filter:ThingFilter| or type {{ThingFilter}}, run the following steps:
+        To create {{ThingDiscoveryProcess}} with a |filter:ThingFilter|, run the following steps:
         <ol>
           <li>
             If |filter| is not an object or `null`, [= exception/throw =] a {{TypeError}} and abort these steps.
           </li>
           <li>
-            Let |discovery:ThingDiscovery| be a new {{ThingDiscovery}} object.
+            Let |discovery:ThingDiscoveryProcess| be a new {{ThingDiscoveryProcess}} object.
           </li>
           <li>
-            Set the <a href="#dom-thingdiscovery-filter">filter</a> property to |filter|.
+            Set |discovery|.{{ThingDiscoveryProcess/[[filter]]}} to |filter|.
           </li>
           <li>
-            Set the <a href="#dom-thingdiscovery-active">active</a> and <a href="#dom-thingdiscovery-done">done</a> properties to `false`. Set the <a href="#dom-thingdiscovery-error">error</a> property to `null`.
+            Set |discovery|.{{ThingDiscoveryProcess/done}} to `false`.
+          </li>
+          <li>
+            Set |discovery|.{{ThingDiscoveryProcess/error}} to `null`.
           </li>
           <li>
             Return |discovery|.
           </li>
         </ol>
       </div>
-      <p>
-        The <a href="#the-start-method">start()</a> method sets <a href="#dom-thingdiscovery-active">active</a> to `true`. The <a href="#the-stop-method">stop()</a> method sets the <a href="#dom-thingdiscovery-active">active</a> property to |false|, but <a href="#dom-thingdiscovery-done">done</a> may be still `false` if there are {{ThingDescription}} objects in the <a>discovery results</a> not yet consumed with <a href="#the-next-method">next()</a>.
-      </p>
-      <p>
-         During successive calls of <a href="#the-next-method">next()</a>, the <a href="#dom-thingdiscovery-active">active</a> property may be `true` or `false`, but the <a href="#dom-thingdiscovery-done">done</a> property is set to `false` by <a href="#the-next-method">next()</a> only when both the <a href="#dom-thingdiscovery-active">active</a> property is `false` and <a>discovery results</a> is empty.
-      </p>
-    </section>
-
-    <section data-dfn-for="DiscoveryMethod">
-      <h3>The <dfn>DiscoveryMethod</dfn> enumeration</h3>
-      <pre class="idl">
-        typedef DOMString DiscoveryMethod;
-      </pre>
-      <p>
-        Represents the discovery type to be used:
-      </p>
-      <ul>
-        <li>
-          "<dfn>direct</dfn>" for fetching the <a>Thing Description</a> of a
-          <a>Thing</a> specified by <a>ThingFilter</a>'s `url`.
-        </li>
-        <li>
-          "<dfn>directory</dfn>" for discovery based on a service provided by a
-          <a>Thing Directory</a> specified by <a>ThingFilter</a>'s `url`.
-        </li>
-      </ul>
     </section>
 
     <section data-dfn-for="ThingFilter">
@@ -3761,118 +3852,122 @@
       </p>
       <pre class="idl">
         dictionary ThingFilter {
-          DiscoveryMethod method = "directory";
-          USVString? url;
           object? fragment;
           <!-- DOMString? query; -->
         };
       </pre>
-      <p class = "ednote">
-        The `DOMString query` property was temporarily removed from
-        <a>ThingFilter</a>, until it is standardized in the WoT Discovery
-        task force.
-      </p>
-      <p>
-        The <dfn>method</dfn> property represents the discovery type that should be used in the discovery process. The possible values are defined by the <a href="#the-discoverymethod-enumeration">DiscoveryMethod</a> enumeration.
-      </p>
-      <p>
-        The <dfn>url</dfn> property represents the URL of the target entity serving the discovery request, for instance the URL of a <a>Thing Directory</a> (if <a href="#dom-thingfilter-method">method</a> is {{DiscoveryMethod/[["directory"]]}}),
-        or the URL of a directly targeted <a>Thing</a> (if
-        <a href="#dom-thingfilter-method">method</a> is {{DiscoveryMethod/[["direct"]]}})
-      </p>
       <p>
         The <dfn>fragment</dfn> property represents a template object used for matching property by property against discovered <a>Thing</a>s.
       </p>
-      <!--p>
-        The <dfn>query</dfn> property represents a query string accepted by the implementation, for instance a SPARQL or JSON query. Support may be implemented locally in the <a>WoT Runtime</a> or remotely as a service in a <a>Thing Directory</a>.
-      </p-->
+      <p class = "ednote">
+        The |query:DOMString| property was temporarily removed from
+        <a>ThingFilter</a>, until it is standardized in the WoT Discovery
+        task force. It represented a query string accepted by the implementation,
+        for instance a SPARQL or JSON query. Support was to be implemented locally
+        in the <a>WoT Runtime</a> or remotely as a service in a <a>TD Directory</a>.
+      </p>
+      <p class="ednote">
+        The |url:USVString| property was removed. It used to represent the target
+        entity serving the discovery request, for instance the URL of a
+        <a>TD Directory</a>, or the URL of a directly targeted <a>Thing</a>,
+        but these are implemented by dedicated methods now.
+      </p>
     </section>
 
     <section>
-      <h3>The <dfn>start()</dfn> method</h3>
+      <h3>The <dfn data-lt="discovery-process">discovery process</dfn> algorithm</h3>
       <div>
-        Starts the discovery process. The method MUST run the following steps:
+        Describes what to do during a discovery process that has already started.
+        The algorithm, given |discovery:ThingDiscoveryProcess|, runs the following steps:
         <ol>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, set the <a href="#dom-thingdiscovery-error">error</a> property to a {{SecurityError}} and abort these steps.
-          </li>
-          <li>
-            If discovery is not supported by the implementation, set the <a href="#dom-thingdiscovery-error">error</a> property to {{NotSupportedError}} and abort these steps.
-          </li>
-          <li>
-            Let |filter| denote the <a href="#dom-thingdiscovery-filter">filter</a> property.
-          </li>
-          <!--li>
-            If the |filter| is defined,
-            <ul>
-              <li>
-                If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, pass it as an opaque string to the underlying implementation to be matched against discovered items. The underlying implementation is responsible to parse it e.g. as a SPARQL or JSON query and match it against the <a>Thing Description</a>s found during the discovery process. If queries are not supported, set |this.error| to {{NotSupportedError}} and abort these steps.
-              </li>
-            </ul>
-          </li-->
-          <li>
-            Create the <a>discovery results</a> <a>internal slot</a> for storing discovered {{ThingDescription}} objects.
-          </li>
-          <li>
-            Request the underlying platform to start the discovery process, with the following parameters:
-            <ul>
-              <li>
-                If |filter|s <a href="#dom-thingfilter-method">|method|</a> is not defined or is `"directory"`, use the remote <a>Thing Directory</a> specified in |filter.url|.
-              </li>
-              <li>
-                Otherwise if |filter|s <a href="#dom-thingfilter-method">|method|</a> is `"direct"`, use the remote <a>Thing</a> specified in |filter.url|.
-              </li>
-            </ul>
-          </li>
-          <li>
-            When the underlying platform has started the discovery process, set the <a href="#dom-thingdiscovery-active">active</a> property to `true`.
-          </li>
-          <li>
-            Whenever a new <a>Thing Description</a> |td:ThingDescription| is discovered by the underlying platform, run the following sub-steps:
+            Whenever a new |link| to a <a>Thing Description</a>
+            is discovered and provided by the underlying platform, run the following
+            sub-steps:
             <ol>
               <li>
-                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch</a> |td| as a JSON object |json|. If that fails, set the <a href="#dom-thingdiscovery-error">error</a> property to {{SyntaxError}}, discard |td| and continue the discovery process.
+                Retrieve |td:ThingDescription| as a JSON object, using the <a>Protocol Binding</a>
+                used by the underlying discovery process (as specified by |link|).
+                In the case of an HTTP(S) Binding, this process could use the
+                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a>
+                for the |td|'s retrieval.
               </li>
+              <li>
+                If that fails, set the |discovery|.{{ThingDiscoveryProcess/error}}
+                property to {{SyntaxError}}, discard |td| and continue the discovery process.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Whenever a <a>Thing Description</a> |td| is discovered and provided
+            by the underlying platform or by the previous step, run the following
+            sub-steps:
+            <p class="note">
+              At this point implementations MAY control the flow of the discovery
+              process (depending on memory constraints, for instance queue the
+              results, or temporarily stop discovery if the queue is getting too
+              large, or resume discovery when the queue is emptied sufficiently).
+              These steps are run for each discovered/fetched |td|.
+            </p>
+            <ol>
               <!--li>
                 If |filter|'s <a href="#dom-thingfilter-query">|query|</a> is defined, check if |json| is a match for the query. The matching algorithm is encapsulated by implementations. If that returns `false`, discard |td| and continue the discovery process.
               </li-->
               <li>
-                If |filter|'s <a href="#dom-thingfilter-fragment">|fragment|</a> is defined, for each property defined in it, check if that property exists in |json|'s properties and has the same value. If this is `false` in any checks, discard |td| and continue the discovery process.
+                If |discovery|.{{ThingDiscoveryProcess/[[filter]]}}.{{ThingFilter/fragment}}
+                [=map/exists=], then for each property defined in it,
+                <ol>
+                  <li>
+                     Check if that property exists in |json|'s properties and has the same value.
+                  </li>
+                  <li>
+                    If this is `false` in any checks, discard |td|, discard these
+                    sub-steps and continue the discovery process.
+                  </li>
+                </ol>
               </li>
               <li>
-                Otherwise add |td| to the <a>discovery results</a>.
-              </li>
-              <li>
-                At this point implementations MAY control the flow of the discovery process (depending on memory constraints, for instance temporarily stop discovery if the queue is getting too large, or resume discovery when the queue is emptied sufficiently).
+                Yield |td| using {{Symbol/asyncIterator}}.
+                <p class="ednote">
+                  Improve this step using proper asyncIterator terminology.
+                </p>
               </li>
             </ol>
           </li>
           <li>
-            Whenever an error occurs during the discovery process,
+            Whenever an error occurs during the discovery process, run the following
+            sub-steps:
+            <p class="note">
+              The last error is retained. Implementations MAY choose to stop the
+              discovery process if they consider it should be reported.
+            </p>
             <ol>
               <li>
-                Let |error| be a new {{Error}} object. Set |error|'s |name| to `"DiscoveryError"`.
+                Let |error| be a new {{Error}} object.
+                Set |error|'s |name| to `"DiscoveryError"`.
               </li>
               <li>
-                 If there was an error code or message provided by the <a>Protocol Bindings</a>, set |error|'s |message| to that value as string.
+                 If there was an error code or message provided by the
+                 <a>Protocol Bindings</a>, set |error|'s |message| to that value as string.
               </li>
               <li>
-                Set <a href="#dom-thingdiscovery-error">error</a> property to |error|.
+                Set |discovery|.{{ThingDiscoveryProcess/error}} to |error|.
               </li>
               <li>
-                If the error is irrecoverable and discovery has been stopped by the underlying platform, set the <a href="#dom-thingdiscovery-active">active</a> property to `false`.
+                If the error is irrecoverable and discovery has been stopped by
+                the underlying platform, or if the implementation decided to
+                stop the discovery process and report the error, set
+                |discovery|.{{ThingDiscoveryProcess/done}} to `true` and
+                terminate these steps.
               </li>
             </ol>
-          </li>
-          <li>
-            When the underlying platform reports the discovery process has completed, set the <a href="#dom-thingdiscovery-active">active</a> property to `false`.
           </li>
         </ol>
       </div>
-    </section>
-
+   </section>
+<!--
     <section>
-      <h3>The <dfn>next()</dfn> method</h3>
+      <h3>The <dfn>next()</dfn> method of {{Symbol/asyncIterator}}</h3>
       <div>
         Provides the next discovered {{ThingDescription}} object. The method MUST run the following steps:
         <ol>
@@ -3880,13 +3975,11 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If the <a href="#dom-thingdiscovery-active">active</a> property is `true`, wait until the <a>discovery results</a> <a>internal slot</a> is not empty.
+            Call the `next` method on the Discovery object's {{Symbol/asyncIterator}}.
           </li>
           <li>
-            If <a>discovery results</a> is empty and the <a href="#dom-thingdiscovery-active">active</a> property is `false`, set the <a href="#dom-thingdiscovery-done">done</a> property to `true` and reject |promise|.
-          </li>
-          <li>
-            Remove the first {{ThingDescription}} object |td| from <a>discovery results</a>.
+            If the `value` property in the yielded result from the {{Symbol/asyncIterator}} is undefined, set the
+            {{ThingDiscoveryProcess/done}} property to `true` and reject |promise|.
           </li>
           <li>
             Resolve |promise| with |td| and abort these steps.
@@ -3894,17 +3987,20 @@
         </ol>
       </div>
     </section>
-
+-->
     <section>
       <h3>The <dfn>stop()</dfn> method</h3>
       <div>
-        Stops or suppresses the discovery process. It might not be supported by all discovery methods and endpoints, however, any further discovery results or errors will be discarded and the discovery is marked inactive. The method MUST run the following steps:
+        Stops or suppresses the discovery process. It might not be supported by all discovery methods and endpoints, however, any further discovery results or errors will be discarded and the discovery is marked as done. The method MUST run the following steps:
         <ol>
+          <li>
+            If invoking this method is not allowed for the current scripting context for security reasons, [= exception/throw =] a {{SecurityError}} and abort these steps.
+          </li>
           <li>
             Request the underlying platform to stop the discovery process. If this returns an error, or if it is not possible, for instance when discovery is based on open ended multicast requests, the implementation SHOULD discard subsequent discovered items.
           </li>
           <li>
-            Set the <a href="#dom-thingdiscovery-active">active</a> property to `false`.
+            Set the {{ThingDiscoveryProcess/done}} property to `true`.
           </li>
         </ol>
       </div>
@@ -3913,55 +4009,51 @@
     <section>
       <h3>Discovery Examples</h3>
       <p>
-        The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running. Note that the discovery can end (become inactive) before the internal <a>discovery results</a> queue is emptied, so we need to continue reading {{ThingDescription}} objects until done. This is typical with local and directory type discoveries.
+        The following example finds {{ThingDescription}} objects of <a>Thing</a>s that are exposed by local hardware, regardless how many instances of <a>WoT Runtime</a> it is running
+        Using the {{Symbol/asyncIterator}} provided by the Discovery object, we can iterate asynchronously over the results and perform operations with the obtained {{ThingDescription}} objects.
       </p>
       <pre class="example" title="Fetch the Thing Description of a Thing">
-        let discovery = new ThingDiscovery({ method: "direct" });
-        do {
-          let td = await discovery.next();
-          console.log("Found Thing Description for " + td.title);
-        } while (!discovery.done);
+        let url = "https://mythings.com/thing1";
+        let td = await WOT.requestThingDescription(url);
+        console.log("Found Thing Description for " + td.title);
       </pre>
       <p>
-        The next example finds {{ThingDescription}} objects of <a>Thing</a>s listed in a <a>Thing Directory</a> service. We set a timeout for safety.
+        The next example finds {{ThingDescription}} objects of <a>Thing</a>s listed in a <a>TD Directory</a> service. We set a timeout for safety.
       </p>
       <pre class="example" title="Discover Things via directory">
-        let discoveryFilter = {
-          method: "directory", // default value, no need to specify
-          url: "http://directory.wotservice.org"
-        };
-        let discovery = new ThingDiscovery(discoveryFilter);
+        let discovery = await WOT.exploreDirectory("http://directory.wotservice.org");
         setTimeout( () => {
             discovery.stop();
             console.log("Discovery stopped after timeout.");
           },
           3000);
-        do {
-          let td = await discovery.next();
+        for await (const td of discovery) {
           console.log("Found Thing Description for " + td.title);
           let thing = new ConsumedThing(td);
           console.log("Thing name: " + thing.getThingDescription().title);
-        } while (!discovery.done);
+        };
         if (discovery.error) {
           console.log("Discovery stopped because of an error: " + error.message);
         }
       </pre>
-      <!--p>
-        The next example is for an open-ended multicast discovery, which likely won't complete soon (depending on the underlying protocol), so stopping it with a timeout is a good idea. It will likely deliver results one by one.
+      <p>
+        The next example is for a generic discovery, by any means provisioned
+        to the WOT runtime, including local Things, if any is available.
       </p>
       <pre class="example" title="Discover Things in a network">
-        let discovery = new ThingDiscovery({ method: "multicast" });
+        let discovery = await WOT.discover();
         setTimeout( () => {
             discovery.stop();
             console.log("Stopped open-ended discovery");
           },
           10000);
-        do {
-          let td = await discovery.next();
-          let thing = new ConsumedThing(td);
-          console.log("Thing name: " + thing.getThingDescription().title);
-        } while (!discovery.done);
-      </pre-->
+        for await (const td of discovery) {
+          console.log("Found Thing Description for " + td.title);
+        };
+        if (discovery.error) {
+          console.log("Discovery stopped because of an error: " + error.message);
+        }
+      </pre>
     </section> <!-- Examples -->
   </section>
 

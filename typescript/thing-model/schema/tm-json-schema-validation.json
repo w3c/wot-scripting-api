@@ -1,9 +1,9 @@
 {
-  "title": "Thing Description",
+  "title": "Thing Model",
   "version": "1.1-05-September-2022",
-  "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
+  "description": "JSON Schema for validating Thing Models. This is automatically generated from the WoT TD Schema.",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id":"https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/td-json-schema-validation.json",
+  "$id": "https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/tm-json-schema-validation.json",
   "definitions": {
     "anyUri": {
       "type": "string"
@@ -15,6 +15,11 @@
       "type": "object",
       "additionalProperties": {
         "type": "string"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "title": {
@@ -24,6 +29,11 @@
       "type": "object",
       "additionalProperties": {
         "type": "string"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "security": {
@@ -32,8 +42,7 @@
           "type": "array",
           "items": {
             "type": "string"
-          },
-          "minItems":1
+          }
         },
         {
           "type": "string"
@@ -76,7 +85,7 @@
     "thing-context": {
       "anyOf": [
         {
-          "$comment":"New context URI with other vocabularies after it but not the old one",
+          "$comment": "New context URI with other vocabularies after it but not the old one",
           "type": "array",
           "items": [
             {
@@ -92,17 +101,17 @@
                 "type": "object"
               }
             ],
-            "not":{
+            "not": {
               "$ref": "#/definitions/thing-context-td-uri-v1"
             }
           }
         },
         {
-          "$comment":"Only the new context URI",
+          "$comment": "Only the new context URI",
           "$ref": "#/definitions/thing-context-td-uri-v1.1"
         },
         {
-          "$comment":"Old context URI, followed by the new one and possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
+          "$comment": "Old context URI, followed by the new one and possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
           "type": "array",
           "prefixItems": [
             {
@@ -112,8 +121,8 @@
               "$ref": "#/definitions/thing-context-td-uri-v1.1"
             }
           ],
-          "minItems":2,
-          "contains":{
+          "minItems": 2,
+          "contains": {
             "$ref": "#/definitions/thing-context-td-uri-v1.1"
           },
           "additionalItems": {
@@ -130,62 +139,66 @@
         {
           "$comment": "Old context URI, followed by possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
           "type": "array",
-          "prefixItems": [{
-            "$ref": "#/definitions/thing-context-td-uri-v1"
-          }],
+          "prefixItems": [
+            {
+              "$ref": "#/definitions/thing-context-td-uri-v1"
+            }
+          ],
           "minItems": 1,
           "contains": {
             "$ref": "#/definitions/thing-context-td-uri-v1"
           },
           "additionalItems": {
-            "anyOf": [{
-              "$ref": "#/definitions/anyUri"
-            },
-            {
-              "type": "object"
-            }
-           ]
+            "anyOf": [
+              {
+                "$ref": "#/definitions/anyUri"
+              },
+              {
+                "type": "object"
+              }
+            ]
           }
         },
         {
-          "$comment":"Only the old context URI",
+          "$comment": "Only the new context URI",
           "$ref": "#/definitions/thing-context-td-uri-v1"
         }
       ]
     },
-    "bcp47_string":{
-      "type":"string",
+    "bcp47_string": {
+      "type": "string",
       "pattern": "^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$"
     },
     "type_declaration": {
       "oneOf": [
         {
-          "type": "string",
-          "not": {
-            "const": "tm:ThingModel"
-          }
+          "type": "string"
         },
         {
           "type": "array",
           "items": {
-            "type": "string",
-            "not": {
-              "const": "tm:ThingModel"
-            }
+            "type": "string"
           }
         }
       ]
     },
     "dataSchema-type": {
       "type": "string",
-      "enum": [
-        "boolean",
-        "integer",
-        "number",
-        "string",
-        "object",
-        "array",
-        "null"
+      "anyOf": [
+        {
+          "enum": [
+            "boolean",
+            "integer",
+            "number",
+            "string",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       ]
     },
     "dataSchema": {
@@ -207,10 +220,24 @@
           "$ref": "#/definitions/titles"
         },
         "writeOnly": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "readOnly": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "oneOf": {
           "type": "array",
@@ -222,9 +249,16 @@
           "type": "string"
         },
         "enum": {
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "format": {
           "type": "string"
@@ -254,18 +288,46 @@
           ]
         },
         "maxItems": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "minItems": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "minimum": {
-          "type": "number"
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "maximum": {
-          "type": "number"
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "exclusiveMinimum": {
           "type": "number"
@@ -274,12 +336,26 @@
           "type": "number"
         },
         "minLength": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "maxLength": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "multipleOf": {
           "$ref": "#/definitions/multipleOfDefinition"
@@ -290,10 +366,25 @@
           }
         },
         "required": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -315,17 +406,29 @@
       }
     },
     "multipleOfDefinition": {
-      "type": [
-        "integer",
-        "number"
-      ],
-      "exclusiveMinimum": 0
+      "anyOf": [
+        {
+          "type": [
+            "integer",
+            "number"
+          ],
+          "exclusiveMinimum": 0
+        },
+        {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      ]
     },
     "expectedResponse": {
       "type": "object",
       "properties": {
         "contentType": {
           "type": "string"
+        }
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
         }
       }
     },
@@ -370,152 +473,265 @@
           "$ref": "#/definitions/additionalResponsesDefinition"
         }
       },
-      "required": [
-        "href"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "form_element_property": {
-      "allOf":[{"$ref":"#/definitions/form_element_base"}],
-      "type": "object",
-      "properties": {
-        "op": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": [
-                "readproperty",
-                "writeproperty",
-                "observeproperty",
-                "unobserveproperty"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "readproperty",
-                  "writeproperty",
-                  "observeproperty",
-                  "unobserveproperty"
-                ]
-              }
-            }
-          ]
+      "allOf": [
+        {
+          "$ref": "#/definitions/form_element_base"
         }
-      },
-      "additionalProperties": true
-    },
-    "form_element_action": {
-      "allOf":[{"$ref":"#/definitions/form_element_base"}],
+      ],
       "type": "object",
       "properties": {
         "op": {
           "oneOf": [
             {
               "type": "string",
-              "enum": [
-                "invokeaction",
-                "queryaction",
-                "cancelaction"
+              "anyOf": [
+                {
+                  "enum": [
+                    "readproperty",
+                    "writeproperty",
+                    "observeproperty",
+                    "unobserveproperty"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/placeholder-pattern"
+                }
               ]
             },
             {
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": [
-                  "invokeaction",
-                  "queryaction",
-                  "cancelaction"
+                "anyOf": [
+                  {
+                    "enum": [
+                      "readproperty",
+                      "writeproperty",
+                      "observeproperty",
+                      "unobserveproperty"
+                    ]
+                  },
+                  {
+                    "$ref": "#/definitions/placeholder-pattern"
+                  }
                 ]
               }
             }
           ]
-        }
-      },
-      "additionalProperties": true
-    },
-    "form_element_event": {
-      "allOf":[{"$ref":"#/definitions/form_element_base"}],
-      "type": "object",
-      "properties": {
-        "op": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": [
-                "subscribeevent",
-                "unsubscribeevent"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "subscribeevent",
-                  "unsubscribeevent"
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "additionalProperties": true
-    },
-    "form_element_root": {
-      "allOf":[{"$ref":"#/definitions/form_element_base"}],
-      "type": "object",
-      "properties": {
-        "op": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": [
-                "readallproperties",
-                "writeallproperties",
-                "readmultipleproperties",
-                "writemultipleproperties",
-                "observeallproperties",
-                "unobserveallproperties",
-                "queryallactions",
-                "subscribeallevents",
-                "unsubscribeallevents"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "readallproperties",
-                  "writeallproperties",
-                  "readmultipleproperties",
-                  "writemultipleproperties",
-                  "observeallproperties",
-                  "unobserveallproperties",
-                  "queryallactions",
-                  "subscribeallevents",
-                  "unsubscribeallevents"
-                ]
-              }
-            }
-          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
       "additionalProperties": true,
-      "required":["op"]
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
-    "form" : {
-      "$comment":"This is NOT for validation purposes but for automatic generation of TS types. For more info, please see: https://github.com/w3c/wot-thing-description/pull/1319#issuecomment-994950057",
+    "form_element_action": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/form_element_base"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "op": {
+          "oneOf": [
+            {
+              "type": "string",
+              "anyOf": [
+                {
+                  "enum": [
+                    "invokeaction",
+                    "queryaction",
+                    "cancelaction"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/placeholder-pattern"
+                }
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "invokeaction",
+                      "queryaction",
+                      "cancelaction"
+                    ]
+                  },
+                  {
+                    "$ref": "#/definitions/placeholder-pattern"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
+    },
+    "form_element_event": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/form_element_base"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "op": {
+          "oneOf": [
+            {
+              "type": "string",
+              "anyOf": [
+                {
+                  "enum": [
+                    "subscribeevent",
+                    "unsubscribeevent"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/placeholder-pattern"
+                }
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "subscribeevent",
+                      "unsubscribeevent"
+                    ]
+                  },
+                  {
+                    "$ref": "#/definitions/placeholder-pattern"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
+    },
+    "form_element_root": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/form_element_base"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "op": {
+          "oneOf": [
+            {
+              "type": "string",
+              "anyOf": [
+                {
+                  "enum": [
+                    "readallproperties",
+                    "writeallproperties",
+                    "readmultipleproperties",
+                    "writemultipleproperties",
+                    "observeallproperties",
+                    "unobserveallproperties",
+                    "queryallactions",
+                    "subscribeallevents",
+                    "unsubscribeallevents"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/placeholder-pattern"
+                }
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "anyOf": [
+                  {
+                    "enum": [
+                      "readallproperties",
+                      "writeallproperties",
+                      "readmultipleproperties",
+                      "writemultipleproperties",
+                      "observeallproperties",
+                      "unobserveallproperties",
+                      "queryallactions",
+                      "subscribeallevents",
+                      "unsubscribeallevents"
+                    ]
+                  },
+                  {
+                    "$ref": "#/definitions/placeholder-pattern"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
+        }
+      },
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
+    },
+    "form": {
+      "$comment": "This is NOT for validation purposes but for automatic generation of TS types. For more info, please see: https://github.com/w3c/wot-thing-description/pull/1319#issuecomment-994950057",
       "oneOf": [
-           {  "$ref" : "#/definitions/form_element_property" },
-           {  "$ref" : "#/definitions/form_element_action" },
-           {  "$ref" : "#/definitions/form_element_event" },
-           {  "$ref" : "#/definitions/form_element_root" }
-       ]
+        {
+          "$ref": "#/definitions/form_element_property"
+        },
+        {
+          "$ref": "#/definitions/form_element_action"
+        },
+        {
+          "$ref": "#/definitions/form_element_event"
+        },
+        {
+          "$ref": "#/definitions/form_element_root"
+        }
+      ]
     },
     "property_element": {
       "type": "object",
@@ -546,16 +762,42 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/dataSchema"
+          },
+          "propertyNames": {
+            "not": {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           }
         },
         "observable": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "writeOnly": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "readOnly": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "oneOf": {
           "type": "array",
@@ -567,9 +809,16 @@
           "type": "string"
         },
         "enum": {
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "format": {
           "type": "string"
@@ -593,18 +842,46 @@
           ]
         },
         "maxItems": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "minItems": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "minimum": {
-          "type": "number"
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "maximum": {
-          "type": "number"
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "exclusiveMinimum": {
           "type": "number"
@@ -613,12 +890,26 @@
           "type": "number"
         },
         "minLength": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "maxLength": {
-          "type": "integer",
-          "minimum": 0
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "multipleOf": {
           "$ref": "#/definitions/multipleOfDefinition"
@@ -629,16 +920,28 @@
           }
         },
         "required": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "forms"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "action_element": {
       "type": "object",
@@ -669,6 +972,11 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/dataSchema"
+          },
+          "propertyNames": {
+            "not": {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           }
         },
         "input": {
@@ -678,19 +986,45 @@
           "$ref": "#/definitions/dataSchema"
         },
         "safe": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "idempotent": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
         },
         "synchronous": {
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "forms"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "event_element": {
       "type": "object",
@@ -721,6 +1055,11 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "#/definitions/dataSchema"
+          },
+          "propertyNames": {
+            "not": {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           }
         },
         "subscription": {
@@ -734,12 +1073,17 @@
         },
         "cancellation": {
           "$ref": "#/definitions/dataSchema"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "forms"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "base_link_element": {
       "type": "object",
@@ -757,21 +1101,28 @@
           "$ref": "#/definitions/anyUri"
         },
         "hreflang": {
-            "anyOf":[
-              {"$ref": "#/definitions/bcp47_string"},
-              {
-                "type":"array",
-                "items":{
-                  "$ref": "#/definitions/bcp47_string"
-                }
+          "anyOf": [
+            {
+              "$ref": "#/definitions/bcp47_string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/bcp47_string"
               }
-            ]
+            }
+          ]
+        },
+        "instanceName": {
+          "type": "string"
         }
       },
-      "required": [
-        "href"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "link_element": {
       "allOf": [
@@ -792,12 +1143,18 @@
         },
         {
           "not": {
-            "description": "A basic link element should not contain icon or tm:extends",
+            "description": "A basic link element should not contain icon",
             "properties": {
               "rel": {
-                "enum": [
-                  "icon",
-                  "tm:extends"
+                "anyOf": [
+                  {
+                    "enum": [
+                      "icon"
+                    ]
+                  },
+                  {
+                    "$ref": "#/definitions/placeholder-pattern"
+                  }
                 ]
               }
             },
@@ -837,7 +1194,10 @@
           "scheme": "ace:ACESecurityScheme",
           "ace:as": "coaps://as.example.com/token",
           "ace:audience": "coaps://rs.example.com",
-          "ace:scopes": ["limited", "special"],
+          "ace:scopes": [
+            "limited",
+            "special"
+          ],
           "ace:cnonce": true
         }
       ],
@@ -860,10 +1220,12 @@
           "pattern": ".+:.*"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "noSecurityScheme": {
       "type": "object",
@@ -882,15 +1244,27 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "nosec"
+          "anyOf": [
+            {
+              "enum": [
+                "nosec"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "autoSecurityScheme": {
       "type": "object",
@@ -909,18 +1283,29 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "auto"
+          "anyOf": [
+            {
+              "enum": [
+                "auto"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         }
       },
-      "not":{
-        "required":["name"]
+      "not": {
+        "required": [
+          "name"
+        ]
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "comboSecurityScheme": {
       "oneOf": [
@@ -941,8 +1326,15 @@
             },
             "scheme": {
               "type": "string",
-              "enum": [
-                "combo"
+              "anyOf": [
+                {
+                  "enum": [
+                    "combo"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/placeholder-pattern"
+                }
               ]
             },
             "oneOf": {
@@ -951,12 +1343,11 @@
               "items": {
                 "type": "string"
               }
+            },
+            "tm:ref": {
+              "$ref": "#/definitions/tm_ref"
             }
           },
-          "required": [
-            "scheme",
-            "oneOf"
-          ],
           "additionalProperties": true
         },
         {
@@ -976,8 +1367,15 @@
             },
             "scheme": {
               "type": "string",
-              "enum": [
-                "combo"
+              "anyOf": [
+                {
+                  "enum": [
+                    "combo"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/placeholder-pattern"
+                }
               ]
             },
             "allOf": {
@@ -986,12 +1384,11 @@
               "items": {
                 "type": "string"
               }
+            },
+            "tm:ref": {
+              "$ref": "#/definitions/tm_ref"
             }
           },
-          "required": [
-            "scheme",
-            "allOf"
-          ],
           "additionalProperties": true
         }
       ]
@@ -1013,28 +1410,47 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "basic"
+          "anyOf": [
+            {
+              "enum": [
+                "basic"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "in": {
           "type": "string",
-          "enum": [
-            "header",
-            "query",
-            "body",
-            "cookie",
-            "auto"
+          "anyOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie",
+                "auto"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "name": {
           "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "digestSecurityScheme": {
       "type": "object",
@@ -1053,35 +1469,61 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "digest"
+          "anyOf": [
+            {
+              "enum": [
+                "digest"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "qop": {
           "type": "string",
-          "enum": [
-            "auth",
-            "auth-int"
+          "anyOf": [
+            {
+              "enum": [
+                "auth",
+                "auth-int"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "in": {
           "type": "string",
-          "enum": [
-            "header",
-            "query",
-            "body",
-            "cookie",
-            "auto"
+          "anyOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie",
+                "auto"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "name": {
           "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "apiKeySecurityScheme": {
       "type": "object",
@@ -1100,29 +1542,48 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "apikey"
+          "anyOf": [
+            {
+              "enum": [
+                "apikey"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "in": {
           "type": "string",
-          "enum": [
-            "header",
-            "query",
-            "body",
-            "cookie",
-            "uri",
-            "auto"
+          "anyOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie",
+                "uri",
+                "auto"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "name": {
           "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "bearerSecurityScheme": {
       "type": "object",
@@ -1141,8 +1602,15 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "bearer"
+          "anyOf": [
+            {
+              "enum": [
+                "bearer"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "authorization": {
@@ -1156,22 +1624,34 @@
         },
         "in": {
           "type": "string",
-          "enum": [
-            "header",
-            "query",
-            "body",
-            "cookie",
-            "auto"
+          "anyOf": [
+            {
+              "enum": [
+                "header",
+                "query",
+                "body",
+                "cookie",
+                "auto"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "name": {
           "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "pskSecurityScheme": {
       "type": "object",
@@ -1190,18 +1670,30 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "psk"
+          "anyOf": [
+            {
+              "enum": [
+                "psk"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "identity": {
           "type": "string"
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "oAuth2SecurityScheme": {
       "type": "object",
@@ -1220,8 +1712,15 @@
         },
         "scheme": {
           "type": "string",
-          "enum": [
-            "oauth2"
+          "anyOf": [
+            {
+              "enum": [
+                "oauth2"
+              ]
+            },
+            {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
           ]
         },
         "authorization": {
@@ -1253,22 +1752,34 @@
             },
             {
               "type": "string",
-              "enum": [
-                "code",
-                "client",
-                "device"
+              "anyOf": [
+                {
+                  "enum": [
+                    "code",
+                    "client",
+                    "device"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/placeholder-pattern"
+                }
               ]
             }
           ]
+        },
+        "tm:ref": {
+          "$ref": "#/definitions/tm_ref"
         }
       },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
+      "additionalProperties": true,
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
+      }
     },
     "securityScheme": {
-      "oneOf": [
+      "anyOf": [
         {
           "$ref": "#/definitions/noSecurityScheme"
         },
@@ -1300,13 +1811,57 @@
           "$ref": "#/definitions/additionalSecurityScheme"
         }
       ]
+    },
+    "tm_type_declaration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "const": "tm:ThingModel"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "contains": {
+            "const": "tm:ThingModel"
+          }
+        }
+      ]
+    },
+    "placeholder-pattern": {
+      "type": "string",
+      "pattern": "^.*[{]{2}[ -~]+[}]{2}.*$"
+    },
+    "tm_optional": {
+      "type": "array",
+      "items": {
+        "$comment": "this first checks for the general structure of /properties/myProp and then prohibits using / 3 times",
+        "allOf": [
+          {
+            "type": "string",
+            "pattern": "^((/properties/)|(/actions/)|(/events/))(([^/]))",
+            "$comment": "regex tests available at https://regex101.com/r/UgOzrJ/1"
+          },
+          {
+            "not": {
+              "type": "string",
+              "pattern": "(/)(.*\\1){2}",
+              "$comment": "regex tests available at https://regex101.com/r/Ytzd72/1"
+            }
+          }
+        ]
+      }
+    },
+    "tm_ref": {
+      "type": "string",
+      "format": "uri-reference"
     }
   },
   "type": "object",
   "properties": {
     "id": {
-      "type": "string",
-      "format": "uri"
+      "type": "string"
     },
     "title": {
       "$ref": "#/definitions/title"
@@ -1318,18 +1873,33 @@
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/property_element"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "actions": {
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/action_element"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "events": {
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/event_element"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "description": {
@@ -1339,14 +1909,34 @@
       "$ref": "#/definitions/descriptions"
     },
     "version": {
-      "type": "object",
-      "properties": {
-        "instance": {
-          "type": "string"
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "not": {
+              "$ref": "#/definitions/placeholder-pattern"
+            }
+          },
+          "not": {
+            "type": "object",
+            "properties": {
+              "instance": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "instance"
+            ]
+          }
+        },
+        {
+          "$ref": "#/definitions/placeholder-pattern"
         }
-      },
-      "required": [
-        "instance"
       ]
     },
     "links": {
@@ -1362,13 +1952,13 @@
         ]
       }
     },
-        "forms": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/form_element_root"
-          }
-        },
+    "forms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/form_element_root"
+      }
+    },
     "base": {
       "$ref": "#/definitions/anyUri"
     },
@@ -1377,6 +1967,11 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/definitions/securityScheme"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "schemaDefinitions": {
@@ -1384,18 +1979,21 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/definitions/dataSchema"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "support": {
       "$ref": "#/definitions/anyUri"
     },
     "created": {
-      "type": "string",
-      "format": "date-time"
+      "type": "string"
     },
     "modified": {
-      "type": "string",
-      "format": "date-time"
+      "type": "string"
     },
     "profile": {
       "oneOf": [
@@ -1429,20 +2027,31 @@
       "type": "object",
       "additionalProperties": {
         "$ref": "#/definitions/dataSchema"
+      },
+      "propertyNames": {
+        "not": {
+          "$ref": "#/definitions/placeholder-pattern"
+        }
       }
     },
     "@type": {
-      "$ref": "#/definitions/type_declaration"
+      "$ref": "#/definitions/tm_type_declaration"
     },
     "@context": {
       "$ref": "#/definitions/thing-context"
+    },
+    "tm:optional": {
+      "$ref": "#/definitions/tm_optional"
+    }
+  },
+  "additionalProperties": true,
+  "propertyNames": {
+    "not": {
+      "$ref": "#/definitions/placeholder-pattern"
     }
   },
   "required": [
-    "title",
-    "security",
-    "securityDefinitions",
-    "@context"
-  ],
-  "additionalProperties": true
+    "@context",
+    "@type"
+  ]
 }
