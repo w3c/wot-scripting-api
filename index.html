@@ -2527,7 +2527,8 @@
                 PropertyReadHandler handler);
         ExposedThing setPropertyUnobserveHandler(DOMString name,
                 PropertyReadHandler handler);
-        Promise&lt;undefined&gt; emitPropertyChange(DOMString name);
+        Promise&lt;undefined&gt; emitPropertyChange(DOMString name,
+                optional InteractionInput data);
 
         ExposedThing setActionHandler(DOMString name, ActionHandler action);
 
@@ -2988,9 +2989,11 @@
 
     <section> <h3>The <dfn>emitPropertyChange()</dfn> method</h3>
       <div>
-        Takes the |name:string| argument, denoting a <a>Property</a> name.
+        Takes the |name:string| argument, denoting a <a>Property</a> name, and
+        optionally the |data:InteractionInput| argument.
         Triggers emitting a notification to all observers of the specified
-        <a>Property</a> with the data obtained from the observe handler or the
+        <a>Property</a> with the data provided by the |data| argument, or if not
+        provided, it is obtained by the observe handler or the by
         read handler associated with that <a>Property</a>.
         The method MUST run the following steps:
         <ol>
@@ -2999,6 +3002,9 @@
           </li>
           <li>
             If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          </li>
+          <li>
+            Let |name| be the first argument.
           </li>
           <li>
             Let |property| be the value of {{ExposedThing/[[td]]}}'s |properties|'s |name|.
@@ -3012,25 +3018,35 @@
 			see https://github.com/w3c/wot-scripting-api/issues/407
 		  -->
           <li>
-            Let |handler:function| be `null.`
+            Let |data| be the second argument.
           </li>
           <li>
-            If there is a user provided {{PropertyReadHandler}} in {{ExposedThing/[[readHandlers]]}}
-            <a>internal slot</a> for |interaction|, let |handler| be that.
+            If |data| is `undefined`, run the following sub-steps:
+            <ol>
+              <li>
+                Let |handler:function| be `null.`
+              </li>
+              <li>
+                If there is a user provided {{PropertyReadHandler}} in {{ExposedThing/[[readHandlers]]}}
+                <a>internal slot</a> for |interaction|, let |handler| be that.
+              </li>
+              <li>
+                If |handler| is `null`, abort these steps.
+              </li>
+              <li>
+                Let |promise| be the result of invoking |handler| with `null`.
+              </li>
+              <li>
+                 If |promise| rejects, abort these steps.
+              </li>
+              <li>
+                Otherwise let |data| be the value |promise| resolves with.
+              </li>
+            </ol>
           </li>
           <li>
-            If |handler| is `null`, abort these steps.
-          </li>
-          <li>
-            Let |promise| be the result of invoking |handler| with `null`.
-          </li>
-          <li>
-             If |promise| rejects, abort these steps.
-          </li>
-          <li>
-            If |promise| resolves with |data|, then for each |observer| in
-            |property|'s <a>internal observer list</a>, run the following
-            sub-steps:
+            For each |observer| in |property|'s <a>internal observer list</a>
+            run the following sub-steps:
             <ol>
               <li>
                 Let |options| be the interaction options saved with |observer|.
