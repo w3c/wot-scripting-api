@@ -2997,11 +2997,12 @@
         read handler associated with that <a>Property</a>.
         The method MUST run the following steps:
         <ol>
+          <li>Let |promise:Promise| be a new {{Promise}}.
           <li>
-            Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
+            Return |promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let |name| be the first argument.
@@ -3011,7 +3012,7 @@
           </li>
           <li>
             If a <a>Property</a> with the name |name| is not found,
-            reject |promise| with {{NotFoundError}} and abort these steps.
+            [=reject=] |promise| with {{NotFoundError}} and abort these steps.
           </li>
 		  <!--
 			Do we need a dedicated emitPropertChange handler instead of using readHandler?
@@ -3027,21 +3028,23 @@
                 Let |handler:function| be `null.`
               </li>
               <li>
-                If there is a user provided {{PropertyReadHandler}} in {{ExposedThing/[[readHandlers]]}}
-                <a>internal slot</a> for |interaction|, let |handler| be that.
+                If |name| does not [=map/exist=] in {{ExposedThing/[[readHandlers]]}},
+                reject |promise| and abort these steps.
               </li>
               <li>
-                If |handler| is `null`, abort these steps.
+                Let |handler| be {{ExposedThing/[[readHandlers]]}}[|name|].
               </li>
               <li>
-                Let |promise| be the result of invoking |handler| with `null`.
+                If |handler| is `null` or `undefined`, [=reject=] |promise| and abort these steps.
               </li>
               <li>
-                 If |promise| rejects, abort these steps.
+                Let |handled| be the result of invoking |handler| with `null`.
               </li>
               <li>
-                Otherwise let |data| be the value |promise| resolves with.
+                 If |handled| is [=rejected=], then [=reject=] |promise| and abort these steps.
               </li>
+              <li>
+                Otherwise if |handled| [=resolved=] with |value|, let |data| be |value|.
             </ol>
           </li>
           <li>
@@ -3052,14 +3055,20 @@
                 Let |options| be the interaction options saved with |observer|.
               </li>
               <li>
-                Create a |reply| from |data| and |options| according to the
-                <a>Protocol Bindings</a>.
+                Request the underlying platform to create a |reply| from |data| and |options| according to the <a>Protocol Bindings</a>.
+                <p class="ednote">
+                  This clause needs expanding and/or refer to an algorithm in [[WOT-PROTOCOL-BINDINGS]].
+                </p>
               </li>
               <li>
                 Send |reply| to |observer|.
               </li>
             </ol>
           </li>
+          <li>
+            [=Resolve=] |promise|.
+          </li>
+        </ol>
         </ol>
       </div>
     </section>
