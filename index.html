@@ -55,40 +55,40 @@
         xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra", "url", "ecmascript"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
-            href:"https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/",
-            title: "Web of Things Architecture 1.1",
+            href:"https://www.w3.org/TR/2023/CR-wot-architecture11-20230119/",
+            title: "Web of Things (WoT) Architecture 1.1",
             publisher: "W3C",
-            date: "24 November 2020"
+            date: "19 January 2023"
           },
           "WOT-TD" : {
-            href:"https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/",
-            title: "Web of Things Thing Description 1.1",
+            href:"https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/",
+            title: "Web of Things (WoT) Thing Description 1.1",
             publisher: "W3C",
-            date: "24 November 2020"
+            date: "19 January 2023"
           },
           "WOT-DISCOVERY" : {
-            href:"https://www.w3.org/TR/2022/WD-wot-discovery-20220810/",
+            href:"https://www.w3.org/TR/2023/CR-wot-discovery-20230119/",
             title: "Web of Things (WoT) Discovery",
             publisher: "W3C",
-            date: "10 August 2022"
+            date: "19 January 2023"
           },
           "WOT-PROTOCOL-BINDINGS" : {
             href: "https://www.w3.org/TR/2020/NOTE-wot-binding-templates-20200130/",
-            title: "Web of Things Binding Templates",
+            title: "Web of Things (WoT) Binding Templates",
             publisher: "W3C",
             date: "30 January 2020"
           },
           "WOT-SECURITY" : {
               href: "https://www.w3.org/TR/2019/NOTE-wot-security-20191106/",
-            title: "Web of Things Security and Privacy Guidelines",
+            title: "Web of Things (WoT) Security and Privacy Guidelines",
             publisher: "W3C",
             date: "6 November 2019"
           },
           "WOT-USE-CASES" : {
-            href:"https://www.w3.org/TR/2021/NOTE-wot-usecases-20210518/",
-            title: "Web of Things Use Cases and Requirements",
+            href:"https://www.w3.org/TR/2022/NOTE-wot-usecases-20220307/",
+            title: "Web of Things (WoT): Use Cases and Requirements",
             publisher: "W3C",
-            date: "18 May 2021"
+            date: " 7 March 2022"
           },
           "TYPESCRIPT": {
             href: "https://www.typescriptlang.org/docs/handbook/intro.html",
@@ -100,7 +100,7 @@
             href:"https://w3c.github.io/webappsec/specs/powerfulfeatures",
             title: "Secure Contexts",
             publisher: "W3C",
-            date: "17 July 2015"
+            date: "18 September 2021"
           },
         },
       };
@@ -385,12 +385,12 @@
   <section> <h2>Terminology and conventions</h2>
     <p>
       The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
-      <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#dataschema">
-        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form"><dfn data-lt="Forms">Form</dfn></a>,
+      <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#dataschema">
+        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#form"><dfn data-lt="Forms">Form</dfn></a>,
         <a href="https://w3c.github.io/wot-thing-description/#securityscheme"><dfn>SecurityScheme</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
     </p>
     <p>
-      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2020/WD-wot-architecture11-20201124/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2023/CR-wot-architecture11-20230119/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
       An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
       when referring to <a>Thing</a> capabilities, as explained in
       <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
@@ -484,9 +484,9 @@
 
     <p>
       Represents a <a>Thing Description</a> (<a>TD</a>) as
-      <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/">defined</a> in
+      <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119">defined</a> in
       [[!WOT-TD]]. It is expected to be
-      a <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">JSON Schema validation</a>.
+      a <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">JSON Schema validation</a>.
     </p>
     <section> <h3> Fetching a Thing Description</h3>
       <p>
@@ -508,7 +508,7 @@
     <section> <h3>Expanding a Thing Description</h3>
       <p>
         Note that the [[[WOT-TD]]] specification allows using a shortened <a>Thing Description</a>
-        by the means of <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
+        by the means of <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
         [[[WOT-TD]]] specification for the properties that are not explicitly defined in a given
         <a>TD</a>.
       </p>
@@ -516,7 +516,7 @@
         To <dfn>expand a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            For each item in the <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
+            For each item in the <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
           </li>
         </ol>
       </div>
@@ -531,7 +531,7 @@
         To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            If <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">JSON Schema
+            If <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">JSON Schema
             validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and abort these steps.
           </li>
         </ol>
@@ -654,7 +654,7 @@
           </ol>
         </li>
         <li>Search for missing required properties in |td| accordingly to
-          <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
+          <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">TD JSON
             Schema</a>.
           <p class="ednote">The editors find this step vague. It will be improved or removed in the next iteration. </p>
         </li>
@@ -685,7 +685,7 @@
       To <dfn>validate an ExposedThingInit</dfn> given |init:ExposedThingInit|, run the following steps:
       <ol  class="algorithm">
         <li>
-          Parse <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#json-schema-for-validation">TD JSON
+          Parse <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">TD JSON
             Schema</a>
           and load it in object called |exposedThingInitSchema:object|
         </li>
@@ -868,7 +868,7 @@
     As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
     and include a number of possible <a>Form</a>s, out of which one is selected
     for the interaction. The
-    <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form">
+    <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#form">
     Form</a> contains a `contentType` to describe the data.
     For certain content types, a <a>DataSchema</a> is defined, based on
     <a>JSON Schema</a>, making possible to represent these contents as
@@ -4314,7 +4314,7 @@
     </section>
     <section> <h4>Polymorphic functions</h4>
       <p>
-        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2020/WD-wot-thing-description11-20201124/#form">Form</a> definition in the [[[WOT-TD]]] specification.
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#form">Form</a> definition in the [[[WOT-TD]]] specification.
       </p>
     </section>
   </section>
