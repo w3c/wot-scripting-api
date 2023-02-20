@@ -486,7 +486,7 @@
       Represents a <a>Thing Description</a> (<a>TD</a>) as
       <a data-cite="WOT-TD#">defined</a> in
       [[!WOT-TD]]. It is expected to be
-      a <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a data-cite="WOT-TD#json-schema-for-validation">JSON Schema validation</a>.
+      a <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a data-cite="WOT-TD#json-schema-for-validation">JSON Schema validation</a>.
     </p>
     <section> <h3> Fetching a Thing Description</h3>
       <p>
@@ -2133,7 +2133,7 @@
       <p>
         The <dfn>uriVariables</dfn> property if defined, represents the URI
         template variables to be used with the WoT Interaction that are represented
-        as <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">
+        as <a data-cite="infra#parse-json-bytes-to-a-javascript-value">
         parsed JSON objects</a> defined in [[!WOT-TD]].
       </p>
       <p class="ednote">
@@ -4300,9 +4300,7 @@
         Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
         is defined externally in the [[[WOT-TD]]] specification, that is scoped out, too.
         This specification expects a <a>TD</a> as
-        <a href="https://infra.spec.whatwg.org/#
-                 parse-json-bytes-to-a-javascript-value
-                 parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
+        <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
       </p>
     </section>
     <section> <h4>Factory vs constructors</h4>
