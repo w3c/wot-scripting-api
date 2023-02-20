@@ -218,7 +218,7 @@
           then instantiating a software stack that implements the <a>WoT Interface</a> specified by the <a>TD</a> in order to serve requests for accessing the exposed <a>Properties</a>, <a>Actions</a> and <a>Events</a>,
         </li>
         <li>
-           then eventually publishing the <a>Thing Description</a> (for instance to a <a>TD Directory</a> directory for easier discovery).
+           then eventually publishing the <a>Thing Description</a> (for instance to a <a>TD Directory</a> for easier discovery).
         </li>
       </ul>
       This specification describes how to expose and consume <a>Thing</a>s by a script. Also, it defines a generic API for <a>Thing</a> discovery.
@@ -1066,7 +1066,7 @@
           throw {{TypeError}} and abort these steps, otherwise return `null`.
         </li>
         <li>
-          If |type| is `"boolean"` and |payload| is a falsey value or its byte
+          If |type| is `"boolean"` and |payload| is a falsy value or its byte
           length is 0, return `false`, otherwise return `true`.
         </li>
         <li>
@@ -2138,7 +2138,7 @@
       </p>
       <p class="ednote">
         The support for URI variables comes from the need, exposed by the [[[WOT-TD]]] specification, to be able to describe
-        existing REST-ful endpoints that use them. However, it should be possible to write a Thing Description that would use
+        existing RESTful endpoints that use them. However, it should be possible to write a Thing Description that would use
         <a>Action</a>s for representing this kind of interactions and model the URI variables as action parameters. In that case,
         implementations can serialize the parameters as URI variables, and therefore, the |options| parameter could be
         dismissed.
@@ -4201,7 +4201,7 @@
         <p>
           It is possible to develop WoT applications that only use the
           <a>WoT network interface</a>, typically exposed by a WoT gateway that
-          presents a REST-ful API towards clients and implements IoT protocol
+          presents a RESTful API towards clients and implements IoT protocol
           plugins that communicate with supported IoT deployments. One such
           implementation is the
           <a href="https://iot.mozilla.org/">Mozilla WebThings</a> platform.
@@ -4236,7 +4236,7 @@
           exposes software objects to represent the <a>Thing</a> metadata as
           data property and the WoT interactions as methods. One implementation
           is <a href="https://github.com/eclipse/thingweb.node-wot">node-wot</a>
-          in the the <a href="http://www.thingweb.io/">Eclipse ThingWeb</a> project,
+          in the <a href="http://www.thingweb.io/">Eclipse ThingWeb</a> project,
           which is the current reference implementation of the API specified in
           this document.
         </p>
