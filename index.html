@@ -385,12 +385,12 @@
   <section> <h2>Terminology and conventions</h2>
     <p>
       The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
-      <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#dataschema">
-        <dfn>DataSchema</dfn></a>, <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#form"><dfn data-lt="Forms">Form</dfn></a>,
-        <a href="https://w3c.github.io/wot-thing-description/#securityscheme"><dfn>SecurityScheme</dfn></a>, <a href="https://w3c.github.io/wot-thing-description/#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
+      <a data-cite="WOT-TD#dataschema">
+        <dfn>DataSchema</dfn></a>, <a data-cite="WOT-TD#form"><dfn data-lt="Forms">Form</dfn></a>,
+        <a data-cite="WOT-TD#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="WOT-TD#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
     </p>
     <p>
-      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a href="https://www.w3.org/TR/2023/CR-wot-architecture11-20230119/#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a data-cite="WOT-ARCHITECTURE#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
       An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
       when referring to <a>Thing</a> capabilities, as explained in
       <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
@@ -484,9 +484,9 @@
 
     <p>
       Represents a <a>Thing Description</a> (<a>TD</a>) as
-      <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119">defined</a> in
+      <a data-cite="WOT-TD#">defined</a> in
       [[!WOT-TD]]. It is expected to be
-      a <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">JSON Schema validation</a>.
+      a <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a data-cite="WOT-TD#json-schema-for-validation">JSON Schema validation</a>.
     </p>
     <section> <h3> Fetching a Thing Description</h3>
       <p>
@@ -508,7 +508,7 @@
     <section> <h3>Expanding a Thing Description</h3>
       <p>
         Note that the [[[WOT-TD]]] specification allows using a shortened <a>Thing Description</a>
-        by the means of <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
+        by the means of <a data-cite="WOT-TD#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
         [[[WOT-TD]]] specification for the properties that are not explicitly defined in a given
         <a>TD</a>.
       </p>
@@ -516,7 +516,7 @@
         To <dfn>expand a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            For each item in the <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
+            For each item in the <a data-cite="WOT-TD#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
           </li>
         </ol>
       </div>
@@ -531,7 +531,7 @@
         To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            If <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">JSON Schema
+            If <a data-cite="WOT-TD#json-schema-for-validation">JSON Schema
             validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and abort these steps.
           </li>
         </ol>
@@ -654,7 +654,7 @@
           </ol>
         </li>
         <li>Search for missing required properties in |td| accordingly to
-          <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">TD JSON
+          <a data-cite="WOT-TD#json-schema-for-validation">TD JSON
             Schema</a>.
           <p class="ednote">The editors find this step vague. It will be improved or removed in the next iteration. </p>
         </li>
@@ -685,7 +685,7 @@
       To <dfn>validate an ExposedThingInit</dfn> given |init:ExposedThingInit|, run the following steps:
       <ol  class="algorithm">
         <li>
-          Parse <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">TD JSON
+          Parse <a data-cite="WOT-TD#json-schema-for-validation">TD JSON
             Schema</a>
           and load it in object called |exposedThingInitSchema:object|
         </li>
@@ -868,7 +868,7 @@
     As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
     and include a number of possible <a>Form</a>s, out of which one is selected
     for the interaction. The
-    <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#form">
+    <a data-cite="WOT-TD#form">
     Form</a> contains a `contentType` to describe the data.
     For certain content types, a <a>DataSchema</a> is defined, based on
     <a>JSON Schema</a>, making possible to represent these contents as
@@ -887,8 +887,8 @@
     </p>
     <p>
       <dfn>DataSchemaValue</dfn> is an
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]].
-	  The possible values MUST be of type <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-null-type">null</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-boolean-type">boolean</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-number-type">number</a>, <a href="https://262.ecma-international.org/11.0/#sec-ecmascript-language-types-string-type">string</a>, <a href="https://262.ecma-international.org/11.0/#sec-array-objects">array</a>, or <a href="https://262.ecma-international.org/11.0/#sec-object-type">object</a>.
+      <a data-cite="ECMASCRIPT#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]].
+	  The possible values MUST be of type <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-null-type">null</a>, <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-boolean-type">boolean</a>, <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-number-type">number</a>, <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-string-type">string</a>, <a data-cite="ECMASCRIPT#sec-array-objects">array</a>, or <a data-cite="ECMASCRIPT#sec-object-type">object</a>.
     </p>
     <p>
       {{ReadableStream}} is meant to be used for <a>WoT Interactions</a> that
@@ -897,7 +897,7 @@
     </p>
     <p>
       In practice, any
-      <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">ECMAScript value</a> may be used for <a>WoT Interactions</a> that have a
+      <a data-cite="ECMASCRIPT#sec-ecmascript-data-types-and-values">ECMAScript value</a> may be used for <a>WoT Interactions</a> that have a
       <a>DataSchema</a> defined in the <a>Thing Description</a>,
       or which can be mapped by implementations to the {{Form}}'s `contentType`
       defined in the <a>Thing Description</a>.
@@ -2133,7 +2133,7 @@
       <p>
         The <dfn>uriVariables</dfn> property if defined, represents the URI
         template variables to be used with the WoT Interaction that are represented
-        as <a href="https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">
+        as <a data-cite="infra#parse-json-bytes-to-a-javascript-value">
         parsed JSON objects</a> defined in [[!WOT-TD]].
       </p>
       <p class="ednote">
@@ -2663,7 +2663,7 @@
         A function that is called when an external request for reading a
         <a>Property</a> is received and defines what to do with such requests.
         It returns a {{Promise}} and resolves with an {{ReadableStream}} object or an
-        <a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-ecmascript-data-types-and-values">
+        <a data-cite="ECMASCRIPT#sec-ecmascript-data-types-and-values">
         ECMAScript value</a> conforming to <a>DataSchema</a>, or rejects with an
         error.
       </p>
@@ -3840,7 +3840,7 @@
     </p>
     <p>
       The {{ThingDiscoveryProcess}} object implements the
-      <a href="https://tc39.es/ecma262/#sec-symbol.asynciterator">async iterator</a>
+      <a data-cite="ECMASCRIPT#sec-symbol.asynciterator">async iterator</a>
       concept.
     </p>
 
@@ -4300,9 +4300,7 @@
         Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
         is defined externally in the [[[WOT-TD]]] specification, that is scoped out, too.
         This specification expects a <a>TD</a> as
-        <a href="https://infra.spec.whatwg.org/#
-                 parse-json-bytes-to-a-javascript-value
-                 parse-json-from-bytes">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
+        <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
       </p>
     </section>
     <section> <h4>Factory vs constructors</h4>
@@ -4339,7 +4337,7 @@
     </section>
     <section> <h4>Polymorphic functions</h4>
       <p>
-        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a href="https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#form">Form</a> definition in the [[[WOT-TD]]] specification.
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a data-cite="WOT-TD#form">Form</a> definition in the [[[WOT-TD]]] specification.
       </p>
     </section>
   </section>
