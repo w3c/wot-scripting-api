@@ -22,7 +22,9 @@
     "access": "public"
   },
   "types": "index.d.ts",
-  "dependencies": {},
+  "dependencies": {
+    "wot-thing-description-types": "1.1.0-13-October-2022"
+  },
   "scripts": {
     "build": "json2ts schema/td-json-schema-validation.json | sed -e 's/WoTTDSchema02June2021/ThingDescription/' > thing-description.d.ts"
   },
