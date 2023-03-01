@@ -975,7 +975,7 @@
         </li>
         <li>
           If the value of the |data| property is not a {{ReadableStream}} or if
-          |dataUsed| is `true`, or if |form| is `null` or if |schema| or its
+          |dataUsed| is `true`, or if |form| is `null` or `undefined` or if |schema| or its
           |type| are `null` or `undefined`,
           reject |promise| with {{NotReadableError}} and abort these steps.
         </li>
@@ -3170,7 +3170,7 @@
             Otherwise, if there is a default write handler provided by the implementation, let |handler| be that.
           </li>
           <li>
-            Otherwise, if |handler| is `null`, send back a {{NotSupportedError}}
+            Otherwise, if |handler| is `null` or `undefined`, send back a {{NotSupportedError}}
             with the reply and abort these steps.
           </li>
           <li>
@@ -3291,7 +3291,7 @@
             <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
-            If |handler| is `null`, return a {{NotSupportedError}} with the reply
+            If |handler| is `null` or `undefined`, return a {{NotSupportedError}} with the reply
             created by following the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
