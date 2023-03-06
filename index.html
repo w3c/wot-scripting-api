@@ -942,7 +942,7 @@
     </p>
     <p>
       The <dfn>dataUsed</dfn> property tells whether the data stream has
-      been <a href="https://streams.spec.whatwg.org#is-readable-stream-disturbed">
+      been <a data-cite="streams#is-readable-stream-disturbed">
 
       disturbed</a>. Initially `false`.
     </p>
@@ -987,13 +987,12 @@
         </li>
         <li>
           Let |reader| be the result of
-          <a href="https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          <a data-cite="streams#readablestream-get-a-reader">
           getting a reader</a> from |data|. If that threw an exception, reject
           |promise| with that exception and abort these steps.
         </li>
         <li>
-          Let |bytes| be the result of <a href=
-          "https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          Let |bytes| be the result of <a data-cite="streams#readablestream-get-a-reader">
           reading all bytes</a> from |data| with |reader|.
         </li>
         <li>
@@ -1033,13 +1032,12 @@
         </li>
         <li>
           Let |reader| be the result of
-          <a href="https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          <a data-cite="streams#readablestream-get-a-reader">
           getting a reader</a> from |data|. If that threw an exception, reject
           |promise| with that exception and abort these steps.
         </li>
         <li>
-          Let |bytes| be the result of <a href=
-          "https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          Let |bytes| be the result of <a data-cite="streams#readablestream-get-a-reader">
           reading all bytes</a> from |data| with |reader|.
         </li>
         <li>
@@ -1242,7 +1240,7 @@
         <li>
           Set |idata|'s |data| to a new {{ReadableStream}} created from |idata|'s
           [[\value]] <a>internal slot</a> as its
-          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          <a data-cite="streams#underlying-source">
           underlying source</a>.
         </li>
         <li>
@@ -1268,7 +1266,7 @@
         <li>
           Let |result|'s |data| be a new {{ReadableStream}} with the payload data
           of |response| as its
-          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          <a data-cite="streams#underlying-source">
           underlying source</a>.
         </li>
         <li>
