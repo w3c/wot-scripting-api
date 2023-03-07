@@ -712,7 +712,7 @@
   <section> <h3>The <dfn>discover()</dfn> method</h3>
     <pre class="idl">
       partial namespace WOT {
-        Promise&lt;ThingDiscoveryProcess&gt; discover(optional ThingFilter filter = null);
+        Promise&lt;ThingDiscoveryProcess&gt; discover(optional ThingFilter filter = {});
       };
     </pre>
     <div>
@@ -762,7 +762,7 @@
     <pre class="idl">
       partial namespace WOT {
         Promise&lt;ThingDiscoveryProcess&gt; exploreDirectory(USVString url,
-            optional ThingFilter filter = null);
+            optional ThingFilter filter = {});
       };
     </pre>
     <div>
@@ -1377,32 +1377,32 @@
       interface ConsumedThing {
         constructor(ThingDescription td);
         Promise&lt;InteractionOutput&gt; readProperty(DOMString propertyName,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;PropertyReadMap&gt; readAllProperties(
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;PropertyReadMap&gt; readMultipleProperties(
                                     sequence&lt;DOMString&gt; propertyNames,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;undefined&gt; writeProperty(DOMString propertyName,
                                     InteractionInput value,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;undefined&gt; writeMultipleProperties(
                                     PropertyWriteMap valueMap,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         /*Promise&lt;undefined&gt; writeAllProperties(
                                     PropertyWriteMap valueMap,
-                                    optional InteractionOptions options = null);*/
+                                    optional InteractionOptions options = {});*/
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
-                                    optional InteractionInput params = null,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionInput params = {},
+                                    optional InteractionOptions options = {});
         Promise&lt;Subscription&gt; observeProperty(DOMString name,
                                     InteractionListener listener,
                                     optional ErrorListener onerror,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;Subscription&gt; subscribeEvent(DOMString name,
                                     InteractionListener listener,
                                     optional ErrorListener onerror,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         ThingDescription getThingDescription();
       };
 
@@ -1415,7 +1415,7 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface Subscription {
         readonly attribute boolean active;
-        Promise&lt;undefined&gt; stop(optional InteractionOptions options = null);
+        Promise&lt;undefined&gt; stop(optional InteractionOptions options = {});
       };
 
       [SecureContext, Exposed=(Window,Worker)]
@@ -2546,18 +2546,18 @@
       };
 
       callback PropertyReadHandler = Promise&lt;InteractionInput&gt;(
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
       callback PropertyWriteHandler = Promise&lt;undefined&gt;(
               InteractionOutput value,
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
       callback ActionHandler = Promise&lt;InteractionInput&gt;(
               InteractionOutput params,
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
       callback EventSubscriptionHandler = Promise&lt;undefined&gt;(
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
     </pre>
 
@@ -3800,7 +3800,7 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscoveryProcess {
-        constructor(optional ThingFilter filter = null);
+        constructor(optional ThingFilter filter = {});
         readonly attribute boolean done;
         readonly attribute Error? error;
         undefined stop();
