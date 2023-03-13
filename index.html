@@ -490,7 +490,7 @@
     </p>
     <section> <h3> Fetching a Thing Description</h3>
       <p>
-        Fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details.
+        Fetching a <a>TD</a> given a URL should be done with an external method, such as the <a data-cite="fetch#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details.
       </p>
       <pre class="example" title="Fetching a Thing Description">
         try {
@@ -942,7 +942,7 @@
     </p>
     <p>
       The <dfn>dataUsed</dfn> property tells whether the data stream has
-      been <a href="https://streams.spec.whatwg.org#is-readable-stream-disturbed">
+      been <a data-cite="streams#is-readable-stream-disturbed">
 
       disturbed</a>. Initially `false`.
     </p>
@@ -987,13 +987,12 @@
         </li>
         <li>
           Let |reader| be the result of
-          <a href="https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          <a data-cite="streams#readablestream-get-a-reader">
           getting a reader</a> from |data|. If that threw an exception, reject
           |promise| with that exception and abort these steps.
         </li>
         <li>
-          Let |bytes| be the result of <a href=
-          "https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          Let |bytes| be the result of <a data-cite="streams#readablestream-get-a-reader">
           reading all bytes</a> from |data| with |reader|.
         </li>
         <li>
@@ -1033,13 +1032,12 @@
         </li>
         <li>
           Let |reader| be the result of
-          <a href="https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          <a data-cite="streams#readablestream-get-a-reader">
           getting a reader</a> from |data|. If that threw an exception, reject
           |promise| with that exception and abort these steps.
         </li>
         <li>
-          Let |bytes| be the result of <a href=
-          "https://streams.spec.whatwg.org#readablestream-get-a-reader">
+          Let |bytes| be the result of <a data-cite="streams#readablestream-get-a-reader">
           reading all bytes</a> from |data| with |reader|.
         </li>
         <li>
@@ -1242,7 +1240,7 @@
         <li>
           Set |idata|'s |data| to a new {{ReadableStream}} created from |idata|'s
           [[\value]] <a>internal slot</a> as its
-          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          <a data-cite="streams#underlying-source">
           underlying source</a>.
         </li>
         <li>
@@ -1268,7 +1266,7 @@
         <li>
           Let |result|'s |data| be a new {{ReadableStream}} with the payload data
           of |response| as its
-          <a href="https://streams.spec.whatwg.org/#underlying-source">
+          <a data-cite="streams#underlying-source">
           underlying source</a>.
         </li>
         <li>
@@ -2345,7 +2343,7 @@
                   </li>
                   <li>
                     If |form|'s |href| and [[\subscribeForm]]'s |href| are
-                    <a href="https://html.spec.whatwg.org/multipage/origin.html#same-origin-domain">
+                    <a data-cite="html#same-origin-domain">
                     same origin-domain</a>, increment |form|'s [[\matchLevel]].
                   </li>
                   <li>
@@ -3914,7 +3912,7 @@
                 Retrieve |td:ThingDescription| as a JSON object, using the <a>Protocol Binding</a>
                 used by the underlying discovery process (as specified by |link|).
                 In the case of an HTTP(S) Binding, this process could use the
-                <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a>
+                <a data-cite="fetch#fetch-api">Fetch API</a>
                 for the |td|'s retrieval.
               </li>
               <li>
@@ -4294,7 +4292,7 @@
     </section>
     <section> <h4>Fetching and validating a TD</h4>
       <p>
-        The <code>fetch(url)</code> method has been part of this API in earlier versions. However, now fetching a <a>TD</a> given a URL should be done with an external method, such as the <a href="https://fetch.spec.whatwg.org/#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details. The reason is that while simple fetch operations (covering most use cases) could be done in this API, when various fetch options were needed, there was no point in duplicating existing work to re-expose those options in this API.
+        The <code>fetch(url)</code> method has been part of this API in earlier versions. However, now fetching a <a>TD</a> given a URL should be done with an external method, such as the <a data-cite="fetch#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details. The reason is that while simple fetch operations (covering most use cases) could be done in this API, when various fetch options were needed, there was no point in duplicating existing work to re-expose those options in this API.
       </p>
       <p>
         Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
