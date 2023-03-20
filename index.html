@@ -712,7 +712,7 @@
   <section> <h3>The <dfn>discover()</dfn> method</h3>
     <pre class="idl">
       partial namespace WOT {
-        Promise&lt;ThingDiscoveryProcess&gt; discover(optional ThingFilter filter = null);
+        Promise&lt;ThingDiscoveryProcess&gt; discover(optional ThingFilter filter = {});
       };
     </pre>
     <div>
@@ -762,7 +762,7 @@
     <pre class="idl">
       partial namespace WOT {
         Promise&lt;ThingDiscoveryProcess&gt; exploreDirectory(USVString url,
-            optional ThingFilter filter = null);
+            optional ThingFilter filter = {});
       };
     </pre>
     <div>
@@ -975,7 +975,7 @@
         </li>
         <li>
           If the value of the |data| property is not a {{ReadableStream}} or if
-          |dataUsed| is `true`, or if |form| is `null` or if |schema| or its
+          |dataUsed| is `true`, or if |form| is `null` or `undefined` or if |schema| or its
           |type| are `null` or `undefined`,
           reject |promise| with {{NotReadableError}} and abort these steps.
         </li>
@@ -1375,32 +1375,32 @@
       interface ConsumedThing {
         constructor(ThingDescription td);
         Promise&lt;InteractionOutput&gt; readProperty(DOMString propertyName,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;PropertyReadMap&gt; readAllProperties(
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;PropertyReadMap&gt; readMultipleProperties(
                                     sequence&lt;DOMString&gt; propertyNames,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;undefined&gt; writeProperty(DOMString propertyName,
                                     InteractionInput value,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;undefined&gt; writeMultipleProperties(
                                     PropertyWriteMap valueMap,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         /*Promise&lt;undefined&gt; writeAllProperties(
                                     PropertyWriteMap valueMap,
-                                    optional InteractionOptions options = null);*/
+                                    optional InteractionOptions options = {});*/
         Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
-                                    optional InteractionInput params = null,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionInput params = {},
+                                    optional InteractionOptions options = {});
         Promise&lt;Subscription&gt; observeProperty(DOMString name,
                                     InteractionListener listener,
                                     optional ErrorListener onerror,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         Promise&lt;Subscription&gt; subscribeEvent(DOMString name,
                                     InteractionListener listener,
                                     optional ErrorListener onerror,
-                                    optional InteractionOptions options = null);
+                                    optional InteractionOptions options = {});
         ThingDescription getThingDescription();
       };
 
@@ -1413,7 +1413,7 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface Subscription {
         readonly attribute boolean active;
-        Promise&lt;undefined&gt; stop(optional InteractionOptions options = null);
+        Promise&lt;undefined&gt; stop(optional InteractionOptions options = {});
       };
 
       [SecureContext, Exposed=(Window,Worker)]
@@ -2544,18 +2544,18 @@
       };
 
       callback PropertyReadHandler = Promise&lt;InteractionInput&gt;(
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
       callback PropertyWriteHandler = Promise&lt;undefined&gt;(
               InteractionOutput value,
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
       callback ActionHandler = Promise&lt;InteractionInput&gt;(
               InteractionOutput params,
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
       callback EventSubscriptionHandler = Promise&lt;undefined&gt;(
-              optional InteractionOptions options = null);
+              optional InteractionOptions options = {});
 
     </pre>
 
@@ -3168,7 +3168,7 @@
             Otherwise, if there is a default write handler provided by the implementation, let |handler| be that.
           </li>
           <li>
-            Otherwise, if |handler| is `null`, send back a {{NotSupportedError}}
+            Otherwise, if |handler| is `null` or `undefined`, send back a {{NotSupportedError}}
             with the reply and abort these steps.
           </li>
           <li>
@@ -3289,7 +3289,7 @@
             <a>internal slot</a> for |interaction|, let |handler| be that.
           </li>
           <li>
-            If |handler| is `null`, return a {{NotSupportedError}} with the reply
+            If |handler| is `null` or `undefined`, return a {{NotSupportedError}} with the reply
             created by following the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
@@ -3798,7 +3798,7 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscoveryProcess {
-        constructor(optional ThingFilter filter = null);
+        constructor(optional ThingFilter filter = {});
         readonly attribute boolean done;
         readonly attribute Error? error;
         undefined stop();
