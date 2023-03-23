@@ -297,7 +297,7 @@ export interface FormElementBase {
  * via the `definition` "expectedResponse".
  */
 export interface ExpectedResponse {
-  contentType?: string;
+  contentType: string;
   [k: string]: unknown;
 }
 /**
