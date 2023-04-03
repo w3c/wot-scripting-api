@@ -29,7 +29,7 @@ See https://www.w3.org/WoT/IG/wiki/WG_WoT_Scripting_API_WebConf.
 We use [labels](https://github.com/w3c/wot-scripting-api/labels) to categorize our work items.
 
 ## Versioning 
-As discussed in the [27th February 2023](https://www.w3.org/2023/02/27-wot-script-minutes.html#t06) call, the task force decided to use a new versioning mechanism for the WoT Scripting API specification. In practice, we augment the current Typescript versioning with a more comprehensive tagging mechanism that takes into account also standard W3C process for publishing Notes. Each substantial change will trigger the creation of a git on the repository and when the Note is published it will trigger a full Github release with a special tag. Substantial changes are anything that is not just an editorial or rephrasing of the current document content; examples of substantial changes are:
+As discussed in the [27th February 2023](https://www.w3.org/2023/02/27-wot-script-minutes.html#t06) call, the task force decided to use a new versioning mechanism for the WoT Scripting API specification. In practice, we augment the current Typescript versioning with a more comprehensive tagging mechanism that takes into account also standard W3C process for publishing Notes. Each substantial change will trigger the creation of a git tag on the repository and when the Note is published it will trigger a full Github release. Substantial changes are anything that is not just an editorial or rephrasing of the current document content; examples of substantial changes are:
 - Fix in an algorithm
 - New function or change in the argument list of an existing function
 - Introducing a new type
@@ -41,12 +41,13 @@ On the other hand, examples of non-substantial changes are:
 - Introduce new examples or explanatory text
 - Improve readability or document structure
 
-In every circumstance, different substantial changes may be packed together in one single git tag if they are closely related or are merged in a short period (e.g. a day). Tags follow semantic versioning
+In every circumstance, different substantial changes may be packed together in one single git tag if they are closely related or are merged in a short period (e.g. a day). Tags follow [semantic versioning](https://semver.org/)
 ```
-majory.minor.patch-[Experimental | Release].[id]
+majory.minor.patch-[alpha].[id]
 ```
 - `id` identifies the experimental revision of an ongoing `majory.minor.patch` version. 
 
+Since we are still in a exploratory phase, we will use the `major` number `0` until we reach a certain level of maturity.
 
 ## Editors Tools
 
