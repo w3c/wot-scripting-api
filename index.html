@@ -2603,6 +2603,26 @@
             <td>`{}`</td>
             <td>A {{Map}} with action names as keys and {{ActionHandler}}s as values</td>
           </tr>
+          <tr>
+            <td><dfn>[[\subscribeHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with event names as keys and {{EventSubscriptionHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\unsubscribeHandlers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with event names as keys and {{EventSubscriptionHandler}}s as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\propertyObservers]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with property names as keys and an {{Array}} of listeners as values</td>
+          </tr>
+          <tr>
+            <td><dfn>[[\eventListeners]]</dfn></td>
+            <td>`{}`</td>
+            <td>A {{Map}} with event names as keys and {{Array}} of listeners as values</td>
+          </tr>
         </tbody>
       </table>
     </section>
@@ -2896,7 +2916,7 @@
           </li>
           <li>
             Save the request sender information together with |options| to
-            |property|'s <a>internal observer list</a>, in order to be able
+            {{ExposedThing/[[propertyObservers]]}}'s |name| value, in order to be able
             to notify about <a>Property</a> value changes.
           </li>
         </ol>
@@ -2973,12 +2993,13 @@
             reply following the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Let |sender| be the matching observer found in |property|'s
-            <a>internal observer list</a>. If not found, send back a
+            Let |sender| be the matching observer found in the value of
+            {{ExposedThing/[[propertyObservers]]}}'s |name|. If not found, send back a
             {{NotFoundError}} in the reply and abort these steps.
           </li>
           <li>
-            Remove |sender| from |property|'s <a>internal observer list</a>
+            Remove |sender| from in the value of
+            {{ExposedThing/[[propertyObservers]]}}'s |name|
             and send back a reply following the <a>Protocol Bindings</a>.
           </li>
         </ol>
@@ -3046,7 +3067,7 @@
             </ol>
           </li>
           <li>
-            For each |observer| in |property|'s <a>internal observer list</a>
+            For each |observer| in the value of {{ExposedThing/[[propertyObservers]]}}'s |name|,
             run the following sub-steps:
             <ol>
               <li>
@@ -3351,8 +3372,8 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\subscribeHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[subscribeHandlers]]}}
+            <a>internal slot</a>.
           </li>
           <li>
             Return `this`.
@@ -3384,11 +3405,12 @@
             {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            If |name| has an associated [[\subscribeHandler]] <a>internal slot</a>,
+            If |name| has an associated {{EventSubscriptionHandler}} in the
+            {{ExposedThing/[[subscribeHandlers]]}} <a>internal slot</a>,
             invoke it with |options| and abort these steps.
           </li>
           <li>
-            Otherwise, if no [[\subscribeHandler]] is defined, then implement the
+            Otherwise, if no {{EventSubscriptionHandler}} is defined, then implement the
             default subscriber mechanism:
             <ol>
               <li>
@@ -3398,7 +3420,7 @@
                 notification response.
               </li>
               <li>
-                Add |subscriber| to the <a>internal listener list</a> of |interaction|.
+                Add |subscriber| to the {{ExposedThing/[[eventListeners]]}} value of key |name|.
               </li>
             </ol>
           </li>
@@ -3437,8 +3459,8 @@
             [= exception/throw =] a {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            Set the <a>internal slot</a> [[\unsubscribeHandler]] on |interaction|
-            to |handler|.
+            Set the pair (|interaction|,|handler|) in {{ExposedThing/[[unsubscribeHandlers]]}}
+            <a>internal slot</a>.
           </li>
           <li>
             Return `this`.
@@ -3470,17 +3492,16 @@
             {{NotFoundError}} and abort these steps.
           </li>
           <li>
-            If |name| has an associated [[\unsubscribeHandler]]
-            <a>internal slot</a> that is a function,
+            If |name| has an associated {{EventSubscriptionHandler}} in the
+            {{ExposedThing/[[unsubscribeHandlers]]}} <a>internal slot</a>,
             invoke it with |options| and abort these steps.
           </li>
           <li>
-            Otherwise let |subscriber| be the tuple saved in |interaction|'s
-            <a>internal listener list</a>.
+            Otherwise let |subscriber| be the tuple saved in {{ExposedThing/[[eventListeners]]}} 
+            in |name| key.
           </li>
           <li>
-             Remove |subscriber| from |interaction|'s
-            <a>internal listener list</a>.
+             Remove |subscriber| from the value of |name| key.
           </li>
           <li>
             Return `this`.
@@ -3497,12 +3518,10 @@
         following steps:
         <ol>
           <li>
-            Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s
-            |name|.
+            Let |listeners| be the value of {{ExposedThing/[[eventListeners]]}}'s |name|.
           </li>
           <li>
-            For each |subscriber| in the <a>internal listener list</a> of
-            |interaction|, run the following sub-steps:
+            For each |subscriber| in |listeners|, run the following sub-steps:
             <ol>
               <li>
                 Create an <a>Event</a> notification |response| according to the
@@ -3580,15 +3599,14 @@
             reject |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            For each <a>Property</a> definition in {{ExposedThing/[[td]]}}'s |properties|,
-            initialize an |<dfn>internal observer list</dfn>| <a>internal slot</a>
+            For each |key| in {{ExposedThing/[[td]]}}'s |properties| initialize the value of 
+            {{ExposedThing/[[propertyObservers]]}}'s |key| to an empty {{Array}}
             in order to store observe request data needed to notify the observers on value changes.
           </li>
           <li>
-            For each <a>Event</a> definition is {{ExposedThing/[[td]]}}'s |events|,
-            initialize an |<dfn>internal listener list</dfn>| <a>internal slot</a>
-            in order to store subscription request data needed to notify the
-            <a>Event</a> listeners.
+            For each |key| in {{ExposedThing/[[td]]}}'s |events| initialize the value of 
+            {{ExposedThing/[[eventListeners]]}}'s |key| to an empty {{Array}}
+            in order to store subscribe request data needed to notify the subscribers on event emission.
           </li>
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting {{ExposedThing/[[td]]}}
