@@ -566,7 +566,7 @@
           Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
         </li>
         <li>
           Let |thing:ConsumedThing| be a new {{ConsumedThing}} object constructed from |td|.
@@ -580,7 +580,7 @@
           </p>
         </li>
         <li>
-          Resolve |promise| with |thing|.
+          [=Resolve=] |promise| with |thing|.
         </li>
       </ol>
       <p class="ednote">
@@ -613,13 +613,13 @@
           Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
         </li>
         <li>
           Let |thing:ExposedThing| be a new {{ExposedThing}} object constructed with |init|.
         </li>
         <li>
-          Resolve |promise| with |thing|.
+          [=Resolve=] |promise| with |thing|.
         </li>
       </ol>
     </div>
@@ -722,10 +722,10 @@
           Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
         </li>
         <li>
-          If discovery is not supported by the implementation, reject |promise|
+          If discovery is not supported by the implementation, [=reject=] |promise|
           with {{NotSupportedError}} and abort these steps.
         </li>
         <li>
@@ -739,12 +739,12 @@
         </li>
         <li>
           If filters in general are not supported by the implementation and
-          |filter| is not `undefined` or `null`, reject |promise|
+          |filter| is not `undefined` or `null`, [=reject=] |promise|
           with {{NotSupportedError}} and abort these steps.
         </li>
         <li>
           If discovery cannot be started by the underlying platform,
-          reject |promise| with {{OperationError}} and abort these steps.
+          [=reject=] |promise| with {{OperationError}} and abort these steps.
         </li>
         <li>
           Request the underlying platform to start the <a>discovery process</a>
@@ -752,7 +752,7 @@
           the script has access to, passing |discovery| to it.
         </li>
         <li>
-          Resolve |promise| with |discovery|.
+          [=Resolve=] |promise| with |discovery|.
         </li>
       </ol>
     </div>
@@ -772,10 +772,10 @@
           Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
         </li>
         <li>
-          If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+          If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
         </li>
         <li>
-          If directory discovery is not supported by the implementation, reject |promise|
+          If directory discovery is not supported by the implementation, [=reject=] |promise|
           with {{NotSupportedError}} and abort these steps.
         </li>
         <li>
@@ -799,12 +799,12 @@
             <li>
               If |url| is not a <a>TD Directory</a> or if the underlying
               implementation cannot support the <a>Protocol Binding</a>
-              indicated by |url|, reject |promise|
+              indicated by |url|, [=reject=] |promise|
               with {{NotSupportedError}} and terminate these steps.
             </li>
             <li>
               If filters in general are not supported by the implementation and
-              |filter| is not `undefined` or `null`, reject |promise|
+              |filter| is not `undefined` or `null`, [=reject=] |promise|
               with {{NotSupportedError}} and abort these steps.
             </li>
             <li>
@@ -817,7 +817,7 @@
           </ol>
         </li>
         <li>
-          Resolve |promise| with |discovery|.
+          [=Resolve=] |promise| with |discovery|.
         </li>
       </ol>
     </div>
@@ -839,23 +839,23 @@
         </li>
         <li>
           If invoking this method is not allowed for the current scripting
-          context for security reasons, reject |promise| with a {{SecurityError}}
+          context for security reasons, [=reject=] |promise| with a {{SecurityError}}
           and abort these steps.
         </li>
         <li>
           If fetching a <a>Thing Description</a> is not supported by the
-          implementation, reject |promise| with {{NotSupportedError}} and
+          implementation, [=reject=] |promise| with {{NotSupportedError}} and
           abort these steps.
         </li>
         <li>
           Let |td:ThingDescription| be the result of invoking the underlying
           platform to retrieve the <a>Thing Description</a> using the
             <a>Protocol Binding</a> specified by |url|.
-          If retrieving |td| fails, reject |promise| with {{NotFoundError}} and
+          If retrieving |td| fails, [=reject=] |promise| with {{NotFoundError}} and
           abort these steps.
         </li>
         <li>
-          Resolve |promise| with |td|.
+          [=Resolve=] |promise| with |td|.
         </li>
       </ol>
     </div>
@@ -971,24 +971,24 @@
         </li>
         <li>
           If the value of the <a>[[\value]]</a> <a>internal slot</a> is not
-          `undefined`, resolve |promise| with that value and abort these steps.
+          `undefined`, [=resolve=] |promise| with that value and abort these steps.
         </li>
         <li>
           If the value of the |data| property is not a {{ReadableStream}} or if
           |dataUsed| is `true`, or if |form| is `null` or `undefined` or if |schema| or its
           |type| are `null` or `undefined`,
-          reject |promise| with {{NotReadableError}} and abort these steps.
+          [=reject=] |promise| with {{NotReadableError}} and abort these steps.
         </li>
         <li>
           If |form|'s |contentType| is not `application/json` and if a mapping is
           not available in the <a>Protocol Bindings</a> from |form|'s |contentType|
-          to [[!JSON-SCHEMA]], reject |promise| with {{NotSupportedError}} and
+          to [[!JSON-SCHEMA]], [=reject=] |promise| with {{NotSupportedError}} and
           abort these steps.
         </li>
         <li>
           Let |reader| be the result of
           <a data-cite="streams#readablestream-get-a-reader">
-          getting a reader</a> from |data|. If that threw an exception, reject
+          getting a reader</a> from |data|. If that threw an exception, [=reject=]
           |promise| with that exception and abort these steps.
         </li>
         <li>
@@ -1005,16 +1005,16 @@
         </li>
         <li>
           Let |json| be the result of running <a>parse JSON from bytes</a> on
-          |bytes|. If that throws, reject |promise| with that exception and
+          |bytes|. If that throws, [=reject=] |promise| with that exception and
           abort these steps.
         </li>
         <li>
           Set <a>[[\value]]</a> to the result of running <a>check data schema</a>
-          on |json| and |schema|. If that throws, reject |promise| with that
+          on |json| and |schema|. If that throws, [=reject=] |promise| with that
           exception and abort these steps.
         </li>
         <li>
-          Resolve |promise| with <a>[[\value]]</a>.
+          [=Resolve=] |promise| with <a>[[\value]]</a>.
         </li>
       </ol>
     </section>
@@ -1028,12 +1028,12 @@
         </li>
         <li>
           If |data| is not {{ReadableStream}} or if |dataUsed| is `true`,
-          reject |promise| with {{NotReadableError}} and abort these steps.
+          [=reject=] |promise| with {{NotReadableError}} and abort these steps.
         </li>
         <li>
           Let |reader| be the result of
           <a data-cite="streams#readablestream-get-a-reader">
-          getting a reader</a> from |data|. If that threw an exception, reject
+          getting a reader</a> from |data|. If that threw an exception, [=reject=]
           |promise| with that exception and abort these steps.
         </li>
         <li>
@@ -1045,10 +1045,10 @@
         </li>
         <li>
           Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are |bytes|.
-          If that throws, reject |promise| with that exception and abort these steps.
+          If that throws, [=reject=] |promise| with that exception and abort these steps.
         </li>
         <li>
-          Resolve |promise| with |arrayBuffer|.
+          [=Resolve=] |promise| with |arrayBuffer|.
         </li>
       </ol>
     </section>
@@ -1455,12 +1455,16 @@
         <tr>
           <td><dfn>[[\activeSubscriptions]]</dfn></td>
           <td>`{}`</td>
-          <td>A {{Set}} containing the names of active {{Subscription}}'s for an <a>Event</a></td>
+          <td>
+            An [=ordered map=] [=map/keyed=] on a [=string=] name representing the <a>Event</a> and [=map/value=] is a {{Subscription}} object.
+          </td>
         </tr>
         <tr>
           <td><dfn>[[\activeObservations]]</dfn></td>
           <td>`{}`</td>
-          <td>A {{Set}} containing the names of active {{Subscription}}'s for an <a>Property</a></td>
+          <td>
+            An [=ordered map=] [=map/keyed=] on a [=string=] name representing a <a>Property</a> and [=map/value=] is a {{Subscription}} object.
+          </td>
         </tr>
         </tbody>
       </table>
@@ -1522,7 +1526,7 @@
           </li>
           <li>
             If invoking this method is not allowed for the current scripting
-            context for security reasons, reject |promise| with a
+            context for security reasons, [=reject=] |promise| with a
             {{SecurityError}} and abort these steps.
           </li>
           <li>
@@ -1530,7 +1534,7 @@
             |propertyName|.
           </li>
           <li>
-            If |interaction| is  <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+            If |interaction| is  `undefined`, [=reject=] |promise| with a {{NotFoundError}}
             and abort these steps.
           </li>
           <li>
@@ -1541,7 +1545,7 @@
             the implementation.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            If |form| is failure, [=reject=] |promise| with a {{SyntaxError}} and
             abort these steps.
           </li>
           <li>
@@ -1551,7 +1555,7 @@
             given in |options|' |uriVariables|.
           </li>
           <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Let |response| be the response received to the request.
@@ -1559,10 +1563,10 @@
           <li>
             Let |data| be the result of running <a>parse interaction response</a>
             on |response|, |form| and |interaction|.
-            If that fails, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If that fails, [=reject=] |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Resolve |promise| with |data|.
+            [=Resolve=] |promise| with |data|.
           </li>
         </ol>
       </div>
@@ -1582,7 +1586,7 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
@@ -1590,7 +1594,7 @@
             the implementation.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If |form| is failure, [=reject=] |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
@@ -1599,7 +1603,7 @@
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a>, reject |promise| with a {{NotSupportedError}} and abort these steps.
+            If this cannot be done with a single request with the <a>Protocol Bindings</a>, [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
             Process the response and for each |key| in |result|, run the following
@@ -1619,11 +1623,11 @@
             </ol>
           </li>
           <li>
-            If the above step throws at any point, reject |promise| with that
+            If the above step throws at any point, [=reject=] |promise| with that
             exception and abort these steps.
           </li>
           <li>
-            Resolve |promise| with |result|.
+            [=Resolve=] |promise| with |result|.
           </li>
         </ol>
       </div>
@@ -1641,7 +1645,7 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             If |option|'s |formIndex| is defined, let |form| be the
@@ -1649,16 +1653,16 @@
             the implementation.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If |form| is failure, [=reject=] |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the value of the all the <a>Property</a> definitions from the <a>TD</a> with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise| with a {{NotSupportedError}} and abort these steps.
+            If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then [=reject=] |promise| with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
@@ -1681,7 +1685,7 @@
             </ol>
           </li>
           <li>
-            Resolve |promise| with |result|.
+            [=Resolve=] |promise| with |result|.
           </li>
         </ol>
       </div>
@@ -1699,14 +1703,14 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s
             |propertyName|.
           </li>
           <li>
-            If |interaction| is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+            If |interaction| is `undefined`, [=reject=] |promise| with a {{NotFoundError}}
             and abort these steps.
           </li>
           <li>
@@ -1717,10 +1721,10 @@
             the implementation.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If |form| is failure, [=reject=] |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |data| be the result of running the <a>create interaction request</a> steps on |value|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+            Let |data| be the result of running the <a>create interaction request</a> steps on |value|, |form| and |interaction|. If that throws, [=reject=] <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>)
@@ -1729,10 +1733,10 @@
             |options|' |uriVariables|.
           </li>
           <li>
-            If the request fails, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise|.
+            Otherwise [=resolve=] |promise|.
           </li>
         </ol>
       </div>
@@ -1762,7 +1766,7 @@
           </li>
           <li>
             If invoking this method is not allowed for the current scripting
-            context for security reasons, reject |promise| with a
+            context for security reasons, [=reject=] |promise| with a
             {{SecurityError}} and abort these steps.
           </li>
           <li>
@@ -1773,7 +1777,7 @@
             the implementation.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and
+            If |form| is failure, [=reject=] |promise| with a {{SyntaxError}} and
             abort these steps.
           </li>
           <li>
@@ -1781,7 +1785,7 @@
           </li>
           <li>
             For each |name:string| in |propertyNames|, let |property| be the value of {{ConsumedThing/[[td]]}}'s |properties|'s |name|.
-            If |property| is `null` or `undefined` or is not `writeable` reject |promise| with {{NotSupportedError}}
+            If |property| is `null` or `undefined` or is not `writeable` [=reject=] |promise| with {{NotSupportedError}}
             and abort these steps.
           </li>
           <li>
@@ -1797,7 +1801,7 @@
             For each key |key:string| in |properties|, take its value as |value|
             and run the <a>create interaction request</a> steps on |value|, |form|
             and the value for |schema|'s |key|.
-            If that throws for any |name|, reject <a>promise</a> with that
+            If that throws for any |name|, [=reject=] <a>promise</a> with that
             exception and abort these steps.
           </li>
           <li>
@@ -1808,7 +1812,7 @@
           </li>
           <li>
             If this cannot be done with a single request with the
-            <a>Protocol Bindings</a> of the <a>Thing</a>, then reject |promise|
+            <a>Protocol Bindings</a> of the <a>Thing</a>, then [=reject=] |promise|
             with a {{NotSupportedError}} and abort these steps.
           </li>
           <li>
@@ -1816,7 +1820,7 @@
             <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise|.
+            Otherwise [=resolve=] |promise|.
           </li>
         </ol>
       </div>
@@ -1843,19 +1847,18 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If |listener| is not a {{Function}}, reject |promise|
+            If |listener| is not a {{Function}}, [=reject=] |promise|
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            If |onerror| is not `null` and is not a {{Function}}, reject |promise|
+            If |onerror| is not `null` and is not a {{Function}}, [=reject=] |promise|
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            if |thing| {{ConsumedThing/[[activeObservations]]}} contains |propertyName|, reject |promise| with
-            a {{NotAllowedError}} and abort these steps.
+            If |thing|.{{ConsumedThing/[[activeObservations]]}}[|propertyName|] [=map/exists], [=reject=] |promise| with a {{NotAllowedError}} and abort these steps.
           </li>
           <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
@@ -1882,11 +1885,11 @@
                 `"observeproperty"`, selected by the implementation.
               </li>
               <li>
-                If |subscription|'s {{Subscription/[[form]]}} is failure, reject |promise| with a
+                If |subscription|'s {{Subscription/[[form]]}} is failure, [=reject=] |promise| with a
                 {{SyntaxError}} and abort these steps.
               </li>
               <li>
-                If |subscription|'s {{Subscription/[[interaction]]}} is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+                If |subscription|'s {{Subscription/[[interaction]]}} is `undefined`, [=reject=] |promise| with a {{NotFoundError}}
                 and abort this steps.
               </li>
             </ul>
@@ -1897,21 +1900,21 @@
             optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
-            If the request fails, reject |promise| with the error received from
+            If the request fails, [=reject=] |promise| with the error received from
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise add |propertyName| to |thing|'s' {{ConsumedThing/[[activeObservations]]}} set and resolve |promise|.
+            [=map/Set=] |thing|.{{ConsumedThing/[[activeObservations]]}}[|propertyName] to |subscription| and [=resolve=] |promise|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for this
-            subscription with a new <a>Property</a> value |value|,
+            |subscription| [=map/keyed=] on |propertyName| with a new <a>Property</a> value |value|,
             run the following sub-steps:
             <ul>
               <li>
                 Let |reply| be the result of running <a>parse interaction response</a>
-                with |value|, {{Subscription/[[form]]}} and {{Subscription/[[interaction]]}}.
-                If that throws, reject |promise| with that exception and abort these steps.
+                with |value|, |subscription|.{{Subscription/[[form]]}} and |subscription|.{{Subscription/[[interaction]]}}.
+                If that throws, [=reject=] |promise| with that exception and abort these steps.
               </li>
               <li>
                 Invoke |listener| with |reply|.
@@ -1953,14 +1956,14 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let |interaction| be the value of {{ConsumedThing/[[td]]}}'s |actions|'s
             |actionName|.
           </li>
           <li>
-            If |interaction| is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
+            If |interaction| is `undefined`, [=reject=] |promise| with a {{NotFoundError}}
             and abort these steps.
           </li>
           <li>
@@ -1971,26 +1974,26 @@
             selected by the implementation.
           </li>
           <li>
-            If |form| is failure, reject |promise| with a {{SyntaxError}} and abort these steps.
+            If |form| is failure, [=reject=] |promise| with a {{SyntaxError}} and abort these steps.
           </li>
           <li>
-            Let |args| be the result of running the <a>create interaction request</a> steps on |params|, |form| and |interaction|. If that throws, reject <a>promise</a> with that exception and abort these steps.
+            Let |args| be the result of running the <a>create interaction request</a> steps on |params|, |form| and |interaction|. If that throws, [=reject=] <a>promise</a> with that exception and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|'s |uriVariables|.
           </li>
           <li>
-            If the request fails locally or returns an error over the network, reject |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
+            If the request fails locally or returns an error over the network, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
             Let |value| be the reply returned in the reply.
           </li>
           <li>
             Let |result| be the result of running <a>parse interaction response</a>
-            with |value|, |form| and |interaction|. If that throws, reject |promise| with that exception and abort these steps.
+            with |value|, |form| and |interaction|. If that throws, [=reject=] |promise| with that exception and abort these steps.
           </li>
           <li>
-            Resolve |promise| with |result|.
+            [=Resolve=] |promise| with |result|.
           </li>
         </ol>
       </div>
@@ -2017,81 +2020,81 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
-            If |listener| is not a {{Function}}, reject |promise|
+            If |listener| is not a {{Function}}, [=reject=] |promise|
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            If |onerror| is not `null` and is not a {{Function}}, reject |promise|
+            If |onerror| is not `null` and is not a {{Function}}, [=reject=] |promise|
             with a {{TypeError}} and abort these steps.
           </li>
           <li>
-            if |thing| {{ConsumedThing/[[activeSubscriptions]]}} contains |eventName|, reject |promise| with 
-            a {{NotAllowedError}} and abort these steps.
+            If |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|eventName|] does not [=map/exist=], [=reject=] |promise| with a {{NotAllowedError}} and abort these steps.
           </li>
           <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
             set as follows:
             <ul>
               <li>
-                Let |subscription|'s {{Subscription/[[type]]}} be `"event"`.
+                Let |subscription|.{{Subscription/[[type]]}} be `"event"`.
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[name]]}} be the value of |eventName|.
+                Let |subscription|.{{Subscription/[[name]]}} be |eventName|.
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[interaction]]}} be the value of {{ConsumedThing/[[td]]}}'s
-                |events|'s |eventName|.
+                Let |subscription|.{{Subscription/[[interaction]]}} be |thing|. {{ConsumedThing/[[td]]}}.|events|[|eventName|].
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[thing]]}} be the value of |thing|.
+                If |subscription|.{{Subscription/[[interaction]]}} is `undefined`, [=reject=] |promise| with a {{NotFoundError}} and abort this steps.
               </li>
               <li>
-                Let |subscription|'s {{Subscription/[[form]]}} be the <a>Form</a> associated with
-                |formIndex| in {{Subscription/[[interaction]]}}'s |forms| array if |option|'s
-                |formIndex| is defined, otherwise let {{Subscription/[[form]]}} be a
-                <a>Form</a> in {{Subscription/[[interaction]]}}'s |forms| array whose |op| is
-                `"subscribeevent"`, selected by the implementation.
+                Let |subscription|.{{Subscription/[[thing]]}} be |thing|.
               </li>
               <li>
-                If |subscription|'s {{Subscription/[[form]]}} is failure, reject |promise| with a
-                {{SyntaxError}} and abort these steps.
+                If |options|.|formIndex| [=map/exists=], then let |subscription|.{{Subscription/[[form]]}} be  |thing|.{{Subscription/[[interaction]]}}.|forms|[|formIndex|].
               </li>
               <li>
-                If |subscription|'s {{Subscription/[[interaction]]}} is <code>undefined</code>, reject |promise| with a {{NotFoundError}}
-                and abort this steps.
+                Otherwise, let |subscription|.{{Subscription/[[form]]}} be an [=implementation-defined=]
+                <a>Form</a> from the |subscription|.{{Subscription/[[interaction]]}}.|forms| array whose |op| is `"subscribeevent"`.
+              </li>
+              <li>
+                If |subscription|.{{Subscription/[[form]]}} does not [=map/exist=],
+                [=reject=] |promise| with a {{SyntaxError}} and abort these steps.
               </li>
             </ul>
           </li>
           <li>
             Make a request to the underlying platform via the <a>Protocol Bindings</a>
-            to subscribe to an <a>Event</a> identified by |eventName:string| with
-            {{Subscription/[[form]]}}, optional URI templates given in |options|' |uriVariables|
-            and optional subscription data given in |options|'s |data|.
+            to subscribe to the <a>Event</a> identified by |eventName:string| with
+            {{Subscription/[[form]]}}, optional URI templates given in |options|.|uriVariables|
+            and optional subscription data given in |options|.|data|.
           </li>
           <li>
-            If the request fails, reject |promise| with the error received from
+            If the request fails, [=reject=] |promise| with the error received from
             the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise add |eventName| to |thing|'s {{ConsumedThing/[[activeSubscriptions]]}} set and resolve |promise|.
+            [=map/Set=] |eventName| to |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|eventName|] to |subscription|.
           </li>
           <li>
-            Whenever the underlying platform detects a notification for this
-            <a>Event</a> subscription, run the following sub-steps:
+             [=Resolve=] |promise|.
+          </li>
+          <li>
+            Whenever the underlying platform detects a notification for the
+            <a>Event</a> |subscription| [=map/keyed=] on |eventName|, run the following sub-steps:
             <ol>
               <li>
                 Invoke |listener| with the result of running
                 <a>parse interaction response</a> on the data provided with the
-                <a>Event</a>, {{Subscription/[[form]]}} and {{Subscription/[[interaction]]}}.
+                <a>Event</a>, |subscription|.{{Subscription/[[form]]}} and |subscription|.{{Subscription/[[interaction]]}}.
               </li>
             </ol>
           </li>
           <li>
             Whenever the underlying platform detects an error for
-            this subscription, run the following sub-steps:
+            <a>Event</a> |subscription| [=map/keyed=] on |eventName|, run the following sub-steps:
             <ul>
               <li>
                 If the error is irrecoverable and stops the subscription, set
@@ -2256,7 +2259,7 @@
             </li>
             <li>
               If invoking this method is not allowed for the current scripting
-              context for security reasons, reject |promise| with a
+              context for security reasons, [=reject=] |promise| with a
               {{SecurityError}} and abort these steps.
             </li>
             <li>
@@ -2269,7 +2272,7 @@
               <a>find a matching unsubscribe form</a> algorithm given {{Subscription/[[form]]}}.
             </li>
             <li>
-              If |unsubscribeForm| is failure, reject |promise| with a {{SyntaxError}} and
+              If |unsubscribeForm| is failure, [=reject=] |promise| with a {{SyntaxError}} and
               abort these steps.
             </li>
             <li>
@@ -2286,7 +2289,7 @@
               unsubscribe data given in |options|'s |data|.
             </li>
             <li>
-              If the request fails, reject |promise| with the error received from
+              If the request fails, [=reject=] |promise| with the error received from
               the <a>Protocol Bindings</a> and abort these steps.
             </li>
             <li>
@@ -2302,7 +2305,7 @@
                   if {{Subscription/[[type]]}} is `"property"`, remove {{Subscription/[[name]]}} from {{Subscription/[[thing]]}}'s {{ConsumedThing/[[activeObservations]]}} .
                 </li>
                 <li>
-                  resolve |promise|.
+                  [=Resolve=] |promise|.
                 </li>
               </ul> 
             </li>
@@ -2865,8 +2868,8 @@
       </p>
       <p>
          The |handler| callback function should implement reading a
-         <a>Property</a> and resolve with an {{InteractionOutput}} object or
-         reject with an error.
+         <a>Property</a> and [=resolve=] with an {{InteractionOutput}} object or
+         [=reject=] with an error.
       </p>
       <p>
         There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
@@ -3048,7 +3051,7 @@
               </li>
               <li>
                 If |name| does not [=map/exist=] in {{ExposedThing/[[readHandlers]]}},
-                reject |promise| and abort these steps.
+                [=reject=] |promise| and abort these steps.
               </li>
               <li>
                 Let |handler| be {{ExposedThing/[[readHandlers]]}}[|name|].
@@ -3563,14 +3566,14 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Let |interaction| be the value of {{ExposedThing/[[td]]}}'s |events|'s |name|.
           </li>
           <li>
             If an <a>Event</a> with the name |name| is not found,
-            reject |promise| with {{NotFoundError}} and abort these steps.
+            [=reject=] |promise| with {{NotFoundError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform to emit an <a>Event</a>
@@ -3589,14 +3592,14 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Run the <a>expand a TD</a> steps on the {{ExposedThing/[[td]]}}.
           </li>
           <li>
             Run the <a>validate a TD</a> on {{ExposedThing/[[td]]}}. If that fails,
-            reject |promise| with a {{TypeError}} and abort these steps.
+            [=reject=] |promise| with a {{TypeError}} and abort these steps.
           </li>
           <li>
             For each |key| in {{ExposedThing/[[td]]}}'s |properties| initialize the value of 
@@ -3620,10 +3623,10 @@
             want to enforce further checks and constraints on interaction forms).
           </li>
           <li>
-            If there was an error during the request, reject |promise| with an {{Error}} object |error| with |error|'s |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
+            If there was an error during the request, [=reject=] |promise| with an {{Error}} object |error| with |error|'s |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise| and abort these steps.
+            Otherwise [=resolve=] |promise| and abort these steps.
           </li>
         </ol>
       </div>
@@ -3637,16 +3640,16 @@
             Return a {{Promise}} |promise:Promise| and execute the next steps [=in parallel=].
           </li>
           <li>
-            If invoking this method is not allowed for the current scripting context for security reasons, reject |promise| with a {{SecurityError}} and abort these steps.
+            If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and abort these steps.
           </li>
           <li>
             Make a request to the underlying platform to stop serving external requests for <a>WoT Interactions</a>, based on the <a>Protocol Bindings</a>.
           </li>
           <li>
-            If there was an error during the request, reject |promise| with an {{Error}} object |error| with its |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
+            If there was an error during the request, [=reject=] |promise| with an {{Error}} object |error| with its |message| set to the error code seen by the <a>Protocol Bindings</a> and abort these steps.
           </li>
           <li>
-            Otherwise resolve |promise| and abort these steps.
+            Otherwise [=resolve=] |promise| and abort these steps.
           </li>
         </ol>
       </div>
@@ -4020,10 +4023,10 @@
           </li>
           <li>
             If the `value` property in the yielded result from the {{Symbol/asyncIterator}} is undefined, set the
-            {{ThingDiscoveryProcess/done}} property to `true` and reject |promise|.
+            {{ThingDiscoveryProcess/done}} property to `true` and [=reject=] |promise|.
           </li>
           <li>
-            Resolve |promise| with |td| and abort these steps.
+            [=Resolve=] |promise| with |td| and abort these steps.
           </li>
         </ol>
       </div>
