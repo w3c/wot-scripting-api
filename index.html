@@ -856,7 +856,7 @@
           stop.
         </li>
         <li>
-          Let |td:ThingDescription| be the result of invoking the underlying
+          Let |td:ThingDescription| be the result of making a request to the underlying
           platform to retrieve the <a>Thing Description</a> using the
             <a>Protocol Binding</a> specified by |url|.
           If retrieving |td| fails, [=reject=] |promise| with {{NotFoundError}} and
@@ -1328,7 +1328,7 @@
       <figcaption>Data structures used when invoking an Action</figcaption>
     </figure>
     <p>
-      When a {{ConsumedThing}} invokes an <a>Action</a> data, it provides the
+      When a {{ConsumedThing}} invokes an <a>Action</a>, it provides the
       parameters as {{InteractionInput}} and receives the output of the
       <a>Action</a> as an {{InteractionOutput}} object.
     </p>
@@ -1932,7 +1932,7 @@
                 If that throws, [=reject=] |promise| with that exception and stop.
               </li>
               <li>
-                Invoke |listener| with |reply|.
+                Invoke |listener| given |reply|.
               </li>
             </ul>
           </li>
@@ -1949,7 +1949,7 @@
                 to reflect the underlying error condition.
               </li>
               <li>
-                If |onerror| is a {{Function}},  invoke it with |error|.
+                If |onerror| is a {{Function}},  invoke it given |error|.
               </li>
             </ul>
           </li>
@@ -2002,7 +2002,7 @@
             Let |args| be the result of running the <a>create interaction request</a> steps on |params|, |form| and |interaction|. If that throws, [=reject=] <a>promise</a> with that exception and stop.
           </li>
           <li>
-            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| with parameters provided in |args| and optional URI templates given in |options|.|uriVariables|.
+            Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| given |args| and |options|.|uriVariables|.
           </li>
           <li>
             If the request fails locally or returns an error over the network, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
@@ -2108,7 +2108,7 @@
             <a>Event</a> |subscription| [=map/keyed=] on |eventName|, run the following sub-steps:
             <ol>
               <li>
-                Invoke |listener| with the result of running
+                Invoke |listener| given the result of running
                 <a>parse interaction response</a> on the data provided with the
                 <a>Event</a>, |subscription|.{{Subscription/[[form]]}} and |subscription|.{{Subscription/[[interaction]]}}.
               </li>
@@ -2127,7 +2127,7 @@
                 to reflect the underlying error condition.
               </li>
               <li>
-                If |onerror| is a {{Function}}, invoke it with |error|.
+                If |onerror| is a {{Function}}, invoke it given |error|.
               </li>
             </ul>
           </li>
@@ -2790,7 +2790,7 @@
                 and stop.
               </li>
               <li>
-                Let |value| be the result of invoking |handler| with |options|.
+                Let |value| be the result of invoking |handler| given |options|.
                 If that fails, throw the error and stop.
               </li>
               <li>
@@ -2999,7 +2999,7 @@
             Let |handler| be |this|.{{ExposedThing/[[unobserveHandlers]]}}[|name|];
           </li>
           <li>
-            If |handler| is a [=function=], invoke that with |options|, then send back a
+            If |handler| is a [=function=], invoke that given |options|, then send back a
             reply following the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
@@ -3065,7 +3065,7 @@
                 If |handler| is `null` or `undefined`, [=reject=] |promise| and stop.
               </li>
               <li>
-                Let |handled| be the result of invoking |handler| with `null`.
+                Let |handled| be the result of invoking |handler| given `null`.
               </li>
               <li>
                  If |handled| is [=rejected=], then [=reject=] |promise| and stop.
@@ -3192,7 +3192,7 @@
             with the reply and stop.
           </li>
           <li>
-            Let |promise| be the result of invoking |handler| with |name| and
+            Let |promise| be the result of invoking |handler| given |name| and
             |options|. If it fails, return the error in the reply and stop.
           </li>
           <li>
@@ -3232,7 +3232,7 @@
       <p>
         A function that is called when an external request for invoking an
         <a>Action</a> is received and defines what to do with such requests.
-        It is invoked with |params:InteractionOutput| and optionally
+        It is invoked given |params:InteractionOutput| and optionally
         with an |options:InteractionOptions| object.
         It returns a {{Promise}} that rejects with an error or resolves with
         the value returned by the <a>Action</a> as {{InteractionInput}}.
@@ -3281,8 +3281,7 @@
 
     <section> <h3>Handling <a>Action</a> requests</h3>
       <div>
-        When a network request for invoking the <a>Action</a> identified by |name:string| is received with |inputs| and optionally with
-        |options:InteractionOptions|, run the following steps:
+        When a network request for invoking the <a>Action</a> identified by |name:string| is received given |inputs| and optionally |options:InteractionOptions|, run the following steps:
         <ol>
           <li>
             If this operation is not supported, send back a {{NotSupportedError}}
@@ -3306,7 +3305,7 @@
             created by following the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
-            Let |promise| be the result of invoking |handler| with |name|, |inputs| and |options|.
+            Let |promise| be the result of invoking |handler| given |name|, |inputs| and |options|.
           </li>
           <li>
             If |promise| rejects, send the error with the reply and stop.
@@ -3324,7 +3323,7 @@
       <p>
         A function that is called when an external request for subscribing to an
         <a>Event</a> is received and defines what to do with such requests.
-        It is invoked with an |options:InteractionOptions| object provided by the implementation and coming from subscribers.
+        It is invoked given an |options:InteractionOptions| object provided by the implementation and coming from subscribers.
         It returns a {{Promise}} that rejects with an error or resolves when
         the subscription is accepted.
       </p>
@@ -3394,7 +3393,7 @@
           </li>
           <li>
             If |this|.{{ExposedThing/[[subscribeHandlers]]}}[|name|] is a [=function=],
-            invoke it with |options| and stop.
+            invoke it given |options| and stop.
           </li>
           <li>
             Otherwise implement the default subscriber mechanism:
@@ -3430,7 +3429,7 @@
         There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
       </p>
       <div>
-        When the method is invoked with |name:string| and
+        When the method is invoked given |name:string| and
         |handler:EventSubscriptionHandler|, run the following steps:
         <ol>
           <li>
@@ -3476,7 +3475,7 @@
           </li>
           <li>
             If |this|.{{ExposedThing/[[unsubscribeHandlers]]}}[|name|]
-            [=map/exists=] and is a [=function=], invoke it with |options| and stop.
+            [=map/exists=] and is a [=function=], invoke it given |options| and stop.
           </li>
           <li>
             Otherwise |name| [=map/exists] in |this|.{{ExposedThing/[[eventListeners]]}},
