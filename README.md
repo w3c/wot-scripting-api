@@ -30,7 +30,7 @@ We use [labels](https://github.com/w3c/wot-scripting-api/labels) to categorize o
 
 ## Versioning 
 As discussed in the [27th February 2023](https://www.w3.org/2023/02/27-wot-script-minutes.html#t06) call, the task force decided to use a new versioning mechanism for the WoT Scripting API specification. In practice, we augment the current Typescript versioning with a more comprehensive tagging mechanism that takes into account also standard W3C process for publishing Notes. Each substantial change will trigger the creation of a git tag on the repository and when the Note is published it will trigger a full Github release. Substantial changes are anything that is not just an editorial or rephrasing of the current document content; examples of substantial changes are:
-- Fix in an algorithm
+- Fixing an algorithm
 - New function or change in the argument list of an existing function
 - Introducing a new type
 - Fix in WebIDL
