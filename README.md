@@ -33,7 +33,7 @@ As discussed in the [27th February 2023](https://www.w3.org/2023/02/27-wot-scrip
 - Fixing an algorithm
 - New function or change in the argument list of an existing function
 - Introducing a new type
-- Fix in WebIDL
+- Fixing WebIDL
 - etc.
 
 On the other hand, examples of non-substantial changes are:
@@ -43,7 +43,7 @@ On the other hand, examples of non-substantial changes are:
 
 In every circumstance, different substantial changes may be packed together in one single git tag if they are closely related or are merged in a short period (e.g. a day). Tags follow [semantic versioning](https://semver.org/)
 ```
-majory.minor.patch-[alpha].[id]
+major.minor.patch-[alpha].[id]
 ```
 - `id` identifies the experimental revision of an ongoing `majory.minor.patch` version. 
 
