@@ -52,7 +52,9 @@
             ]
           },
         ],
-        xref: ["web-platform", "streams", "wot-architecture", "wot-thing-description", "wot-binding-templates", "html", "infra", "url", "ecmascript"],
+        xref: ["web-platform", "HTML", "INFRA", "URL", "WEBIDL", "DOM", "FETCH",
+               "ecmascript", "streams",
+               "wot-architecture", "wot-thing-description", "wot-binding-templates"],
         localBiblio: {
           "WOT-ARCHITECTURE" : {
             href:"https://www.w3.org/TR/2023/CR-wot-architecture11-20230119/",
@@ -982,7 +984,7 @@
         </li>
         <li>
           If |this|.|data| is not a {{ReadableStream}} or if
-          |dataUsed| is `true`, or if |form| is not an [=object=] or if |schema| or its
+          |dataUsed| is `true`, or if |form| is not an {{object}} or if |schema| or its
           |type| are `null` or `undefined`, then
           [=reject=] |promise| with {{NotReadableError}} and stop.
         </li>
@@ -1111,7 +1113,7 @@
           If |type| is `"object"`, run these sub-steps:
           <ol>
             <li>
-              If |payload| or |schema|.|properties| is not an [=object=],
+              If |payload| or |schema|.|properties| is not an {{object}},
               throw {{TypeError}} and stop.
             </li>
             <li>
@@ -1977,7 +1979,7 @@
             Let |interaction| be |this|.{{ConsumedThing/[[td]]}}.|actions|[|actionName|].
           </li>
           <li>
-            If |interaction| is not an [=object=], [=reject=] |promise| with a {{NotFoundError}}
+            If |interaction| is not an {{object}}, [=reject=] |promise| with a {{NotFoundError}}
             and stop.
           </li>
           <li>
@@ -2999,7 +3001,7 @@
             Let |handler| be |this|.{{ExposedThing/[[unobserveHandlers]]}}[|name|];
           </li>
           <li>
-            If |handler| is a [=function=], invoke that given |options|, then send back a
+            If |handler| is a {{Function}}, invoke that given |options|, then send back a
             reply following the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
@@ -3392,7 +3394,7 @@
             {{NotFoundError}} and stop.
           </li>
           <li>
-            If |this|.{{ExposedThing/[[subscribeHandlers]]}}[|name|] is a [=function=],
+            If |this|.{{ExposedThing/[[subscribeHandlers]]}}[|name|] is a {{Function}},
             invoke it given |options| and stop.
           </li>
           <li>
@@ -3475,7 +3477,7 @@
           </li>
           <li>
             If |this|.{{ExposedThing/[[unsubscribeHandlers]]}}[|name|]
-            [=map/exists=] and is a [=function=], invoke it given |options| and stop.
+            [=map/exists=] and is a {{Function}}, invoke it given |options| and stop.
           </li>
           <li>
             Otherwise |name| [=map/exists] in |this|.{{ExposedThing/[[eventListeners]]}},
@@ -3936,7 +3938,7 @@
                 Let |fragment| be |discovery|.{{ThingDiscoveryProcess/[[filter]]}}.{{ThingFilter/fragment}}.
               </li>
               <li>
-                If |fragment| is an [=object=], then for each |key| defined in it:
+                If |fragment| is an {{object}}, then for each |key| defined in it:
                 <ol>
                   <li>
                      Check if that |key| [=map/exists=] in |json| and |json|[|key| is equal to |fragment|.|key|.
