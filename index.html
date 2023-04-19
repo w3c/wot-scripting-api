@@ -627,25 +627,23 @@
     </div>
     <section>
       <h3>Expand an ExposedThingInit</h3>
-      To <dfn>expand an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as
-      a result,
-      run the following steps:
+      To <dfn>expand an ExposedThingInit</dfn> given |init:ExposedThingInit| and obtain a valid |td:ThingDescription| as a result, run the following steps:
       <ol class="algorithm">
-        <li>Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
+        <li>
+          Run <a>validate an ExposedThingInit</a> on |init|. If that fails,
           [= exception/throw =] {{SyntaxError}} and stop.</li>
-        <li>Initialize an empty object called |td|</li>
         <li>
-          For each property |key| in |init| copy |key| and value of |key| to |td| recursively.
+          Let |td| be the result of running [=map/clone=] given |init|.
         </li>
         <li>
-          For each |scheme:SecurityScheme| defined in <code>securityDefinitions</code> check if it is supported by at least one <a>Protocol Binding</a>. If not, then remove |scheme|.
+          For each |scheme:SecurityScheme| in |td|.[<code>"securityDefinitions"</code>], make a request to the underlying platform to check if it is supported by at least one <a>Protocol Binding</a>. If not, then remove |scheme| from |td|.
         </li>
         <li>
-          If <code>security</code> does not [=map/exist=] <code>securityDefinitions</code>, then remove <code>security</code>.
+          If |td|.[<code>"security"</code>] does not [=map/exist=] in |td|.[<code>"securityDefinitions"</code>], then remove <code>security</code> from |td|.
         </li>
-        <li>For each |affordance| run the following sub-steps:
+        <li>For each |affordance| in |td|.properties, |td|.actions and |td|.events, run the following sub-steps:
           <ol>
-            <li>For each |form:Form| defined in |affordance|:
+            <li>For each |form:Form| in |affordance|.forms:
               <ol>
                 <li>
                   If |form|.|contentType:string| is not recognized by the runtime as valid remove |contentType:string| from |form|.
