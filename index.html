@@ -1150,9 +1150,10 @@
       |schema:object|, run these steps:
       <ol>
         <li>
-          Let |idata| be a new an {{InteractionOutput}} object whose |form| is
-          set to |form|, whose |schema| is set to |schema|, whose [[\value]]
-          <a>internal slot</a> is `undefined` and whose |data| is `null`.
+          Let |idata| be a new an {{InteractionOutput}} object.
+        </li>
+        <li>
+           Set |idata|.|form| to |form|, set |idata|.|schema| to |schema|, set |idata.|data| to `null` and set |idata|.{{InteractionOutput/[[value]]}} to `undefined`.
         </li>
         <li>
           If |source| is a {{ReadableStream}} object, let |idata|.|data| be
@@ -1162,12 +1163,12 @@
           If |schema| and its |type| are defined and not `null`, run these sub-steps:
           <ol>
             <li>
-              If |type| is `"null"` and |source| is not,
+              If |type| is `"null"` and |source| is not `"null"`,
               throw {{TypeError}} and stop.
             </li>
             <li>
               If |type| is `"boolean"` and |source| is a falsy value, set
-              |idata|.[[\value]] |value| to `false`, otherwise to `true`.
+              |idata|.{{InteractionOutput/[[value]]}} to `false`, otherwise set it to `true`.
             </li>
             <li>
               If |type| is `"integer"` or `"number"` and |source| is not a number,
@@ -1177,7 +1178,7 @@
             </li>
             <li>
               If |type| is `"string"` and |source| is not a string, let
-              |idata|.[[\value]] be the result of running
+              |idata|.{{InteractionOutput/[[value]]}} be the result of running
               <a>serialize JSON to bytes</a> given |source|.
               If that is failure, throw {{SyntaxError}} and stop.
             </li>
@@ -1203,7 +1204,7 @@
                   If this throws, re-throw that exception and stop.
                 </li>
                 <li>
-                  Set |data|.[[\value]] to |source|.
+                  Set |data|.{{InteractionOutput/[[value]]}} to |source|.
                 </li>
               </ol>
             </li>
@@ -1236,7 +1237,7 @@
                   not found in |source|, throw {{SyntaxError}} and stop.
                 </li>
                 <li>
-                  Set |data|.[[\value]] to |source|.
+                  Set |data|.{{InteractionOutput/[[value]]}} to |source|.
                 </li>
               </ol>
             </li>
@@ -1244,7 +1245,7 @@
         </li>
         <li>
           Set |idata|.|data| to a new {{ReadableStream}} created from
-          |idata|.[[\value]] <a>internal slot</a> as its
+          |idata|.{{InteractionOutput/[[value]]}} <a>internal slot</a> as its
           <a data-cite="streams#underlying-source">underlying source</a>.
         </li>
         <li>
