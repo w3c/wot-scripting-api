@@ -47,6 +47,16 @@ major.minor.patch-[alpha].[id]
 ```
 - `id` identifies the experimental revision of an ongoing `majory.minor.patch` version. 
 
+Here is an example of the process we will use:
+ * We publish the current document and tag it with 0.8.0
+ * Then we make some relevant changes (e.g. a bug fix )
+ * We tag version 0.8.1-alpha.1
+ * We continue fixing stuff
+ * Then we go for 0.8.1-alpha.2
+ * If we change the API (adding a new function) we should go for 0.9.0-alpha.1
+ * We can cycle in these changes as much as we want (e.g. 0.x.y-alpha.x)
+ * When we want to publish the document again we remove the alpha (e.g. assuming we were at 0.9.1-alpha.10 we release 0.9.1)
+
 Since we are still in a exploratory phase, we will use the `major` number `0` until we reach a certain level of maturity.
 
 ## Editors Tools
