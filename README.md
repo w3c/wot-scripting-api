@@ -49,7 +49,7 @@ major.minor.patch-[alpha].[id]
 
 Here is an example of the process we will use:
  * We publish the current document and tag it with 0.8.0
- * Then we make some relevant changes (e.g. a bug fix )
+ * Then we make some relevant changes (e.g. a bug fix)
  * We tag version 0.8.1-alpha.1
  * We continue fixing stuff
  * Then we go for 0.8.1-alpha.2
