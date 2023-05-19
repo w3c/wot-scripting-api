@@ -2340,14 +2340,14 @@
         </p>
       </section>
       <section><h4>Finding an unsubscribe <a>Form</a></h4>
+        <p class="note">
+          This algorithm is under development and is <em>non-normative</em>.
+          Implementations MAY choose another algorithm to find a matching
+          `unsubscribe` <a>Form</a> to a given `subscribe` <a>Form</a>.
+        </p>
         To <dfn>find a matching unsubscribe form</dfn> given |subscribeForm|
         in the context of a {{Subscription}} object, run the following steps:
         <ol>
-          <p class="note">
-            This algorithm is under development and is <em>non-normative</em>.
-            Implementations MAY choose another algorithm to find a matching
-            `unsubscribe` <a>Form</a> to a given `subscribe` <a>Form</a>.
-          </p>
           <li>
             Let |results| be an empty array.
           </li>
