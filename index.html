@@ -1292,7 +1292,7 @@
     </p>
     <figure id="scripting-read">
       <img src="images/scripting-read-data.png"
-                width="100%"
+                style="width:100%;"
                 title="Reading data"/>
       <figcaption>Data structures used when reading data</figcaption>
     </figure>
@@ -1308,7 +1308,7 @@
 
     <figure id="scripting-write">
       <img src="images/scripting-write-data.png"
-                width="100%"
+                style="width:100%;"
                 title="Writing data"/>
       <figcaption>Data structures used when writing data</figcaption>
     </figure>
@@ -1324,7 +1324,7 @@
 
     <figure id="scripting-action">
       <img src="images/scripting-action-data.png"
-                width="100%"
+                style="width:100%;"
                 title="Invoking action"/>
       <figcaption>Data structures used when invoking an Action</figcaption>
     </figure>
@@ -1352,7 +1352,7 @@
     </p>
     <figure id="scripting-error-handling">
       <img src="images/scripting-error-handling.png"
-                width="100%"
+                style="width:100%;"
                 title="Error handling"/>
       <figcaption>Error handling in WoT interactions</figcaption>
     </figure>
@@ -2340,14 +2340,14 @@
         </p>
       </section>
       <section><h4>Finding an unsubscribe <a>Form</a></h4>
+        <p class="note">
+          This algorithm is under development and is <em>non-normative</em>.
+          Implementations MAY choose another algorithm to find a matching
+          `unsubscribe` <a>Form</a> to a given `subscribe` <a>Form</a>.
+        </p>
         To <dfn>find a matching unsubscribe form</dfn> given |subscribeForm|
         in the context of a {{Subscription}} object, run the following steps:
         <ol>
-          <p class="note">
-            This algorithm is under development and is <em>non-normative</em>.
-            Implementations MAY choose another algorithm to find a matching
-            `unsubscribe` <a>Form</a> to a given `subscribe` <a>Form</a>.
-          </p>
           <li>
             Let |results| be an empty array.
           </li>
