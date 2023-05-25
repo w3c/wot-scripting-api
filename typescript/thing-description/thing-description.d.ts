@@ -501,7 +501,7 @@ export interface OAuth2SecurityScheme {
   token?: AnyUri;
   refresh?: AnyUri;
   scopes?: string[] | string;
-  flow?: string | ("code" | "client" | "device");
+  flow?: string | ("code" | "client");
   [k: string]: unknown;
 }
 /**
