@@ -538,7 +538,7 @@ export interface OAuth2SecurityScheme {
   token?: AnyUri;
   refresh?: AnyUri;
   scopes?: string[] | string;
-  flow?: string | ((("code" | "client" | "device") | PlaceholderPattern) & string);
+  flow?: string | ((("code" | "client") | PlaceholderPattern) & string);
   "tm:ref"?: TmRef;
   [k: string]: unknown;
 }
