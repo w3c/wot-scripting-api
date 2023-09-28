@@ -4,7 +4,7 @@
   <meta name="generator" content=
   "HTML Tidy for HTML5 for Linux version 5.7.27">
   <meta charset="utf-8">
-  <meta name="generator" content="ReSpec 34.0.1">
+  <meta name="generator" content="ReSpec 34.1.8">
   <meta name="viewport" content=
   "width=device-width, initial-scale=1, shrink-to-fit=no">
   <style>
@@ -363,25 +363,25 @@
       "date": "18 September 2021"
     }
   },
-  "publishISODate": "2023-04-26T00:00:00.000Z",
-  "generatedSubtitle": "W3C Editor's Draft 26 April 2023"
+  "publishISODate": "2023-09-28T00:00:00.000Z",
+  "generatedSubtitle": "W3C Editor's Draft 28 September 2023"
   }
   </script>
   <link rel="stylesheet" href=
   "https://www.w3.org/StyleSheets/TR/2021/W3C-ED">
 </head>
-<body class="h-entry" data-cite=
+<body class="h-entry toc-inline" data-cite=
 "web-platform HTML INFRA URL WEBIDL DOM FETCH ecmascript streams wot-architecture wot-thing-description wot-binding-templates">
   <div class="head">
     <p class="logos"><a class="logo" href=
-    "https://www.w3.org/"><img crossorigin="" alt="W3C" src=
-    "https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"
-    height="48"></a></p>
+    "https://www.w3.org/"><img crossorigin="" alt="W3C" height="48"
+    src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width=
+    "72"></a></p>
     <h1 id="title" class="title">Web of Things (WoT) Scripting
     API</h1>
     <p id="w3c-state"><a href=
     "https://www.w3.org/standards/types#ED">W3C Editor's Draft</a>
-    <time class="dt-published" datetime="2023-04-26">26 April
+    <time class="dt-published" datetime="2023-09-28">28 September
     2023</time></p>
     <details open="">
       <summary>
@@ -406,7 +406,8 @@
         <dt>History:</dt>
         <dd>
           <a href=
-          "https://www.w3.org/standards/history/wot-scripting-api">https://www.w3.org/standards/history/wot-scripting-api</a>
+          "https://www.w3.org/standards/history/wot-scripting-api/">
+          https://www.w3.org/standards/history/wot-scripting-api/</a>
         </dd>
         <dt>Editors:</dt>
         <dd class="editor p-author h-card vcard" data-editor-id=
@@ -460,7 +461,7 @@
     liability</a>, <a href=
     "https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">
     trademark</a> and <a rel="license" href=
-    "https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document"
+    "https://www.w3.org/Consortium/Legal/2023/software-license"
     title="W3C Software and Document Notice and License">permissive
     document license</a> rules apply.</p>
     <hr title="Separator for header">
@@ -598,7 +599,7 @@
     Patent Policy</a>.</p>
     <p>This document is governed by the <a id=
     "w3c_process_revision" href=
-    "https://www.w3.org/2021/Process-20211102/">2 November 2021
+    "https://www.w3.org/2023/Process-20230612/">12 June 2023
     <abbr title="World Wide Web Consortium">W3C</abbr> Process
     Document</a>.</p>
   </section>
@@ -1878,9 +1879,10 @@
       with the description within this Conformance section.</p>
     </div>
     <p>This specification describes the conformance criteria for
-    the following classes of <a data-link-type="dfn" data-type=
-    "dfn" href="https://infra.spec.whatwg.org/#user-agent">user
-    agent</a> (<dfn id="dfn-ua" tabindex="0" aria-haspopup="dialog"
+    the following classes of <a data-link-type="dfn|abstract-op"
+    data-type="dfn" href=
+    "https://infra.spec.whatwg.org/#user-agent">user agent</a>
+    (<dfn id="dfn-ua" tabindex="0" aria-haspopup="dialog"
     data-dfn-type="dfn">UA</dfn>).</p>
     <p>Due to requirements of small embedded implementations,
     splitting WoT client and server interfaces was needed. Then,
@@ -2251,8 +2253,8 @@ data-link-type="typedef" href="#dom-thingdescription" id=
           <li>If <a href=
           "https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/#json-schema-for-validation">
             JSON Schema validation</a> fails on <var data-type=
-            "ThingDescription">td</var>, <a data-link-type="dfn"
-            data-type="dfn" href=
+            "ThingDescription">td</var>, <a data-link-type=
+            "dfn|abstract-op" data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
             "<a data-link-type="idl" data-type="exception" href=
             "https://webidl.spec.whatwg.org/#exceptiondef-typeerror"><code>TypeError</code></a>"
@@ -2354,16 +2356,17 @@ class="internalDFN" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -2411,7 +2414,8 @@ class="internalDFN" id=
             </div>
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var data-type="ConsumedThing">thing</var>.
@@ -2524,16 +2528,17 @@ class="internalDFN" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -2546,7 +2551,8 @@ class="internalDFN" id=
             "ExposedThingInit">init</var>.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var data-type="ExposedThing">thing</var>.
@@ -2572,7 +2578,8 @@ class="internalDFN" id=
             "ref-for-dfn-validate-an-exposedthinginit-1">validate
             an ExposedThingInit</a> on <var data-type=
             "ExposedThingInit">init</var>. If that fails,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
             <a data-link-type="idl" data-lt="SyntaxError"
             data-type="exception" href=
@@ -2580,10 +2587,10 @@ class="internalDFN" id=
             and stop.
           </li>
           <li>Let <var data-type="ThingDescription">td</var> be the
-          result of running <a data-link-type="dfn" data-type="dfn"
-            href=
-            "https://infra.spec.whatwg.org/#map-clone">clone</a>
-            given <var data-type="ExposedThingInit">init</var>.
+          result of running <a data-link-type="dfn|abstract-op"
+          data-type="dfn" href=
+          "https://infra.spec.whatwg.org/#map-clone">clone</a>
+          given <var data-type="ExposedThingInit">init</var>.
           </li>
           <li>For each <var data-type="SecurityScheme">scheme</var>
           in <var data-type=
@@ -2599,7 +2606,8 @@ class="internalDFN" id=
           </li>
           <li>If <var data-type=
           "ThingDescription">td</var>.[<code>"security"</code>]
-          does not <a data-link-type="dfn" data-type="dfn" href=
+          does not <a data-link-type="dfn|abstract-op" data-type=
+          "dfn" href=
           "https://infra.spec.whatwg.org/#map-exists">exist</a> in
           <var data-type=
           "ThingDescription">td</var>.[<code>"securityDefinitions"</code>],
@@ -2733,7 +2741,8 @@ class="internalDFN" id=
             data-link-type="dfn" id=
             "ref-for-dfn-validate-a-td-1">validate a TD</a> on
             <var data-type="ThingDescription">td</var>. If that
-            fails re-<a data-link-type="dfn" data-type="dfn" href=
+            fails re-<a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
             the error and stop
           </li>
@@ -2866,27 +2875,28 @@ href="#dom-thingfilter" class="internalDFN" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
           </li>
           <li>If discovery is not supported by the implementation,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with
-          <a data-link-type="idl" data-lt="NotSupportedError"
-          data-type="exception" href=
-          "https://webidl.spec.whatwg.org/#notsupportederror"><code>
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with
+            <a data-link-type="idl" data-lt="NotSupportedError"
+            data-type="exception" href=
+            "https://webidl.spec.whatwg.org/#notsupportederror"><code>
             NotSupportedError</code></a> and stop.
           </li>
           <li>Let <var data-type=
@@ -2912,7 +2922,7 @@ href="#dom-thingfilter" class="internalDFN" id=
           <li>If filters in general are not supported by the
           implementation and <var data-type=
           "ThingFilter">filter</var> is not <code>undefined</code>
-          or <code>null</code>, <a data-link-type="dfn"
+          or <code>null</code>, <a data-link-type="dfn|abstract-op"
             data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with
@@ -2922,13 +2932,14 @@ href="#dom-thingfilter" class="internalDFN" id=
             NotSupportedError</code></a> and stop.
           </li>
           <li>If discovery cannot be started by the underlying
-          platform, <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with
-          <a data-link-type="idl" data-lt="OperationError"
-          data-type="exception" href=
-          "https://webidl.spec.whatwg.org/#operationerror"><code>OperationError</code></a>
-          and stop.
+          platform, <a data-link-type="dfn|abstract-op"
+            data-type="dfn" href=
+            "https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with
+            <a data-link-type="idl" data-lt="OperationError"
+            data-type="exception" href=
+            "https://webidl.spec.whatwg.org/#operationerror"><code>OperationError</code></a>
+            and stop.
           </li>
           <li>Request the underlying platform to start the
             <a href="#dfn-discovery-process" class="internalDFN"
@@ -2942,7 +2953,8 @@ href="#dom-thingfilter" class="internalDFN" id=
             to it.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var data-type="ThingDiscoveryProcess">discovery</var>.
@@ -3015,23 +3027,25 @@ data-type="interface" href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
           </li>
           <li>If directory discovery is not supported by the
-          implementation, <a data-link-type="dfn" data-type="dfn"
-          href="https://webidl.spec.whatwg.org/#reject">reject</a>
+          implementation, <a data-link-type="dfn|abstract-op"
+          data-type="dfn" href=
+          "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with
           <a data-link-type="idl" data-lt="NotSupportedError"
           data-type="exception" href=
@@ -3085,8 +3099,8 @@ data-type="interface" href=
                 data-link-type="dfn" id=
                 "ref-for-dfn-protocol-bindings-7">Protocol
                 Binding</a> indicated by <var data-type=
-                "USVString">url</var>, <a data-link-type="dfn"
-                data-type="dfn" href=
+                "USVString">url</var>, <a data-link-type=
+                "dfn|abstract-op" data-type="dfn" href=
                 "https://webidl.spec.whatwg.org/#reject">reject</a>
                 <var data-type="Promise">promise</var> with
                 <a data-link-type="idl" data-lt="NotSupportedError"
@@ -3099,7 +3113,8 @@ data-type="interface" href=
               implementation and <var data-type=
               "ThingFilter">filter</var> is not
               <code>undefined</code> or <code>null</code>,
-              <a data-link-type="dfn" data-type="dfn" href=
+              <a data-link-type="dfn|abstract-op" data-type="dfn"
+              href=
               "https://webidl.spec.whatwg.org/#reject">reject</a>
               <var data-type="Promise">promise</var> with
               <a data-link-type="idl" data-lt="NotSupportedError"
@@ -3131,7 +3146,8 @@ data-type="interface" href=
             </ol>
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var data-type="ThingDiscoveryProcess">discovery</var>.
@@ -3190,16 +3206,17 @@ data-type="interface" href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -3208,7 +3225,8 @@ data-type="interface" href=
             class="internalDFN" data-link-type="dfn" id=
             "ref-for-dfn-thing-descriptions-16">Thing
             Description</a> is not supported by the implementation,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with
             <a data-link-type="idl" data-lt="NotSupportedError"
@@ -3226,7 +3244,8 @@ data-type="interface" href=
           "ref-for-dfn-protocol-bindings-8">Protocol Binding</a>
           specified by <var>url</var>. If retrieving
             <var data-type="ThingDescription">td</var> fails,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with
             <a data-link-type="idl" data-lt="NotFoundError"
@@ -3235,7 +3254,8 @@ data-type="interface" href=
             and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var data-type="ThingDescription">td</var>.
@@ -3560,18 +3580,19 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If <var>this</var>.<a href="#dfn-value" class=
           "internalDFN" data-link-type="dfn" id=
           "ref-for-dfn-value-1">[[value]]</a> is not
-          <code>undefined</code>, <a data-link-type="dfn"
-            data-type="dfn" href=
-            "https://webidl.spec.whatwg.org/#resolve">resolve</a>
-            <var data-type="Promise">promise</var> with that value
-            and stop.
+          <code>undefined</code>, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
+          "https://webidl.spec.whatwg.org/#resolve">resolve</a>
+          <var data-type="Promise">promise</var> with that value
+          and stop.
           </li>
           <li>If <var>this</var>.<var>data</var> is not a
           <a data-link-type="idl" data-lt="ReadableStream"
@@ -3584,7 +3605,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
             "https://webidl.spec.whatwg.org/#idl-object"><code>object</code></a>
             or if <var>schema</var> or its <var>type</var> are
             <code>null</code> or <code>undefined</code>, then
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with
             <a data-link-type="idl" data-lt="NotReadableError"
@@ -3601,7 +3623,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
             [<cite><a class="bibref" data-link-type="biblio" href=
             "#bib-json-schema" title=
             "JSON Schema: A Media Type for Describing JSON Documents">JSON-SCHEMA</a></cite>],
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with
             <a data-link-type="idl" data-lt="NotSupportedError"
@@ -3612,8 +3635,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
           <li>Let <var>reader</var> be the result of <a href=
           "https://streams.spec.whatwg.org/#readablestream-get-a-reader">
             getting a reader</a> from <var>data</var>. If that
-            threw an exception, <a data-link-type="dfn" data-type=
-            "dfn" href=
+            threw an exception, <a data-link-type="dfn|abstract-op"
+            data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with that
             exception and stop.
@@ -3640,7 +3663,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
           <a data-type="dfn" href=
           "https://infra.spec.whatwg.org/#parse-json-bytes-to-a-javascript-value">
             parse JSON from bytes</a> on <var>bytes</var>. If that
-            throws, <a data-link-type="dfn" data-type="dfn" href=
+            throws, <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with that
             exception and stop.
@@ -3652,13 +3676,14 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
           "internalDFN" data-link-type="dfn" id=
           "ref-for-dfn-check-data-schema-1">check data schema</a>
           on <var>json</var> and <var>schema</var>. If that throws,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with that
-          exception and stop.
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with that
+            exception and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with <a href=
             "#dfn-value" class="internalDFN" data-link-type="dfn"
@@ -3689,7 +3714,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
@@ -3697,8 +3723,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
           data-lt="ReadableStream" data-type="interface" href=
           "https://streams.spec.whatwg.org/#readablestream"><code>
             ReadableStream</code></a> or if <var>dataUsed</var> is
-            <code>true</code>, <a data-link-type="dfn" data-type=
-            "dfn" href=
+            <code>true</code>, <a data-link-type="dfn|abstract-op"
+            data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with
             <a data-link-type="idl" data-lt="NotReadableError"
@@ -3709,8 +3735,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
           <li>Let <var>reader</var> be the result of <a href=
           "https://streams.spec.whatwg.org/#readablestream-get-a-reader">
             getting a reader</a> from <var>data</var>. If that
-            threw an exception, <a data-link-type="dfn" data-type=
-            "dfn" href=
+            threw an exception, <a data-link-type="dfn|abstract-op"
+            data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with that
             exception and stop.
@@ -3727,13 +3753,14 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
             "https://webidl.spec.whatwg.org/#idl-ArrayBuffer"><code>
             ArrayBuffer</code></a> whose contents are
             <var>bytes</var>. If that throws, <a data-link-type=
-            "dfn" data-type="dfn" href=
+            "dfn|abstract-op" data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with that
             exception and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var>arrayBuffer</var>.
@@ -4159,8 +4186,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
       "ref-for-dom-interactioninput-3"><code>InteractionInput</code></a>
       is used when the scripts pass data to the implementation.</p>
       <figure id="scripting-read">
-        <img src="images/scripting-read-data.png" title=
-        "Reading data" style="width:100%;">
+        <img src="images/scripting-read-data.png" style=
+        "width:100%;" title="Reading data">
         <figcaption>
           <a class="self-link" href="#scripting-read">Figure
           <bdi class="figno">1</bdi></a> <span class=
@@ -4184,8 +4211,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
       "#dom-interactioninput" class="internalDFN" id=
       "ref-for-dom-interactioninput-4"><code>InteractionInput</code></a>.</p>
       <figure id="scripting-write">
-        <img src="images/scripting-write-data.png" title=
-        "Writing data" style="width:100%;">
+        <img src="images/scripting-write-data.png" style=
+        "width:100%;" title="Writing data">
         <figcaption>
           <a class="self-link" href="#scripting-write">Figure
           <bdi class="figno">2</bdi></a> <span class=
@@ -4209,8 +4236,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
       "ref-for-dom-interactionoutput-8"><code>InteractionOutput</code></a>
       object.</p>
       <figure id="scripting-action">
-        <img src="images/scripting-action-data.png" title=
-        "Invoking action" style="width:100%;">
+        <img src="images/scripting-action-data.png" style=
+        "width:100%;" title="Invoking action">
         <figcaption>
           <a class="self-link" href="#scripting-action">Figure
           <bdi class="figno">3</bdi></a> <span class=
@@ -4265,8 +4292,8 @@ data-link-type="method" href="#dom-interactionoutput-value" id=
       "dfn" id="ref-for-dfn-protocol-bindings-11">Protocol
       Bindings</a>.</p>
       <figure id="scripting-error-handling">
-        <img src="images/scripting-error-handling.png" title=
-        "Error handling" style="width:100%;">
+        <img src="images/scripting-error-handling.png" style=
+        "width:100%;" title="Error handling">
         <figcaption>
           <a class="self-link" href=
           "#scripting-error-handling">Figure <bdi class=
@@ -4672,19 +4699,23 @@ href=
             "dialog">[[activeSubscriptions]]</dfn></td>
             <td><code>{}</code></td>
             <td>
-              An <a data-link-type="dfn" data-type="dfn" href=
+              An <a data-link-type="dfn|abstract-op" data-type=
+              "dfn" href=
               "https://infra.spec.whatwg.org/#ordered-map">ordered
-              map</a> <a data-link-type="dfn" data-type="dfn" href=
+              map</a> <a data-link-type="dfn|abstract-op"
+              data-type="dfn" href=
               "https://infra.spec.whatwg.org/#map-key">keyed</a> on
-              a <a data-link-type="dfn" data-type="dfn" href=
+              a <a data-link-type="dfn|abstract-op" data-type="dfn"
+              href=
               "https://infra.spec.whatwg.org/#string">string</a>
               name representing the <a href="#dfn-events" class=
               "internalDFN" data-link-type="dfn" id=
               "ref-for-dfn-events-10">Event</a> and
-              <a data-link-type="dfn" href="#dfn-value" class=
-              "internalDFN" id="ref-for-dfn-value-10">value</a> is
-              a <a data-link-type="idl" data-lt="Subscription"
-              href="#dom-subscription" class="internalDFN" id=
+              <a data-link-type="dfn|abstract-op" href="#dfn-value"
+              class="internalDFN" id=
+              "ref-for-dfn-value-10">value</a> is a
+              <a data-link-type="idl" data-lt="Subscription" href=
+              "#dom-subscription" class="internalDFN" id=
               "ref-for-dom-subscription-4"><code>Subscription</code></a>
               object.
             </td>
@@ -4696,19 +4727,23 @@ href=
             "dialog">[[activeObservations]]</dfn></td>
             <td><code>{}</code></td>
             <td>
-              An <a data-link-type="dfn" data-type="dfn" href=
+              An <a data-link-type="dfn|abstract-op" data-type=
+              "dfn" href=
               "https://infra.spec.whatwg.org/#ordered-map">ordered
-              map</a> <a data-link-type="dfn" data-type="dfn" href=
+              map</a> <a data-link-type="dfn|abstract-op"
+              data-type="dfn" href=
               "https://infra.spec.whatwg.org/#map-key">keyed</a> on
-              a <a data-link-type="dfn" data-type="dfn" href=
+              a <a data-link-type="dfn|abstract-op" data-type="dfn"
+              href=
               "https://infra.spec.whatwg.org/#string">string</a>
               name representing a <a href="#dfn-properties" class=
               "internalDFN" data-link-type="dfn" id=
               "ref-for-dfn-properties-13">Property</a> and
-              <a data-link-type="dfn" href="#dfn-value" class=
-              "internalDFN" id="ref-for-dfn-value-11">value</a> is
-              a <a data-link-type="idl" data-lt="Subscription"
-              href="#dom-subscription" class="internalDFN" id=
+              <a data-link-type="dfn|abstract-op" href="#dfn-value"
+              class="internalDFN" id=
+              "ref-for-dfn-value-11">value</a> is a
+              <a data-link-type="idl" data-lt="Subscription" href=
+              "#dom-subscription" class="internalDFN" id=
               "ref-for-dom-subscription-5"><code>Subscription</code></a>
               object.
             </td>
@@ -4747,7 +4782,8 @@ href=
           "internalDFN" data-link-type="dfn" id=
           "ref-for-dfn-validate-a-td-2">validate a TD</a> steps on
           <var data-type="ThingDescription">td</var>. If that
-          fails, <a data-link-type="dfn" data-type="dfn" href=
+          fails, <a data-link-type="dfn|abstract-op" data-type=
+          "dfn" href=
           "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
           <a data-link-type="idl" data-lt="SyntaxError"
             data-type="exception" href=
@@ -4758,9 +4794,10 @@ href=
           "internalDFN" data-link-type="dfn" id=
           "ref-for-dfn-expand-a-td-1">expand a TD</a> steps on
           <var data-type="ThingDescription">td</var>. If that
-          fails, re-<a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> the
-          error and stop.
+          fails, re-<a data-link-type="dfn|abstract-op"
+            data-type="dfn" href=
+            "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            the error and stop.
           </li>
           <li>Let <var data-type="ConsumedThing">thing</var> be a
           new <a data-link-type="idl" data-lt="ConsumedThing"
@@ -4856,16 +4893,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -4876,10 +4914,10 @@ href=
           "ref-for-dfn-td-0-4"><code>[[td]]</code></a>.<var>properties</var>.<var data-type="string">propertyName</var>.
           </li>
           <li>If <var>interaction</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="NotFoundError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#notfounderror"><code>NotFoundError</code></a>
             and stop.
@@ -4898,7 +4936,7 @@ href=
           the implementation.
           </li>
           <li>If <var>form</var> is failure, <a data-link-type=
-          "dfn" data-type="dfn" href=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with a
           <a data-link-type="idl" data-lt="SyntaxError"
@@ -4918,8 +4956,8 @@ href=
           <var data-type=
           "InteractionOptions">options</var>.<var>uriVariables</var>.
           </li>
-          <li>If the request fails, <a data-link-type="dfn"
-          data-type="dfn" href=
+          <li>If the request fails, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with the error
           received from the <a href="#dfn-protocol-bindings"
@@ -4935,7 +4973,8 @@ href=
             "ref-for-dfn-parse-interaction-response-2">parse
             interaction response</a> on <var>response</var>,
             <var>form</var> and <var>interaction</var>. If that
-            fails, <a data-link-type="dfn" data-type="dfn" href=
+            fails, <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with a
             <a data-link-type="idl" data-lt="SyntaxError"
@@ -4944,7 +4983,8 @@ href=
             and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var>data</var>.
@@ -4991,16 +5031,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -5024,7 +5065,7 @@ href=
             implementation.
           </li>
           <li>If <var>form</var> is failure, <a data-link-type=
-          "dfn" data-type="dfn" href=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with a
           <a data-link-type="idl" data-lt="SyntaxError"
@@ -5053,12 +5094,12 @@ href=
           <a href="#dfn-protocol-bindings" class="internalDFN"
           data-link-type="dfn" id=
           "ref-for-dfn-protocol-bindings-16">Protocol Bindings</a>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="NotSupportedError"
-          data-type="exception" href=
-          "https://webidl.spec.whatwg.org/#notsupportederror"><code>
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="NotSupportedError"
+            data-type="exception" href=
+            "https://webidl.spec.whatwg.org/#notsupportederror"><code>
             NotSupportedError</code></a> and stop.
           </li>
           <li>Process the response and for each <var>key</var> in
@@ -5083,13 +5124,14 @@ href=
             </ol>
           </li>
           <li>If the above step throws at any point,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with that
-          exception and stop.
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with that
+            exception and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var data-type="object">result</var>.
@@ -5136,16 +5178,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -5157,10 +5200,10 @@ href=
             "ref-for-dfn-interaction-1"><code>[[interaction]]</code></a>.<var>forms</var>.
           </li>
           <li>If <var>forms</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SyntaxError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SyntaxError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#syntaxerror"><code>SyntaxError</code></a>
             and stop.
@@ -5187,7 +5230,8 @@ href=
           "attribute" data-lt="[[form]]" href="#dfn-form" class=
           "internalDFN" id=
           "ref-for-dfn-form-3"><code>[[form]]</code></a> is
-          failure, <a data-link-type="dfn" data-type="dfn" href=
+          failure, <a data-link-type="dfn|abstract-op" data-type=
+          "dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with a
           <a data-link-type="idl" data-lt="SyntaxError"
@@ -5215,7 +5259,8 @@ href=
           of the <a href="#dfn-things" class="internalDFN"
           data-link-type="dfn" id=
           "ref-for-dfn-things-34">Thing</a>, then
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with a
             <a data-link-type="idl" data-lt="NotSupportedError"
@@ -5223,8 +5268,8 @@ href=
             "https://webidl.spec.whatwg.org/#notsupportederror"><code>
             NotSupportedError</code></a> and stop.
           </li>
-          <li>If the request fails, <a data-link-type="dfn"
-          data-type="dfn" href=
+          <li>If the request fails, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with the error
           received from the <a href="#dfn-protocol-bindings"
@@ -5257,7 +5302,8 @@ href=
             </ol>
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var data-type="object">result</var>.
@@ -5300,16 +5346,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -5320,10 +5367,10 @@ href=
           "ref-for-dfn-td-0-9"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">propertyName</var>].
           </li>
           <li>If <var>interaction</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="NotFoundError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#notfounderror"><code>NotFoundError</code></a>
             and stop.
@@ -5342,7 +5389,7 @@ href=
             selected by the implementation.
           </li>
           <li>If <var>form</var> is failure, <a data-link-type=
-          "dfn" data-type="dfn" href=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with a
           <a data-link-type="idl" data-lt="SyntaxError"
@@ -5357,7 +5404,7 @@ href=
           interaction request</a> steps given <var data-type=
           "InteractionInput">value</var>, <var>form</var> and <var>
             interaction</var>. If that throws, <a data-link-type=
-            "dfn" data-type="dfn" href=
+            "dfn|abstract-op" data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <a data-link-type="dfn" href=
             "https://tc39.es/ecma262/multipage/#sec-promise-objects">
@@ -5376,8 +5423,8 @@ href=
           "InteractionOptions">options</var>'
           <var>uriVariables</var>.
           </li>
-          <li>If the request fails, <a data-link-type="dfn"
-          data-type="dfn" href=
+          <li>If the request fails, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with the error
           received from the <a href="#dfn-protocol-bindings"
@@ -5385,8 +5432,8 @@ href=
             "ref-for-dfn-protocol-bindings-21">Protocol
             Bindings</a> and stop.
           </li>
-          <li>Otherwise <a data-link-type="dfn" data-type="dfn"
-          href=
+          <li>Otherwise <a data-link-type="dfn|abstract-op"
+          data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#resolve">resolve</a>
           <var data-type="Promise">promise</var>.
           </li>
@@ -5457,16 +5504,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -5490,7 +5538,7 @@ href=
             the implementation.
           </li>
           <li>If <var>form</var> is failure, <a data-link-type=
-          "dfn" data-type="dfn" href=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with a
           <a data-link-type="idl" data-lt="SyntaxError"
@@ -5509,7 +5557,8 @@ href=
           </li>
           <li>If <var>property</var> is <code>null</code> or <code>
             undefined</code> or is not <code>writeable</code>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with
             <a data-link-type="idl" data-lt="NotSupportedError"
@@ -5540,8 +5589,8 @@ href=
             "string">key</var>], <var>form</var> and the value for
             <var>schema</var>[<var data-type="string">key</var>].
             If that throws for any <var data-type=
-            "string">name</var>, <a data-link-type="dfn" data-type=
-            "dfn" href=
+            "string">name</var>, <a data-link-type=
+            "dfn|abstract-op" data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <a data-link-type="dfn" href=
             "https://tc39.es/ecma262/multipage/#sec-promise-objects">
@@ -5566,7 +5615,8 @@ href=
           of the <a href="#dfn-things" class="internalDFN"
           data-link-type="dfn" id=
           "ref-for-dfn-things-35">Thing</a>, then
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with a
             <a data-link-type="idl" data-lt="NotSupportedError"
@@ -5580,8 +5630,8 @@ href=
             "ref-for-dfn-protocol-bindings-24">Protocol
             Bindings</a> and stop.
           </li>
-          <li>Otherwise <a data-link-type="dfn" data-type="dfn"
-          href=
+          <li>Otherwise <a data-link-type="dfn|abstract-op"
+          data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#resolve">resolve</a>
           <var data-type="Promise">promise</var>.
           </li>
@@ -5654,16 +5704,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -5673,32 +5724,32 @@ href=
           <a data-link-type="idl" data-lt="Function" data-type=
           "callback" href=
           "https://webidl.spec.whatwg.org/#Function"><code>Function</code></a>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="TypeError" data-type=
-          "exception" href=
-          "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="TypeError" data-type=
+            "exception" href=
+            "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
             <code>TypeError</code></a> and stop.
           </li>
           <li>If <var data-type="ErrorListener">onerror</var> is
           not <code>null</code> and is not a <a data-link-type=
           "idl" data-lt="Function" data-type="callback" href=
           "https://webidl.spec.whatwg.org/#Function"><code>Function</code></a>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="TypeError" data-type=
-          "exception" href=
-          "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="TypeError" data-type=
+            "exception" href=
+            "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
             <code>TypeError</code></a> and stop.
           </li>
           <li>If <var>thing</var>.<a data-link-type="attribute"
           data-lt="[[activeObservations]]" href=
           "#dfn-activeobservations" class="internalDFN" id=
           "ref-for-dfn-activeobservations-1"><code>[[activeObservations]]</code></a>[<var data-type="string">propertyName</var>]
-            [=map/exists], <a data-link-type="dfn" data-type="dfn"
-            href=
+            [=map/exists], <a data-link-type="dfn|abstract-op"
+            data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with a
             <a data-link-type="idl" data-lt="NotAllowedError"
@@ -5747,7 +5798,8 @@ href=
                 "ref-for-dfn-interaction-3"><code>[[interaction]]</code></a>.<var>forms</var>.
               </li>
               <li>If <var>forms</var> is <code>undefined</code>,
-              <a data-link-type="dfn" data-type="dfn" href=
+              <a data-link-type="dfn|abstract-op" data-type="dfn"
+              href=
               "https://webidl.spec.whatwg.org/#reject">reject</a>
               <var data-type="Promise">promise</var> with a
               <a data-link-type="idl" data-lt="SyntaxError"
@@ -5780,8 +5832,8 @@ href=
               "attribute" data-lt="[[form]]" href="#dfn-form"
                 class="internalDFN" id=
                 "ref-for-dfn-form-6"><code>[[form]]</code></a> is
-                failure, <a data-link-type="dfn" data-type="dfn"
-                href=
+                failure, <a data-link-type="dfn|abstract-op"
+                data-type="dfn" href=
                 "https://webidl.spec.whatwg.org/#reject">reject</a>
                 <var data-type="Promise">promise</var> with a
                 <a data-link-type="idl" data-lt="SyntaxError"
@@ -5793,8 +5845,8 @@ href=
               "attribute" data-lt="[[interaction]]" href=
               "#dfn-interaction" class="internalDFN" id=
               "ref-for-dfn-interaction-4"><code>[[interaction]]</code></a>
-              is <code>undefined</code>, <a data-link-type="dfn"
-              data-type="dfn" href=
+              is <code>undefined</code>, <a data-link-type=
+              "dfn|abstract-op" data-type="dfn" href=
               "https://webidl.spec.whatwg.org/#reject">reject</a>
               <var data-type="Promise">promise</var> with a
               <a data-link-type="idl" data-lt="NotFoundError"
@@ -5813,8 +5865,8 @@ href=
           <var data-type="InteractionOptions">options</var>' <var>
             uriVariables</var>.
           </li>
-          <li>If the request fails, <a data-link-type="dfn"
-          data-type="dfn" href=
+          <li>If the request fails, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with the error
           received from the <a href="#dfn-protocol-bindings"
@@ -5823,26 +5875,26 @@ href=
             Bindings</a> and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
-            "https://infra.spec.whatwg.org/#map-set">Set</a>
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://infra.spec.whatwg.org/#map-set">Set</a>
             <var>thing</var>.<a data-link-type="attribute" data-lt=
             "[[activeObservations]]" href="#dfn-activeobservations"
             class="internalDFN" id=
             "ref-for-dfn-activeobservations-2"><code>[[activeObservations]]</code></a>[|propertyName]
-            to <var>subscription</var> and <a data-link-type="dfn"
-            data-type="dfn" href=
+            to <var>subscription</var> and <a data-link-type=
+            "dfn|abstract-op" data-type="dfn" href=
             "https://webidl.spec.whatwg.org/#resolve">resolve</a>
             <var data-type="Promise">promise</var>.
           </li>
           <li>Whenever the underlying platform detects a
           notification for this <var>subscription</var>
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://infra.spec.whatwg.org/#map-key">keyed</a> on
-          <var data-type="string">propertyName</var> with a new
-          <a href="#dfn-properties" class="internalDFN"
-          data-link-type="dfn" id=
-          "ref-for-dfn-properties-32">Property</a> value
-          <var>value</var>, run the following sub-steps:
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://infra.spec.whatwg.org/#map-key">keyed</a>
+            on <var data-type="string">propertyName</var> with a
+            new <a href="#dfn-properties" class="internalDFN"
+            data-link-type="dfn" id=
+            "ref-for-dfn-properties-32">Property</a> value
+            <var>value</var>, run the following sub-steps:
             <ul>
               <li>Let <var>reply</var> be the result of running
               <a href="#dfn-parse-interaction-response" class=
@@ -5857,8 +5909,8 @@ href=
                 "attribute" data-lt="[[interaction]]" href=
                 "#dfn-interaction" class="internalDFN" id=
                 "ref-for-dfn-interaction-5"><code>[[interaction]]</code></a>.
-                If that throws, <a data-link-type="dfn" data-type=
-                "dfn" href=
+                If that throws, <a data-link-type="dfn|abstract-op"
+                data-type="dfn" href=
                 "https://webidl.spec.whatwg.org/#reject">reject</a>
                 <var data-type="Promise">promise</var> with that
                 exception and stop.
@@ -5936,16 +5988,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -5959,7 +6012,8 @@ href=
             <a data-link-type="idl" data-lt="object" data-type=
             "interface" href=
             "https://webidl.spec.whatwg.org/#idl-object"><code>object</code></a>,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with a
             <a data-link-type="idl" data-lt="NotFoundError"
@@ -5974,10 +6028,10 @@ href=
             "ref-for-dfn-interaction-6"><code>[[interaction]]</code></a>.<var>forms</var>.
           </li>
           <li>If <var>forms</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SyntaxError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SyntaxError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#syntaxerror"><code>SyntaxError</code></a>
             and stop.
@@ -6004,7 +6058,8 @@ href=
           "attribute" data-lt="[[form]]" href="#dfn-form" class=
           "internalDFN" id=
           "ref-for-dfn-form-10"><code>[[form]]</code></a> is
-          failure, <a data-link-type="dfn" data-type="dfn" href=
+          failure, <a data-link-type="dfn|abstract-op" data-type=
+          "dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with a
           <a data-link-type="idl" data-lt="SyntaxError"
@@ -6019,7 +6074,8 @@ href=
           interaction request</a> steps on <var data-type=
           "InteractionInput">params</var>, <var>form</var> and
           <var>interaction</var>. If that throws,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <a data-link-type="dfn" href=
             "https://tc39.es/ecma262/multipage/#sec-promise-objects">
@@ -6037,10 +6093,11 @@ href=
             "InteractionOptions">options</var>.<var>uriVariables</var>.
           </li>
           <li>If the request fails locally or returns an error over
-          the network, <a data-link-type="dfn" data-type="dfn"
-            href="https://webidl.spec.whatwg.org/#reject">reject</a>
-            <var data-type="Promise">promise</var> with the error
-            received from the <a href="#dfn-protocol-bindings"
+          the network, <a data-link-type="dfn|abstract-op"
+          data-type="dfn" href=
+          "https://webidl.spec.whatwg.org/#reject">reject</a>
+          <var data-type="Promise">promise</var> with the error
+          received from the <a href="#dfn-protocol-bindings"
             class="internalDFN" data-link-type="dfn" id=
             "ref-for-dfn-protocol-bindings-27">Protocol
             Bindings</a> and stop.
@@ -6053,13 +6110,15 @@ href=
           "ref-for-dfn-parse-interaction-response-6">parse
           interaction response</a> with <var>value</var>,
           <var>form</var> and <var>interaction</var>. If that
-          throws, <a data-link-type="dfn" data-type="dfn" href=
+          throws, <a data-link-type="dfn|abstract-op" data-type=
+          "dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with that
           exception and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var> with
             <var>result</var>.
@@ -6132,16 +6191,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -6150,33 +6210,35 @@ href=
           a <a data-link-type="idl" data-lt="Function" data-type=
           "callback" href=
           "https://webidl.spec.whatwg.org/#Function"><code>Function</code></a>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="TypeError" data-type=
-          "exception" href=
-          "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="TypeError" data-type=
+            "exception" href=
+            "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
             <code>TypeError</code></a> and stop.
           </li>
           <li>If <var data-type="ErrorListener">onerror</var> is
           not <code>null</code> and is not a <a data-link-type=
           "idl" data-lt="Function" data-type="callback" href=
           "https://webidl.spec.whatwg.org/#Function"><code>Function</code></a>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="TypeError" data-type=
-          "exception" href=
-          "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="TypeError" data-type=
+            "exception" href=
+            "https://webidl.spec.whatwg.org/#exceptiondef-typeerror">
             <code>TypeError</code></a> and stop.
           </li>
           <li>If <var>thing</var>.<a data-link-type="attribute"
           data-lt="[[activeSubscriptions]]" href=
           "#dfn-activesubscriptions" class="internalDFN" id=
           "ref-for-dfn-activesubscriptions-1"><code>[[activeSubscriptions]]</code></a>[<var data-type="string">eventName</var>]
-            does not <a data-link-type="dfn" data-type="dfn" href=
+            does not <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://infra.spec.whatwg.org/#map-exists">exist</a>,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with a
             <a data-link-type="idl" data-lt="NotAllowedError"
@@ -6217,8 +6279,8 @@ href=
               "attribute" data-lt="[[interaction]]" href=
               "#dfn-interaction" class="internalDFN" id=
               "ref-for-dfn-interaction-8"><code>[[interaction]]</code></a>
-              is <code>undefined</code>, <a data-link-type="dfn"
-              data-type="dfn" href=
+              is <code>undefined</code>, <a data-link-type=
+              "dfn|abstract-op" data-type="dfn" href=
               "https://webidl.spec.whatwg.org/#reject">reject</a>
               <var data-type="Promise">promise</var> with a
               <a data-link-type="idl" data-lt="NotFoundError"
@@ -6234,7 +6296,8 @@ href=
               </li>
               <li>If <var data-type=
               "InteractionOptions">options</var>.<var>formIndex</var>
-              <a data-link-type="dfn" data-type="dfn" href=
+              <a data-link-type="dfn|abstract-op" data-type="dfn"
+              href=
               "https://infra.spec.whatwg.org/#map-exists">exists</a>,
               then let <var>subscription</var>.<a data-link-type=
               "attribute" data-lt="[[form]]" href="#dfn-form"
@@ -6250,7 +6313,8 @@ href=
                 data-lt="[[form]]" href="#dfn-form" class=
                 "internalDFN" id=
                 "ref-for-dfn-form-12"><code>[[form]]</code></a> be
-                an <a data-link-type="dfn" data-type="dfn" href=
+                an <a data-link-type="dfn|abstract-op" data-type=
+                "dfn" href=
                 "https://infra.spec.whatwg.org/#implementation-defined">
                 implementation-defined</a> <a href="#dfn-forms"
                 class="internalDFN" data-link-type="dfn" id=
@@ -6266,10 +6330,11 @@ href=
               "attribute" data-lt="[[form]]" href="#dfn-form"
                 class="internalDFN" id=
                 "ref-for-dfn-form-13"><code>[[form]]</code></a>
-                does not <a data-link-type="dfn" data-type="dfn"
-                href=
+                does not <a data-link-type="dfn|abstract-op"
+                data-type="dfn" href=
                 "https://infra.spec.whatwg.org/#map-exists">exist</a>,
-                <a data-link-type="dfn" data-type="dfn" href=
+                <a data-link-type="dfn|abstract-op" data-type="dfn"
+                href=
                 "https://webidl.spec.whatwg.org/#reject">reject</a>
                 <var data-type="Promise">promise</var> with a
                 <a data-link-type="idl" data-lt="SyntaxError"
@@ -6295,8 +6360,8 @@ href=
             and optional subscription data given in <var data-type=
             "InteractionOptions">options</var>.<var>data</var>.
           </li>
-          <li>If the request fails, <a data-link-type="dfn"
-          data-type="dfn" href=
+          <li>If the request fails, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with the error
           received from the <a href="#dfn-protocol-bindings"
@@ -6305,8 +6370,8 @@ href=
             Bindings</a> and stop.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
-            "https://infra.spec.whatwg.org/#map-set">Set</a>
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://infra.spec.whatwg.org/#map-set">Set</a>
             <var data-type="string">eventName</var> to
             <var>thing</var>.<a data-link-type="attribute" data-lt=
             "[[activeSubscriptions]]" href=
@@ -6315,7 +6380,8 @@ href=
             to <var>subscription</var>.
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var>.
           </li>
@@ -6323,10 +6389,10 @@ href=
           notification for the <a href="#dfn-events" class=
           "internalDFN" data-link-type="dfn" id=
           "ref-for-dfn-events-14">Event</a> <var>subscription</var>
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://infra.spec.whatwg.org/#map-key">keyed</a> on
-          <var data-type="string">eventName</var>, run the
-          following sub-steps:
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://infra.spec.whatwg.org/#map-key">keyed</a>
+            on <var data-type="string">eventName</var>, run the
+            following sub-steps:
             <ol>
               <li>Invoke <var data-type=
               "WoTListener">listener</var> given the result of
@@ -6352,8 +6418,8 @@ href=
           <a href="#dfn-events" class="internalDFN"
             data-link-type="dfn" id=
             "ref-for-dfn-events-16">Event</a>
-            <var>subscription</var> <a data-link-type="dfn"
-            data-type="dfn" href=
+            <var>subscription</var> <a data-link-type=
+            "dfn|abstract-op" data-type="dfn" href=
             "https://infra.spec.whatwg.org/#map-key">keyed</a> on
             <var data-type="string">eventName</var>, run the
             following sub-steps:
@@ -6709,16 +6775,17 @@ href=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -6745,10 +6812,10 @@ href=
             <code>[[form]]</code></a>.
           </li>
           <li>If <var>unsubscribeForm</var> is failure,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SyntaxError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SyntaxError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#syntaxerror"><code>SyntaxError</code></a>
             and stop.
@@ -6791,8 +6858,8 @@ href=
             given in <var data-type=
             "InteractionOptions">options</var>.<var>data</var>.
           </li>
-          <li>If the request fails, <a data-link-type="dfn"
-          data-type="dfn" href=
+          <li>If the request fails, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with the error
           received from the <a href="#dfn-protocol-bindings"
@@ -6837,7 +6904,8 @@ href=
                 .
               </li>
               <li>
-                <a data-link-type="dfn" data-type="dfn" href=
+                <a data-link-type="dfn|abstract-op" data-type="dfn"
+                href=
                 "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
                 <var data-type="Promise">promise</var>.
               </li>
@@ -7741,9 +7809,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -7753,7 +7821,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "ref-for-dfn-expand-an-exposedthinginit-1">expand an
           ExposedThingInit</a> steps on <var data-type=
           "ExposedThingInit">init</var>. if that fails
-          re-<a data-link-type="dfn" data-type="dfn" href=
+          re-<a data-link-type="dfn|abstract-op" data-type="dfn"
+          href=
           "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> the
           error and stop. Otherwise store the obtained
           <var data-type="ThingDescription">td</var>
@@ -7762,9 +7831,10 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "internalDFN" data-link-type="dfn" id=
           "ref-for-dfn-expand-a-td-2">expand a TD</a> steps on
           <var data-type="ThingDescription">td</var>. If that
-          fails, re-<a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> the
-          error and stop.
+          fails, re-<a data-link-type="dfn|abstract-op"
+            data-type="dfn" href=
+            "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            the error and stop.
           </li>
           <li>Let <var data-type="ExposedThing">thing</var> be a
           new <a data-link-type="idl" data-lt="ExposedThing"
@@ -7925,9 +7995,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -7935,9 +8005,11 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <li>If <a data-link-type="attribute" data-lt="[[td]]"
           href="#dfn-td-1" class="internalDFN" id=
           "ref-for-dfn-td-1-5"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">name</var>]
-            does not <a data-link-type="dfn" data-type="dfn" href=
+            does not <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://infra.spec.whatwg.org/#map-exists">exist</a>,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
             <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
@@ -8227,14 +8299,14 @@ href="#dom-interactionoptions" class="internalDFN" id=
       callback function should implement reading a <a href=
       "#dfn-properties" class="internalDFN" data-link-type="dfn"
       id="ref-for-dfn-properties-58">Property</a> and
-      <a data-link-type="dfn" data-type="dfn" href=
+      <a data-link-type="dfn|abstract-op" data-type="dfn" href=
       "https://webidl.spec.whatwg.org/#resolve">resolve</a> with an
       <a data-link-type="idl" data-lt="InteractionOutput" href=
       "#dom-interactionoutput" class="internalDFN" id=
       "ref-for-dom-interactionoutput-23"><code>InteractionOutput</code></a>
-      object or <a data-link-type="dfn" data-type="dfn" href=
-      "https://webidl.spec.whatwg.org/#reject">reject</a> with an
-      error.</p>
+      object or <a data-link-type="dfn|abstract-op" data-type="dfn"
+      href="https://webidl.spec.whatwg.org/#reject">reject</a> with
+      an error.</p>
       <p>There <em class="rfc2119">MUST</em> be at most one handler
       for any given <a href="#dfn-properties" class="internalDFN"
       data-link-type="dfn" id=
@@ -8256,9 +8328,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -8266,9 +8338,11 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <li>If <var>this</var>.<a data-link-type="attribute"
           data-lt="[[td]]" href="#dfn-td-1" class="internalDFN"
             id="ref-for-dfn-td-1-7"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">name</var>]
-            does not <a data-link-type="dfn" data-type="dfn" href=
+            does not <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://infra.spec.whatwg.org/#map-exists">exist</a>,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
             <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
@@ -8325,7 +8399,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <li>If <var>this</var>.<a data-link-type="attribute"
           data-lt="[[td]]" href="#dfn-td-1" class="internalDFN"
             id="ref-for-dfn-td-1-8"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">name</var>]
-            does not <a data-link-type="dfn" data-type="dfn" href=
+            does not <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://infra.spec.whatwg.org/#map-exists">exist</a>,
             send back a <a data-link-type="idl" data-lt=
             "NotFoundError" data-type="exception" href=
@@ -8410,9 +8485,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -8420,9 +8495,11 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <li>If <var>this</var>.<a data-link-type="attribute"
           data-lt="[[td]]" href="#dfn-td-1" class="internalDFN"
             id="ref-for-dfn-td-1-9"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">name</var>]
-            does not <a data-link-type="dfn" data-type="dfn" href=
+            does not <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://infra.spec.whatwg.org/#map-exists">exist</a>,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
             <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
@@ -8479,7 +8556,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <li>If <var>this</var>.<a data-link-type="attribute"
           data-lt="[[td]]" href="#dfn-td-1" class="internalDFN"
             id="ref-for-dfn-td-1-10"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">name</var>]
-            does not <a data-link-type="dfn" data-type="dfn" href=
+            does not <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://infra.spec.whatwg.org/#map-exists">exist</a>,
             send back a <a data-link-type="idl" data-lt=
             "NotFoundError" data-type="exception" href=
@@ -8506,7 +8584,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "attribute" data-lt="[[propertyObservers]]" href=
           "#dfn-propertyobservers" class="internalDFN" id=
           "ref-for-dfn-propertyobservers-2"><code>[[propertyObservers]]</code></a>[<var data-type="string">name</var>]
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://infra.spec.whatwg.org/#map-exists">exists</a>,
             remove it from <var>this</var>.<a data-link-type=
             "attribute" data-lt="[[propertyObservers]]" href=
@@ -8570,17 +8649,17 @@ href="#dom-interactionoptions" class="internalDFN" id=
             <code><code>Promise</code></code></a>.
           </li>
           <li>Return <var data-type="Promise">promise</var> and
-          execute the next steps <a data-link-type="dfn"
-            data-type="dfn" href=
-            "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
+          execute the next steps <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
+          "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -8593,10 +8672,10 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "ref-for-dfn-td-1-11"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">name</var>].
           </li>
           <li>If <var>property</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with
-          <a data-link-type="idl" data-lt="NotFoundError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with
+            <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#notfounderror"><code>NotFoundError</code></a>
             and stop.
@@ -8609,13 +8688,14 @@ href="#dom-interactionoptions" class="internalDFN" id=
               <li>Let <var data-type="function">handler</var> be
               <code>null.</code></li>
               <li>If <var data-type="string">name</var> does not
-              <a data-link-type="dfn" data-type="dfn" href=
+              <a data-link-type="dfn|abstract-op" data-type="dfn"
+              href=
               "https://infra.spec.whatwg.org/#map-exists">exist</a>
               in <a data-link-type="attribute" data-lt=
               "[[readHandlers]]" href="#dfn-readhandlers" class=
               "internalDFN" id="ref-for-dfn-readhandlers-3"><code>
                 [[readHandlers]]</code></a>, <a data-link-type=
-                "dfn" data-type="dfn" href=
+                "dfn|abstract-op" data-type="dfn" href=
                 "https://webidl.spec.whatwg.org/#reject">reject</a>
                 <var data-type="Promise">promise</var> and stop.
               </li>
@@ -8628,22 +8708,25 @@ href="#dom-interactionoptions" class="internalDFN" id=
               </li>
               <li>If <var data-type="function">handler</var> is
               <code>null</code> or <code>undefined</code>,
-              <a data-link-type="dfn" data-type="dfn" href=
+              <a data-link-type="dfn|abstract-op" data-type="dfn"
+              href=
               "https://webidl.spec.whatwg.org/#reject">reject</a>
               <var data-type="Promise">promise</var> and stop.
               </li>
               <li>Let <var>handled</var> be the result of invoking
               <var data-type="function">handler</var> given
               <code>null</code>.</li>
-              <li>If <var>handled</var> is <a data-link-type="dfn"
-                data-type="dfn" href=
-                "https://webidl.spec.whatwg.org/#reject">rejected</a>,
-                then <a data-link-type="dfn" data-type="dfn" href=
-                "https://webidl.spec.whatwg.org/#reject">reject</a>
-                <var data-type="Promise">promise</var> and stop.
+              <li>If <var>handled</var> is <a data-link-type=
+              "dfn|abstract-op" data-type="dfn" href=
+              "https://webidl.spec.whatwg.org/#reject">rejected</a>,
+              then <a data-link-type="dfn|abstract-op" data-type=
+              "dfn" href="https://webidl.spec.whatwg.org/#reject">
+                reject</a> <var data-type="Promise">promise</var>
+                and stop.
               </li>
               <li>Otherwise if <var>handled</var>
-                <a data-link-type="dfn" data-type="dfn" href=
+                <a data-link-type="dfn|abstract-op" data-type="dfn"
+                href=
                 "https://webidl.spec.whatwg.org/#resolve">resolved</a>
                 with <var>value</var>, let <var data-type=
                 "InteractionInput">data</var> be <var>value</var>.
@@ -8684,7 +8767,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
             </ol>
           </li>
           <li>
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#resolve">Resolve</a>
             <var data-type="Promise">promise</var>.
           </li>
@@ -8815,9 +8899,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -8825,9 +8909,11 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <li>If <var>this</var>.<a data-link-type="attribute"
           data-lt="[[td]]" href="#dfn-td-1" class="internalDFN"
             id="ref-for-dfn-td-1-12"><code>[[td]]</code></a>.<var>properties</var>[<var data-type="string">name</var>]
-            does not <a data-link-type="dfn" data-type="dfn" href=
+            does not <a data-link-type="dfn|abstract-op" data-type=
+            "dfn" href=
             "https://infra.spec.whatwg.org/#map-exists">exist</a>,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
             <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
@@ -9078,9 +9164,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -9091,9 +9177,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "ref-for-dfn-td-1-14"><code>[[td]]</code></a>.<var>actions</var>[<var data-type="string">name</var>].
           </li>
           <li>If <var>interaction</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="NotFoundError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#notfounderror"><code>NotFoundError</code></a>
             and stop.
@@ -9262,9 +9348,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -9275,9 +9361,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "ref-for-dfn-td-1-16"><code>[[td]]</code></a>.<var>events</var>[<var data-type="string">name</var>].
           </li>
           <li>If <var>interaction</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="NotFoundError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#notfounderror"><code>NotFoundError</code></a>
             and stop.
@@ -9417,9 +9503,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -9430,9 +9516,9 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "ref-for-dfn-td-1-18"><code>[[td]]</code></a>.<var>events</var>[<var data-type="string">name</var>].
           </li>
           <li>If <var>interaction</var> is <code>undefined</code>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="NotFoundError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="NotFoundError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#notfounderror"><code>NotFoundError</code></a>
             and stop.
@@ -9501,22 +9587,22 @@ href="#dom-interactionoptions" class="internalDFN" id=
           data-lt="[[unsubscribeHandlers]]" href=
           "#dfn-unsubscribehandlers" class="internalDFN" id=
           "ref-for-dfn-unsubscribehandlers-2"><code>[[unsubscribeHandlers]]</code></a>[<var>name</var>]
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://infra.spec.whatwg.org/#map-exists">exists</a>
-          and is a <a data-link-type="idl" data-lt="Function"
-          data-type="callback" href=
-          "https://webidl.spec.whatwg.org/#Function"><code>Function</code></a>,
-          invoke it given <var data-type=
-          "InteractionOptions">options</var> and stop.
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://infra.spec.whatwg.org/#map-exists">exists</a>
+            and is a <a data-link-type="idl" data-lt="Function"
+            data-type="callback" href=
+            "https://webidl.spec.whatwg.org/#Function"><code>Function</code></a>,
+            invoke it given <var data-type=
+            "InteractionOptions">options</var> and stop.
           </li>
           <li>Otherwise <var>name</var> [=map/exists] in
           <var>this</var>.<a data-link-type="attribute" data-lt=
           "[[eventListeners]]" href="#dfn-eventlisteners" class=
           "internalDFN" id=
           "ref-for-dfn-eventlisteners-2"><code>[[eventListeners]]</code></a>,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://infra.spec.whatwg.org/#map-remove">remove</a>
-          <var>name</var>.
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://infra.spec.whatwg.org/#map-remove">remove</a>
+            <var>name</var>.
           </li>
           <li>Return <code>this</code>.</li>
         </ol>
@@ -9630,16 +9716,17 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -9652,7 +9739,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <li>If an <a href="#dfn-events" class="internalDFN"
           data-link-type="dfn" id="ref-for-dfn-events-40">Event</a>
           with the name <var data-type="string">name</var> is not
-          found, <a data-link-type="dfn" data-type="dfn" href=
+          found, <a data-link-type="dfn|abstract-op" data-type=
+          "dfn" href=
           "https://webidl.spec.whatwg.org/#reject">reject</a>
           <var data-type="Promise">promise</var> with
           <a data-link-type="idl" data-lt="NotFoundError"
@@ -9704,16 +9792,17 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -9731,7 +9820,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
           <a data-link-type="attribute" data-lt="[[td]]" href=
           "#dfn-td-1" class="internalDFN" id="ref-for-dfn-td-1-22">
             <code>[[td]]</code></a>. If that fails,
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://webidl.spec.whatwg.org/#reject">reject</a>
             <var data-type="Promise">promise</var> with a
             <a data-link-type="idl" data-lt="TypeError" data-type=
@@ -9807,11 +9897,11 @@ href="#dom-interactionoptions" class="internalDFN" id=
             constraints on interaction forms).
           </li>
           <li>If there was an error during the request,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with an
-          <a data-link-type="idl" data-lt="Error" href=
-          "https://tc39.es/ecma262/multipage/#sec-error-objects"><code>
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with an
+            <a data-link-type="idl" data-lt="Error" href=
+            "https://tc39.es/ecma262/multipage/#sec-error-objects"><code>
             Error</code></a> object <var>error</var> with
             <var>error</var>.<var>message</var> set to the error
             code seen by the <a href="#dfn-protocol-bindings"
@@ -9819,8 +9909,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
             "ref-for-dfn-protocol-bindings-71">Protocol
             Bindings</a> and stop.
           </li>
-          <li>Otherwise <a data-link-type="dfn" data-type="dfn"
-          href=
+          <li>Otherwise <a data-link-type="dfn|abstract-op"
+          data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#resolve">resolve</a>
           <var data-type="Promise">promise</var> and stop.
           </li>
@@ -9853,16 +9943,17 @@ href="#dom-interactionoptions" class="internalDFN" id=
           "https://tc39.es/ecma262/multipage/#sec-promise-objects">
             <code><code>Promise</code></code></a> <var data-type=
             "Promise">promise</var> and execute the next steps
-            <a data-link-type="dfn" data-type="dfn" href=
+            <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href=
             "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel">
             in parallel</a>.
           </li>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with a
+            <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -9878,11 +9969,11 @@ href="#dom-interactionoptions" class="internalDFN" id=
             Bindings</a>.
           </li>
           <li>If there was an error during the request,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#reject">reject</a>
-          <var data-type="Promise">promise</var> with an
-          <a data-link-type="idl" data-lt="Error" href=
-          "https://tc39.es/ecma262/multipage/#sec-error-objects"><code>
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#reject">reject</a>
+            <var data-type="Promise">promise</var> with an
+            <a data-link-type="idl" data-lt="Error" href=
+            "https://tc39.es/ecma262/multipage/#sec-error-objects"><code>
             Error</code></a> object <var>error</var> with its
             <var>message</var> set to the error code seen by the
             <a href="#dfn-protocol-bindings" class="internalDFN"
@@ -9890,8 +9981,8 @@ href="#dom-interactionoptions" class="internalDFN" id=
             "ref-for-dfn-protocol-bindings-73">Protocol
             Bindings</a> and stop.
           </li>
-          <li>Otherwise <a data-link-type="dfn" data-type="dfn"
-          href=
+          <li>Otherwise <a data-link-type="dfn|abstract-op"
+          data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#resolve">resolve</a>
           <var data-type="Promise">promise</var> and stop.
           </li>
@@ -10321,8 +10412,8 @@ href="#dom-thingdescription" class="internalDFN" id=
         following steps:
         <ol>
           <li>If <var data-type="ThingFilter">filter</var> is not
-          an object or <code>null</code>, <a data-link-type="dfn"
-          data-type="dfn" href=
+          an object or <code>null</code>, <a data-link-type=
+          "dfn|abstract-op" data-type="dfn" href=
           "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
           <a data-link-type="idl" data-lt="TypeError" data-type=
           "exception" href=
@@ -10526,7 +10617,8 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
               then for each <var>key</var> defined in it:
                 <ol>
                   <li>Check if that <var>key</var>
-                  <a data-link-type="dfn" data-type="dfn" href=
+                  <a data-link-type="dfn|abstract-op" data-type=
+                  "dfn" href=
                   "https://infra.spec.whatwg.org/#map-exists">exists</a>
                   in <var>json</var> and
                   <var>json</var>[<var>key</var> is equal to <var>
@@ -10627,9 +10719,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
         <ol>
           <li>If invoking this method is not allowed for the
           current scripting context for security reasons,
-          <a data-link-type="dfn" data-type="dfn" href=
-          "https://webidl.spec.whatwg.org/#dfn-throw">throw</a> a
-          <a data-link-type="idl" data-lt="SecurityError"
+          <a data-link-type="dfn|abstract-op" data-type="dfn"
+            href="https://webidl.spec.whatwg.org/#dfn-throw">throw</a>
+            a <a data-link-type="idl" data-lt="SecurityError"
             data-type="exception" href=
             "https://webidl.spec.whatwg.org/#securityerror"><code>SecurityError</code></a>
             and stop.
@@ -12289,9 +12381,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
   </section>
   <p role="navigation" id="back-to-top"><a href=
   "#title"><abbr title="Back to Top">↑</abbr></a></p>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-ua" aria-label=
-  "Links in this document to definition: UA" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-ua" aria-label=
+  "Links in this document to definition: UA">
     <div>
       <a class="self-link" href="#dfn-ua" aria-label=
       "Permalink for definition: UA. Activate to close this dialog.">
@@ -12311,9 +12403,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-consumer" aria-label=
-  "Links in this document to definition: WoT Consumer" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-consumer" aria-label=
+  "Links in this document to definition: WoT Consumer">
     <div>
       <a class="self-link" href="#dfn-wot-consumer" aria-label=
       "Permalink for definition: WoT Consumer. Activate to close this dialog.">
@@ -12342,9 +12434,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-producer" aria-label=
-  "Links in this document to definition: WoT Producer" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-producer" aria-label=
+  "Links in this document to definition: WoT Producer">
     <div>
       <a class="self-link" href="#dfn-wot-producer" aria-label=
       "Permalink for definition: WoT Producer. Activate to close this dialog.">
@@ -12358,9 +12450,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-discovery" aria-label=
-  "Links in this document to definition: WoT Discovery" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-discovery" aria-label=
+  "Links in this document to definition: WoT Discovery">
     <div>
       <a class="self-link" href="#dfn-wot-discovery" aria-label=
       "Permalink for definition: WoT Discovery. Activate to close this dialog.">
@@ -12385,9 +12477,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-things" aria-label=
-  "Links in this document to definition: Thing" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-things" aria-label=
+  "Links in this document to definition: Thing">
     <div>
       <a class="self-link" href="#dfn-things" aria-label=
       "Permalink for definition: Thing. Activate to close this dialog.">
@@ -12533,10 +12625,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-thing-descriptions" aria-label=
-  "Links in this document to definition: Thing Description" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-thing-descriptions" aria-label=
+  "Links in this document to definition: Thing Description">
     <div>
       <a class="self-link" href="#dfn-thing-descriptions"
       aria-label=
@@ -12690,9 +12781,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-td" aria-label=
-  "Links in this document to definition: TD" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-td" aria-label=
+  "Links in this document to definition: TD">
     <div>
       <a class="self-link" href="#dfn-td" aria-label=
       "Permalink for definition: TD. Activate to close this dialog.">
@@ -12781,9 +12872,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-partial-td" aria-label=
-  "Links in this document to definition: Partial TD" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-partial-td" aria-label=
+  "Links in this document to definition: Partial TD">
     <div>
       <a class="self-link" href="#dfn-partial-td" aria-label=
       "Permalink for definition: Partial TD. Activate to close this dialog.">
@@ -12797,9 +12888,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-web-of-things" aria-label=
-  "Links in this document to definition: Web of Things" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-web-of-things" aria-label=
+  "Links in this document to definition: Web of Things">
     <div>
       <a class="self-link" href="#dfn-web-of-things" aria-label=
       "Permalink for definition: Web of Things. Activate to close this dialog.">
@@ -12813,9 +12904,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-interface" aria-label=
-  "Links in this document to definition: WoT Interface" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-interface" aria-label=
+  "Links in this document to definition: WoT Interface">
     <div>
       <a class="self-link" href="#dfn-wot-interface" aria-label=
       "Permalink for definition: WoT Interface. Activate to close this dialog.">
@@ -12840,10 +12931,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-protocol-bindings" aria-label=
-  "Links in this document to definition: Protocol Bindings" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-protocol-bindings" aria-label=
+  "Links in this document to definition: Protocol Bindings">
     <div>
       <a class="self-link" href="#dfn-protocol-bindings"
       aria-label="Permalink for definition: Protocol Bindings. Activate to close this dialog.">
@@ -13087,9 +13177,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-runtime" aria-label=
-  "Links in this document to definition: WoT Runtime" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-runtime" aria-label=
+  "Links in this document to definition: WoT Runtime">
     <div>
       <a class="self-link" href="#dfn-wot-runtime" aria-label=
       "Permalink for definition: WoT Runtime. Activate to close this dialog.">
@@ -13125,10 +13215,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-consume" aria-label=
-  "Links in this document to definition: Consuming a Thing Description"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-consume" aria-label=
+  "Links in this document to definition: Consuming a Thing Description">
     <div>
       <a class="self-link" href="#dfn-consume" aria-label=
       "Permalink for definition: Consuming a Thing Description. Activate to close this dialog.">
@@ -13146,9 +13235,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-td-directory" aria-label=
-  "Links in this document to definition: TD Directory" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-td-directory" aria-label=
+  "Links in this document to definition: TD Directory">
     <div>
       <a class="self-link" href="#dfn-td-directory" aria-label=
       "Permalink for definition: TD Directory. Activate to close this dialog.">
@@ -13187,9 +13276,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-properties" aria-label=
-  "Links in this document to definition: Property" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-properties" aria-label=
+  "Links in this document to definition: Property">
     <div>
       <a class="self-link" href="#dfn-properties" aria-label=
       "Permalink for definition: Property. Activate to close this dialog.">
@@ -13448,9 +13537,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-actions" aria-label=
-  "Links in this document to definition: Action" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-actions" aria-label=
+  "Links in this document to definition: Action">
     <div>
       <a class="self-link" href="#dfn-actions" aria-label=
       "Permalink for definition: Action. Activate to close this dialog.">
@@ -13551,9 +13640,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-events" aria-label=
-  "Links in this document to definition: Event" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-events" aria-label=
+  "Links in this document to definition: Event">
     <div>
       <a class="self-link" href="#dfn-events" aria-label=
       "Permalink for definition: Event. Activate to close this dialog.">
@@ -13699,9 +13788,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-dataschema" aria-label=
-  "Links in this document to definition: DataSchema" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-dataschema" aria-label=
+  "Links in this document to definition: DataSchema">
     <div>
       <a class="self-link" href="#dfn-dataschema" aria-label=
       "Permalink for definition: DataSchema. Activate to close this dialog.">
@@ -13762,9 +13851,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-forms" aria-label=
-  "Links in this document to definition: Form" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-forms" aria-label=
+  "Links in this document to definition: Form">
     <div>
       <a class="self-link" href="#dfn-forms" aria-label=
       "Permalink for definition: Form. Activate to close this dialog.">
@@ -13866,9 +13955,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-securityscheme" aria-label=
-  "Links in this document to definition: SecurityScheme" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-securityscheme" aria-label=
+  "Links in this document to definition: SecurityScheme">
     <div>
       <a class="self-link" href="#dfn-securityscheme" aria-label=
       "Permalink for definition: SecurityScheme. Activate to close this dialog.">
@@ -13884,10 +13973,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-nosecurityscheme" aria-label=
-  "Links in this document to definition: NoSecurityScheme" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-nosecurityscheme" aria-label=
+  "Links in this document to definition: NoSecurityScheme">
     <div>
       <a class="self-link" href="#dfn-nosecurityscheme" aria-label=
       "Permalink for definition: NoSecurityScheme. Activate to close this dialog.">
@@ -13902,10 +13990,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-interaction" aria-label=
-  "Links in this document to definition: WoT Interaction" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-interaction" aria-label=
+  "Links in this document to definition: WoT Interaction">
     <div>
       <a class="self-link" href="#dfn-wot-interaction" aria-label=
       "Permalink for definition: WoT Interaction. Activate to close this dialog.">
@@ -13988,10 +14075,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-interaction-affordance" aria-label=
-  "Links in this document to definition: Interaction Affordance"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-interaction-affordance" aria-label=
+  "Links in this document to definition: Interaction Affordance">
     <div>
       <a class="self-link" href="#dfn-interaction-affordance"
       aria-label=
@@ -14007,10 +14093,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-network-interface" aria-label=
-  "Links in this document to definition: WoT network interface"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-network-interface" aria-label=
+  "Links in this document to definition: WoT network interface">
     <div>
       <a class="self-link" href="#dfn-wot-network-interface"
       aria-label=
@@ -14032,9 +14117,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-json-schema" aria-label=
-  "Links in this document to definition: JSON Schema" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-json-schema" aria-label=
+  "Links in this document to definition: JSON Schema">
     <div>
       <a class="self-link" href="#dfn-json-schema" aria-label=
       "Permalink for definition: JSON Schema. Activate to close this dialog.">
@@ -14049,10 +14134,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingdescription" aria-label=
-  "Links in this document to definition: ThingDescription" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingdescription" aria-label=
+  "Links in this document to definition: ThingDescription">
     <div>
       <a class="self-link" href="#dom-thingdescription" aria-label=
       "Permalink for definition: ThingDescription. Activate to close this dialog.">
@@ -14145,9 +14229,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-expand-a-td" aria-label=
-  "Links in this document to definition: expand a TD" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-expand-a-td" aria-label=
+  "Links in this document to definition: expand a TD">
     <div>
       <a class="self-link" href="#dfn-expand-a-td" aria-label=
       "Permalink for definition: expand a TD. Activate to close this dialog.">
@@ -14171,9 +14255,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-validate-a-td" aria-label=
-  "Links in this document to definition: validate a TD" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-validate-a-td" aria-label=
+  "Links in this document to definition: validate a TD">
     <div>
       <a class="self-link" href="#dfn-validate-a-td" aria-label=
       "Permalink for definition: validate a TD. Activate to close this dialog.">
@@ -14197,9 +14281,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-wot" aria-label=
-  "Links in this document to definition: WOT" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-wot" aria-label=
+  "Links in this document to definition: WOT">
     <div>
       <a class="self-link" href="#dom-wot" aria-label=
       "Permalink for definition: WOT. Activate to close this dialog.">
@@ -14248,9 +14332,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-wot-api-object" aria-label=
-  "Links in this document to definition: WoT API object" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-wot-api-object" aria-label=
+  "Links in this document to definition: WoT API object">
     <div>
       <a class="self-link" href="#dfn-wot-api-object" aria-label=
       "Permalink for definition: WoT API object. Activate to close this dialog.">
@@ -14268,9 +14352,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-wot-consume" aria-label=
-  "Links in this document to definition: consume()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-wot-consume" aria-label=
+  "Links in this document to definition: consume()">
     <div>
       <a class="self-link" href="#dom-wot-consume" aria-label=
       "Permalink for definition: consume(). Activate to close this dialog.">
@@ -14291,9 +14375,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-wot-produce" aria-label=
-  "Links in this document to definition: produce()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-wot-produce" aria-label=
+  "Links in this document to definition: produce()">
     <div>
       <a class="self-link" href="#dom-wot-produce" aria-label=
       "Permalink for definition: produce(). Activate to close this dialog.">
@@ -14314,10 +14398,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthinginit" aria-label=
-  "Links in this document to definition: ExposedThingInit" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthinginit" aria-label=
+  "Links in this document to definition: ExposedThingInit">
     <div>
       <a class="self-link" href="#dom-exposedthinginit" aria-label=
       "Permalink for definition: ExposedThingInit. Activate to close this dialog.">
@@ -14353,10 +14436,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-expand-an-exposedthinginit" aria-label=
-  "Links in this document to definition: expand an ExposedThingInit"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-expand-an-exposedthinginit" aria-label=
+  "Links in this document to definition: expand an ExposedThingInit">
     <div>
       <a class="self-link" href="#dfn-expand-an-exposedthinginit"
       aria-label=
@@ -14377,10 +14459,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-validate-an-exposedthinginit" aria-label=
-  "Links in this document to definition: validate an ExposedThingInit"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-validate-an-exposedthinginit" aria-label=
+  "Links in this document to definition: validate an ExposedThingInit">
     <div>
       <a class="self-link" href="#dfn-validate-an-exposedthinginit"
       aria-label=
@@ -14396,11 +14477,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-validating-an-object-with-json-schema"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-validating-an-object-with-json-schema"
   aria-label=
-  "Links in this document to definition: validating an object with JSON Schema"
-  hidden="">
+  "Links in this document to definition: validating an object with JSON Schema">
     <div>
       <a class="self-link" href=
       "#dfn-validating-an-object-with-json-schema" aria-label=
@@ -14417,9 +14497,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-wot-discover" aria-label=
-  "Links in this document to definition: discover()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-wot-discover" aria-label=
+  "Links in this document to definition: discover()">
     <div>
       <a class="self-link" href="#dom-wot-discover" aria-label=
       "Permalink for definition: discover(). Activate to close this dialog.">
@@ -14441,10 +14521,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-wot-exploredirectory" aria-label=
-  "Links in this document to definition: exploreDirectory()"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-wot-exploredirectory" aria-label=
+  "Links in this document to definition: exploreDirectory()">
     <div>
       <a class="self-link" href="#dom-wot-exploredirectory"
       aria-label=
@@ -14467,10 +14546,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-wot-requestthingdescription" aria-label=
-  "Links in this document to definition: requestThingDescription()"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-wot-requestthingdescription" aria-label=
+  "Links in this document to definition: requestThingDescription()">
     <div>
       <a class="self-link" href="#dom-wot-requestthingdescription"
       aria-label=
@@ -14493,10 +14571,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactioninput" aria-label=
-  "Links in this document to definition: InteractionInput" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactioninput" aria-label=
+  "Links in this document to definition: InteractionInput">
     <div>
       <a class="self-link" href="#dom-interactioninput" aria-label=
       "Permalink for definition: InteractionInput. Activate to close this dialog.">
@@ -14575,10 +14652,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-dataschemavalue" aria-label=
-  "Links in this document to definition: DataSchemaValue" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-dataschemavalue" aria-label=
+  "Links in this document to definition: DataSchemaValue">
     <div>
       <a class="self-link" href="#dom-dataschemavalue" aria-label=
       "Permalink for definition: DataSchemaValue. Activate to close this dialog.">
@@ -14611,10 +14687,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoutput" aria-label=
-  "Links in this document to definition: InteractionOutput" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoutput" aria-label=
+  "Links in this document to definition: InteractionOutput">
     <div>
       <a class="self-link" href="#dom-interactionoutput"
       aria-label="Permalink for definition: InteractionOutput. Activate to close this dialog.">
@@ -14727,9 +14802,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoutput-data" aria-label=
-  "Links in this document to definition: data" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoutput-data" aria-label=
+  "Links in this document to definition: data">
     <div>
       <a class="self-link" href="#dom-interactionoutput-data"
       aria-label=
@@ -14752,9 +14827,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoutput-dataused" aria-label=
-  "Links in this document to definition: dataUsed" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoutput-dataused" aria-label=
+  "Links in this document to definition: dataUsed">
     <div>
       <a class="self-link" href="#dom-interactionoutput-dataused"
       aria-label=
@@ -14777,9 +14852,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoutput-form" aria-label=
-  "Links in this document to definition: form" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoutput-form" aria-label=
+  "Links in this document to definition: form">
     <div>
       <a class="self-link" href="#dom-interactionoutput-form"
       aria-label=
@@ -14802,9 +14877,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoutput-schema" aria-label=
-  "Links in this document to definition: schema" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoutput-schema" aria-label=
+  "Links in this document to definition: schema">
     <div>
       <a class="self-link" href="#dom-interactionoutput-schema"
       aria-label=
@@ -14827,9 +14902,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-value" aria-label=
-  "Links in this document to definition: [[value]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-value" aria-label=
+  "Links in this document to definition: [[value]]">
     <div>
       <a class="self-link" href="#dfn-value" aria-label=
       "Permalink for definition: [[value]]. Activate to close this dialog.">
@@ -14862,9 +14937,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoutput-value" aria-label=
-  "Links in this document to definition: value()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoutput-value" aria-label=
+  "Links in this document to definition: value()">
     <div>
       <a class="self-link" href="#dom-interactionoutput-value"
       aria-label=
@@ -14887,9 +14962,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoutput-arraybuffer" aria-label=
-  "Links in this document to definition: arrayBuffer()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoutput-arraybuffer" aria-label=
+  "Links in this document to definition: arrayBuffer()">
     <div>
       <a class="self-link" href=
       "#dom-interactionoutput-arraybuffer" aria-label=
@@ -14912,10 +14987,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-check-data-schema" aria-label=
-  "Links in this document to definition: check data schema" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-check-data-schema" aria-label=
+  "Links in this document to definition: check data schema">
     <div>
       <a class="self-link" href="#dfn-check-data-schema"
       aria-label="Permalink for definition: check data schema. Activate to close this dialog.">
@@ -14939,10 +15013,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-create-interaction-request" aria-label=
-  "Links in this document to definition: create interaction request"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-create-interaction-request" aria-label=
+  "Links in this document to definition: create interaction request">
     <div>
       <a class="self-link" href="#dfn-create-interaction-request"
       aria-label=
@@ -14977,10 +15050,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-parse-interaction-response" aria-label=
-  "Links in this document to definition: parse interaction response"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-parse-interaction-response" aria-label=
+  "Links in this document to definition: parse interaction response">
     <div>
       <a class="self-link" href="#dfn-parse-interaction-response"
       aria-label=
@@ -15026,9 +15098,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing" aria-label=
-  "Links in this document to definition: ConsumedThing" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing" aria-label=
+  "Links in this document to definition: ConsumedThing">
     <div>
       <a class="self-link" href="#dom-consumedthing" aria-label=
       "Permalink for definition: ConsumedThing. Activate to close this dialog.">
@@ -15137,9 +15209,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-constructor" aria-label=
-  "Links in this document to definition: constructor" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-constructor" aria-label=
+  "Links in this document to definition: constructor">
     <div>
       <a class="self-link" href="#dom-consumedthing-constructor"
       aria-label=
@@ -15152,9 +15224,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       <li>Not referenced in this document.</li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-td-0" aria-label=
-  "Links in this document to definition: [[td]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-td-0" aria-label=
+  "Links in this document to definition: [[td]]">
     <div>
       <a class="self-link" href="#dfn-td-0" aria-label=
       "Permalink for definition: [[td]]. Activate to close this dialog.">
@@ -15220,10 +15292,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-activesubscriptions" aria-label=
-  "Links in this document to definition: [[activeSubscriptions]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-activesubscriptions" aria-label=
+  "Links in this document to definition: [[activeSubscriptions]]">
     <div>
       <a class="self-link" href="#dfn-activesubscriptions"
       aria-label=
@@ -15245,10 +15316,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-activeobservations" aria-label=
-  "Links in this document to definition: [[activeObservations]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-activeobservations" aria-label=
+  "Links in this document to definition: [[activeObservations]]">
     <div>
       <a class="self-link" href="#dfn-activeobservations"
       aria-label=
@@ -15270,10 +15340,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-getthingdescription" aria-label=
-  "Links in this document to definition: getThingDescription()"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-getthingdescription"
+  aria-label=
+  "Links in this document to definition: getThingDescription()">
     <div>
       <a class="self-link" href=
       "#dom-consumedthing-getthingdescription" aria-label=
@@ -15296,9 +15366,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-readproperty" aria-label=
-  "Links in this document to definition: readProperty()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-readproperty" aria-label=
+  "Links in this document to definition: readProperty()">
     <div>
       <a class="self-link" href="#dom-consumedthing-readproperty"
       aria-label=
@@ -15321,11 +15391,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-readmultipleproperties"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-readmultipleproperties"
   aria-label=
-  "Links in this document to definition: readMultipleProperties()"
-  hidden="">
+  "Links in this document to definition: readMultipleProperties()">
     <div>
       <a class="self-link" href=
       "#dom-consumedthing-readmultipleproperties" aria-label=
@@ -15350,10 +15419,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-readallproperties" aria-label=
-  "Links in this document to definition: readAllProperties()"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-readallproperties"
+  aria-label="Links in this document to definition: readAllProperties()">
     <div>
       <a class="self-link" href=
       "#dom-consumedthing-readallproperties" aria-label=
@@ -15376,10 +15444,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-writeproperty" aria-label=
-  "Links in this document to definition: writeProperty()" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-writeproperty" aria-label=
+  "Links in this document to definition: writeProperty()">
     <div>
       <a class="self-link" href="#dom-consumedthing-writeproperty"
       aria-label=
@@ -15402,11 +15469,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-writemultipleproperties"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-writemultipleproperties"
   aria-label=
-  "Links in this document to definition: writeMultipleProperties()"
-  hidden="">
+  "Links in this document to definition: writeMultipleProperties()">
     <div>
       <a class="self-link" href=
       "#dom-consumedthing-writemultipleproperties" aria-label=
@@ -15431,10 +15497,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-observeproperty" aria-label=
-  "Links in this document to definition: observeProperty()" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-observeproperty" aria-label=
+  "Links in this document to definition: observeProperty()">
     <div>
       <a class="self-link" href=
       "#dom-consumedthing-observeproperty" aria-label=
@@ -15457,9 +15522,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-invokeaction" aria-label=
-  "Links in this document to definition: invokeAction()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-invokeaction" aria-label=
+  "Links in this document to definition: invokeAction()">
     <div>
       <a class="self-link" href="#dom-consumedthing-invokeaction"
       aria-label=
@@ -15482,10 +15547,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-consumedthing-subscribeevent" aria-label=
-  "Links in this document to definition: subscribeEvent()" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-consumedthing-subscribeevent" aria-label=
+  "Links in this document to definition: subscribeEvent()">
     <div>
       <a class="self-link" href="#dom-consumedthing-subscribeevent"
       aria-label=
@@ -15508,10 +15572,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoptions" aria-label=
-  "Links in this document to definition: InteractionOptions"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoptions" aria-label=
+  "Links in this document to definition: InteractionOptions">
     <div>
       <a class="self-link" href="#dom-interactionoptions"
       aria-label=
@@ -15587,9 +15650,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoptions-formindex" aria-label=
-  "Links in this document to definition: formIndex" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoptions-formindex" aria-label=
+  "Links in this document to definition: formIndex">
     <div>
       <a class="self-link" href="#dom-interactionoptions-formindex"
       aria-label=
@@ -15612,9 +15675,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoptions-urivariables" aria-label=
-  "Links in this document to definition: uriVariables" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoptions-urivariables"
+  aria-label="Links in this document to definition: uriVariables">
     <div>
       <a class="self-link" href=
       "#dom-interactionoptions-urivariables" aria-label=
@@ -15637,9 +15700,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionoptions-data" aria-label=
-  "Links in this document to definition: data" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionoptions-data" aria-label=
+  "Links in this document to definition: data">
     <div>
       <a class="self-link" href="#dom-interactionoptions-data"
       aria-label=
@@ -15662,10 +15725,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-propertyreadmap" aria-label=
-  "Links in this document to definition: PropertyReadMap" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-propertyreadmap" aria-label=
+  "Links in this document to definition: PropertyReadMap">
     <div>
       <a class="self-link" href="#dom-propertyreadmap" aria-label=
       "Permalink for definition: PropertyReadMap. Activate to close this dialog.">
@@ -15704,10 +15766,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-propertywritemap" aria-label=
-  "Links in this document to definition: PropertyWriteMap" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-propertywritemap" aria-label=
+  "Links in this document to definition: PropertyWriteMap">
     <div>
       <a class="self-link" href="#dom-propertywritemap" aria-label=
       "Permalink for definition: PropertyWriteMap. Activate to close this dialog.">
@@ -15732,10 +15793,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-interactionlistener" aria-label=
-  "Links in this document to definition: InteractionListener"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-interactionlistener" aria-label=
+  "Links in this document to definition: InteractionListener">
     <div>
       <a class="self-link" href="#dom-interactionlistener"
       aria-label=
@@ -15765,9 +15825,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-errorlistener" aria-label=
-  "Links in this document to definition: ErrorListener" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-errorlistener" aria-label=
+  "Links in this document to definition: ErrorListener">
     <div>
       <a class="self-link" href="#dom-errorlistener" aria-label=
       "Permalink for definition: ErrorListener. Activate to close this dialog.">
@@ -15794,9 +15854,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-subscription" aria-label=
-  "Links in this document to definition: Subscription" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-subscription" aria-label=
+  "Links in this document to definition: Subscription">
     <div>
       <a class="self-link" href="#dom-subscription" aria-label=
       "Permalink for definition: Subscription. Activate to close this dialog.">
@@ -15860,9 +15920,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-subscription-active" aria-label=
-  "Links in this document to definition: active" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-subscription-active" aria-label=
+  "Links in this document to definition: active">
     <div>
       <a class="self-link" href="#dom-subscription-active"
       aria-label=
@@ -15889,9 +15949,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-type" aria-label=
-  "Links in this document to definition: [[type]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-type" aria-label=
+  "Links in this document to definition: [[type]]">
     <div>
       <a class="self-link" href="#dfn-type" aria-label=
       "Permalink for definition: [[type]]. Activate to close this dialog.">
@@ -15924,9 +15984,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-name" aria-label=
-  "Links in this document to definition: [[name]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-name" aria-label=
+  "Links in this document to definition: [[name]]">
     <div>
       <a class="self-link" href="#dfn-name" aria-label=
       "Permalink for definition: [[name]]. Activate to close this dialog.">
@@ -15953,10 +16013,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-interaction" aria-label=
-  "Links in this document to definition: [[interaction]]" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-interaction" aria-label=
+  "Links in this document to definition: [[interaction]]">
     <div>
       <a class="self-link" href="#dfn-interaction" aria-label=
       "Permalink for definition: [[interaction]]. Activate to close this dialog.">
@@ -16004,9 +16063,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-form" aria-label=
-  "Links in this document to definition: [[form]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-form" aria-label=
+  "Links in this document to definition: [[form]]">
     <div>
       <a class="self-link" href="#dfn-form" aria-label=
       "Permalink for definition: [[form]]. Activate to close this dialog.">
@@ -16051,9 +16110,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-thing" aria-label=
-  "Links in this document to definition: [[thing]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-thing" aria-label=
+  "Links in this document to definition: [[thing]]">
     <div>
       <a class="self-link" href="#dfn-thing" aria-label=
       "Permalink for definition: [[thing]]. Activate to close this dialog.">
@@ -16078,9 +16137,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-subscription-stop" aria-label=
-  "Links in this document to definition: stop()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-subscription-stop" aria-label=
+  "Links in this document to definition: stop()">
     <div>
       <a class="self-link" href="#dom-subscription-stop"
       aria-label="Permalink for definition: stop(). Activate to close this dialog.">
@@ -16102,10 +16161,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-find-a-matching-unsubscribe-form" aria-label=
-  "Links in this document to definition: find a matching unsubscribe form"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-find-a-matching-unsubscribe-form"
+  aria-label=
+  "Links in this document to definition: find a matching unsubscribe form">
     <div>
       <a class="self-link" href=
       "#dfn-find-a-matching-unsubscribe-form" aria-label=
@@ -16121,9 +16180,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing" aria-label=
-  "Links in this document to definition: ExposedThing" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing" aria-label=
+  "Links in this document to definition: ExposedThing">
     <div>
       <a class="self-link" href="#dom-exposedthing" aria-label=
       "Permalink for definition: ExposedThing. Activate to close this dialog.">
@@ -16234,9 +16293,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-td-1" aria-label=
-  "Links in this document to definition: [[td]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-td-1" aria-label=
+  "Links in this document to definition: [[td]]">
     <div>
       <a class="self-link" href="#dfn-td-1" aria-label=
       "Permalink for definition: [[td]]. Activate to close this dialog.">
@@ -16346,10 +16405,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-readhandlers" aria-label=
-  "Links in this document to definition: [[readHandlers]]" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-readhandlers" aria-label=
+  "Links in this document to definition: [[readHandlers]]">
     <div>
       <a class="self-link" href="#dfn-readhandlers" aria-label=
       "Permalink for definition: [[readHandlers]]. Activate to close this dialog.">
@@ -16375,10 +16433,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-writehandlers" aria-label=
-  "Links in this document to definition: [[writeHandlers]]" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-writehandlers" aria-label=
+  "Links in this document to definition: [[writeHandlers]]">
     <div>
       <a class="self-link" href="#dfn-writehandlers" aria-label=
       "Permalink for definition: [[writeHandlers]]. Activate to close this dialog.">
@@ -16398,10 +16455,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-observehandlers" aria-label=
-  "Links in this document to definition: [[observeHandlers]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-observehandlers" aria-label=
+  "Links in this document to definition: [[observeHandlers]]">
     <div>
       <a class="self-link" href="#dfn-observehandlers" aria-label=
       "Permalink for definition: [[observeHandlers]]. Activate to close this dialog.">
@@ -16416,10 +16472,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-unobservehandlers" aria-label=
-  "Links in this document to definition: [[unobserveHandlers]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-unobservehandlers" aria-label=
+  "Links in this document to definition: [[unobserveHandlers]]">
     <div>
       <a class="self-link" href="#dfn-unobservehandlers"
       aria-label="Permalink for definition: [[unobserveHandlers]]. Activate to close this dialog.">
@@ -16439,10 +16494,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-actionhandlers" aria-label=
-  "Links in this document to definition: [[actionHandlers]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-actionhandlers" aria-label=
+  "Links in this document to definition: [[actionHandlers]]">
     <div>
       <a class="self-link" href="#dfn-actionhandlers" aria-label=
       "Permalink for definition: [[actionHandlers]]. Activate to close this dialog.">
@@ -16462,10 +16516,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-subscribehandlers" aria-label=
-  "Links in this document to definition: [[subscribeHandlers]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-subscribehandlers" aria-label=
+  "Links in this document to definition: [[subscribeHandlers]]">
     <div>
       <a class="self-link" href="#dfn-subscribehandlers"
       aria-label="Permalink for definition: [[subscribeHandlers]]. Activate to close this dialog.">
@@ -16485,10 +16538,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-unsubscribehandlers" aria-label=
-  "Links in this document to definition: [[unsubscribeHandlers]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-unsubscribehandlers" aria-label=
+  "Links in this document to definition: [[unsubscribeHandlers]]">
     <div>
       <a class="self-link" href="#dfn-unsubscribehandlers"
       aria-label=
@@ -16509,10 +16561,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-propertyobservers" aria-label=
-  "Links in this document to definition: [[propertyObservers]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-propertyobservers" aria-label=
+  "Links in this document to definition: [[propertyObservers]]">
     <div>
       <a class="self-link" href="#dfn-propertyobservers"
       aria-label="Permalink for definition: [[propertyObservers]]. Activate to close this dialog.">
@@ -16543,10 +16594,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-eventlisteners" aria-label=
-  "Links in this document to definition: [[eventListeners]]"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-eventlisteners" aria-label=
+  "Links in this document to definition: [[eventListeners]]">
     <div>
       <a class="self-link" href="#dfn-eventlisteners" aria-label=
       "Permalink for definition: [[eventListeners]]. Activate to close this dialog.">
@@ -16574,10 +16624,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-getthingdescription" aria-label=
-  "Links in this document to definition: getThingDescription()"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-getthingdescription"
+  aria-label=
+  "Links in this document to definition: getThingDescription()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-getthingdescription" aria-label=
@@ -16600,10 +16650,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-propertyreadhandler" aria-label=
-  "Links in this document to definition: PropertyReadHandler"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-propertyreadhandler" aria-label=
+  "Links in this document to definition: PropertyReadHandler">
     <div>
       <a class="self-link" href="#dom-propertyreadhandler"
       aria-label=
@@ -16649,11 +16698,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-setpropertyreadhandler"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-setpropertyreadhandler"
   aria-label=
-  "Links in this document to definition: setPropertyReadHandler()"
-  hidden="">
+  "Links in this document to definition: setPropertyReadHandler()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-setpropertyreadhandler" aria-label=
@@ -16678,10 +16726,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-read-server-property" aria-label=
-  "Links in this document to definition: read server property"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-read-server-property" aria-label=
+  "Links in this document to definition: read server property">
     <div>
       <a class="self-link" href="#dfn-read-server-property"
       aria-label=
@@ -16697,10 +16744,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-read-multiple-properties" aria-label=
-  "Links in this document to definition: read multiple properties"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-read-multiple-properties" aria-label=
+  "Links in this document to definition: read multiple properties">
     <div>
       <a class="self-link" href="#dfn-read-multiple-properties"
       aria-label=
@@ -16716,11 +16762,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-setpropertyobservehandler"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-setpropertyobservehandler"
   aria-label=
-  "Links in this document to definition: setPropertyObserveHandler()"
-  hidden="">
+  "Links in this document to definition: setPropertyObserveHandler()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-setpropertyobservehandler" aria-label=
@@ -16745,11 +16790,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-setpropertyunobservehandler"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-setpropertyunobservehandler"
   aria-label=
-  "Links in this document to definition: setPropertyUnobserveHandler()"
-  hidden="">
+  "Links in this document to definition: setPropertyUnobserveHandler()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-setpropertyunobservehandler" aria-label=
@@ -16774,10 +16818,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-emitpropertychange" aria-label=
-  "Links in this document to definition: emitPropertyChange()"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-emitpropertychange"
+  aria-label="Links in this document to definition: emitPropertyChange()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-emitpropertychange" aria-label=
@@ -16800,10 +16843,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-propertywritehandler" aria-label=
-  "Links in this document to definition: PropertyWriteHandler"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-propertywritehandler" aria-label=
+  "Links in this document to definition: PropertyWriteHandler">
     <div>
       <a class="self-link" href="#dom-propertywritehandler"
       aria-label=
@@ -16834,11 +16876,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-setpropertywritehandler"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-setpropertywritehandler"
   aria-label=
-  "Links in this document to definition: setPropertyWriteHandler()"
-  hidden="">
+  "Links in this document to definition: setPropertyWriteHandler()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-setpropertywritehandler" aria-label=
@@ -16863,10 +16904,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-update-property-steps" aria-label=
-  "Links in this document to definition: update property steps"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-update-property-steps" aria-label=
+  "Links in this document to definition: update property steps">
     <div>
       <a class="self-link" href="#dfn-update-property-steps"
       aria-label=
@@ -16882,9 +16922,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-actionhandler" aria-label=
-  "Links in this document to definition: ActionHandler" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-actionhandler" aria-label=
+  "Links in this document to definition: ActionHandler">
     <div>
       <a class="self-link" href="#dom-actionhandler" aria-label=
       "Permalink for definition: ActionHandler. Activate to close this dialog.">
@@ -16918,10 +16958,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-setactionhandler" aria-label=
-  "Links in this document to definition: setActionHandler()"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-setactionhandler" aria-label=
+  "Links in this document to definition: setActionHandler()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-setactionhandler" aria-label=
@@ -16944,10 +16983,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-eventsubscriptionhandler" aria-label=
-  "Links in this document to definition: EventSubscriptionHandler"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-eventsubscriptionhandler" aria-label=
+  "Links in this document to definition: EventSubscriptionHandler">
     <div>
       <a class="self-link" href="#dom-eventsubscriptionhandler"
       aria-label=
@@ -16985,11 +17023,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-seteventsubscribehandler"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-seteventsubscribehandler"
   aria-label=
-  "Links in this document to definition: setEventSubscribeHandler()"
-  hidden="">
+  "Links in this document to definition: setEventSubscribeHandler()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-seteventsubscribehandler" aria-label=
@@ -17014,11 +17051,10 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-seteventunsubscribehandler"
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-seteventunsubscribehandler"
   aria-label=
-  "Links in this document to definition: setEventUnsubscribeHandler()"
-  hidden="">
+  "Links in this document to definition: setEventUnsubscribeHandler()">
     <div>
       <a class="self-link" href=
       "#dom-exposedthing-seteventunsubscribehandler" aria-label=
@@ -17043,9 +17079,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-emitevent" aria-label=
-  "Links in this document to definition: emitEvent()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-emitevent" aria-label=
+  "Links in this document to definition: emitEvent()">
     <div>
       <a class="self-link" href="#dom-exposedthing-emitevent"
       aria-label=
@@ -17068,9 +17104,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-expose" aria-label=
-  "Links in this document to definition: expose()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-expose" aria-label=
+  "Links in this document to definition: expose()">
     <div>
       <a class="self-link" href="#dom-exposedthing-expose"
       aria-label=
@@ -17098,9 +17134,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-exposedthing-destroy" aria-label=
-  "Links in this document to definition: destroy()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-exposedthing-destroy" aria-label=
+  "Links in this document to definition: destroy()">
     <div>
       <a class="self-link" href="#dom-exposedthing-destroy"
       aria-label=
@@ -17123,10 +17159,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingdiscoveryprocess" aria-label=
-  "Links in this document to definition: ThingDiscoveryProcess"
-  hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingdiscoveryprocess" aria-label=
+  "Links in this document to definition: ThingDiscoveryProcess">
     <div>
       <a class="self-link" href="#dom-thingdiscoveryprocess"
       aria-label=
@@ -17185,9 +17220,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingdiscoveryprocess-constructor" aria-label=
-  "Links in this document to definition: constructor" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingdiscoveryprocess-constructor"
+  aria-label="Links in this document to definition: constructor">
     <div>
       <a class="self-link" href=
       "#dom-thingdiscoveryprocess-constructor" aria-label=
@@ -17200,9 +17235,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       <li>Not referenced in this document.</li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-filter" aria-label=
-  "Links in this document to definition: [[filter]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-filter" aria-label=
+  "Links in this document to definition: [[filter]]">
     <div>
       <a class="self-link" href="#dfn-filter" aria-label=
       "Permalink for definition: [[filter]]. Activate to close this dialog.">
@@ -17232,9 +17267,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-url" aria-label=
-  "Links in this document to definition: [[url]]" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-url" aria-label=
+  "Links in this document to definition: [[url]]">
     <div>
       <a class="self-link" href="#dfn-url" aria-label=
       "Permalink for definition: [[url]]. Activate to close this dialog.">
@@ -17254,9 +17289,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingdiscoveryprocess-done" aria-label=
-  "Links in this document to definition: done" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingdiscoveryprocess-done" aria-label=
+  "Links in this document to definition: done">
     <div>
       <a class="self-link" href="#dom-thingdiscoveryprocess-done"
       aria-label=
@@ -17293,9 +17328,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingdiscoveryprocess-error" aria-label=
-  "Links in this document to definition: error" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingdiscoveryprocess-error" aria-label=
+  "Links in this document to definition: error">
     <div>
       <a class="self-link" href="#dom-thingdiscoveryprocess-error"
       aria-label=
@@ -17335,9 +17370,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingfilter" aria-label=
-  "Links in this document to definition: ThingFilter" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingfilter" aria-label=
+  "Links in this document to definition: ThingFilter">
     <div>
       <a class="self-link" href="#dom-thingfilter" aria-label=
       "Permalink for definition: ThingFilter. Activate to close this dialog.">
@@ -17382,9 +17417,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingfilter-fragment" aria-label=
-  "Links in this document to definition: fragment" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingfilter-fragment" aria-label=
+  "Links in this document to definition: fragment">
     <div>
       <a class="self-link" href="#dom-thingfilter-fragment"
       aria-label=
@@ -17412,10 +17447,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dfn-discovery-process" aria-label=
-  "Links in this document to definition: discovery process" hidden=
-  "">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dfn-discovery-process" aria-label=
+  "Links in this document to definition: discovery process">
     <div>
       <a class="self-link" href="#dfn-discovery-process"
       aria-label="Permalink for definition: discovery process. Activate to close this dialog.">
@@ -17435,9 +17469,9 @@ data-link-type="dict-member" href="#dom-thingfilter-fragment" id=
       </li>
     </ul>
   </div>
-  <div class="dfn-panel" role="dialog" aria-modal="true" id=
-  "dfn-panel-for-dom-thingdiscoveryprocess-stop" aria-label=
-  "Links in this document to definition: stop()" hidden="">
+  <div class="dfn-panel" hidden="" role="dialog" aria-modal="true"
+  id="dfn-panel-for-dom-thingdiscoveryprocess-stop" aria-label=
+  "Links in this document to definition: stop()">
     <div>
       <a class="self-link" href="#dom-thingdiscoveryprocess-stop"
       aria-label=
