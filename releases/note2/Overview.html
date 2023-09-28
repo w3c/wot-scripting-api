@@ -199,7 +199,8 @@
   </style>
   <meta name="description" content=
   "The Web of Things is made of entities (Things) that can describe their capabilities in a machine-interpretable Thing Description (TD) and expose these capabilities through the WoT Interface, that is, network interactions modeled as Properties (for reading and writing values), Actions (to execute remote procedures with or without return values) and Events (for signaling notifications).">
-
+  <link rel="canonical" href=
+  "https://www.w3.org/TR/wot-scripting-api/">
   <style>
   .hljs{display:block;overflow-x:auto;padding:.5em;color:#383a42;background:#fafafa}
   .hljs-comment,.hljs-quote{color:#717277;font-style:italic}
@@ -223,12 +224,13 @@
   </style>
   <script id="initialUserConfig" type="application/json">
   {
-  "specStatus": "ED",
+  "specStatus": "NOTE",
+  "publishDate": "",
   "shortName": "wot-scripting-api",
+  "processVersion": 2023,
   "group": "wg/wot",
   "copyrightStart": 2017,
   "noLegacyStyle": true,
-  "publishDate": "",
   "previousPublishDate": "",
   "previousMaturity": "",
   "edDraftURI": "https://w3c.github.io/wot-scripting-api/",
@@ -364,11 +366,11 @@
     }
   },
   "publishISODate": "2023-09-28T00:00:00.000Z",
-  "generatedSubtitle": "W3C Editor's Draft 28 September 2023"
+  "generatedSubtitle": "W3C Group Note 28 September 2023"
   }
   </script>
   <link rel="stylesheet" href=
-  "https://www.w3.org/StyleSheets/TR/2021/W3C-ED">
+  "https://www.w3.org/StyleSheets/TR/2021/W3C-NOTE">
 </head>
 <body class="h-entry toc-inline" data-cite=
 "web-platform HTML INFRA URL WEBIDL DOM FETCH ecmascript streams wot-architecture wot-thing-description wot-binding-templates">
@@ -380,7 +382,7 @@
     <h1 id="title" class="title">Web of Things (WoT) Scripting
     API</h1>
     <p id="w3c-state"><a href=
-    "https://www.w3.org/standards/types#ED">W3C Editor's Draft</a>
+    "https://www.w3.org/standards/types#NOTE">W3C Group Note</a>
     <time class="dt-published" datetime="2023-09-28">28 September
     2023</time></p>
     <details open="">
@@ -391,7 +393,8 @@
         <dt>This version:</dt>
         <dd>
           <a class="u-url" href=
-          "https://w3c.github.io/wot-scripting-api/">https://w3c.github.io/wot-scripting-api/</a>
+          "https://www.w3.org/TR/2023/NOTE-wot-scripting-api-20230928/">
+          https://www.w3.org/TR/2023/NOTE-wot-scripting-api-20230928/</a>
         </dd>
         <dt>Latest published version:</dt>
         <dd>
@@ -573,30 +576,22 @@
     </div>
     <p>This document was published by the <a href=
     "https://www.w3.org/groups/wg/wot">Web of Things Working
-    Group</a> as an Editor's Draft.</p>
-    <p>Publication as an Editor's Draft does not imply endorsement
-    by <abbr title="World Wide Web Consortium">W3C</abbr> and its
+    Group</a> as a Group Note using the <a href=
+    "https://www.w3.org/2023/Process-20230612/#recs-and-notes">Note
+    track</a>.</p>
+    <p>This Group Note is endorsed by the <a href=
+    "https://www.w3.org/groups/wg/wot">Web of Things Working
+    Group</a>, but is not endorsed by <abbr title=
+    "World Wide Web Consortium">W3C</abbr> itself nor its
     Members.</p>
     <p>This is a draft document and may be updated, replaced or
     obsoleted by other documents at any time. It is inappropriate
     to cite this document as other than work in progress.</p>
-    <p>This document was produced by a group operating under the
-    <a href=
+    <p data-deliverer="95969">The <a href=
     "https://www.w3.org/Consortium/Patent-Policy/"><abbr title=
-    "World Wide Web Consortium">W3C</abbr> Patent Policy</a>.
-    <abbr title="World Wide Web Consortium">W3C</abbr> maintains a
-    <a rel="disclosure" href=
-    "https://www.w3.org/groups/wg/wot/ipr">public list of any
-    patent disclosures</a> made in connection with the deliverables
-    of the group; that page also includes instructions for
-    disclosing a patent. An individual who has actual knowledge of
-    a patent which the individual believes contains <a href=
-    "https://www.w3.org/Consortium/Patent-Policy/#def-essential">Essential
-    Claim(s)</a> must disclose the information in accordance with
-    <a href=
-    "https://www.w3.org/Consortium/Patent-Policy/#sec-Disclosure">section
-    6 of the <abbr title="World Wide Web Consortium">W3C</abbr>
-    Patent Policy</a>.</p>
+    "World Wide Web Consortium">W3C</abbr> Patent Policy</a> does
+    not carry any licensing requirements or commitments on this
+    document.</p>
     <p>This document is governed by the <a id=
     "w3c_process_revision" href=
     "https://www.w3.org/2023/Process-20230612/">12 June 2023
