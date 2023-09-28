@@ -1,6 +1,6 @@
 {
   "name": "wot-typescript-definitions",
-  "version": "0.8.0-SNAPSHOT.26",
+  "version": "0.8.0-SNAPSHOT.27",
   "description": "TypeScript definitions for the W3C WoT Scripting API",
   "author": "W3C Web of Things Working Group",
   "license": "W3C-20150513",
@@ -23,7 +23,7 @@
   },
   "types": "index.d.ts",
   "dependencies": {
-    "wot-thing-description-types": "1.1.0-24-May-2023"
+    "wot-thing-description-types": "1.1.0-05-July-2023"
   },
   "scripts": {
     "build": "json2ts schema/td-json-schema-validation.json | sed -e 's/WoTTDSchema02June2021/ThingDescription/' > thing-description.d.ts"
