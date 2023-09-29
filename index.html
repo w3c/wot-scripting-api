@@ -552,15 +552,22 @@
   <pre class="idl">
     [SecureContext, Exposed=(Window,Worker)]
     namespace WOT {
-      // methods defined in UA conformance classes
+      // WoT Consumer conformance class
+      Promise&lt;ConsumedThing&gt; consume(ThingDescription td);
+	  
+      // WoT Producer conformance class
+      Promise&lt;ExposedThing&gt; produce(ExposedThingInit init);
+	  
+      // WoT Discovery conformance class
+      Promise&lt;ThingDiscoveryProcess&gt; discover(optional ThingFilter filter = {});
+      Promise&lt;ThingDiscoveryProcess&gt; exploreDirectory(USVString url,
+        optional ThingFilter filter = {});
+      Promise&lt;ThingDescription&gt; requestThingDescription(USVString url);
     };
+	
+    typedef object ExposedThingInit;
   </pre>
   <section> <h3>The <dfn>consume()</dfn> method</h3>
-    <pre class="idl">
-      partial namespace WOT {
-        Promise&lt;ConsumedThing&gt; consume(ThingDescription td);
-      };
-    </pre>
     <div>
       Belongs to the <a>WoT Consumer</a> conformance class. Expects an |td:ThingDescription| argument and returns a {{Promise}} that resolves with a {{ConsumedThing}} object that represents a client interface to operate with the <a>Thing</a>. The method MUST run the following steps:
       <ol>
@@ -595,13 +602,6 @@
   </section>
 
   <section> <h3>The <dfn>produce()</dfn> method</h3>
-    <pre class="idl">
-      typedef object ExposedThingInit;
-
-      partial namespace WOT {
-        Promise&lt;ExposedThing&gt; produce(ExposedThingInit init);
-      };
-    </pre>
     <div>
       Belongs to the <a>WoT Producer</a> conformance class. Expects a |init:ExposedThingInit| argument and returns a {{Promise}}
       that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface,
@@ -718,11 +718,6 @@
   </section>
 
   <section> <h3>The <dfn>discover()</dfn> method</h3>
-    <pre class="idl">
-      partial namespace WOT {
-        Promise&lt;ThingDiscoveryProcess&gt; discover(optional ThingFilter filter = {});
-      };
-    </pre>
     <div>
       Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
       <ol>
@@ -767,12 +762,6 @@
   </section>
 
   <section> <h3>The <dfn>exploreDirectory()</dfn> method</h3>
-    <pre class="idl">
-      partial namespace WOT {
-        Promise&lt;ThingDiscoveryProcess&gt; exploreDirectory(USVString url,
-            optional ThingFilter filter = {});
-      };
-    </pre>
     <div>
       Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that given a <a>TD Directory</a> URL, will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
       <ol>
@@ -832,11 +821,6 @@
   </section>
 
   <section> <h3>The <dfn>requestThingDescription()</dfn> method</h3>
-    <pre class="idl">
-      partial namespace WOT {
-        Promise&lt;ThingDescription&gt; requestThingDescription(USVString url);
-      };
-    </pre>
     <div>
       Belongs to the <a>WoT Discovery</a> conformance class.
       Requests a <a>Thing Description</a> from the given URL.
@@ -885,10 +869,6 @@
 
   <section data-dfn-for="InteractionInput">
     <h2>The <dfn>InteractionInput</dfn> type</h2>
-    <pre class="idl">
-      typedef any DataSchemaValue;
-      typedef (ReadableStream or DataSchemaValue) InteractionInput;
-    </pre>
     <p>
       Belongs to the <a>WoT Consumer</a> conformance class and represents the
       <a>WoT Interaction</a> data provided by application scripts to the UA.
