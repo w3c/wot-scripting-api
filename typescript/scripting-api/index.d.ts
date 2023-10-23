@@ -12,7 +12,7 @@ declare namespace WoT {
      *
      * @param filter represents the constraints for discovering Things as key-value pairs
      */
-    export function discover(filter?: ThingFilter): ThingDiscoveryProcess;
+    export function discover(filter?: ThingFilter): Promise<ThingDiscoveryProcess>;
 
     /**
      * Starts the discovery process that, given a TD Directory {@link url}, will
