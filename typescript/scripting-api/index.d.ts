@@ -64,8 +64,6 @@ declare namespace WoT {
         filter?: ThingFilter;
         done: boolean;
         error?: Error;
-        start(): void;
-        next(): Promise<ThingDescription>;
         stop(): void;
     }
 
