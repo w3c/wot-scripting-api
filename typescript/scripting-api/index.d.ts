@@ -51,10 +51,6 @@ declare namespace WoT {
      */
     export interface ThingFilter {
         /**
-         * The query field represents a query string accepted by the implementation, for instance a SPARQL query.
-         */
-        query?: string;
-        /**
          * The fragment field represents a template object used for matching against discovered Things.
          */
         fragment?: object;
