@@ -106,6 +106,10 @@ declare namespace WoT {
      */
     export interface ConsumedThing {
         /**
+         * Instantiates a new ConsumedThing from a {@link ThingDescription}.
+         */
+        new(td: ThingDescription);
+        /**
          * Reads a Property value.
          * Takes as arguments propertyName and optionally options.
          * It returns a Promise that resolves with a Property value represented as an
