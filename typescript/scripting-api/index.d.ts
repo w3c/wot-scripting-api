@@ -61,6 +61,7 @@ declare namespace WoT {
      * controlling the discovery process. 
      */
     export interface ThingDiscoveryProcess extends AsyncIterable<ThingDescription> {
+        new(filter?: ThingFilter);
         filter?: ThingFilter;
         done: boolean;
         error?: Error;
