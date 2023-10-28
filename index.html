@@ -1378,7 +1378,6 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ConsumedThing {
-        constructor(ThingDescription td);
         Promise&lt;InteractionOutput&gt; readProperty(DOMString propertyName,
                                     optional InteractionOptions options = {});
         Promise&lt;PropertyReadMap&gt; readAllProperties(
