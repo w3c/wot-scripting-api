@@ -2653,7 +2653,7 @@
         is created from a full or partial {{ThingDescription}} object.
       </p>
       <p class="note">
-         Note that an existing {{ThingDescription}} object can be optionally modified (for instance by adding or removing elements on its |properties|, |actions| and |events| internal properties) and the resulting object can used for constructing an
+         Note that an existing {{ThingDescription}} object can be optionally modified (for instance by adding or removing elements on its |properties|, |actions| and |events| internal properties) and the resulting object can used for creating an
          {{ExposedThing}} object. This is the current way of adding and
          removing <a>Property</a>, <a>Action</a> and <a>Event</a> definitions, as illustrated in the <a href="#exposedthing-examples">examples</a>.
       </p>
@@ -2661,7 +2661,7 @@
         Before invoking <a href="#dom-exposedthing-expose">expose()</a>, the {{ExposedThing}} object does not serve any requests. This allows first creating {{ExposedThing}} and then initialize its <a>Properties</a> and service handlers before starting serving requests.
       </p>
       <div>
-        To construct an {{ExposedThing}} with the {{ExposedThingInit}}
+        To create an {{ExposedThing}} with the {{ExposedThingInit}}
         |init:ExposedThingInit|, run the following steps:
         <ol>
           <li>
@@ -4290,11 +4290,6 @@
         is defined externally in the [[[WOT-TD]]] specification, that is scoped out, too.
         This specification expects a <a>TD</a> as
         <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
-      </p>
-    </section>
-    <section> <h4>Factory vs constructors</h4>
-      <p>
-        The factory methods for consuming and exposing <a>Thing</a>s are asynchronous and fully validate the input <a>TD</a>. In addition, one can also construct {{ConsumedThing}} and {{ExposedThing}} by providing a parsed and validated <a>TD</a>. Platform initialization is then done when needed during the WoT interactions.
       </p>
     </section>
     <section> <h4>Observers</h4>
