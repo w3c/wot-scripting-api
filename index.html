@@ -489,16 +489,17 @@
       [[!WOT-TD]]. It is expected to be
       a <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a data-cite="WOT-TD#json-schema-for-validation">JSON Schema validation</a>.
     </p>
-    <section> <h3> Fetching a Thing Description</h3>
+    <section> <h3> Requesting a Thing Description</h3>
       <p>
-        Fetching a <a>TD</a> given a URL should be done with an external method, such as the <a data-cite="fetch#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details.
+        Requesting a <a>TD</a> given a URL should be done with the
+        <a href="#dom-wot-requestthingdescription">requestThingDescription()</a>
+        method.
+        Alternatively, external methods, such as the <a data-cite="fetch#fetch-api">Fetch API</a> or a HTTP client library, can be used.
       </p>
       <pre class="example" title="Fetching a Thing Description">
         try {
-          let res = await fetch('https://tds.mythings.biz/sensor11');
-          // ... additional checks possible on res.headers
-          let td = await res.json();
-          let thing = await WOT.consume(td);
+          const td = await requestThingDescription('https://tds.mythings.biz/sensor11');
+          const thing = await WoT.consume(td);
           console.log("Thing name: " + thing.getThingDescription().title);
         } catch (err) {
           console.log("Fetching TD failed", err.message);
