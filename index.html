@@ -2432,7 +2432,7 @@
             console.log("Temperature: " + temperature);
 
             await thing.unsubscribe("ready");
-            console.log("Unsubscribed from the ‘ready’ event.");
+            console.log("Unsubscribed from the 'ready' event.");
           } catch (error) {
             console.log("Error in the cleanup function");
           }
@@ -4237,7 +4237,7 @@
           and the <code>open()</code> method are directly exposed on the object.
         </p>
         <pre class="example" title="Open a lock with a simple API">
-          let lock = await WoT.consume(‘https://td.my.com/lock-00123’);
+          let lock = await WoT.consume('https://td.my.com/lock-00123');
           console.log(lock.status);
           lock.open('withThisKey');
         </pre>
@@ -4262,8 +4262,8 @@
           let res = await fetch(‘https://td.my.com/lock-00123’);
           let td = await res.json();
           let lock = new ConsumedThing(td);
-          console.log(lock.readProperty(‘status’));
-          lock.invokeAction(‘open’, 'withThisKey');
+          console.log(lock.readProperty('status'));
+          lock.invokeAction('open', 'withThisKey');
         </pre>
       </section>
       <p>
