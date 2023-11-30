@@ -4280,15 +4280,22 @@
         into consideration when designing a Scripting API for WoT.
       </p>
     </section>
-    <section> <h4>Fetching and validating a TD</h4>
+    <section>
+      <h4>Requesting and validating a TD</h4>
       <p>
-        The <code>fetch(url)</code> method has been part of this API in earlier versions. However, now fetching a <a>TD</a> given a URL should be done with an external method, such as the <a data-cite="fetch#fetch-api">Fetch API</a> or a HTTP client library, which offer already standardized options on specifying fetch details. The reason is that while simple fetch operations (covering most use cases) could be done in this API, when various fetch options were needed, there was no point in duplicating existing work to re-expose those options in this API.
+        The current version of this specification defines a new
+        `requestThingDescription` method that simplifies the process of
+        retrieving and validating a Thing Description.
+        However, it only covers simple use cases that do not require additional
+        parameters or special HTTP headers during for performing the retrieval.
       </p>
       <p>
-        Since fetching a <a>TD</a> has been scoped out, and <a>TD</a> validation
-        is defined externally in the [[[WOT-TD]]] specification, that is scoped out, too.
-        This specification expects a <a>TD</a> as
-        <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that has been validated according to the [[[WOT-TD]]] specification.
+        More sophisticated use cases need to be covered by external methods, such
+        as the <a data-cite="fetch#fetch-api">Fetch API</a> or a
+        HTTP client library, which offer already standardized options on
+        specifying fetch details.
+        In these cases, the user is required to perform validation manually as
+        described by the [[[WoT-TD]]] specification.
       </p>
     </section>
     <section> <h4>Observers</h4>
