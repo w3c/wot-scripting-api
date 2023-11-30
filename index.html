@@ -2400,7 +2400,7 @@
         };
 
         try {
-          // subscribe to property change for “temperature”
+          // subscribe to property change for "temperature"
           await thing.observeProperty("temperature", async (data) => {
             try {
               console.log("Temperature changed to: " + await data.value());
@@ -2409,11 +2409,11 @@
               console.error(error);
             }
           });
-          // subscribe to the “ready” event defined in the TD
+          // subscribe to the "ready" event defined in the TD
           await thing.subscribeEvent("ready", async (eventData) => {
             try {
               console.log("Ready; index: " + await eventData.value());
-              // run the “startMeasurement” action defined by TD
+              // run the "startMeasurement" action defined by TD
               await thing.invokeAction("startMeasurement", { units: "Celsius" });
               console.log("Measurement started.");
             } catch (error) {
@@ -2457,7 +2457,7 @@
         let response;
         let image;
         try {
-          response = await thing.invokeAction(“takePicture”));
+          response = await thing.invokeAction("takePicture");
           image = await response.value() // throws NotReadableError --> schema not defined
         } catch(ex) {
           image = await response.arrayBuffer();
@@ -2519,7 +2519,7 @@
         parser.on('data', data => data.name === 'startObject' && ++objectCounter);
         parser.on('end', () => console.log(`Found ${objectCounter} objects.`));
 
-        const response = await thing.readProperty(“eventHistory”)
+        const response = await thing.readProperty("eventHistory")
         await response.data.pipeTo(parser);
 
         // Found N objects
