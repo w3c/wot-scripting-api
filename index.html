@@ -496,13 +496,13 @@
         method.
         Alternatively, external methods, such as the <a data-cite="fetch#fetch-api">Fetch API</a> or a HTTP client library, can be used.
       </p>
-      <pre class="example" title="Fetching a Thing Description">
+      <pre class="example" title="Requesting a Thing Description">
         try {
           const td = await requestThingDescription('https://tds.mythings.biz/sensor11');
           const thing = await WoT.consume(td);
           console.log("Thing name: " + thing.getThingDescription().title);
         } catch (err) {
-          console.log("Fetching TD failed", err.message);
+          console.log("Requesting TD failed", err.message);
         }
       </pre>
     </section>
@@ -845,7 +845,7 @@
           and stop.
         </li>
         <li>
-          If fetching a <a>Thing Description</a> is not supported by the
+          If requesting a <a>Thing Description</a> is not supported by the
           implementation, [=reject=] |promise| with {{NotSupportedError}} and
           stop.
         </li>
