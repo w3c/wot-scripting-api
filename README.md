@@ -19,7 +19,7 @@ If you want to make a full text review on the spec or other files, follow the st
 ## TypeScript Definitions
 
 The specification uses WebIDL definitions, but [TypeScript definititions](./typescript) are also available.
-We use <https://www.npmjs.com/package/json-schema-to-typescript> to generate the TypeScript definitions.
+We use <https://www.npmjs.com/package/json-schema-to-typescript> to generate the TypeScript definitions for [wot-thing-description-types](https://github.com/w3c/wot-scripting-api/tree/main/typescript/thing-description) and [wot-thing-models-types](https://github.com/w3c/wot-scripting-api/tree/main/typescript/thing-model).
 
 ## Task Force Meeting Logistics
 
