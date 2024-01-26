@@ -19,6 +19,7 @@ If you want to make a full text review on the spec or other files, follow the st
 ## TypeScript Definitions
 
 The specification uses WebIDL definitions, but [TypeScript definititions](./typescript) are also available.
+We use <https://www.npmjs.com/package/json-schema-to-typescript> to generate the TypeScript definitions.
 
 ## Task Force Meeting Logistics
 
