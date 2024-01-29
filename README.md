@@ -18,7 +18,7 @@ If you want to make a full text review on the spec or other files, follow the st
 
 ## TypeScript Definitions
 
-The specification uses WebIDL definitions, but [TypeScript definititions](./typescript) are also available.
+The specification uses WebIDL definitions, but [TypeScript definitions](./typescript) are also available.
 
 ## Task Force Meeting Logistics
 
