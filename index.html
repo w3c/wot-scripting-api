@@ -754,33 +754,40 @@
           Set |discovery|.{{ThingDiscoveryProcess/[[filter]]}} to |filter:ThingFilter|.
         </li>
         <li>
-          Request the underlying platform to start the directory discovery process.
           <p class="note">
             This is a placeholder for more details in the discovery algorithm.
             Implementations should follow the procedures described in the
             [[wot-discovery]] and [wot-binding-templates] specifications.
-            Some normative steps are indicated below.
+            Some normative steps (that are currently Work in Progress) are
+            indicated below.
           </p>
-          <ol>
-            <li>
-              If |url| is not a <a>TD Directory</a> or if the underlying
-              implementation cannot support the <a>Protocol Binding</a>
-              indicated by |url|, [=reject=] |promise|
-              with {{NotSupportedError}} and terminate these steps.
-            </li>
-            <li>
-              If filters in general are not supported by the implementation and
-              |filter| is not `undefined` or `null`, [=reject=] |promise|
-              with {{NotSupportedError}} and stop.
-            </li>
-            <li>
-              Run the <a>discovery process</a> given |discovery|.
-              <p class="note">
-                From this point on, errors are recorded only on
-                {{ThingDiscoveryProcess/error}}, but don't affect |promise| any longer.
-              </p>
-            </li>
-          </ol>
+
+          If the underlying implementation cannot support the
+          <a>Protocol Binding</a> indicated by |url|, [=reject=] |promise| with
+          {{NotSupportedError}} and stop.
+        </li>
+        <li>
+          Request the underlying platform to retrieve the TD available under
+          |discovery|.{{ThingDiscoveryProcess/[[url]]}}.
+          If that does not return a valid TDD Thing Description, [=reject=]
+          |promise| with {{TypeError}} and stop.
+          <!-- TODO: Define what a valid TDD TD is. -->
+          Otherwise, let |directoryTd| be the retrieved TD.
+        </li>
+        <li>
+          Let |consumedTddThing| be the result of
+          <a href="#creating-consumedthing">creating a <dfn>ConsumedThing</dfn></a>
+          from |directoryTd|.
+          If that fails, resolve |promise| with {{SyntaxError}} and stop.
+        </li>
+        <li>
+          Run the <a>discovery process</a> given |discovery| by
+          either invoking one of the actions associated with the Search API
+          – if the {{ThingDiscoveryProcess/[[filter]]}} argument is not
+          `undefined` or `null` – or reading the `things` property.
+        </li>
+        <li>
+          <!-- TODO: Deal with pagination etc. -->
         </li>
         <li>
           [=Resolve=] |promise| with |discovery|.
