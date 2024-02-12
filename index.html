@@ -1058,6 +1058,46 @@
       To run the <a>check data schema</a> steps on |payload| and |schema:object|,
       <ol>
         <li>
+          If |schema| is `null` or `undefined`, return `undefined`.
+        </li>
+        <li>
+          <!--
+            TODO: Should we just continue with the rest of the algorithm here?
+          -->
+          If |schema|.|default| is not |undefined| and |payload| is undefined,
+          let |payload| be the value of |schema|.|default|.
+        </li>
+        <li>
+          Let |const| be |schema|.|const|.
+          If |const| is not |undefined|,
+          <ol>
+            <li>
+              <!-- TODO: Should we already return here? -->
+              If |const| equals |payload|, return |payload|.
+            </li>
+            <li>
+              If |const| does not equal |payload|, throw {{TypeError}} and stop.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If |schema|.|enum| is not |undefined| and none of the elements in
+          |schema|.|enum| equal |payload|, throw {{TypeError}} and stop.
+        </li>
+        <li>
+          Let |oneOf| be |schema|.|oneOf|.
+          If |oneOf| is not |undefined|,
+          <ol>
+            <li>
+              For each |subSchema| in |oneOf|, run the <a>check data schema</a>
+              steps on |payload| and |subSchema|.
+            </li>
+            <li>
+              If all of these runs throw, throw {{TypeError}} and stop.
+            </li>
+          </ol>
+        </li>
+        <li>
           Let |type| be |schema|.|type|.
         </li>
         <li>
