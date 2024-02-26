@@ -1093,7 +1093,8 @@
               steps on |payload| and |subSchema|.
             </li>
             <li>
-              If all of these runs throw, throw {{TypeError}} and stop.
+              If more than two of these runs do not throw, throw {{TypeError}}
+              and stop.
             </li>
           </ol>
         </li>
