@@ -1061,13 +1061,6 @@
           If |schema| is `null` or `undefined`, return `undefined`.
         </li>
         <li>
-          <!--
-            TODO: Should we just continue with the rest of the algorithm here?
-          -->
-          If |schema|.|default| is not |undefined| and |payload| is undefined,
-          let |payload| be the value of |schema|.|default|.
-        </li>
-        <li>
           If |schema|.|const| is not |undefined| and |schema|.|const| does not equal |payload|, throw {{TypeError}} and stop.
         </li>
         <li>
