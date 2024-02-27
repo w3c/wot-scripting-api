@@ -1068,17 +1068,7 @@
           let |payload| be the value of |schema|.|default|.
         </li>
         <li>
-          Let |const| be |schema|.|const|.
-          If |const| is not |undefined|,
-          <ol>
-            <li>
-              <!-- TODO: Should we already return here? -->
-              If |const| equals |payload|, return |payload|.
-            </li>
-            <li>
-              If |const| does not equal |payload|, throw {{TypeError}} and stop.
-            </li>
-          </ol>
+          If |schema|.|const| is not |undefined| and |schema|.|const| does not equal |payload|, throw {{TypeError}} and stop.
         </li>
         <li>
           If |schema|.|enum| is not |undefined| and none of the elements in
