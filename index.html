@@ -976,8 +976,8 @@
         </li>
         <li>
           If |this|.|data| is not a {{ReadableStream}} or if
-          |dataUsed| is `true`, or if |form| is not an {{object}} or if |schema| or its
-          |type| are `null` or `undefined`, then
+          |dataUsed| is `true`, or if |form| is not an {{object}} or if |schema|
+          is `null` or `undefined`, then
           [=reject=] |promise| with {{NotReadableError}} and stop.
         </li>
         <li>
@@ -1057,6 +1057,30 @@
     <section><h3>The <dfn>check data schema</dfn> algorithm</h3>
       To run the <a>check data schema</a> steps on |payload| and |schema:object|,
       <ol>
+        <li>
+          If |schema| is `null` or `undefined`, return `undefined`.
+        </li>
+        <li>
+          If |schema|.|const| is not |undefined| and |schema|.|const| does not equal |payload|, throw {{TypeError}} and stop.
+        </li>
+        <li>
+          If |schema|.|enum| is not |undefined| and none of the elements in
+          |schema|.|enum| equal |payload|, throw {{TypeError}} and stop.
+        </li>
+        <li>
+          Let |oneOf| be |schema|.|oneOf|.
+          If |oneOf| is not |undefined|,
+          <ol>
+            <li>
+              For each |subSchema| in |oneOf|, run the <a>check data schema</a>
+              steps on |payload| and |subSchema|.
+            </li>
+            <li>
+              If none or more than one of these runs do not throw, throw
+              {{TypeError}} and stop.
+            </li>
+          </ol>
+        </li>
         <li>
           Let |type| be |schema|.|type|.
         </li>
