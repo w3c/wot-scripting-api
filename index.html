@@ -731,6 +731,15 @@
             optional ThingFilter filter = {});
       };
     </pre>
+
+    <!-- TODO: Improve and integrate into code section above -->
+    <pre class="idl">
+      dictionary ExploreDirectoryQuery {
+        DOMString query;
+        DOMString queryType;
+      };
+    </pre>
+
     <div>
       Belongs to the <a>WoT Discovery</a> conformance class. Starts the discovery process that given a <a>TD Directory</a> URL, will provide {{ThingDescription}} objects for <a>Thing Description</a>s that match an optional |filter:ThingFilter| argument of type {{ThingFilter}}. The method MUST run the following steps:
       <ol>
@@ -3861,7 +3870,8 @@
       <pre class="idl">
         dictionary ThingFilter {
           object? fragment;
-          <!-- DOMString? query; -->
+          <!-- TODO: Should this be part of the general "ThingFilter"? -->
+          ExploreDirectoryQuery? directoryQuery
         };
       </pre>
       <p>
