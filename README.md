@@ -36,6 +36,19 @@ To make contributions, please refer to [https://github.com/w3c/wotwg#contributin
 
 If you want to make a full text review on the spec or other files, follow the steps outlined [here](https://github.com/w3c/wot-scripting-api/pull/248).
 
+## Logistics
+
+- Call information: We use the W3C Calendar. You can find the next Scripting API call at https://www.w3.org/groups/wg/wot/calendar.
+- Wiki (contains agenda): https://www.w3.org/WoT/IG/wiki/WG_WoT_Scripting_API_WebConf
+- [Contribution rules](./CONTRIBUTING.md)
+
+## Publications
+
+- [Latest Editor's Draft](https://w3c.github.io/wot-scripting-api/)
+- [Latest Group Note](https://www.w3.org/TR/wot-scripting-api/)
+
+---
+
 ## TypeScript Definitions
 
 The specification uses WebIDL definitions, but [TypeScript definitions](./typescript) are also available.
