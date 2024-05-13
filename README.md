@@ -54,10 +54,6 @@ If you want to make a full text review on the spec or other files, follow the st
 The specification uses WebIDL definitions, but [TypeScript definitions](./typescript) are also available.
 We use [json-schema-to-typescript](https://www.npmjs.com/package/json-schema-to-typescript) to generate the TypeScript definitions for [wot-thing-description-types](https://github.com/w3c/wot-scripting-api/tree/main/typescript/thing-description) and [wot-thing-models-types](https://github.com/w3c/wot-scripting-api/tree/main/typescript/thing-model).
 
-## Task Force Meeting Logistics
-
-See https://www.w3.org/WoT/IG/wiki/WG_WoT_Scripting_API_WebConf. 
-
 ## Technical Matrix
 
 We use [labels](https://github.com/w3c/wot-scripting-api/labels) to categorize our work items.
