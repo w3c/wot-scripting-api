@@ -3821,7 +3821,7 @@
     <pre class="idl">
       [SecureContext, Exposed=(Window,Worker)]
       interface ThingDiscoveryProcess {
-        constructor(optional ThingFilter filter = {});
+        constructor(optional ThingFilter filter = {}, optional URL url);
         readonly attribute boolean done;
         readonly attribute Error? error;
         undefined stop();
@@ -3848,7 +3848,7 @@
       <tr>
         <td><dfn>[[\url]]</dfn></td>
         <td>`undefined`</td>
-        <td>A {{URL}} representing the <a>TD Directory</a> in a discovery.</td>
+        <td>A {{URL}} representing the <a>TD Directory</a> when instanted by the <code>exploreDirectory()</code> method.</td>
       </tr>
       </tbody>
     </table>
