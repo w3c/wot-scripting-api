@@ -757,6 +757,15 @@
           [=Resolve=] |promise| with |discovery|.
         </li>
       </ol>
+      <p>
+        Note that the details of the <a>discovery process</a> depend on the
+        underlying implementation which needs to be preconfigured in order to
+        use, for example, the appropriate Introduction methods as defined in
+        the [[[wot-discovery]]] specification.
+        Since the <code>discover()</code> method outputs
+        <a>Thing Description</a>s and not URLs, it is expected to cover both the
+        Introduction and the Exploration phase.
+      </p>
     </div>
   </section>
 
