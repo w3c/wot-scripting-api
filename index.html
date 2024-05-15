@@ -55,12 +55,6 @@
                "ecmascript", "streams",
                "wot-architecture11", "wot-thing-description11", "wot-binding-templates"],
         localBiblio: {
-          "WOT-SECURITY" : {
-              href: "https://www.w3.org/TR/2019/NOTE-wot-security-20191106/",
-            title: "Web of Things (WoT) Security and Privacy Guidelines",
-            publisher: "W3C",
-            date: "6 November 2019"
-          },
           "WOT-USE-CASES" : {
             href:"https://www.w3.org/TR/2022/NOTE-wot-usecases-20220307/",
             title: "Web of Things (WoT): Use Cases and Requirements",
@@ -4074,13 +4068,13 @@
   <section> <h2 id="security">Security and Privacy</h2>
     <p>
       A detailed discussion of security and privacy considerations for the Web of Things, including a threat model that can be adapted to various circumstances, is
-      presented in the informative document [[!WOT-SECURITY]].
+      presented in the informative document [[!wot-security]].
       This section discusses only security and privacy risks and possible mitigations
       directly relevant to the scripts and WoT Scripting API.
     </p>
     <p>
       A suggested set of best practices to improve security for WoT devices and
-      services has been documented in [[!WOT-SECURITY]].
+      services has been documented in [[!wot-security]].
       That document may be updated as security measures evolve.
       Following these practices does not guarantee security,
       but it might help avoid commonly known vulnerabilities.
@@ -4122,7 +4116,7 @@
           using WoT interface it exposes.
         </p>
         <dl><dt>Mitigation:</dt><dd>
-          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
+          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
@@ -4151,7 +4145,7 @@
             Post-manufacturing provisioning or update of scripts,
             WoT Scripting Runtime or any related data should be done in a secure fashion.
             A set of recommendations for secure update and post-manufacturing
-            provisioning can be found in [[!WOT-SECURITY]].
+            provisioning can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
@@ -4180,7 +4174,7 @@
           A script instance may receive data formats defined by the TD, or data formats defined by the applications. While the WoT Scripting Runtime SHOULD perform validation on all input fields defined by the TD, scripts may be still exploited by input data.
         </p>
         <dl><dt>Mitigation:</dt><dd>
-          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
+          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
@@ -4192,7 +4186,7 @@
         <dl><dt>Mitigation:</dt><dd>
           Scripts should avoid heavy functional processing without prior successful
           authentication of requestor. The set of recommended authentication mechanisms
-          can be found in [[!WOT-SECURITY]].
+          can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
