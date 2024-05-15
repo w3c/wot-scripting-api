@@ -53,14 +53,8 @@
         ],
         xref: ["web-platform", "HTML", "INFRA", "URL", "WEBIDL", "DOM", "FETCH",
                "ecmascript", "streams",
-               "wot-architecture", "wot-thing-description", "wot-binding-templates"],
+               "wot-architecture11", "wot-thing-description", "wot-binding-templates"],
         localBiblio: {
-          "WOT-ARCHITECTURE" : {
-            href:"https://www.w3.org/TR/2023/CR-wot-architecture11-20230119/",
-            title: "Web of Things (WoT) Architecture 1.1",
-            publisher: "W3C",
-            date: "19 January 2023"
-          },
           "WOT-TD" : {
             href:"https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/",
             title: "Web of Things (WoT) Thing Description 1.1",
@@ -173,7 +167,7 @@
       The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
     </p>
     <p>
-      The main <a>Web of Things</a> (WoT) concepts are described in the [[[WOT-ARCHITECTURE]]] specification.
+      The main <a>Web of Things</a> (WoT) concepts are described in the [[[wot-architecture11]]] specification.
     </p>
     <p>
       Scripting is an optional building block in WoT and it is typically used in gateways or browsers that are able to run a <a>WoT Runtime</a> and
@@ -204,7 +198,7 @@
   <section id="introduction"> <h2>Introduction</h2>
     <p>
       WoT provides layered interoperability based on how <a>Thing</a>s are used:
-      "consumed" and "exposed", as defined in the [[[WOT-ARCHITECTURE]]] terminology.
+      "consumed" and "exposed", as defined in the [[[wot-architecture11]]] terminology.
     </p>
     <p>
       By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
@@ -385,13 +379,13 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      The generic WoT terminology is defined in [[!wot-architecture11]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
       <a data-cite="WOT-TD#dataschema">
         <dfn>DataSchema</dfn></a>, <a data-cite="WOT-TD#form"><dfn data-lt="Forms">Form</dfn></a>,
         <a data-cite="WOT-TD#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="WOT-TD#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
     </p>
     <p>
-      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a data-cite="WOT-ARCHITECTURE#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a data-cite="wot-architecture11#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
       An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
       when referring to <a>Thing</a> capabilities, as explained in
       <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
@@ -601,7 +595,7 @@
       that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface,
       i.e. the ability to define request handlers. The |init:ExposedThingInit| object is an instance of the <a>ExposedThingInit</a> type.
       Specifically, an <a>ExposedThingInit</a> value is a dictionary used for the initialization of an <a>ExposedThing</a> and
-      it represents a <a>Partial TD</a> as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same
+      it represents a <a>Partial TD</a> as described in the [[!wot-architecture11]]. As such, it has the same
       structure of a <a>Thing Description</a> but it may omit some information.
       The method MUST run the following steps:
       <ol>
@@ -4114,7 +4108,7 @@
       <ul>
         <li>
           Implementors of WoT Runtimes that do not implement a Scripting Runtime.
-          The [[!WOT-ARCHITECTURE]] document provides generic security guidelines
+          The [[!wot-architecture11]] document provides generic security guidelines
           for this group.
         </li>
         <li>
