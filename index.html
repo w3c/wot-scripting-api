@@ -55,12 +55,6 @@
                "ecmascript", "streams",
                "wot-architecture11", "wot-thing-description11", "wot-binding-templates"],
         localBiblio: {
-          "WOT-PROTOCOL-BINDINGS" : {
-            href: "https://www.w3.org/TR/2020/NOTE-wot-binding-templates-20200130/",
-            title: "Web of Things (WoT) Binding Templates",
-            publisher: "W3C",
-            date: "30 January 2020"
-          },
           "WOT-SECURITY" : {
               href: "https://www.w3.org/TR/2019/NOTE-wot-security-20191106/",
             title: "Web of Things (WoT) Security and Privacy Guidelines",
@@ -556,7 +550,7 @@
           Let |thing:ConsumedThing| be a new {{ConsumedThing}} object constructed from |td|.
         </li>
         <li>
-          Set up the <a>WoT Interactions</a> based on introspecting <a>td</a> as explained in [[!wot-thing-description11]] and [[!WOT-PROTOCOL-BINDINGS]]. Make a request to the underlying platform to initialize the <a>Protocol Bindings</a>.
+          Set up the <a>WoT Interactions</a> based on introspecting <a>td</a> as explained in [[!wot-thing-description11]] and [[!wot-binding-templates]]. Make a request to the underlying platform to initialize the <a>Protocol Bindings</a>.
           <p class="ednote">
             Implementations encapsulate the complexity of how to use the
             <a>Protocol Bindings</a> for implementing <a>WoT interactions</a>.
@@ -776,7 +770,7 @@
           <p class="note">
             This is a placeholder for more details in the discovery algorithm.
             Implementations should follow the procedures described in the
-            [[wot-discovery]] and [WOT-PROTOCOL-BINDINGS] specifications.
+            [[wot-discovery]] and [wot-binding-templates] specifications.
             Some normative steps are indicated below.
           </p>
           <ol>
@@ -3084,7 +3078,7 @@
               <li>
                 Request the underlying platform to create a |reply| from |data| and |options| according to the <a>Protocol Bindings</a>.
                 <p class="ednote">
-                  This clause needs expanding and/or refer to an algorithm in [[WOT-PROTOCOL-BINDINGS]].
+                  This clause needs expanding and/or refer to an algorithm in [[wot-binding-templates]].
                 </p>
               </li>
               <li>
@@ -3588,7 +3582,7 @@
           </li>
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting {{ExposedThing/[[td]]}}
-            as explained in [[!wot-thing-description11]] and [[!WOT-PROTOCOL-BINDINGS]].
+            as explained in [[!wot-thing-description11]] and [[!wot-binding-templates]].
             Make a request to the underlying platform to initialize the
             <a>Protocol Bindings</a> and then start serving external requests
             for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>,
