@@ -25,7 +25,7 @@
 General information about the Web of Things can be found on https://www.w3.org/WoT/.
   
 ---
-The Web of Things (WoT) is made of entities (Things) that can describe their capabilities in a machine-interpretable Thing Description (TD) and expose these capabilities through the WoT Interface, that is, network interactions modeled as Properties (for reading and writing values), Actions (to execute remote procedures with or without return values) and Events (for signaling notifications).
+The Web of Things (WoT) is made of entities (Things) that can describe their capabilities in a machine-interpretable Thing Description (TD) and expose these capabilities through the WoT Interface, that is, network interactions modeled as Properties (for reading, writing and observing values), Actions (to execute remote procedures with or without return values) and Events (for signaling notifications).
 
 Scripting API is an optional building block in WoT and it is typically used in gateways or browsers that can run a WoT Runtime and script management, providing a convenient way to use WoT concepts in high-level applications.
 
