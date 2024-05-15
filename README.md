@@ -25,27 +25,26 @@
 General information about the Web of Things can be found on https://www.w3.org/WoT/.
   
 ---
+The Web of Things (WoT) is made of entities (Things) that can describe their capabilities in a machine-interpretable Thing Description (TD) and expose these capabilities through the WoT Interface, that is, network interactions modeled as Properties (for reading and writing values), Actions (to execute remote procedures with or without return values) and Events (for signaling notifications).
 
-The main deliverable being developed in this repository is the [WoT Scripting API Specification](http://w3c.github.io/wot-scripting-api/).
+Scripting API is an optional building block in WoT and it is typically used in gateways or browsers that can run a WoT Runtime and script management, providing a convenient way to use WoT concepts in high-level applications.
 
-Releases for [published versions](https://www.w3.org/TR/wot-scripting-api/) are found in [releases](./releases/).
+This specification describes an application programming interface (API) representing the WoT Interface that allows scripts to discover, operate Things, and expose locally defined Things characterized by WoT Interactions specified by a script.
 
-See the [rationale.md](./rationale.md) for explanation on API design choices.
-
-To make contributions, please refer to [https://github.com/w3c/wotwg#contributing](https://github.com/w3c/wotwg#contributing).
-
-If you want to make a full text review on the spec or other files, follow the steps outlined [here](https://github.com/w3c/wot-scripting-api/pull/248).
+See the [rationale.md](./rationale.md) for an explanation of API design choices.
 
 ## Logistics
 
 - Call information: We use the W3C Calendar. You can find the next Scripting API call at https://www.w3.org/groups/wg/wot/calendar.
 - Wiki (contains agenda): https://www.w3.org/WoT/IG/wiki/WG_WoT_Scripting_API_WebConf
 - [Contribution rules](./CONTRIBUTING.md)
+- If you want to make a full-text review on the spec or other files, follow the steps outlined [here](https://github.com/w3c/wot-scripting-api/pull/248).
 
 ## Publications
 
 - [Latest Editor's Draft](https://w3c.github.io/wot-scripting-api/)
 - [Latest Group Note](https://www.w3.org/TR/wot-scripting-api/)
+- Releases for other [published versions](https://www.w3.org/TR/wot-scripting-api/) are found in [releases](./releases/).
 
 ---
 
@@ -54,7 +53,7 @@ If you want to make a full text review on the spec or other files, follow the st
 The specification uses WebIDL definitions, but [TypeScript definitions](./typescript) are also available.
 We use [json-schema-to-typescript](https://www.npmjs.com/package/json-schema-to-typescript) to generate the TypeScript definitions for [wot-thing-description-types](https://github.com/w3c/wot-scripting-api/tree/main/typescript/thing-description) and [wot-thing-models-types](https://github.com/w3c/wot-scripting-api/tree/main/typescript/thing-model).
 
-## Technical Matrix
+## Labelling conventions
 
 We use [labels](https://github.com/w3c/wot-scripting-api/labels) to categorize our work items.
 
