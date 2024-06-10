@@ -29,7 +29,7 @@ The Web of Things (WoT) is made of entities (Things) that can describe their cap
 
 Scripting API is an optional building block in WoT and it is typically used in gateways or browsers that can run a WoT Runtime and script management, providing a convenient way to use WoT concepts in high-level applications.
 
-This specification describes an application programming interface (API) representing the WoT Interface that allows scripts to discover, operate Things, and expose locally defined Things characterized by WoT Interactions specified by a script.
+This specification describes an application programming interface (API) representing the WoT Interface that allows scripts to discover Things, operate Things, and expose locally defined Things characterized by WoT Interactions.
 
 See the [rationale.md](./rationale.md) for an explanation of API design choices.
 
