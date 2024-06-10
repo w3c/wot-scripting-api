@@ -53,44 +53,8 @@
         ],
         xref: ["web-platform", "HTML", "INFRA", "URL", "WEBIDL", "DOM", "FETCH",
                "ecmascript", "streams",
-               "wot-architecture", "wot-thing-description", "wot-binding-templates"],
+               "wot-architecture11", "wot-thing-description11", "wot-binding-templates"],
         localBiblio: {
-          "WOT-ARCHITECTURE" : {
-            href:"https://www.w3.org/TR/2023/CR-wot-architecture11-20230119/",
-            title: "Web of Things (WoT) Architecture 1.1",
-            publisher: "W3C",
-            date: "19 January 2023"
-          },
-          "WOT-TD" : {
-            href:"https://www.w3.org/TR/2023/CR-wot-thing-description11-20230119/",
-            title: "Web of Things (WoT) Thing Description 1.1",
-            publisher: "W3C",
-            date: "19 January 2023"
-          },
-          "WOT-DISCOVERY" : {
-            href:"https://www.w3.org/TR/2023/CR-wot-discovery-20230119/",
-            title: "Web of Things (WoT) Discovery",
-            publisher: "W3C",
-            date: "19 January 2023"
-          },
-          "WOT-PROTOCOL-BINDINGS" : {
-            href: "https://www.w3.org/TR/2020/NOTE-wot-binding-templates-20200130/",
-            title: "Web of Things (WoT) Binding Templates",
-            publisher: "W3C",
-            date: "30 January 2020"
-          },
-          "WOT-SECURITY" : {
-              href: "https://www.w3.org/TR/2019/NOTE-wot-security-20191106/",
-            title: "Web of Things (WoT) Security and Privacy Guidelines",
-            publisher: "W3C",
-            date: "6 November 2019"
-          },
-          "WOT-USE-CASES" : {
-            href:"https://www.w3.org/TR/2022/NOTE-wot-usecases-20220307/",
-            title: "Web of Things (WoT): Use Cases and Requirements",
-            publisher: "W3C",
-            date: " 7 March 2022"
-          },
           "TYPESCRIPT": {
             href: "https://www.typescriptlang.org/docs/handbook/intro.html",
             title: "TypeScript Language Specification",
@@ -173,7 +137,7 @@
       The Web of Things is made of entities (<a>Thing</a>s) that can describe their capabilities in a machine-interpretable <a>Thing Description</a> (TD) and expose these capabilities through the <a>WoT Interface</a>, that is, network interactions modeled as <a>Properties</a> (for reading and writing values), <a>Action</a>s (to execute remote procedures with or without return values) and <a>Event</a>s (for signaling notifications).
     </p>
     <p>
-      The main <a>Web of Things</a> (WoT) concepts are described in the [[[WOT-ARCHITECTURE]]] specification.
+      The main <a>Web of Things</a> (WoT) concepts are described in the [[[wot-architecture11]]] specification.
     </p>
     <p>
       Scripting is an optional building block in WoT and it is typically used in gateways or browsers that are able to run a <a>WoT Runtime</a> and
@@ -183,7 +147,7 @@
       This specification describes an application programming interface (API) representing the <a>WoT Interface</a> that allows scripts to discover, operate <a>Thing</a>s and to expose locally defined <a>Thing</a>s characterized by <a> WoT Interactions</a> specified by a script.
     </p>
     <p>
-      The APIs defined in this document deliberately follow the [[[WOT-TD]]] specification closely. It is possible to implement more abstract APIs on top of them, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
+      The APIs defined in this document deliberately follow the [[[wot-thing-description11]]] specification closely. It is possible to implement more abstract APIs on top of them, or implementing directly the WoT network facing interface (i.e. the <a>WoT Interface</a>).
     </p>
     <p class="ednote">
       This specification is implemented at least by the <a href="https://www.thingweb.io/">Eclipse Thingweb</a>
@@ -204,7 +168,7 @@
   <section id="introduction"> <h2>Introduction</h2>
     <p>
       WoT provides layered interoperability based on how <a>Thing</a>s are used:
-      "consumed" and "exposed", as defined in the [[[WOT-ARCHITECTURE]]] terminology.
+      "consumed" and "exposed", as defined in the [[[wot-architecture11]]] terminology.
     </p>
     <p>
       By <a>consuming a TD</a>, a client <a>Thing</a> creates a local runtime resource model that allows accessing the <a>Properties</a>, <a>Actions</a> and <a>Events</a> exposed by the server <a>Thing</a> on a remote device.
@@ -239,7 +203,7 @@
 
   <section class="informative"> <h3>Use Case Scenarios</h3>
     <p>
-      The business use cases listed in the [[WOT-USE-CASES]] document may be
+      The business use cases listed in the [[wot-usecases]] document may be
       implemented using this API, based on the scripting use case scenarios
       described here.
     </p>
@@ -385,14 +349,14 @@
 
   <section> <h2>Terminology and conventions</h2>
     <p>
-      The generic WoT terminology is defined in [[!WOT-ARCHITECTURE]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
-      <a data-cite="WOT-TD#dataschema">
-        <dfn>DataSchema</dfn></a>, <a data-cite="WOT-TD#form"><dfn data-lt="Forms">Form</dfn></a>,
-        <a data-cite="WOT-TD#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="WOT-TD#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
+      The generic WoT terminology is defined in [[!wot-architecture11]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
+      <a data-cite="wot-thing-description11#dataschema">
+        <dfn>DataSchema</dfn></a>, <a data-cite="wot-thing-description11#form"><dfn data-lt="Forms">Form</dfn></a>,
+        <a data-cite="wot-thing-description11#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="wot-thing-description11#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
     </p>
     <p>
-      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a data-cite="WOT-ARCHITECTURE#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
-      An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!WOT-TD]]
+      <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a data-cite="wot-architecture11#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
+      An <a>Interaction Affordance</a> (or shortly, affordance) is the term used in [[!wot-thing-description11]]
       when referring to <a>Thing</a> capabilities, as explained in
       <a href="https://github.com/w3c/wot-thing-description/issues/282">TD issue 282</a>.
       However, this term is not well understood outside the <a>TD</a> semantic context.
@@ -485,9 +449,9 @@
 
     <p>
       Represents a <a>Thing Description</a> (<a>TD</a>) as
-      <a data-cite="WOT-TD#">defined</a> in
-      [[!WOT-TD]]. It is expected to be
-      a <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a data-cite="WOT-TD#json-schema-for-validation">JSON Schema validation</a>.
+      <a data-cite="wot-thing-description11#">defined</a> in
+      [[!wot-thing-description11]]. It is expected to be
+      a <a data-cite="infra#parse-json-bytes-to-a-javascript-value">parsed JSON object</a> that is validated using <a data-cite="wot-thing-description11#json-schema-for-validation">JSON Schema validation</a>.
     </p>
     <section> <h3> Requesting a Thing Description</h3>
       <p>
@@ -509,16 +473,16 @@
 
     <section> <h3>Expanding a Thing Description</h3>
       <p>
-        Note that the [[[WOT-TD]]] specification allows using a shortened <a>Thing Description</a>
-        by the means of <a data-cite="WOT-TD#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
-        [[[WOT-TD]]] specification for the properties that are not explicitly defined in a given
+        Note that the [[[wot-thing-description11]]] specification allows using a shortened <a>Thing Description</a>
+        by the means of <a data-cite="wot-thing-description11#sec-default-values">defaults</a> and requiring clients to expand them with default values specified in the
+        [[[wot-thing-description11]]] specification for the properties that are not explicitly defined in a given
         <a>TD</a>.
       </p>
       <div>
         To <dfn>expand a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            For each item in the <a data-cite="WOT-TD#sec-default-values">TD default values</a> table from [[!WOT-TD]], if the term is not defined in |td|, add the term definition with the default value specified in [[!WOT-TD]].
+            For each item in the <a data-cite="wot-thing-description11#sec-default-values">TD default values</a> table from [[!wot-thing-description11]], if the term is not defined in |td|, add the term definition with the default value specified in [[!wot-thing-description11]].
           </li>
         </ol>
       </div>
@@ -526,14 +490,14 @@
 
     <section> <h3>Validating a Thing Description</h3>
       <p>
-        The [[!WOT-TD]] specification defines how a <a>TD</a> should be validated.
+        The [[!wot-thing-description11]] specification defines how a <a>TD</a> should be validated.
         Therefore, this API expects the {{ThingDescription}} objects be validated before used as parameters. This specification defines a basic <a>TD</a> validation as follows.
       </p>
       <div>
         To <dfn>validate a TD</dfn> given |td:ThingDescription|, run the following steps:
         <ol>
           <li>
-            If <a data-cite="WOT-TD#json-schema-for-validation">JSON Schema
+            If <a data-cite="wot-thing-description11#json-schema-for-validation">JSON Schema
             validation</a> fails on |td|, [= exception/throw =] a {{"TypeError"}} and stop.
           </li>
         </ol>
@@ -574,7 +538,7 @@
           Let |thing:ConsumedThing| be a new {{ConsumedThing}} object constructed from |td|.
         </li>
         <li>
-          Set up the <a>WoT Interactions</a> based on introspecting <a>td</a> as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]]. Make a request to the underlying platform to initialize the <a>Protocol Bindings</a>.
+          Set up the <a>WoT Interactions</a> based on introspecting <a>td</a> as explained in [[!wot-thing-description11]] and [[!wot-binding-templates]]. Make a request to the underlying platform to initialize the <a>Protocol Bindings</a>.
           <p class="ednote">
             Implementations encapsulate the complexity of how to use the
             <a>Protocol Bindings</a> for implementing <a>WoT interactions</a>.
@@ -601,7 +565,7 @@
       that resolves with an {{ExposedThing}} object that extends {{ConsumedThing}} with a server interface,
       i.e. the ability to define request handlers. The |init:ExposedThingInit| object is an instance of the <a>ExposedThingInit</a> type.
       Specifically, an <a>ExposedThingInit</a> value is a dictionary used for the initialization of an <a>ExposedThing</a> and
-      it represents a <a>Partial TD</a> as described in the [[!WOT-ARCHITECTURE]]. As such, it has the same
+      it represents a <a>Partial TD</a> as described in the [[!wot-architecture11]]. As such, it has the same
       structure of a <a>Thing Description</a> but it may omit some information.
       The method MUST run the following steps:
       <ol>
@@ -656,7 +620,7 @@
           </ol>
         </li>
         <li>Search for missing required properties in |td| accordingly to
-          <a data-cite="WOT-TD#json-schema-for-validation">TD JSON
+          <a data-cite="wot-thing-description11#json-schema-for-validation">TD JSON
             Schema</a>.
           <p class="ednote">The editors find this step vague. It will be improved or removed in the next iteration. </p>
         </li>
@@ -687,7 +651,7 @@
       To <dfn>validate an ExposedThingInit</dfn> given |init:ExposedThingInit|, run the following steps:
       <ol  class="algorithm">
         <li>
-          Parse <a data-cite="WOT-TD#json-schema-for-validation">TD JSON
+          Parse <a data-cite="wot-thing-description11#json-schema-for-validation">TD JSON
             Schema</a>
           and load it in object called |exposedThingInitSchema:object|
         </li>
@@ -794,7 +758,7 @@
           <p class="note">
             This is a placeholder for more details in the discovery algorithm.
             Implementations should follow the procedures described in the
-            [[WOT-DISCOVERY]] and [WOT-PROTOCOL-BINDINGS] specifications.
+            [[wot-discovery]] and [wot-binding-templates] specifications.
             Some normative steps are indicated below.
           </p>
           <ol>
@@ -867,10 +831,10 @@
 
   <section data-cite="webidl"> <h2>Handling interaction data</h2>
   <p>
-    As specified in the [[[WOT-TD]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
+    As specified in the [[[wot-thing-description11]]] specification, <a>WoT interactions</a> extend <a>DataSchema</a>
     and include a number of possible <a>Form</a>s, out of which one is selected
     for the interaction. The
-    <a data-cite="WOT-TD#form">
+    <a data-cite="wot-thing-description11#form">
     Form</a> contains a `contentType` to describe the data.
     For certain content types, a <a>DataSchema</a> is defined, based on
     <a>JSON Schema</a>, making possible to represent these contents as
@@ -889,7 +853,7 @@
     </p>
     <p>
       <dfn>DataSchemaValue</dfn> is an
-      <a data-cite="ECMASCRIPT#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[WoT-TD]].
+      <a data-cite="ECMASCRIPT#sec-ecmascript-data-types-and-values">ECMAScript value</a> that is accepted for <a>DataSchema</a> defined in [[wot-thing-description11]].
 	  The possible values MUST be of type <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-null-type">null</a>, <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-boolean-type">boolean</a>, <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-number-type">number</a>, <a data-cite="ECMASCRIPT#sec-ecmascript-language-types-string-type">string</a>, <a data-cite="ECMASCRIPT#sec-array-objects">array</a>, or <a data-cite="ECMASCRIPT#sec-object-type">object</a>.
     </p>
     <p>
@@ -955,7 +919,7 @@
     </p>
     <p>
       The <dfn>schema</dfn> attribute represents the <a>DataSchema</a>
-      (defined in [[WoT-TD]]) of the payload as a {{JSON}} object, initially `null`.
+      (defined in [[wot-thing-description11]]) of the payload as a {{JSON}} object, initially `null`.
     </p>
     <p>
       The <dfn data-lt="value">[[\value]]</dfn> internal slot represents the parsed value of
@@ -2175,10 +2139,10 @@
         The <dfn>uriVariables</dfn> property if defined, represents the URI
         template variables to be used with the WoT Interaction that are represented
         as <a data-cite="infra#parse-json-bytes-to-a-javascript-value">
-        parsed JSON objects</a> defined in [[!WOT-TD]].
+        parsed JSON objects</a> defined in [[!wot-thing-description11]].
       </p>
       <p class="ednote">
-        The support for URI variables comes from the need, exposed by the [[[WOT-TD]]] specification, to be able to describe
+        The support for URI variables comes from the need, exposed by the [[[wot-thing-description11]]] specification, to be able to describe
         existing RESTful endpoints that use them. However, it should be possible to write a Thing Description that would use
         <a>Action</a>s for representing this kind of interactions and model the URI variables as action parameters. In that case,
         implementations can serialize the parameters as URI variables, and therefore, the |options| parameter could be
@@ -3102,7 +3066,7 @@
               <li>
                 Request the underlying platform to create a |reply| from |data| and |options| according to the <a>Protocol Bindings</a>.
                 <p class="ednote">
-                  This clause needs expanding and/or refer to an algorithm in [[WOT-PROTOCOL-BINDINGS]].
+                  This clause needs expanding and/or refer to an algorithm in [[wot-binding-templates]].
                 </p>
               </li>
               <li>
@@ -3606,7 +3570,7 @@
           </li>
           <li>
             Set up the <a>WoT Interactions</a> based on introspecting {{ExposedThing/[[td]]}}
-            as explained in [[!WOT-TD]] and [[!WOT-PROTOCOL-BINDINGS]].
+            as explained in [[!wot-thing-description11]] and [[!wot-binding-templates]].
             Make a request to the underlying platform to initialize the
             <a>Protocol Bindings</a> and then start serving external requests
             for <a>WoT Interactions</a> (read, write and observe <a>Properties</a>,
@@ -4098,13 +4062,13 @@
   <section> <h2 id="security">Security and Privacy</h2>
     <p>
       A detailed discussion of security and privacy considerations for the Web of Things, including a threat model that can be adapted to various circumstances, is
-      presented in the informative document [[!WOT-SECURITY]].
+      presented in the informative document [[!wot-security]].
       This section discusses only security and privacy risks and possible mitigations
       directly relevant to the scripts and WoT Scripting API.
     </p>
     <p>
       A suggested set of best practices to improve security for WoT devices and
-      services has been documented in [[!WOT-SECURITY]].
+      services has been documented in [[!wot-security]].
       That document may be updated as security measures evolve.
       Following these practices does not guarantee security,
       but it might help avoid commonly known vulnerabilities.
@@ -4114,7 +4078,7 @@
       <ul>
         <li>
           Implementors of WoT Runtimes that do not implement a Scripting Runtime.
-          The [[!WOT-ARCHITECTURE]] document provides generic security guidelines
+          The [[!wot-architecture11]] document provides generic security guidelines
           for this group.
         </li>
         <li>
@@ -4146,7 +4110,7 @@
           using WoT interface it exposes.
         </p>
         <dl><dt>Mitigation:</dt><dd>
-          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
+          Implementors of this API SHOULD perform validation on all script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> should be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
@@ -4175,7 +4139,7 @@
             Post-manufacturing provisioning or update of scripts,
             WoT Scripting Runtime or any related data should be done in a secure fashion.
             A set of recommendations for secure update and post-manufacturing
-            provisioning can be found in [[!WOT-SECURITY]].
+            provisioning can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
@@ -4204,7 +4168,7 @@
           A script instance may receive data formats defined by the TD, or data formats defined by the applications. While the WoT Scripting Runtime SHOULD perform validation on all input fields defined by the TD, scripts may be still exploited by input data.
         </p>
         <dl><dt>Mitigation:</dt><dd>
-          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!WOT-SECURITY]].
+          Script developers should perform validation on all application defined script inputs. In addition to input validation, <a href="https://en.wikipedia.org/wiki/Fuzzing">fuzzing</a> could be used to verify that the input processing is done correctly. There are many tools and techniques in existence to do such validation. More details can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
@@ -4216,7 +4180,7 @@
         <dl><dt>Mitigation:</dt><dd>
           Scripts should avoid heavy functional processing without prior successful
           authentication of requestor. The set of recommended authentication mechanisms
-          can be found in [[!WOT-SECURITY]].
+          can be found in [[!wot-security]].
         </dd></dl>
       </section>
 
@@ -4267,7 +4231,7 @@
           lock.open('withThisKey');
         </pre>
       </section>
-      <section> <h3>This API, aligned with the [[[WOT-TD]]] specification</h3>
+      <section> <h3>This API, aligned with the [[[wot-thing-description11]]] specification</h3>
         <p>
           Since the direct mapping of <a>Thing</a>s to software objects have had
           some challenges, this specification takes another approach that
@@ -4292,11 +4256,11 @@
       </section>
       <p>
         In conclusion, the WoT WG decided to explore the third option that
-        closely follows the [[[WOT-TD]]] specification. Based on this, a simple
+        closely follows the [[[wot-thing-description11]]] specification. Based on this, a simple
         API can also be implemented.
         Since Scripting is an optional module in WoT, this leaves room for
         applications that only use the <a>WoT network interface</a>.
-        Therefore all three approaches above are supported by the [[[WOT-TD]]] specification.
+        Therefore all three approaches above are supported by the [[[wot-thing-description11]]] specification.
       </p>
       <p>
         Moreover, the <a>WoT network interface</a> can be implemented in many languages
@@ -4319,7 +4283,7 @@
         HTTP client library, which offer already standardized options on
         specifying fetch details.
         In these cases, the user is required to perform validation manually as
-        described by the [[[WOT-TD]]] specification.
+        described by the [[[wot-thing-description11]]] specification.
       </p>
       <p class="ednote" title="Extending the `requestThingDescription()` method">
         In the future, `requestThingDescription()` might be extended with an
@@ -4359,7 +4323,7 @@
     </section>
     <section> <h4>Polymorphic functions</h4>
       <p>
-        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a data-cite="WOT-TD#form">Form</a> definition in the [[[WOT-TD]]] specification.
+        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a data-cite="wot-thing-description11#form">Form</a> definition in the [[[wot-thing-description11]]] specification.
       </p>
     </section>
   </section>
