@@ -796,8 +796,10 @@
             <!-- TODO: Deal with pagination etc. -->
             <li>
               If the {{ThingDiscoveryProcess/[[filter]]}} argument is not
-              `undefined` or `null`, invoke the Action that represents the
-              corresponding Search API.
+              `undefined` or `null`, let |queryType| be invoke the Action that
+              represents the corresponding Search API described by
+              <!-- TODO: Check syntax and field access. -->
+              {{ThingDiscoveryProcess/[[filter]].queryType}}.
               <!--
                 TODO: Specify a mapping of filter values to search API actions
               -->
