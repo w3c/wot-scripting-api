@@ -790,13 +790,24 @@
           If that fails, resolve |promise| with {{SyntaxError}} and stop.
         </li>
         <li>
-          Run the <a>discovery process</a> given |discovery| by
-          either invoking one of the actions associated with the Search API
-          – if the {{ThingDiscoveryProcess/[[filter]]}} argument is not
-          `undefined` or `null` – or reading the `things` property.
-        </li>
-        <li>
-          <!-- TODO: Deal with pagination etc. -->
+          Run the <a>discovery process</a> given |discovery| by running the
+          following steps:
+          <ol>
+            <!-- TODO: Deal with pagination etc. -->
+            <li>
+              If the {{ThingDiscoveryProcess/[[filter]]}} argument is not
+              `undefined` or `null`, invoke the Action that represents the
+              corresponding Search API.
+              <!--
+                TODO: Specify a mapping of filter values to search API actions
+              -->
+              If the corresponding Action is not present, throw a
+              {{NotSupportedError}} and stop.
+            </li>
+            <li>
+              Otherwise, read the `things` property.
+            </li>
+          </ol>
         </li>
         <li>
           [=Resolve=] |promise| with |discovery|.
