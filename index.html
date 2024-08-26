@@ -1275,7 +1275,71 @@
       </ol>
     </section>
   </section>
-  <section> <h3>Using {{InteractionInput}} and {{InteractionOutput}}</h3>
+  
+  <section data-dfn-for="ActionInteractionOutput">
+    <h2>The <dfn>ActionInteractionOutput</dfn> interface</h2>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class.
+      An {{ActionInteractionOutput}} object is always created by the implementations
+      and exposes the data returned from <a>WoT Interactions</a> to application
+      scripts.
+    </p>
+    <p>
+      This interface exposes an action status object. Its implementation
+      will allow cancelling asynchronous actions and report the status of a long running action.
+    </p>
+    <pre class="idl">
+      enum ActionStatus {
+        /* "pending", Profile has pending. Not sure what it would mean? */
+        "running",
+        "success", /* Profile uses completed? */
+        "error" /* Profile uses failed? */
+      };
+      
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ActionInteractionOutput : InteractionOutput {
+        readonly attribute object? error;
+        Promise&lt;ActionStatus&gt; status();
+        Promise&lt;undefined&gt; cancel();
+      };
+    </pre>
+    <p>
+      The <dfn>error</dfn> property represents a possible error, initially `null`.
+    </p>
+    <p class="ednote" title="Should state be a function or an attribute only?">
+      
+    </p>
+    <p class="ednote" title="Additional action object functions needed?">
+      Should we allow pause/resume also? TD has no notion of it.
+    </p>
+    <section><h3>The <dfn>status()</dfn> function</h3>
+      Reports the status of an <a>Action</a> (one of <code>running</code>, <code>success</code> or <code>error</code>) or rejects on error. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          [=in parallel=].
+        </li>
+        <li>
+          TODO
+        </li>
+      </ol>
+    </section>
+    <section><h3>The <dfn>cancel()</dfn> function</h3>
+      Cancels a running WoT <a>Action</a> or rejects on error. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          [=in parallel=].
+        </li>
+		<li>
+          TODO
+        </li>
+      </ol>
+    </section>
+
+  </section>
+  
+  <section> <h3>Using {{InteractionInput}}, {{InteractionOutput}} and {{ActionInteractionOutput}}</h3>
     <p>
       As illustrated in the next pictures, the {{InteractionOutput}} interface
       is used every time implementations provide data to scripts, while
@@ -1323,7 +1387,7 @@
     <p>
       When a {{ConsumedThing}} invokes an <a>Action</a>, it provides the
       parameters as {{InteractionInput}} and receives the output of the
-      <a>Action</a> as an {{InteractionOutput}} object.
+      <a>Action</a> as an {{ActionInteractionOutput}} object.
     </p>
     <p>
       An {{ExposedThing}} <a href="#the-actionhandler-callback">
@@ -1386,7 +1450,7 @@
         /*Promise&lt;undefined&gt; writeAllProperties(
                                     PropertyWriteMap valueMap,
                                     optional InteractionOptions options = {});*/
-        Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
+        Promise&lt;ActionInteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = {},
                                     optional InteractionOptions options = {});
         Promise&lt;Subscription&gt; observeProperty(DOMString name,
