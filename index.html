@@ -1281,8 +1281,8 @@
     <p>
       Belongs to the <a>WoT Consumer</a> conformance class.
       An {{ActionInteractionOutput}} object is always created by the implementations
-      and exposes the data returned from <a>WoT Interactions</a> to application
-      scripts.
+      and exposes functionality to interact with long running (asynchronous) actions.<br />
+      Note: a synchronous action MAY not offer any <emph>additional</emph> sensible interaction beyond the ones from {{InteractionOutput}}. 
     </p>
     <p>
       This interface exposes an action status object. Its implementation
@@ -1332,7 +1332,7 @@
           [=in parallel=].
         </li>
 		<li>
-          TODO
+          TODO ... applicable when the state is running
         </li>
       </ol>
     </section>
