@@ -1024,6 +1024,17 @@
           [=Resolve=] |promise| with <a>[[\value]]</a>.
         </li>
       </ol>
+      <p>
+        While the {{value()}} function provides built-in validation, we recognize that some
+        use cases may require returning values without validation. In such cases, developers
+        can use alternative patterns, such as directly accessing the underlying data 
+        using streams or the {{InteractionOutput/arrayBuffer()}} function (See [[[#validation-arraybuffer-example]]] and [[[#stream-example]]]).
+      </p>
+      <p class="advisement" id="non-validating-value-warning" title="Implications for not using validation">
+        <strong>Warning:</strong> Disabling validation may introduce risks, particularly when interacting
+        with remote Things, as mismatches in data formats or schema expectations can lead to
+        unforeseen bugs and vulnerabilities. For more details, see the <a data-cite="wot-thing-description11#behavior-data"> consumer assertions</a>.
+      </p>
     </section>
 
     <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
@@ -2472,10 +2483,25 @@
           // image: ArrayBuffer [0x1 0x2 0x3 0x5 0x15 0x23 ...]
         }
       </pre>
+      <aside id="validation-arraybuffer-example" class="example" title="Read data without validation using arraybuffer()">
+        <p>
+          The {{InteractionOutput/arrayBuffer()}} can be used as a shortcut to skip the validation of the {{value()}} function.
+          See <a href="#non-validating-value-warning"> relevant warning</a> for the implications. 
+        </p>
+        <pre>
+          try{
+            // output is an InteractionOutput instance
+            const value = JSON.parse(Buffer.from(await output.arrayBuffer()).toString())
+            // ... custom validation
+          } catch(ex) {
+            // deal with parsing errors.
+          }
+        </pre>
+      </aside>
       <p>
         Finally, the next two examples shows the usage of a {{ReadableStream}} from an {{InteractionOutput}}.
       </p>
-      <pre class="example" title="Thing Client API example with readable stream (e.g., video stream)">
+      <pre id="stream-example" class="example" title="Thing Client API example with readable stream (e.g., video stream)">
         /*{
         "video": {
           "description" : "the video stream of this camera",
