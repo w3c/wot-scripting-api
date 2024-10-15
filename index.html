@@ -2484,7 +2484,7 @@
         const reader = video.data.getReader()
         reader.read().then(function processVideo({ done, value }) {
           if (done) {
-            console.log("live video stoped");
+            console.log("live video stopped");
             return;
           }
           const decoded = decode(value)
