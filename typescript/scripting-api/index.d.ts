@@ -88,12 +88,13 @@ declare namespace WoT {
         value(): Promise<DataSchemaValue>;
     }
 
-    export enum ActionStatus { "running", "success", "error" }
-
     export interface ActionInteractionOutput extends InteractionOutput {
         error?: Error;
-        status(): Promise<ActionStatus>
-        cancel(): Promise<void>
+        // query the status of a running action
+        query(options?: InteractionOptions): Promise<InteractionOutput>
+        // cancel a pending/running action
+        cancel(options?: InteractionOptions): Promise<void>
+        // Note: value() function will only work after completed state has been reached
     }
 
     export interface Subscription {
