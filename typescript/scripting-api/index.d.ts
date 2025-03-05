@@ -89,12 +89,11 @@ declare namespace WoT {
     }
 
     export interface ActionInteractionOutput extends InteractionOutput {
-        error?: Error;
         // query the status of a running action
-        query(options?: InteractionOptions): Promise<InteractionOutput>
+        query(params?: InteractionInput, options?: InteractionOptions): Promise<InteractionOutput>
         // cancel a pending/running action
-        cancel(options?: InteractionOptions): Promise<void>
-        // Note: value() function will only work after completed state has been reached
+        cancel(params?: InteractionInput, options?: InteractionOptions): Promise<void>
+        // Note: retrieving the result of the action via implicit InteractionOutput interface will only work after the action has been completed
     }
 
     export interface Subscription {
