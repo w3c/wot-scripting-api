@@ -88,6 +88,14 @@ declare namespace WoT {
         value(): Promise<DataSchemaValue>;
     }
 
+    export interface ActionInteractionOutput extends InteractionOutput {
+        // query the status of a running action
+        query(params?: InteractionInput, options?: InteractionOptions): Promise<InteractionOutput>
+        // cancel a pending/running action
+        cancel(params?: InteractionInput, options?: InteractionOptions): Promise<void>
+        // Note: retrieving the result of the action via implicit InteractionOutput interface will only work after the action has been completed
+    }
+
     export interface Subscription {
         active:boolean,
         stop(options?: InteractionOptions):Promise<void>
@@ -140,9 +148,9 @@ declare namespace WoT {
          * Makes a request for invoking an Action and return the result.
          * Takes as arguments actionName, optionally params and optionally options.
          * It returns a Promise that resolves with the result of the Action represented
-         * as an InteractionOutput object, or rejects with an error.
+         * as an ActionInteractionOutput object, or rejects with an error.
          */
-        invokeAction(actionName: string, params?: InteractionInput, options?: InteractionOptions): Promise<undefined | InteractionOutput>;
+        invokeAction(actionName: string, params?: InteractionInput, options?: InteractionOptions): Promise<undefined | ActionInteractionOutput>;
 
         /**
          * Makes a request for Property value change notifications.
