@@ -1282,7 +1282,7 @@
       Belongs to the <a>WoT Consumer</a> conformance class.
       An {{ActionInteractionOutput}} object is always created by a consumer implementation
       and exposes functionality to interact with long running (asynchronous) actions.<br />
-      Note: a synchronous action MAY not offer any <emph>additional</emph> sensible interaction beyond the ones from {{InteractionOutput}}. 
+      Note: The output of a synchronous action MAY be limited to the functionality of a regular {{InteractionOutput}} object, e.g., invoking the `cancel()` method might not have an effect.
     </p>
     <p>
       This interface exposes an action status object. Its implementation
