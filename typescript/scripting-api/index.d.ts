@@ -93,7 +93,7 @@ declare namespace WoT {
         query(params?: InteractionInput, options?: InteractionOptions): Promise<InteractionOutput>
         // cancel a pending/running action
         cancel(params?: InteractionInput, options?: InteractionOptions): Promise<void>
-        // Note: retrieving the result of the action via implicit InteractionOutput interface will only work after the action has been completed
+        // Note: retrieving the result of an action via the implicit InteractionOutput interface will only work after the action has been completed
     }
 
     export interface Subscription {
