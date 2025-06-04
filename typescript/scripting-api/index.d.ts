@@ -88,12 +88,14 @@ declare namespace WoT {
         value(): Promise<DataSchemaValue>;
     }
 
+    /**
+     * Note: retrieving the result of an action via the implicit InteractionOutput interface will only work after the action has been completed
+     */
     export interface ActionInteractionOutput extends InteractionOutput {
         // query the status of a running action
         query(params?: InteractionInput, options?: InteractionOptions): Promise<InteractionOutput>
         // cancel a pending/running action
         cancel(params?: InteractionInput, options?: InteractionOptions): Promise<void>
-        // Note: retrieving the result of an action via the implicit InteractionOutput interface will only work after the action has been completed
     }
 
     export interface Subscription {

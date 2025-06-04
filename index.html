@@ -1289,6 +1289,10 @@
       will allow cancelling asynchronous actions and query the status of a long running action.
     </p>
     <pre class="idl">
+      /**
+       * Note: retrieving the result of an action via the implicit InteractionOutput interface
+       * will only work after the action has been completed
+       */
       [SecureContext, Exposed=(Window,Worker)]
       interface ActionInteractionOutput : InteractionOutput {
         Promise&lt;InteractionOutput&gt; query(
@@ -1297,8 +1301,6 @@
         Promise&lt;undefined&gt; cancel(
           optional InteractionInput params = {},
           optional InteractionOptions options = {});
-        // Note: retrieving the result of an action via the implicit InteractionOutput interface
-        // will only work after the action has been completed
       };
     </pre>
       
