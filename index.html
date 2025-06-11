@@ -1286,7 +1286,80 @@
       </ol>
     </section>
   </section>
-  <section> <h3>Using {{InteractionInput}} and {{InteractionOutput}}</h3>
+  
+  <section data-dfn-for="ActionInteractionOutput">
+    <h2>The <dfn>ActionInteractionOutput</dfn> interface</h2>
+    <p>
+      Belongs to the <a>WoT Consumer</a> conformance class.
+      An {{ActionInteractionOutput}} object is always created by a consumer implementation
+      and exposes functionality to interact with long running (asynchronous) actions.<br />
+      Note: The output of a synchronous action MAY be limited to the functionality of a regular {{InteractionOutput}} object, e.g., invoking the `cancel()` method might not have an effect.
+    </p>
+    <p>
+      This interface exposes functions which
+      will allow cancelling asynchronous actions and query the status of a long running action.
+    </p>
+    <pre class="idl">
+      /**
+       * Note: retrieving the result of an action via the implicit InteractionOutput interface
+       * will only work after the action has been completed
+       */
+      [SecureContext, Exposed=(Window,Worker)]
+      interface ActionInteractionOutput : InteractionOutput {
+        Promise&lt;InteractionOutput&gt; query(
+          optional InteractionInput params = {},
+          optional InteractionOptions options = {});
+        Promise&lt;undefined&gt; cancel(
+          optional InteractionInput params = {},
+          optional InteractionOptions options = {});
+      };
+    </pre>
+      
+    </p>
+	
+    <section><h3>The <dfn>query()</dfn> function</h3>
+      Reports the status of an <a>Action</a>, or rejects on error. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          [=in parallel=].
+        </li>
+        <li>
+          If invoking this method is not supported (e.g., synchronous action)
+          [=reject=] |promise| with a {{NotSupportedError}} and stop.
+        </li>
+        <li>
+          Let |res| be the result of making a request to the underlying platform (via the <a>Protocol Bindings</a>) to query the <a>Action</a> status given optional |params| and |options|. If quering |res| fails, [=reject=] |promise| with {{OperationError}} and stop.
+        </li>
+        <li>
+          [=Resolve=] |promise| with |res|.
+        </li>
+      </ol>
+    </section>
+    <section><h3>The <dfn>cancel()</dfn> function</h3>
+      Cancels a running WoT <a>Action</a>, or rejects on error. The method MUST run the following steps:
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          [=in parallel=].
+        </li>
+        <li>
+          If invoking this method is not supported (e.g., because the action is synchronous)
+          [=reject=] |promise| with a {{NotSupportedError}} and stop.
+        </li>
+        <li>
+          Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to cancel the <a>Action</a> given optional |params| and |options|.
+		  If cancelling fails, [=reject=] |promise| with {{OperationError}} and stop.
+        </li>
+        <li>
+          [=Resolve=] |promise|</a>.
+        </li>
+      </ol>
+    </section>
+
+  </section>
+  
+  <section> <h3>Using {{InteractionInput}}, {{InteractionOutput}} and {{ActionInteractionOutput}}</h3>
     <p>
       As illustrated in the next pictures, the {{InteractionOutput}} interface
       is used every time implementations provide data to scripts, while
@@ -1334,7 +1407,7 @@
     <p>
       When a {{ConsumedThing}} invokes an <a>Action</a>, it provides the
       parameters as {{InteractionInput}} and receives the output of the
-      <a>Action</a> as an {{InteractionOutput}} object.
+      <a>Action</a> as an {{ActionInteractionOutput}} object.
     </p>
     <p>
       An {{ExposedThing}} <a href="#the-actionhandler-callback">
@@ -1397,7 +1470,7 @@
         /*Promise&lt;undefined&gt; writeAllProperties(
                                     PropertyWriteMap valueMap,
                                     optional InteractionOptions options = {});*/
-        Promise&lt;InteractionOutput&gt; invokeAction(DOMString actionName,
+        Promise&lt;ActionInteractionOutput&gt; invokeAction(DOMString actionName,
                                     optional InteractionInput params = {},
                                     optional InteractionOptions options = {});
         Promise&lt;Subscription&gt; observeProperty(DOMString name,
