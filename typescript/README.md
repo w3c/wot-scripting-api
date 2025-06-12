@@ -11,6 +11,6 @@ We currently provide the following TypeScript definition files:
 
 Run `npm publish --workspaces --tag latest` in `typescript` folder.
 
-Note: to publish just a subfolder use `npm publish --workspaces -w ./<subfolder>`
+Note: to publish just a subfolder use `npm publish --workspaces --tag latest -w ./<subfolder>`
 
 Requirement: npm version 7+
