@@ -19,17 +19,17 @@ jobs:
           # Retrieve json schema from td repository
           mkdir .temp && cd .temp
           git init
-          git fetch https://github.com/w3c/wot-thing-description.git
-          git checkout FETCH_HEAD -- validation/td-json-schema-validation.json
+          git fetch https://github.com/w3c/wot-resources.git
+          git checkout FETCH_HEAD -- td/v1.1/validation/td-json-schema-validation.json
       - name: Look for changes
         continue-on-error: true
         run: |
-          git diff --no-index --quiet typescript/thing-description/schema/td-json-schema-validation.json .temp/validation/td-json-schema-validation.json
+          git diff --no-index --quiet typescript/thing-description/schema/td-json-schema-validation.json .temp/td/v1.1/validation/td-json-schema-validation.json
           echo "::set-output name=changed::$?"
         id: diff
       - name: Sync file
         if: ${{ ! steps.diff.outputs.changed }}
-        run: mv .temp/validation/td-json-schema-validation.json typescript/thing-description/schema/td-json-schema-validation.json && rm -rf .temp
+        run: mv .temp/td/v1.1/validation/td-json-schema-validation.json typescript/thing-description/schema/td-json-schema-validation.json && rm -rf .temp
       - name: Generate types
         if: ${{ ! steps.diff.outputs.changed }}
         run: |
@@ -64,17 +64,17 @@ jobs:
           # Retrieve json schema from td repository
           mkdir .temp && cd .temp
           git init
-          git fetch https://github.com/w3c/wot-thing-description.git
-          git checkout FETCH_HEAD -- validation/tm-json-schema-validation.json
+          git fetch https://github.com/w3c/wot-resources.git
+          git checkout FETCH_HEAD -- td/v1.1/validation/tm-json-schema-validation.json
       - name: Look for changes
         continue-on-error: true
         run: |
-          git diff --no-index --quiet typescript/thing-model/schema/tm-json-schema-validation.json .temp/validation/tm-json-schema-validation.json
+          git diff --no-index --quiet typescript/thing-model/schema/tm-json-schema-validation.json .temp/td/v1.1/validation/tm-json-schema-validation.json
           echo "::set-output name=changed::$?"
         id: diff
       - name: Sync file
         if: ${{ ! steps.diff.outputs.changed }}
-        run: mv .temp/validation/tm-json-schema-validation.json typescript/thing-model/schema/tm-json-schema-validation.json && rm -rf .temp
+        run: mv .temp/td/v1.1/validation/tm-json-schema-validation.json typescript/thing-model/schema/tm-json-schema-validation.json && rm -rf .temp
       - name: Generate types
         if: ${{ ! steps.diff.outputs.changed }}
         run: |

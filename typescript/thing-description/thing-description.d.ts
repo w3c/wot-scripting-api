@@ -150,13 +150,30 @@ export type ThingContext =
       ...(
         | AnyUri
         | {
-            [k: string]: unknown;
+            [k: string]: string;
           }
       )[]
     ]
   | "https://www.w3.org/2022/wot/td/v1.1"
-  | [unknown, unknown, ...unknown[]]
-  | [unknown, ...unknown[]]
+  | [
+      ThingContextTdUriV1,
+      ThingContextTdUriV11,
+      ...(
+        | AnyUri
+        | {
+            [k: string]: string;
+          }
+      )[]
+    ]
+  | [
+      ThingContextTdUriV1,
+      ...(
+        | AnyUri
+        | {
+            [k: string]: string;
+          }
+      )[]
+    ]
   | "https://www.w3.org/2019/wot/td/v1";
 /**
  * This interface was referenced by `ThingDescription`'s JSON-Schema

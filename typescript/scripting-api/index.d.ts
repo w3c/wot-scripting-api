@@ -6,11 +6,30 @@ type DeepPartial<T> = T extends object ? {
 declare namespace WoT {
 
     /**
-     * Starts the discovery process that will provide ConsumedThing 
-     * 
+     * Starts the discovery process that will provide {@link ThingDescription}
+     * objects for Thing Descriptions that match an optional {@link filter}
+     * argument of type {@link ThingFilter}.
+     *
      * @param filter represents the constraints for discovering Things as key-value pairs
      */
-    export function discover(filter?: ThingFilter): ThingDiscovery;
+    export function discover(filter?: ThingFilter): Promise<ThingDiscoveryProcess>;
+
+    /**
+     * Starts the discovery process that, given a TD Directory {@link url}, will
+     *  provide {@link ThingDescription} objects for Thing Descriptions that
+     * match an optional {@link filter} argument of type {@link ThingFilter}.
+     *
+     * @param url URL pointing to a TD Directory.
+     * @param filter represents the constraints for discovering Things as key-value pairs
+     */
+    export function exploreDirectory(url: string, filter?: ThingFilter): Promise<ThingDiscoveryProcess>;
+
+    /**
+     * Requests a {@link ThingDescription} from the given {@link url}.
+     *
+     * @param url The URL to request the Thing Description from.
+     */
+    export function requestThingDescription(url: string): Promise<ThingDescription>;
 
     /**
      * Accepts a ThingDescription and returns a ConsumedThing
@@ -32,46 +51,19 @@ declare namespace WoT {
      */
     export interface ThingFilter {
         /**
-         * The method field represents the discovery type that should be used in the discovery process. The possible values are defined by the DiscoveryMethod enumeration that can be extended by string values defined by solutions (with no guarantee of interoperability). 
-         */
-        method?: DiscoveryMethod | string; // default value "any", DOMString
-        /**
-         * The url field represents additional information for the discovery method, such as the URL of the target entity serving the discovery request, such as a Thing Directory or a Thing.
-         */
-        url?: string;
-        /**
-         * The query field represents a query string accepted by the implementation, for instance a SPARQL query. 
-         */
-        query?: string;
-        /**
          * The fragment field represents a template object used for matching against discovered Things.
          */
         fragment?: object;
-    }
-
-    /** The DiscoveryMethod enumeration represents the discovery type to be used */
-    export enum DiscoveryMethod {
-        /** does not restrict */
-        "any",
-        /** for discovering Things defined in the same Servient */
-        "local",
-        /** for discovery based on a service provided by a Thing Directory */
-        "directory",
-        /** for discovering Things in the same/reachable network by using a supported multicast protocol */
-        "multicast"
     }
 
     /**
      * The ThingDiscovery object is constructed given a filter and provides the properties and methods
      * controlling the discovery process. 
      */
-    export interface ThingDiscovery {
+    export interface ThingDiscoveryProcess extends AsyncIterable<ThingDescription> {
         filter?: ThingFilter;
-        active: boolean;
         done: boolean;
         error?: Error;
-        start(): void;
-        next(): Promise<ThingDescription>;
         stop(): void;
     }
 
@@ -94,6 +86,16 @@ declare namespace WoT {
         schema?: DataSchema;
         arrayBuffer(): Promise<ArrayBuffer>;
         value(): Promise<DataSchemaValue>;
+    }
+
+    /**
+     * Note: retrieving the result of an action via the implicit InteractionOutput interface will only work after the action has been completed
+     */
+    export interface ActionInteractionOutput extends InteractionOutput {
+        // query the status of a running action
+        query(params?: InteractionInput, options?: InteractionOptions): Promise<InteractionOutput>
+        // cancel a pending/running action
+        cancel(params?: InteractionInput, options?: InteractionOptions): Promise<void>
     }
 
     export interface Subscription {
@@ -148,9 +150,9 @@ declare namespace WoT {
          * Makes a request for invoking an Action and return the result.
          * Takes as arguments actionName, optionally params and optionally options.
          * It returns a Promise that resolves with the result of the Action represented
-         * as an InteractionOutput object, or rejects with an error.
+         * as an ActionInteractionOutput object, or rejects with an error.
          */
-        invokeAction(actionName: (keyof T["actions"]) & string, params?: InteractionInput, options?: InteractionOptions): Promise<undefined | InteractionOutput>;
+        invokeAction(actionName: (keyof T["actions"]) & string, params?: InteractionInput, options?: InteractionOptions): Promise<undefined | ActionInteractionOutput>;
 
         /**
          * Makes a request for Property value change notifications.
