@@ -35,7 +35,7 @@ declare namespace WoT {
      * Accepts a ThingDescription and returns a ConsumedThing
      * @param td thing description
      */
-    export function consume(td: ThingDescription): Promise<ConsumedThing>;
+    export function consume<T extends ThingDescription>(td: T): Promise<ConsumedThing<T>>;
 
     /**
      * Accepts an init dictionary similar to a ThingDescription.
@@ -43,7 +43,7 @@ declare namespace WoT {
      * 
      * @param ptd Partial thing description 
      */
-    export function produce(init: ExposedThingInit): Promise<ExposedThing>;
+    export function produce<T extends ExposedThingInit>(init: T): Promise<ExposedThing<T>>;
 
 
     /**
@@ -106,14 +106,14 @@ declare namespace WoT {
     /**
      * The ConsumedThing interface instance represents a client API to operate a Thing.
      */
-    export interface ConsumedThing {
+    export interface ConsumedThing<T extends ThingDescription> {
         /**
          * Reads a Property value.
          * Takes as arguments propertyName and optionally options.
          * It returns a Promise that resolves with a Property value represented as an
          * InteractionOutput object or rejects on error.
          */
-        readProperty(propertyName: string, options?: InteractionOptions): Promise<InteractionOutput>;
+        readProperty(propertyName: Extract<keyof NonNullable<T["properties"]>, string>, options?: InteractionOptions): Promise<InteractionOutput>;
 
         /**
          * Reads all properties of the Thing with one or multiple requests.
@@ -129,14 +129,14 @@ declare namespace WoT {
          * It returns a Promise that resolves with a PropertyMap object that
          * maps keys from propertyNames to values
          */
-        readMultipleProperties(propertyNames: string[], options?: InteractionOptions): Promise<PropertyReadMap>;
+        readMultipleProperties(propertyNames: Extract<keyof NonNullable<T["properties"]>[], string>[], options?: InteractionOptions): Promise<PropertyReadMap>;
 
         /**
          * Writes a single Property.
          * Takes as arguments propertyName, value and optionally options.
          * It returns a Promise that resolves on success and rejects on failure.
          */
-        writeProperty(propertyName: string, value: InteractionInput, options?: InteractionOptions): Promise<void>;
+        writeProperty(propertyName: Extract<keyof NonNullable<T["properties"]>, string>, value: InteractionInput, options?: InteractionOptions): Promise<void>;
 
         /**
          * Writes a multiple Property values with one request.
@@ -152,26 +152,26 @@ declare namespace WoT {
          * It returns a Promise that resolves with the result of the Action represented
          * as an ActionInteractionOutput object, or rejects with an error.
          */
-        invokeAction(actionName: string, params?: InteractionInput, options?: InteractionOptions): Promise<undefined | ActionInteractionOutput>;
+        invokeAction(actionName: Extract<keyof NonNullable<T["actions"]>, string>, params?: InteractionInput, options?: InteractionOptions): Promise<undefined | ActionInteractionOutput>;
 
         /**
          * Makes a request for Property value change notifications.
          * Takes as arguments propertyName, listener and optionally options.
          * It returns a Promise that resolves on success and rejects on failure. 
          */
-        observeProperty(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<Subscription>;
+        observeProperty(name:  Extract<keyof NonNullable<T["properties"]>, string>, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<Subscription>;
 
         /**
          * Makes a request for subscribing to Event notifications.
          * Takes as arguments eventName, listener and optionally options.
          * It returns a Promise to signal success or failure.
          */
-        subscribeEvent(name: string, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<Subscription>;
+        subscribeEvent(name: Extract<keyof NonNullable<T["events"]>, string>, listener: WotListener, errorListener?: ErrorListener, options?: InteractionOptions): Promise<Subscription>;
 
         /**
          * Returns the the object that represents the Thing Description.
          */
-        getThingDescription(): ThingDescription;
+        getThingDescription(): T;
     }
 
     export interface InteractionOptions {
@@ -201,7 +201,7 @@ declare namespace WoT {
     /**
      * The ExposedThing interface is the server API to operate the Thing that allows defining request handlers, Property, Action, and Event interactions.
      **/
-    export interface ExposedThing {
+    export interface ExposedThing<T extends ExposedThingInit>  {
         /**
          * Start serving external requests for the Thing, so that WoT Interactions using Properties, Actions and Events will be possible.
          */
@@ -218,7 +218,7 @@ declare namespace WoT {
          * Throws on error.
          * Returns a reference to the same object for supporting chaining.
          */
-        setPropertyReadHandler(name: string, handler: PropertyReadHandler): ExposedThing;
+        setPropertyReadHandler(name: Extract<keyof NonNullable<T["properties"]>, string>, handler: PropertyReadHandler): ExposedThing<T>;
 
         /**
          * Takes name as string argument and handler as argument of type PropertyWriteHandler.
@@ -226,7 +226,7 @@ declare namespace WoT {
          * Throws on error.
          * Returns a reference to the same object for supporting chaining.
          */
-        setPropertyWriteHandler(name: string, handler: PropertyWriteHandler): ExposedThing;
+        setPropertyWriteHandler(name: Extract<keyof NonNullable<T["properties"]>, string>, handler: PropertyWriteHandler): ExposedThing<T>;
 
         /**
          * Takes as arguments name and handler.
@@ -235,7 +235,7 @@ declare namespace WoT {
          * Throws on error.
          * Returns a reference to the same object for supporting chaining.
          */
-        setPropertyObserveHandler(name: string, handler: PropertyReadHandler): ExposedThing;
+        setPropertyObserveHandler(name: Extract<keyof NonNullable<T["properties"]>, string>, handler: PropertyReadHandler): ExposedThing<T>;
 
         /**
          * Takes as arguments name and handler.
@@ -244,13 +244,13 @@ declare namespace WoT {
          * Throws on error.
          * Returns a reference to the same object for supporting chaining.
          */
-        setPropertyUnobserveHandler(name: string, handler: PropertyReadHandler): ExposedThing;
+        setPropertyUnobserveHandler(name: Extract<keyof NonNullable<T["properties"]>, string>, handler: PropertyReadHandler): ExposedThing<T>;
 		
         /**
          * Takes as arguments name denoting a Property name.
          * Triggers emitting a notification to all observers. 
          */
-        emitPropertyChange(name: string): void;
+        emitPropertyChange(name: Extract<keyof NonNullable<T["properties"]>, string>): void;
 
         /**
          * Takes name as string argument and handler as argument of type ActionHandler.
@@ -258,7 +258,7 @@ declare namespace WoT {
          * Throws on error.
          * Returns a reference to the same object for supporting chaining.
          */
-        setActionHandler(name: string, handler: ActionHandler): ExposedThing;
+        setActionHandler(name: Extract<keyof NonNullable<T["actions"]>, string>, handler: ActionHandler): ExposedThing<T>;
 
         /**
          * Takes as arguments name and handler.
@@ -267,7 +267,7 @@ declare namespace WoT {
          * Throws on error.
          * Returns a reference to the same object for supporting chaining.
          */
-        setEventSubscribeHandler(name: string, handler: EventSubscriptionHandler): ExposedThing;
+        setEventSubscribeHandler(name: Extract<keyof NonNullable<T["events"]>, string>, handler: EventSubscriptionHandler): ExposedThing<T>;
 
         /**
          * Takes as arguments name and handler.
@@ -276,18 +276,18 @@ declare namespace WoT {
          * Throws on error.
          * Returns a reference to the same object for supporting chaining.
          */
-        setEventUnsubscribeHandler(name: string, handler: EventSubscriptionHandler): ExposedThing;
+        setEventUnsubscribeHandler(name: Extract<keyof NonNullable<T["events"]>, string>, handler: EventSubscriptionHandler): ExposedThing<T>;
 
         /**
          * Takes as arguments name denoting an Event name and optionally data.
          * Triggers emitting the Event with optional data.
          */
-        emitEvent(name: string, data?: InteractionInput): void;
+        emitEvent(name: Extract<keyof NonNullable<T["events"]>, string>, data?: InteractionInput): void;
 
         /**
          * Returns the the object that represents the Thing Description.
          */
-        getThingDescription(): ThingDescription;
+        getThingDescription(): T;
     }
 
     export type PropertyReadHandler = (options?: InteractionOptions) => Promise<InteractionInput>;
