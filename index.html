@@ -355,7 +355,7 @@
       The generic WoT terminology is defined in [[!wot-architecture11]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
       <a data-cite="wot-thing-description11#dataschema">
         <dfn>DataSchema</dfn></a>, <a data-cite="wot-thing-description11#form"><dfn data-lt="Forms">Form</dfn></a>,
-        <a data-cite="wot-thing-description11#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="wot-thing-description11#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
+        <a data-cite="wot-thing-description11#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="wot-thing-description11#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a>, <a data-cite="wot-thing-description11#additionalexpectedresponse"><dfn>AdditionalExpectedResponse</dfn></a> etc.
     </p>
     <p>
       <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a data-cite="wot-architecture11#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
@@ -365,6 +365,10 @@
       However, this term is not well understood outside the <a>TD</a> semantic context.
       Hence for the sake of readability, this document will use the previous term
       <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
+    </p>
+    <p>
+      <dfn data-plurals="interaction methods">interaction method</dfn> indicate one of the method defined in the {{ConsumedThing}} interface
+      to interact with a <a>Thing</a> (e.g. <code>readProperty()</code>, <code>writeProperty()</code>, <code>invokeAction()</code>, etc.).
     </p>
     <p>
       <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>.
@@ -1434,6 +1438,91 @@
                 title="Error handling"/>
       <figcaption>Error handling in WoT interactions</figcaption>
     </figure>
+
+    <section data-dfn-for="InteractionError">
+      <h3>The <dfn>InteractionError</dfn> interface</h3>
+      <p>
+        Represents an error that occurred during a <a>WoT Interaction</a> with
+        additional diagnostic information from the <a>Thing</a> in the form of
+        response data associated with an <a>AdditionalExpectedResponse</a> defined in
+        the <a>Thing Description</a>.
+      </p>
+      <pre class="idl">
+        [SecureContext, Exposed=(Window,Worker)]
+        interface InteractionError : Error {
+          constructor(DOMString message, InteractionOutput data);
+          readonly attribute InteractionOutput data;
+        };
+      </pre>
+      <p>
+        The <dfn data-lt="InteractionError.data">data</dfn> attribute represents
+        the {{InteractionOutput}} object containing the response payload from the 
+        failed <a>WoT Interaction</a>.
+      </p>
+    </section>
+
+    <section>
+      <h3>The <dfn>handle interaction error response</dfn> algorithm</h3>
+      <p>
+        This algorithm is used by <a>interaction methods</a> to process error responses
+        from the <a>Protocol Bindings</a> and determine whether to create an
+        {{InteractionError}} or map to a standard error type.
+      </p>
+      <p>
+        To <a>handle interaction error response</a> given   |error|, |form:Form| and |response|, 
+        run these steps:
+      </p>
+      <ol>
+        <li>
+          if |response| is not defined or null, attempt to map |error|
+          to a suitable {{DOMException}} or, if none, to {{OperationError}}. 
+          Return that error and stop.
+        </li>
+        <li>
+          Let |additionalResponses| be |form|.|additionalResponses|, if it exists.
+        </li>
+        <li>
+          Let |binding| be the binding that was used to make the request which resulted in |response|.
+        </li>
+        <li>
+          If |additionalResponses| is defined, for each |responseEntry:AdditionalExpectedResponse| in
+          |additionalResponses|:
+          <ol>
+            <li>
+              Let |match| be a boolean expression that checks if |response| matches a |responseEntry| according to |binding|
+            </li>
+            <li>
+              If |responseEntry|.|success| is `false` or not defined and if |match| is `true` for |responseEntry|, 
+              then run these sub-steps:
+              <ol>
+                <li>
+                  Let |responseSchema| be |responseEntry|.|schema|, if it exists.
+                </li>
+                <li>
+                  Let |errorOutput:InteractionOutput| be the result of running
+                  <a>parse interaction response</a> on |response|, |form|, and
+                  |responseSchema|.
+                </li>
+                <li>
+                  Return a new {{InteractionError}} constructed with |errorOutput| an appropriate
+                  message derived from the |binding| or |error|.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          If no match was found in |additionalResponses| but |binding| indicates
+          a failure, attempt to map the error
+          to a suitable {{DOMException}} or other appropriate
+          error type.
+        </li>
+        <li>
+          Otherwise, return {{OperationError}}.
+        </li>
+      </ol>
+    </section>
+
     <p class="ednote">
       This topic is still being discussed in
       <a href="https://github.com/w3c/wot-scripting-api/issues/200">Issue #200</a>.
@@ -1635,7 +1724,18 @@
             using |form| and the optional URI templates given in |options|.|uriVariables|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|, 
+            run the followingsub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Let |response| be the response received to the request.
