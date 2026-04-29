@@ -1779,10 +1779,25 @@
             Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
           </li>
           <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a>, [=reject=] |promise| with a
+            {{NotSupportedError}} and stop.
+          </li>
+          <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a>, [=reject=] |promise| with a {{NotSupportedError}} and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Process the response and for each |key| in |result|, run the following
@@ -1850,7 +1865,18 @@
             If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then [=reject=] |promise| with a {{NotSupportedError}} and stop.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
@@ -1920,7 +1946,18 @@
             |options|' |uriVariables|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Otherwise [=resolve=] |promise|.
@@ -2004,8 +2041,18 @@
             with a {{NotSupportedError}} and stop.
           </li>
           <li>
-            If the request fails, return the error received from the
-            <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Otherwise [=resolve=] |promise|.
@@ -2093,8 +2140,18 @@
             optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from
-            the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             [=map/Set=] |thing|.{{ConsumedThing/[[activeObservations]]}}[|propertyName] to |subscription| and [=resolve=] |promise|.
@@ -2183,7 +2240,18 @@
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| given |args| and |options|.|uriVariables|.
           </li>
           <li>
-            If the request fails locally or returns an error over the network, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Let |value| be the reply returned in the reply.
@@ -2272,8 +2340,18 @@
             and optional subscription data given in |options|.|data|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from
-            the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|
+                {{Subscription/[[form]]}} and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             [=map/Set=] |eventName| to |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|eventName|] to |subscription|.
@@ -2489,8 +2567,22 @@
               unsubscribe data given in |options|.|data|.
             </li>
             <li>
-              If the request fails, [=reject=] |promise| with the error received from
-              the <a>Protocol Bindings</a> and stop.
+              If the request fails with error |receivedError| and optionally |failedResponse|,
+              run the following sub-steps:
+              <ol>
+                <li>
+                  let |error| be the result of running
+                  <a>handle interaction error response</a> given the |receivedError|
+                  |unsubscribeForm| and |failedResponse|.
+                </li>
+                <li>
+                  [=Reject=] |promise| with |error| and stop.
+                </li>
+                <li>
+                  If the underlying platform receives further notifications for this
+                  subscription, implementations SHOULD silently suppress them.
+                </li>
+              </ol>
             </li>
             <li>
               Otherwise:
