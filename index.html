@@ -367,10 +367,6 @@
       <a>WoT interaction</a> or, simply, <em>interaction</em> instead.
     </p>
     <p>
-      <dfn data-plurals="interaction methods">interaction method</dfn> indicate one of the method defined in the {{ConsumedThing}} interface
-      to interact with a <a>Thing</a> (e.g. <code>readProperty()</code>, <code>writeProperty()</code>, <code>invokeAction()</code>, etc.).
-    </p>
-    <p>
       <dfn>WoT network interface</dfn> synonym for <a>WoT Interface</a>.
     </p>
     <p>
@@ -1464,9 +1460,9 @@
     <section>
       <h3>The <dfn>handle interaction error response</dfn> algorithm</h3>
       <p>
-        This algorithm is used by <a>interaction methods</a> to process error responses
-        from the <a>Protocol Bindings</a> and determine whether to create an
-        {{InteractionError}} or map to a standard error type.
+        This algorithm is invoked by any {{ConsumedThing}} method that performs a <a>WoT Interaction</a>.
+        It processes error responses returned by the <a>Protocol Bindings</a> and determines whether to
+        throw an {{InteractionError}} or map the response to a {{DOMException}}.
       </p>
       <p>
         To <a>handle interaction error response</a> given   |error|, |form:Form| and |response|, 
