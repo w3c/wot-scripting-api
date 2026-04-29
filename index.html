@@ -1437,6 +1437,10 @@
 
     <section data-dfn-for="InteractionError">
       <h3>The <dfn>InteractionError</dfn> interface</h3>
+      <p class="note">
+        Currently, we are looking for wider implementation of the following section. 
+        The alorithm presented here might be subject to changes in the future. 
+      </p>
       <p>
         Represents an error that occurred during a <a>WoT Interaction</a> with
         additional diagnostic information from the <a>Thing</a> in the form of
@@ -1518,16 +1522,6 @@
         </li>
       </ol>
     </section>
-
-    <p class="ednote">
-      This topic is still being discussed in
-      <a href="https://github.com/w3c/wot-scripting-api/issues/200">Issue #200</a>.
-      A standardized error mapping would be needed in order to ensure consistency
-      in mapping script errors to protocol errors and vice versa. In particular,
-      when algorithms say "error received from the <a>Protocol Bindings</a>",
-      that will be factored out as an explicit error mapping algorithm. Currently,
-      that is encapsulated by implementations.
-    </p>
   </section>
 
   </section> <!-- Handling interaction data -->
