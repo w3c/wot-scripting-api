@@ -1439,7 +1439,7 @@
       <h3>The <dfn>InteractionError</dfn> interface</h3>
       <p class="note">
         Currently, we are looking for wider implementation of the following section. 
-        The alorithm presented here might be subject to changes in the future. 
+        The algorithm presented here might be subject to changes in the future. 
       </p>
       <p>
         Represents an error that occurred during a <a>WoT Interaction</a> with
@@ -1504,8 +1504,9 @@
                   |responseSchema|.
                 </li>
                 <li>
-                  Return a new {{InteractionError}} constructed with |errorOutput| an appropriate
-                  message derived from the |binding| or |error|.
+                  Return a newly constructed {{InteractionError}}, using a message
+                  derived from the |binding| or |error| as first argument, and |errorOutput| 
+                  as second argument.
                 </li>
               </ol>
             </li>
