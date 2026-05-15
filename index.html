@@ -895,9 +895,9 @@
       scripts.
     </p>
     <p>
-      This interface exposes a convenience function which should cover
+      This interface exposes a convenience method which should cover
       the vast majority of IoT use cases: the
-      <a href="#the-value-function">value()</a> function. Its implementation
+      <a href="#the-value-method">value()</a> method. Its implementation
       will inspect the data, parse it if adheres to a <a>DataSchema</a>, or
       otherwise fail early, leaving the underlying stream undisturbed so
       that application scripts could attempt reading the stream themselves, or
@@ -938,7 +938,7 @@
       the <a>WoT Interaction</a>, initially `undefined` (note that `null` is a
       valid value).
     </p>
-    <section><h3>The <dfn>value()</dfn> function</h3>
+    <section><h3>The <dfn>value()</dfn> method</h3>
       Parses the data returned by the <a>WoT Interaction</a> and returns a
       value with the type described by the interaction <a>DataSchema</a>
       if that exists, or by the `contentType` of the interaction <a>Form</a>. The method MUST run the following steps:
@@ -995,10 +995,10 @@
         </li>
       </ol>
       <p>
-        While the {{value()}} function provides built-in validation, we recognize that some
+        While the {{value()}} method provides built-in validation, we recognize that some
         use cases may require returning values without validation. In such cases, developers
         can use alternative patterns, such as directly accessing the underlying data 
-        using streams or the {{InteractionOutput/arrayBuffer()}} function (see [[[#validation-arraybuffer-example]]] and [[[#stream-example]]]).
+        using streams or the {{InteractionOutput/arrayBuffer()}} method (see [[[#validation-arraybuffer-example]]] and [[[#stream-example]]]).
       </p>
       <p class="advisement" id="non-validating-value-warning" title="Implications for not using validation">
         <strong>Warning:</strong> Disabling validation may introduce risks, particularly when interacting
@@ -1007,8 +1007,8 @@
       </p>
     </section>
 
-    <section><h3>The <dfn>arrayBuffer()</dfn> function</h3>
-      When invoked, the `arrayBuffer()` function MUST run the following steps:
+    <section><h3>The <dfn>arrayBuffer()</dfn> method</h3>
+      When invoked, the `arrayBuffer()` method MUST run the following steps:
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps
@@ -1298,7 +1298,7 @@
       Note: The output of a synchronous action MAY be limited to the functionality of a regular {{InteractionOutput}} object, e.g., invoking the `cancel()` method might not have an effect.
     </p>
     <p>
-      This interface exposes functions which
+      This interface exposes methods which
       will allow cancelling asynchronous actions and query the status of a long running action.
     </p>
     <pre class="idl">
@@ -1319,7 +1319,7 @@
       
     </p>
 	
-    <section><h3>The <dfn>query()</dfn> function</h3>
+    <section><h3>The <dfn>query()</dfn> method</h3>
       Reports the status of an <a>Action</a>, or rejects on error. The method MUST run the following steps:
       <ol>
         <li>
@@ -1338,7 +1338,7 @@
         </li>
       </ol>
     </section>
-    <section><h3>The <dfn>cancel()</dfn> function</h3>
+    <section><h3>The <dfn>cancel()</dfn> method</h3>
       Cancels a running WoT <a>Action</a>, or rejects on error. The method MUST run the following steps:
       <ol>
         <li>
@@ -2551,7 +2551,7 @@
       </pre>
       <aside id="validation-arraybuffer-example" class="example" title="Read data without validation using arraybuffer()">
         <p>
-          The {{InteractionOutput/arrayBuffer()}} can be used as a shortcut to skip the validation of the {{value()}} function.
+          The {{InteractionOutput/arrayBuffer()}} can be used as a shortcut to skip the validation of the {{value()}} method.
           See <a href="#non-validating-value-warning"> relevant warning</a> for the implications. 
         </p>
         <pre>
@@ -4432,9 +4432,9 @@
         </ul>
       </div>
     </section>
-    <section> <h4>Polymorphic functions</h4>
+    <section> <h4>Polymorphic methods</h4>
       <p>
-        The reason to use function names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> function is that the current names map exactly to the <code>"op"</code> vocabulary from the <a data-cite="wot-thing-description11#form">Form</a> definition in the [[[wot-thing-description11]]] specification.
+        The reason to use method names like <code>readProperty()</code>, <code>readMultipleProperties()</code> etc. instead of a generic polymorphic <code>read()</code> method is that the current names map exactly to the <code>"op"</code> vocabulary from the <a data-cite="wot-thing-description11#form">Form</a> definition in the [[[wot-thing-description11]]] specification.
       </p>
     </section>
   </section>
