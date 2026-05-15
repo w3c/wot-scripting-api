@@ -1007,8 +1007,8 @@
       </p>
     </section>
 
-    <section><h3>The  <dfn>arrayBuffer()</dfn> function</h3>
-      When invoked, MUST run the following steps:
+    <section><h3>The <dfn>arrayBuffer()</dfn> function</h3>
+      When invoked, the `arrayBuffer()` function MUST run the following steps:
       <ol>
         <li>
           Return a {{Promise}} |promise:Promise| and execute the next steps
@@ -1021,7 +1021,7 @@
         <li>
           Let |reader| be the result of
           <a data-cite="streams#readablestream-get-a-reader">
-          getting a reader</a> from |data|. If that threw an exception, [=reject=]
+          getting a reader</a> from |data|. If that throws an exception, [=reject=]
           |promise| with that exception and stop.
         </li>
         <li>
@@ -2351,7 +2351,7 @@
         <p>
           Stops delivering notifications for the subscription. It takes an
           optional parameter |options:InteractionOptions| and returns a {{Promise}}.
-          When invoked, the method MUST execute the following steps:
+          When invoked, the `stop()` method MUST execute the following steps:
           <ol>
             <li>
               Return a {{Promise}} |promise:Promise| and execute the next steps
