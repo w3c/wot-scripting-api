@@ -1538,14 +1538,16 @@
           <td><dfn>[[\activeSubscriptions]]</dfn></td>
           <td>`{}`</td>
           <td>
-            An [=ordered map=] [=map/keyed=] on a [=string=] name representing the <a>Event</a> and [=map/value=] is a {{Subscription}} object.
+            An [=ordered map=] of the active <a>Event</a> {{Subscription}}s,
+            [=map/keyed=] on their <a>subscription identifier</a>.
           </td>
         </tr>
         <tr>
           <td><dfn>[[\activeObservations]]</dfn></td>
           <td>`{}`</td>
           <td>
-            An [=ordered map=] [=map/keyed=] on a [=string=] name representing a <a>Property</a> and [=map/value=] is a {{Subscription}} object.
+            An [=ordered map=] of the active <a>Property</a> {{Subscription}}s,
+            [=map/keyed=] on their <a>subscription identifier</a>.
           </td>
         </tr>
         </tbody>
@@ -1921,10 +1923,12 @@
         Takes as arguments |propertyName:string|, |listener:InteractionListener| and
         optionally |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} that resolves on success and rejects on failure.
-        <p class="ednote">
-          This algorithm allows for only one active {{Subscription}} per <a>Property</a>. If a new
-          {{Subscription}} is made while an existing {{Subscription}} is active the runtime
-          will throw an {{NotAllowedError}}.
+        <p class="note">
+          Only one <a>Property</a> observation per <a>subscription identifier</a>
+          can be active at a time; a request whose identifier is already used
+          by an active observation is rejected with a {{NotAllowedError}}.
+          <a>Event</a> subscriptions do not count towards this limit, even
+          when they have the same identifier.
         </p>
         The method MUST execute the following steps:
         <ol>
@@ -1946,7 +1950,14 @@
             with a {{TypeError}} and stop.
           </li>
           <li>
-            If |thing|.{{ConsumedThing/[[activeObservations]]}}[|propertyName|] [=map/exists=], [=reject=] |promise| with a {{NotAllowedError}} and stop.
+            Let |observationId| be the result of running the
+            <a>create a subscription identifier</a> operation given
+            |propertyName| and |options|.
+          </li>
+          <li>
+            If |thing|.{{ConsumedThing/[[activeObservations]]}}[|observationId|]
+            [=map/exists=], [=reject=] |promise| with a {{NotAllowedError}} and
+            stop.
           </li>
           <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
@@ -1957,6 +1968,9 @@
               </li>
               <li>
                 Let |subscription|.{{Subscription/[[name]]}} be |propertyName|.
+              </li>
+              <li>
+                Let |subscription|.{{Subscription/[[identifier]]}} be |observationId|.
               </li>
               <li>
                 Let |subscription|.{{Subscription/[[interaction]]}} be  {{ConsumedThing/[[td]]}}.|properties|[|propertyName|].
@@ -1997,11 +2011,11 @@
             the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
-            [=map/Set=] |thing|.{{ConsumedThing/[[activeObservations]]}}[|propertyName] to |subscription| and [=resolve=] |promise|.
+            [=map/Set=] |thing|.{{ConsumedThing/[[activeObservations]]}}[|observationId|] to |subscription| and [=resolve=] |promise|.
           </li>
           <li>
-            Whenever the underlying platform detects a notification for this
-            |subscription| [=map/keyed=] on |propertyName| with a new <a>Property</a> value |value|,
+            Whenever the underlying platform detects a notification for
+            |subscription| with a new <a>Property</a> value |value|,
             run the following sub-steps:
             <ul>
               <li>
@@ -2106,10 +2120,12 @@
         Takes as arguments |eventName:string|, |listener:WoTListener| and
         optionally  |onerror:ErrorListener| and |options:InteractionOptions|.
         It returns a {{Promise}} to signal success or failure.
-        <p class="ednote">
-          This algorithm allows for only one active {{Subscription}} per <a>Event</a>. If a new
-          {{Subscription}} is made while an existing {{Subscription}} is active the runtime
-          will throw an {{NotAllowedError}}.
+        <p class="note">
+          Only one <a>Event</a> subscription per <a>subscription identifier</a>
+          can be active at a time; a request whose identifier is already used
+          by an active subscription is rejected with a {{NotAllowedError}}.
+          <a>Property</a> observations do not count towards this limit, even
+          when they have the same identifier.
         </p>
         The method MUST execute the following steps:
         <ol>
@@ -2131,7 +2147,12 @@
             with a {{TypeError}} and stop.
           </li>
           <li>
-            If |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|eventName|] [=map/exists=], [=reject=] |promise| with a {{NotAllowedError}} and stop.
+            Let |subscriptionId| be the result of running the
+            <a>create a subscription identifier</a> operation given
+            |eventName| and |options|.
+          </li>
+          <li>
+            If |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|subscriptionId|] [=map/exists=], [=reject=] |promise| with a {{NotAllowedError}} and stop.
           </li>
           <li>
             Let |subscription| be a new {{Subscription}} object with its <a>internal slots</a>
@@ -2142,6 +2163,9 @@
               </li>
               <li>
                 Let |subscription|.{{Subscription/[[name]]}} be |eventName|.
+              </li>
+              <li>
+                Let |subscription|.{{Subscription/[[identifier]]}} be |subscriptionId|.
               </li>
               <li>
                 Let |subscription|.{{Subscription/[[interaction]]}} be |thing|. {{ConsumedThing/[[td]]}}.|events|[|eventName|].
@@ -2176,14 +2200,14 @@
             the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
-            [=map/Set=] |eventName| to |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|eventName|] to |subscription|.
+            [=map/Set=] |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|subscriptionId|] to |subscription|.
           </li>
           <li>
              [=Resolve=] |promise|.
           </li>
           <li>
-            Whenever the underlying platform detects a notification for the
-            <a>Event</a> |subscription| [=map/keyed=] on |eventName|, run the following sub-steps:
+            Whenever the underlying platform detects a notification for
+            |subscription|, run the following sub-steps:
             <ol>
               <li>
                 Invoke |listener| given the result of running
@@ -2194,7 +2218,7 @@
           </li>
           <li>
             Whenever the underlying platform detects an error for
-            <a>Event</a> |subscription| [=map/keyed=] on |eventName|, run the following sub-steps:
+            |subscription|, run the following sub-steps:
             <ul>
               <li>
                 If the error is irrecoverable and stops the subscription, set
@@ -2326,6 +2350,16 @@
              <td>The <a>Property</a> or <a>Event</a> name.</td>
            </tr>
            <tr>
+             <td><dfn>[[\identifier]]</dfn></td>
+             <td>`null`</td>
+             <td>
+               The <a>subscription identifier</a> of this {{Subscription}},
+               used as its key in {{ConsumedThing/[[activeObservations]]}} if
+               {{Subscription/[[type]]}} is `"property"`, or in
+               {{ConsumedThing/[[activeSubscriptions]]}} if it is `"event"`.
+             </td>
+           </tr>
+           <tr>
              <td><dfn>[[\interaction]]</dfn></td>
              <td>`null`</td>
              <td>
@@ -2399,10 +2433,10 @@
                   set <a href="#dom-subscription-active">active</a> to `false`.
                 </li>
                 <li>
-                  if {{Subscription/[[type]]}} is `"event"`, remove {{Subscription/[[name]]}} from {{Subscription/[[thing]]}}.{{ConsumedThing/[[activeSubscriptions]]}} .
+                  if {{Subscription/[[type]]}} is `"event"`, remove {{Subscription/[[identifier]]}} from {{Subscription/[[thing]]}}.{{ConsumedThing/[[activeSubscriptions]]}} .
                 </li>
                 <li>
-                  if {{Subscription/[[type]]}} is `"property"`, remove {{Subscription/[[name]]}} from {{Subscription/[[thing]]}}.{{ConsumedThing/[[activeObservations]]}} .
+                  if {{Subscription/[[type]]}} is `"property"`, remove {{Subscription/[[identifier]]}} from {{Subscription/[[thing]]}}.{{ConsumedThing/[[activeObservations]]}} .
                 </li>
                 <li>
                   [=Resolve=] |promise|.
@@ -2467,6 +2501,45 @@
           </li>
         </ol>
       </section>
+    </section>
+
+    <section>
+      <h3>The <dfn>create a subscription identifier</dfn> operation</h3>
+      <div>
+        <p>
+          A <dfn>subscription identifier</dfn> distinguishes an active
+          {{Subscription}} from the other active {{Subscription}}s of the same
+          {{Subscription/[[type]]}} on a {{ConsumedThing}}. It is unique only
+          within its type: <a>Property</a> observations are keyed in
+          {{ConsumedThing/[[activeObservations]]}} and <a>Event</a>
+          subscriptions in {{ConsumedThing/[[activeSubscriptions]]}}, so the
+          two never conflict. This lets one <a>Property</a> or <a>Event</a>
+          have several active {{Subscription}}s at once, one per identifier.
+        </p>
+        <p>
+          To <a>create a subscription identifier</a> given |name:string| and
+          |options:InteractionOptions|, return an [=implementation-defined=]
+          value that uniquely identifies |name| and |options|. A new
+          identifier MUST result in a separate request to the underlying
+          <a>Protocol Bindings</a>, so that no two {{Subscription}}s share a
+          protocol-level subscription.
+        </p>
+        <p class="note">
+          Currently, [[!wot-thing-description11]] limits request
+          differentiation to URI variables for observing a <a>Property</a>,
+          and URI variables plus subscription data for subscribing to an
+          <a>Event</a>. Implementations must therefore derive the identifier
+          from |name| combined with these values.
+        </p>
+        <p class="ednote" title="Implementation feedback">
+          This operation is intentionally left implementation-defined rather
+          than specified as a concrete algorithm. Feedback on whether a more
+          precise algorithm is needed, and on which parameters should
+          participate in the identifier, is welcome on the
+          <a href="https://github.com/w3c/wot-scripting-api/issues">GitHub
+            Issues</a> page.
+        </p>
+      </div>
     </section>
 
     <section>
