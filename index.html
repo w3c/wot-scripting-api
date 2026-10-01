@@ -1618,7 +1618,7 @@
             and stop.
           </li>
           <li>
-            If |option|.|formIndex| is defined, let |form| be the
+            If |options|.|formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in |interaction|.|forms|
             array, otherwise let |form| be a <a>Form</a> in
             |interaction|.|forms| whose |op| is `readproperty`, selected by
@@ -1668,7 +1668,7 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and stop.
           </li>
           <li>
-            If |option|.|formIndex| is defined, let |form| be the
+            If |options|.|formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in the {{ConsumedThing/[[td]]}}.|forms| array, otherwise let |form| be the <a>Form</a> in {{ConsumedThing/[[td]]}}.|forms| array whose |op| is `readmultipleproperties`, as selected by the implementation.
           </li>
           <li>
@@ -1733,7 +1733,7 @@
             {{SyntaxError}} and stop.
           </li>
           <li>
-            If |option|.|formIndex| is not `undefined` and is less than |forms|.|length|, let |form| be |forms|.[|formIndex|].
+            If |options|.|formIndex| is not `undefined` and is less than |forms|.|length|, let |form| be |forms|.[|formIndex|].
           </li>
           <li>
              Otherwise, let |form| be a
@@ -1800,7 +1800,7 @@
             and stop.
           </li>
           <li>
-            If |option|.|formIndex| is not `undefined`, let |form| be the
+            If |options|.|formIndex| is not `undefined`, let |form| be the
             <a>Form</a> associated with |formIndex| in the |interaction|.|forms|
             array, otherwise let |form| be a <a>Form</a> in
             |interaction|.|forms| whose |op| is `writeproperty`, as selected by
@@ -1856,7 +1856,7 @@
             {{SecurityError}} and stop.
           </li>
           <li>
-            If |option|.|formIndex| is defined, let |form| be the
+            If |options|.|formIndex| is defined, let |form| be the
             <a>Form</a> associated with |formIndex| in the {{ConsumedThing/[[td]]}}.|forms| array,
             otherwise let |form| be a <a>Form</a> in {{ConsumedThing/[[td]]}}.|forms|
             array whose |op| is `writemultipleproperties`, as selected by
@@ -1971,7 +1971,7 @@
                 {{SyntaxError}} and stop.
               </li>
               <li>
-                If |option|.|formIndex| is not `undefined` and is less than |forms|.|length|, set |subscription|.{{Subscription/[[form]]}} to |forms|.[|formIndex|].
+                If |options|.|formIndex| is not `undefined` and is less than |forms|.|length|, set |subscription|.{{Subscription/[[form]]}} to |forms|.[|formIndex|].
               </li>
               <li>
                  Otherwise, set |subscription|.{{Subscription/[[form]]}} to a
@@ -2066,7 +2066,7 @@
             {{SyntaxError}} and stop.
           </li>
           <li>
-            If |option|.|formIndex| is not `undefined` and is less than |forms|.|length|, let |form| be |forms|.[|formIndex|].
+            If |options|.|formIndex| is not `undefined` and is less than |forms|.|length|, let |form| be |forms|.[|formIndex|].
           </li>
           <li>
              Otherwise, let |form| be a
