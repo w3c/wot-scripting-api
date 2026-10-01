@@ -2823,7 +2823,7 @@
          The |handler| callback function should implement reading a <a>Property</a> and SHOULD be called by implementations when a request for reading a <a>Property</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the {{ExposedThing/[[td]]}} <a>internal slot</a>.
+        A new handler MUST replace any previous handler for the same <a>Property</a>. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a> provided in the {{ExposedThing/[[td]]}} <a>internal slot</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -2981,7 +2981,7 @@
          [=reject=] with an error.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default property read handler based on the <a>Thing Description</a>.
+        A new handler MUST replace any previous handler for the same <a>Property</a>. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default handler based on the <a>Thing Description</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -3048,7 +3048,7 @@
         unobserve request is received by the implementation.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default handler based on the <a>Thing Description</a>.
+        A new handler MUST replace any previous handler for the same <a>Property</a>. If no handler is initialized for any given <a>Property</a>, implementations SHOULD implement a default handler based on the <a>Thing Description</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -3228,7 +3228,7 @@
         handler may define in an application-specific way to fail the request.
       </p>
       <p>
-        There MUST be at most one write handler for any given <a>Property</a>, so newly added handlers MUST replace the previous handlers. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update if the <a>Property</a> is
+        A new write handler MUST replace any previous write handler for the same <a>Property</a>. If no write handler is initialized for any given <a>Property</a>, implementations SHOULD implement default property update if the <a>Property</a> is
         writeable and notifying observers on change if the <a>Property</a> is
         observable, based on the <a>Thing Description</a>.
       </p>
@@ -3349,7 +3349,7 @@
          The |action| callback function will implement an <a>Action</a> and SHOULD be called by implementations when a request for invoking the <a>Action</a> is received from the underlying platform.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Action</a>, so newly added handlers MUST replace the previous handlers.
+        A new handler MUST replace any previous handler for the same <a>Action</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and |action:ActionHandler|,
@@ -3436,8 +3436,8 @@
          Note that the handler for emitting <a>Events</a> is set separately.
       </p>
       <p>
-        There MUST be at most one event subscribe handler for any given
-        <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+        A new event subscribe handler MUST replace any previous event
+        subscribe handler for the same <a>Event</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
@@ -3519,7 +3519,7 @@
          unsubscribe request is received.
       </p>
       <p>
-        There MUST be at most one handler for any given <a>Event</a>, so newly added handlers MUST replace the previous handlers.
+        A new handler MUST replace any previous handler for the same <a>Event</a>.
       </p>
       <div>
         When the method is invoked given |name:string| and
