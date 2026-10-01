@@ -1726,21 +1726,21 @@
             If invoking this method is not allowed for the current scripting context for security reasons, [=reject=] |promise| with a {{SecurityError}} and stop.
           </li>
           <li>
-            Let |forms| be |subscription|.{{Subscription/[[interaction]]}}.|forms|.
+            Let |forms| be |this|.{{ConsumedThing/[[td]]}}.|forms|.
           </li>
           <li>
             If |forms| is `undefined`, [=reject=] |promise| with a
             {{SyntaxError}} and stop.
           </li>
           <li>
-            If |option|.|formIndex| is not `undefined` and is less than |forms|.|length|, set |subscription|.{{Subscription/[[form]]}} to |forms|.[|formIndex|].
+            If |option|.|formIndex| is not `undefined` and is less than |forms|.|length|, let |form| be |forms|.[|formIndex|].
           </li>
           <li>
-             Otherwise, set |subscription|.{{Subscription/[[form]]}} to a
+             Otherwise, let |form| be a
             <a>Form</a> in |forms| whose |op| is `"readallproperties"`, as selected by the implementation.
           </li>
           <li>
-            If |subscription|.{{Subscription/[[form]]}} is failure, [=reject=] |promise| with a {{SyntaxError}} and stop.
+            If |form| is failure, [=reject=] |promise| with a {{SyntaxError}} and stop.
           </li>
           <li>
             Make a request to the underlying platform using the <a>Protocol Bindings</a> to retrieve  all the <a>Property</a> definitions from the <a>TD</a> given |form| and optional URI templates in |options|.|uriVariables|.
@@ -2058,21 +2058,21 @@
             and stop.
           </li>
           <li>
-            Let |forms| be |subscription|.{{Subscription/[[interaction]]}}.|forms|.
+            Let |forms| be |interaction|.|forms|.
           </li>
           <li>
             If |forms| is `undefined`, [=reject=] |promise| with a
             {{SyntaxError}} and stop.
           </li>
           <li>
-            If |option|.|formIndex| is not `undefined` and is less than |forms|.|length|, set |subscription|.{{Subscription/[[form]]}} to |forms|.[|formIndex|].
+            If |option|.|formIndex| is not `undefined` and is less than |forms|.|length|, let |form| be |forms|.[|formIndex|].
           </li>
           <li>
-             Otherwise, set |subscription|.{{Subscription/[[form]]}} to a
+             Otherwise, let |form| be a
             <a>Form</a> in |forms| whose |op| is `"invokeaction"`, as selected by the implementation.
           </li>
           <li>
-            If |subscription|.{{Subscription/[[form]]}} is failure, [=reject=] |promise| with a
+            If |form| is failure, [=reject=] |promise| with a
             {{SyntaxError}} and stop.
           </li>
           <li>
