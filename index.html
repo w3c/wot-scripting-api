@@ -1988,8 +1988,9 @@
           </li>
           <li>
             Make a request to the underlying platform to observe the
-            <a>Property</a> identified by |propertyName| with |form| and
-            optional URI templates given in |options|' |uriVariables|.
+            <a>Property</a> identified by |propertyName| with
+            |subscription|.{{Subscription/[[form]]}} and optional URI templates
+            given in |options|' |uriVariables|.
           </li>
           <li>
             If the request fails, [=reject=] |promise| with the error received from
@@ -2152,7 +2153,7 @@
                 Let |subscription|.{{Subscription/[[thing]]}} be |thing|.
               </li>
               <li>
-                If |options|.|formIndex| [=map/exists=], then let |subscription|.{{Subscription/[[form]]}} be  |thing|.{{Subscription/[[interaction]]}}.|forms|[|formIndex|].
+                If |options|.|formIndex| [=map/exists=], then let |subscription|.{{Subscription/[[form]]}} be |subscription|.{{Subscription/[[interaction]]}}.|forms|[|formIndex|].
               </li>
               <li>
                 Otherwise, let |subscription|.{{Subscription/[[form]]}} be an [=implementation-defined=]
@@ -2167,7 +2168,7 @@
           <li>
             Make a request to the underlying platform via the <a>Protocol Bindings</a>
             to subscribe to the <a>Event</a> identified by |eventName:string| with
-            {{Subscription/[[form]]}}, optional URI templates given in |options|.|uriVariables|
+            |subscription|.{{Subscription/[[form]]}}, optional URI templates given in |options|.|uriVariables|
             and optional subscription data given in |options|.|data|.
           </li>
           <li>
