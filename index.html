@@ -1927,8 +1927,6 @@
           Only one <a>Property</a> observation per <a>subscription identifier</a>
           can be active at a time; a request whose identifier is already used
           by an active observation is rejected with a {{NotAllowedError}}.
-          <a>Event</a> subscriptions do not count towards this limit, even
-          when they have the same identifier.
         </p>
         The method MUST run the following steps:
         <ol>
@@ -2124,8 +2122,6 @@
           Only one <a>Event</a> subscription per <a>subscription identifier</a>
           can be active at a time; a request whose identifier is already used
           by an active subscription is rejected with a {{NotAllowedError}}.
-          <a>Property</a> observations do not count towards this limit, even
-          when they have the same identifier.
         </p>
         The method MUST run the following steps:
         <ol>
