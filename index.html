@@ -355,7 +355,7 @@
       The generic WoT terminology is defined in [[!wot-architecture11]]: <dfn data-lt="Things">Thing</dfn>, <dfn data-lt="Thing Descriptions">Thing Description</dfn> (in short <dfn>TD</dfn>), <dfn>Partial TD</dfn>, <dfn>Web of Things</dfn> (in short <b><i>WoT</i></b>),  <dfn>WoT Interface</dfn>, <dfn>Protocol Bindings</dfn>, <dfn>WoT Runtime</dfn>, <dfn data-lt="consume|consume a TD|consuming a TD">Consuming a Thing Description</dfn>, <dfn>TD Directory</dfn>, <dfn data-lt="Properties">Property</dfn>, <dfn data-lt="Actions">Action</dfn>, <dfn data-lt="Events|WoT-Event">Event</dfn>,
       <a data-cite="wot-thing-description11#dataschema">
         <dfn>DataSchema</dfn></a>, <a data-cite="wot-thing-description11#form"><dfn data-lt="Forms">Form</dfn></a>,
-        <a data-cite="wot-thing-description11#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="wot-thing-description11#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a> etc.
+        <a data-cite="wot-thing-description11#securityscheme"><dfn>SecurityScheme</dfn></a>, <a data-cite="wot-thing-description11#nosecurityscheme"><dfn>NoSecurityScheme</dfn></a>, <a data-cite="wot-thing-description11#additionalexpectedresponse"><dfn>AdditionalExpectedResponse</dfn></a> etc.
     </p>
     <p>
       <dfn data-plurals="WoT Interactions">WoT Interaction</dfn> is a synonym for <a data-cite="wot-architecture11#dfn-interaction-affordance"><dfn>Interaction Affordance</dfn></a>.
@@ -976,19 +976,9 @@
           Set |dataUsed| to `true`.
         </li>
         <li>
-          If |form|.|contentType| is not `application/json` and if a mapping is
-          available in the <a>Protocol Bindings</a> from |form|.|contentType|
-          to [[!JSON-SCHEMA]], transform |bytes| with that mapping.
-        </li>
-        <li>
-          Let |json| be the result of running <a>parse JSON from bytes</a> on
-          |bytes|. If that throws, [=reject=] |promise| with that exception and
-          stop.
-        </li>
-        <li>
-          Set <a>[[\value]]</a> to the result of running <a>check data schema</a>
-          on |json| and |schema|. If that throws, [=reject=] |promise| with that
-          exception and stop.
+          Set <a>[[\value]]</a> to the result of running <a>parse interaction payload</a>
+          on |bytes|, |form|.|contentType| and |schema|. If that throws, [=reject=]
+          |promise| with that exception and stop.
         </li>
         <li>
           [=Resolve=] |promise| with <a>[[\value]]</a>.
@@ -1145,6 +1135,27 @@
         </li>
         <li>
           Return |payload|.
+        </li>
+      </ol>
+    </section>
+
+    <section><h3>The <dfn>parse interaction payload</dfn> algorithm</h3>
+      To run the <a>parse interaction payload</a> steps on |bytes|,
+      |contentType:string| and |schema:object|, run these steps:
+      <ol>
+        <li>
+          If |contentType| is not `application/json`, then if a mapping is available
+          in the <a>Protocol Bindings</a> from |contentType| to [[!JSON-SCHEMA]],
+          set |bytes| to the result of transforming |bytes| with that mapping;
+          otherwise, throw {{NotSupportedError}} and stop.
+        </li>
+        <li>
+          Let |json| be the result of running <a>parse JSON from bytes</a> on
+          |bytes|. If that throws, re-throw the exception and stop.
+        </li>
+        <li>
+          Return the result of running <a>check data schema</a> on |json| and
+          |schema|. If that throws, re-throw the exception and stop.
         </li>
       </ol>
     </section>
@@ -1434,15 +1445,273 @@
                 title="Error handling"/>
       <figcaption>Error handling in WoT interactions</figcaption>
     </figure>
-    <p class="ednote">
-      This topic is still being discussed in
-      <a href="https://github.com/w3c/wot-scripting-api/issues/200">Issue #200</a>.
-      A standardized error mapping would be needed in order to ensure consistency
-      in mapping script errors to protocol errors and vice versa. In particular,
-      when algorithms say "error received from the <a>Protocol Bindings</a>",
-      that will be factored out as an explicit error mapping algorithm. Currently,
-      that is encapsulated by implementations.
-    </p>
+
+    <section data-dfn-for="InteractionError">
+      <h3>The <dfn>InteractionError</dfn> interface</h3>
+      <p class="note">
+        Currently, we are looking for wider implementation of the following section. 
+        The algorithm presented here might be subject to changes in the future. 
+      </p>
+      <p>
+        Represents an error that occurred during a <a>WoT Interaction</a> with
+        additional diagnostic information from the <a>Thing</a> in the form of
+        response data associated with an <a>AdditionalExpectedResponse</a> defined in
+        the <a>Thing Description</a>.
+      </p>
+      <p>
+        {{InteractionError}} is a
+        <a data-cite="WEBIDL#idl-DOMException-derived-interfaces">DOMException derived interface</a>.
+        As recommended for such interfaces, it is a
+        <a data-cite="HTML#serializable-objects">serializable object</a> whose serialization
+        and deserialization steps preserve the additional information it carries.
+      </p>
+      <pre class="idl">
+        [SecureContext, Exposed=(Window,Worker), Serializable]
+        interface InteractionError : DOMException {
+          constructor(optional DOMString message = "", optional InteractionErrorOptions options = {});
+          readonly attribute AdditionalExpectedResponse? response;
+          readonly attribute DataSchema? schema;
+          Promise&lt;ArrayBuffer&gt; arrayBuffer();
+          Promise&lt;DataSchemaValue&gt; value();
+        };
+
+        dictionary InteractionErrorOptions {
+          ArrayBuffer data;
+          AdditionalExpectedResponse response;
+          DataSchema schema;
+        };
+      </pre>
+      <p class="note">
+        Since {{ReadableStream}} is not serializable, an {{InteractionError}} cannot
+        carry an {{InteractionOutput}}. Instead, the payload of the error response is
+        buffered when the {{InteractionError}} is created. Application scripts can parse
+        it with {{InteractionError/value()}}, or read the raw bytes with
+        {{InteractionError/arrayBuffer()}} and decode them with their own codec, for
+        example when the `contentType` of the {{InteractionError/response}} is not
+        supported by the implementation. Since the payload is buffered, both functions
+        can be called multiple times.
+        Unlike the other members of {{InteractionErrorOptions}}, {{InteractionErrorOptions/data}}
+        is not exposed as a read only attribute of the same name, as is otherwise recommended for
+        <a data-cite="WEBIDL#idl-DOMException-derived-interfaces">DOMException derived interfaces</a>.
+        The payload is exposed through these functions instead, mirroring {{InteractionOutput}},
+        so that application scripts can handle the payloads of error and successful responses
+        in the same way.
+      </p>
+      <p>
+        An {{InteractionError}} object has the following <a>internal slots</a>, all
+        initially `null`: <dfn id="dfn-interactionerror-data">[[\data]]</dfn>, a
+        [=byte sequence=] containing the payload of the error response;
+        <dfn id="dfn-interactionerror-response">[[\response]]</dfn>, the
+        <a>AdditionalExpectedResponse</a> matched by the error response; and
+        <dfn id="dfn-interactionerror-schema">[[\schema]]</dfn>, the <a>DataSchema</a>
+        of the payload.
+      </p>
+      <p>
+        The <dfn data-lt="constructor()">new InteractionError(message, options)</dfn>
+        constructor steps are:
+      </p>
+      <ol>
+        <li>
+          Set |this|'s [=DOMException/name=] to `"InteractionError"`.
+        </li>
+        <li>
+          Set |this|'s [=DOMException/message=] to |message|.
+        </li>
+        <li>
+          If |options|["data"] [=map/exists=], set |this|.{{InteractionError/[[data]]}}
+          to the result of <a data-cite="WEBIDL#dfn-get-buffer-source-copy">getting a copy
+          of the bytes held by</a> |options|["data"].
+        </li>
+        <li>
+          If |options|["response"] [=map/exists=], set |this|.{{InteractionError/[[response]]}}
+          to |options|["response"].
+        </li>
+        <li>
+          If |options|["schema"] [=map/exists=], set |this|.{{InteractionError/[[schema]]}}
+          to |options|["schema"].
+        </li>
+      </ol>
+      <p>
+        The <dfn>response</dfn> and <dfn>schema</dfn> attribute getter steps are to
+        return |this|.{{InteractionError/[[response]]}} and
+        |this|.{{InteractionError/[[schema]]}}, respectively.
+      </p>
+      <p>
+        The <dfn>arrayBuffer()</dfn> method steps are:
+      </p>
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          [=in parallel=].
+        </li>
+        <li>
+          If |this|.{{InteractionError/[[data]]}} is `null`, [=reject=] |promise|
+          with {{NotReadableError}} and stop.
+        </li>
+        <li>
+          Let |arrayBuffer| be a new {{ArrayBuffer}} whose contents are a copy of
+          |this|.{{InteractionError/[[data]]}}. If that throws, [=reject=] |promise|
+          with that exception and stop.
+        </li>
+        <li>
+          [=Resolve=] |promise| with |arrayBuffer|.
+        </li>
+      </ol>
+      <p>
+        The <dfn>value()</dfn> method steps are:
+      </p>
+      <ol>
+        <li>
+          Return a {{Promise}} |promise:Promise| and execute the next steps
+          [=in parallel=].
+        </li>
+        <li>
+          If |this|.{{InteractionError/[[data]]}} is `null`, or if
+          |this|.{{InteractionError/[[schema]]}} is `null` or `undefined`, then
+          [=reject=] |promise| with {{NotReadableError}} and stop.
+        </li>
+        <li>
+          Let |contentType| be |this|.{{InteractionError/[[response]]}}.|contentType|,
+          if it exists, or `"application/json"` otherwise.
+        </li>
+        <li>
+          Let |value| be the result of running <a>parse interaction payload</a> on
+          |this|.{{InteractionError/[[data]]}}, |contentType| and
+          |this|.{{InteractionError/[[schema]]}}. If that throws, [=reject=] |promise|
+          with that exception and stop.
+        </li>
+        <li>
+          [=Resolve=] |promise| with |value|.
+        </li>
+      </ol>
+      <p>
+        {{InteractionError}} objects are
+        <a data-cite="HTML#serializable-objects">serializable objects</a>.
+        Their <a data-cite="HTML#serialization-steps">serialization steps</a>,
+        given |value| and |serialized|, are:
+      </p>
+      <ol>
+        <li>
+          Run the {{DOMException}} <a data-cite="HTML#serialization-steps">serialization steps</a>
+          given |value| and |serialized|.
+        </li>
+        <li>
+          Set |serialized|.[[\Data]] to a copy of |value|.{{InteractionError/[[data]]}}.
+        </li>
+        <li>
+          Set |serialized|.[[\Response]] to the
+          <a data-cite="HTML#sub-serialization">sub-serialization</a> of
+          |value|.{{InteractionError/[[response]]}}.
+        </li>
+        <li>
+          Set |serialized|.[[\Schema]] to the
+          <a data-cite="HTML#sub-serialization">sub-serialization</a> of
+          |value|.{{InteractionError/[[schema]]}}.
+        </li>
+      </ol>
+      <p>
+        Their <a data-cite="HTML#deserialization-steps">deserialization steps</a>,
+        given |serialized| and |value|, are:
+      </p>
+      <ol>
+        <li>
+          Run the {{DOMException}} <a data-cite="HTML#deserialization-steps">deserialization steps</a>
+          given |serialized| and |value|.
+        </li>
+        <li>
+          Set |value|.{{InteractionError/[[data]]}} to |serialized|.[[\Data]].
+        </li>
+        <li>
+          Set |value|.{{InteractionError/[[response]]}} to the
+          <a data-cite="HTML#sub-deserialization">sub-deserialization</a> of
+          |serialized|.[[\Response]].
+        </li>
+        <li>
+          Set |value|.{{InteractionError/[[schema]]}} to the
+          <a data-cite="HTML#sub-deserialization">sub-deserialization</a> of
+          |serialized|.[[\Schema]].
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h3>The <dfn>handle interaction error response</dfn> algorithm</h3>
+      <p>
+        This algorithm is invoked by any {{ConsumedThing}} method that performs a <a>WoT Interaction</a>.
+        It processes error responses returned by the <a>Protocol Bindings</a> and determines whether to
+        return an {{InteractionError}} or map the response to a {{DOMException}} with one of the
+        <a data-cite="WEBIDL#idl-DOMException-error-names">predefined error names</a>.
+      </p>
+      <p>
+        For a given {{ConsumedThing}} object |thing:ConsumedThing|, in order to
+        <a>handle interaction error response</a> given |error|, |form:Form|, |response|
+        and optionally |defaultSchema|, run these steps:
+      </p>
+      <p>
+        |defaultSchema| is the default output <a>DataSchema</a> of the
+        <a>WoT Interaction</a>, which applies to an <a>AdditionalExpectedResponse</a>
+        that does not define its own `schema` [[wot-thing-description11]].
+        It is not given for operations that do not have a single default output
+        <a>DataSchema</a>, such as `readmultipleproperties` or `unsubscribeevent`.
+        In that case, an {{InteractionError}} created for an <a>AdditionalExpectedResponse</a>
+        that does not define its own `schema` has no {{InteractionError/schema}}: its
+        {{InteractionError/value()}} function rejects, while its payload remains available
+        through {{InteractionError/arrayBuffer()}}.
+      </p>
+      <ol>
+        <li>
+          if |response| is not defined or null, attempt to map |error|
+          to a suitable {{DOMException}} or, if none, to {{OperationError}}. 
+          Return that error and stop.
+        </li>
+        <li>
+          Let |additionalResponses| be |form|.|additionalResponses|, if it exists.
+        </li>
+        <li>
+          Let |binding| be the binding that was used to make the request which resulted in |response|.
+        </li>
+        <li>
+          If |additionalResponses| is defined, for each |responseEntry:AdditionalExpectedResponse| in
+          |additionalResponses|:
+          <ol>
+            <li>
+              Let |match| be a boolean expression that checks if |response| matches a |responseEntry| according to |binding|
+            </li>
+            <li>
+              If |responseEntry|.|success| is `false` or not defined and if |match| is `true` for |responseEntry|, 
+              then run these sub-steps:
+              <ol>
+                <li>
+                  If |responseEntry|.|schema| exists, let |responseSchema| be
+                  |thing|.{{ConsumedThing/[[td]]}}.|schemaDefinitions|[|responseEntry|.|schema|].
+                  Otherwise, let |responseSchema| be |defaultSchema|.
+                </li>
+                <li>
+                  Let |data| be a [=byte sequence=] containing the payload data of
+                  |response|.
+                </li>
+                <li>
+                  Return a new {{InteractionError}} whose [=DOMException/message=] is
+                  derived from the |binding| or |error|, whose
+                  {{InteractionError/[[data]]}} is |data|, whose
+                  {{InteractionError/[[response]]}} is |responseEntry|, and whose
+                  {{InteractionError/[[schema]]}} is |responseSchema|.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </li>
+        <li>
+          If no match was found in |additionalResponses| but |binding| indicates
+          a failure, attempt to map the error
+          to a suitable {{DOMException}} or other appropriate
+          error type.
+        </li>
+        <li>
+          Otherwise, return {{OperationError}}.
+        </li>
+      </ol>
+    </section>
   </section>
 
   </section> <!-- Handling interaction data -->
@@ -1636,7 +1905,18 @@
             using |form| and the optional URI templates given in |options|.|uriVariables|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|, 
+            run the followingsub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                |form|, |failedResponse| and |interaction|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Let |response| be the response received to the request.
@@ -1680,10 +1960,25 @@
             Let |result:object| be an object and for each string |name:string| in |propertyNames| add a property with key |name| and the value `null`.
           </li>
           <li>
+            If this cannot be done with a single request with the <a>Protocol Bindings</a>, [=reject=] |promise| with a
+            {{NotSupportedError}} and stop.
+          </li>
+          <li>
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to retrieve the <a>Property</a> values given by |propertyNames| with |form| and optional URI templates given in |options|' |uriVariables|.
           </li>
           <li>
-            If this cannot be done with a single request with the <a>Protocol Bindings</a>, [=reject=] |promise| with a {{NotSupportedError}} and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Process the response and for each |key| in |result|, run the following
@@ -1751,7 +2046,18 @@
             If this cannot be done with a single request with the <a>Protocol Bindings</a> of the <a>Thing</a>, then [=reject=] |promise| with a {{NotSupportedError}} and stop.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Process the reply and let |result:object| be an object with the keys and values obtained in the reply.
@@ -1821,7 +2127,18 @@
             |options|' |uriVariables|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                |form|, |failedResponse| and |interaction|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Otherwise [=resolve=] |promise|.
@@ -1905,8 +2222,18 @@
             with a {{NotSupportedError}} and stop.
           </li>
           <li>
-            If the request fails, return the error received from the
-            <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                |form| and |failedResponse|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Otherwise [=resolve=] |promise|.
@@ -2005,8 +2332,18 @@
             given in |options|' |uriVariables|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from
-            the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                |form|, |failedResponse| and |subscription|.{{Subscription/[[interaction]]}}.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             [=map/Set=] |thing|.{{ConsumedThing/[[activeObservations]]}}[|observationId|] to |subscription| and [=resolve=] |promise|.
@@ -2095,7 +2432,18 @@
             Make a request to the underlying platform (via the <a>Protocol Bindings</a>) to invoke the <a>Action</a> identified by |actionName| given |args| and |options|.|uriVariables|.
           </li>
           <li>
-            If the request fails locally or returns an error over the network, [=reject=] |promise| with the error received from the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                |form|, |failedResponse| and |interaction|.|output|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
           </li>
           <li>
             Let |value| be the reply returned in the reply.
@@ -2192,8 +2540,24 @@
             and optional subscription data given in |options|.|data|.
           </li>
           <li>
-            If the request fails, [=reject=] |promise| with the error received from
-            the <a>Protocol Bindings</a> and stop.
+            If the request fails with error |receivedError| and optionally |failedResponse|,
+            run the following sub-steps:
+            <ol>
+              <li>
+                let |error| be the result of running
+                <a>handle interaction error response</a> given the |receivedError|,
+                {{Subscription/[[form]]}}, |failedResponse| and |subscription|.{{Subscription/[[interaction]]}}.|data|.
+              </li>
+              <li>
+                [=Reject=] |promise| with |error| and stop.
+              </li>
+            </ol>
+            <p class="note">
+              The <a>Thing Description</a> does not define a dedicated output <a>DataSchema</a>
+              for the response to an <a>Event</a> subscription request. Therefore, this
+              specification uses the `data` schema of the <a>Event</a> as the default schema
+              for an <a>AdditionalExpectedResponse</a> that does not define its own `schema`.
+            </p>
           </li>
           <li>
             [=map/Set=] |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|subscriptionId|] to |subscription|.
@@ -2419,8 +2783,22 @@
               unsubscribe data given in |options|.|data|.
             </li>
             <li>
-              If the request fails, [=reject=] |promise| with the error received from
-              the <a>Protocol Bindings</a> and stop.
+              If the request fails with error |receivedError| and optionally |failedResponse|,
+              run the following sub-steps:
+              <ol>
+                <li>
+                  let |error| be the result of running
+                  <a>handle interaction error response</a> given the |receivedError|,
+                  |unsubscribeForm| and |failedResponse|.
+                </li>
+                <li>
+                  [=Reject=] |promise| with |error| and stop.
+                </li>
+                <li>
+                  If the underlying platform receives further notifications for this
+                  subscription, implementations SHOULD silently suppress them.
+                </li>
+              </ol>
             </li>
             <li>
               Otherwise:
