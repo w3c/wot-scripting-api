@@ -1,1154 +1,37 @@
 {
-  "title": "Thing Description",
-  "version": "1.1-12-March-2025",
-  "description": "JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/w3c/wot-thing-description/main/validation/td-json-schema-validation.json",
-  "definitions": {
-    "anyUri": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "descriptions": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
-    },
-    "title": {
-      "type": "string"
-    },
-    "titles": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
-    },
-    "security": {
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1
-        },
-        {
-          "type": "string"
-        }
-      ]
-    },
-    "scopes": {
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        {
-          "type": "string"
-        }
-      ]
-    },
-    "subprotocol": {
-      "type": "string",
-      "examples": [
-        "longpoll",
-        "websub",
-        "sse"
-      ]
-    },
-    "thing-context-td-uri-v1": {
-      "type": "string",
-      "const": "https://www.w3.org/2019/wot/td/v1"
-    },
-    "thing-context-td-uri-v1.1": {
-      "type": "string",
-      "const": "https://www.w3.org/2022/wot/td/v1.1"
-    },
-    "thing-context-td-uri-temp": {
-      "type": "string",
-      "const": "http://www.w3.org/ns/td"
-    },
-    "thing-context": {
-      "anyOf": [
-        {
-          "$comment": "New context URI with other vocabularies after it but not the old one",
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/thing-context-td-uri-v1.1"
-            }
-          ],
-          "additionalItems": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/anyUri"
-              },
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ],
-            "not": {
-              "$ref": "#/definitions/thing-context-td-uri-v1"
-            }
-          }
-        },
-        {
-          "$comment": "Only the new context URI",
-          "$ref": "#/definitions/thing-context-td-uri-v1.1"
-        },
-        {
-          "$comment": "Old context URI, followed by the new one and possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/thing-context-td-uri-v1"
-            },
-            {
-              "$ref": "#/definitions/thing-context-td-uri-v1.1"
-            }
-          ],
-          "minItems": 2,
-          "additionalItems": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/anyUri"
-              },
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "$comment": "Old context URI, followed by possibly other vocabularies. minItems and contains are required since prefixItems does not say all items should be provided",
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/thing-context-td-uri-v1"
-            }
-          ],
-          "minItems": 1,
-          "additionalItems": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/anyUri"
-              },
-              {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "$comment": "Only the old context URI",
-          "$ref": "#/definitions/thing-context-td-uri-v1"
-        }
-      ]
-    },
-    "bcp47_string": {
-      "type": "string",
-      "pattern": "^(((([A-Za-z]{2,3}(-([A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-([A-Za-z]{4}))?(-([A-Za-z]{2}|[0-9]{3}))?(-([A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-([0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(x(-[A-Za-z0-9]{1,8})+))?)|(x(-[A-Za-z0-9]{1,8})+)|((en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang)))$"
-    },
-    "type_declaration": {
-      "oneOf": [
-        {
-          "type": "string",
-          "not": {
-            "const": "tm:ThingModel"
-          }
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "not": {
-              "const": "tm:ThingModel"
-            }
-          }
-        }
-      ]
-    },
-    "dataSchema-type": {
-      "type": "string",
-      "enum": [
-        "boolean",
-        "integer",
-        "number",
-        "string",
-        "object",
-        "array",
-        "null"
-      ]
-    },
-    "dataSchema": {
-      "type": "object",
+  "$defs": {
+    "APIKeySecurityScheme": {
+      "additionalProperties": true,
       "properties": {
+        "@name": {
+          "description": "Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.",
+          "type": "string"
+        },
         "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "title": {
-          "$ref": "#/definitions/title"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "titles": {
-          "$ref": "#/definitions/titles"
-        },
-        "writeOnly": {
-          "type": "boolean"
-        },
-        "readOnly": {
-          "type": "boolean"
-        },
-        "oneOf": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/dataSchema"
-          }
-        },
-        "unit": {
-          "type": "string"
-        },
-        "enum": {
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "format": {
-          "type": "string"
-        },
-        "const": {},
-        "default": {},
-        "contentEncoding": {
-          "type": "string"
-        },
-        "contentMediaType": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/definitions/dataSchema-type"
-        },
-        "items": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/dataSchema"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/dataSchema"
-              }
-            }
-          ]
-        },
-        "maxItems": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "minItems": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "minimum": {
-          "type": "number"
-        },
-        "maximum": {
-          "type": "number"
-        },
-        "exclusiveMinimum": {
-          "type": "number"
-        },
-        "exclusiveMaximum": {
-          "type": "number"
-        },
-        "minLength": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "maxLength": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "multipleOf": {
-          "$ref": "#/definitions/multipleOfDefinition"
-        },
-        "properties": {
-          "additionalProperties": {
-            "$ref": "#/definitions/dataSchema"
-          }
-        },
-        "required": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "additionalResponsesDefinition": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "contentType": {
-            "type": "string"
-          },
-          "schema": {
-            "type": "string"
-          },
-          "success": {
-            "type": "boolean"
-          }
-        }
-      }
-    },
-    "multipleOfDefinition": {
-      "type": [
-        "integer",
-        "number"
-      ],
-      "exclusiveMinimum": 0
-    },
-    "expectedResponse": {
-      "type": "object",
-      "properties": {
-        "contentType": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "contentType"
-      ]
-    },
-    "form_element_base": {
-      "type": "object",
-      "properties": {
-        "op": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
           "oneOf": [
             {
               "type": "string"
             },
             {
-              "type": "array",
               "items": {
                 "type": "string"
-              }
-            }
-          ]
-        },
-        "href": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "contentType": {
-          "type": "string"
-        },
-        "contentCoding": {
-          "type": "string"
-        },
-        "subprotocol": {
-          "$ref": "#/definitions/subprotocol"
-        },
-        "security": {
-          "$ref": "#/definitions/security"
-        },
-        "scopes": {
-          "$ref": "#/definitions/scopes"
-        },
-        "response": {
-          "$ref": "#/definitions/expectedResponse"
-        },
-        "additionalResponses": {
-          "$ref": "#/definitions/additionalResponsesDefinition"
-        }
-      },
-      "required": [
-        "href"
-      ],
-      "additionalProperties": true
-    },
-    "form_element_property": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/form_element_base"
-        }
-      ],
-      "type": "object",
-      "properties": {
-        "op": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": [
-                "readproperty",
-                "writeproperty",
-                "observeproperty",
-                "unobserveproperty"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "readproperty",
-                  "writeproperty",
-                  "observeproperty",
-                  "unobserveproperty"
-                ]
               },
-              "minItems": 1
+              "minItems": 1,
+              "type": "array"
             }
           ]
-        }
-      },
-      "additionalProperties": true
-    },
-    "form_element_action": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/form_element_base"
-        }
-      ],
-      "type": "object",
-      "properties": {
-        "op": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": [
-                "invokeaction",
-                "queryaction",
-                "cancelaction"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "invokeaction",
-                  "queryaction",
-                  "cancelaction"
-                ]
-              },
-              "minItems": 1
-            }
-          ]
-        }
-      },
-      "additionalProperties": true
-    },
-    "form_element_event": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/form_element_base"
-        }
-      ],
-      "type": "object",
-      "properties": {
-        "op": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": [
-                "subscribeevent",
-                "unsubscribeevent"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "subscribeevent",
-                  "unsubscribeevent"
-                ]
-              },
-              "minItems": 1
-            }
-          ]
-        }
-      },
-      "additionalProperties": true
-    },
-    "form_element_root": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/form_element_base"
-        }
-      ],
-      "type": "object",
-      "properties": {
-        "op": {
-          "oneOf": [
-            {
-              "type": "string",
-              "enum": [
-                "readallproperties",
-                "writeallproperties",
-                "readmultipleproperties",
-                "writemultipleproperties",
-                "observeallproperties",
-                "unobserveallproperties",
-                "queryallactions",
-                "subscribeallevents",
-                "unsubscribeallevents"
-              ]
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "readallproperties",
-                  "writeallproperties",
-                  "readmultipleproperties",
-                  "writemultipleproperties",
-                  "observeallproperties",
-                  "unobserveallproperties",
-                  "queryallactions",
-                  "subscribeallevents",
-                  "unsubscribeallevents"
-                ]
-              },
-              "minItems": 1
-            }
-          ]
-        }
-      },
-      "additionalProperties": true,
-      "required": [
-        "op"
-      ]
-    },
-    "form": {
-      "$comment": "This is NOT for validation purposes but for automatic generation of TS types. For more info, please see: https://github.com/w3c/wot-thing-description/pull/1319#issuecomment-994950057",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/form_element_property"
-        },
-        {
-          "$ref": "#/definitions/form_element_action"
-        },
-        {
-          "$ref": "#/definitions/form_element_event"
-        },
-        {
-          "$ref": "#/definitions/form_element_root"
-        }
-      ]
-    },
-    "property_element": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
         },
         "description": {
-          "$ref": "#/definitions/description"
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
         },
         "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "title": {
-          "$ref": "#/definitions/title"
-        },
-        "titles": {
-          "$ref": "#/definitions/titles"
-        },
-        "forms": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/form_element_property"
-          }
-        },
-        "uriVariables": {
-          "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/dataSchema"
-          }
-        },
-        "observable": {
-          "type": "boolean"
-        },
-        "writeOnly": {
-          "type": "boolean"
-        },
-        "readOnly": {
-          "type": "boolean"
-        },
-        "oneOf": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/dataSchema"
-          }
-        },
-        "unit": {
-          "type": "string"
-        },
-        "enum": {
-          "type": "array",
-          "minItems": 1,
-          "uniqueItems": true
-        },
-        "format": {
-          "type": "string"
-        },
-        "const": {},
-        "default": {},
-        "type": {
-          "$ref": "#/definitions/dataSchema-type"
-        },
-        "items": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/dataSchema"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/dataSchema"
-              }
-            }
-          ]
-        },
-        "maxItems": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "minItems": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "minimum": {
-          "type": "number"
-        },
-        "maximum": {
-          "type": "number"
-        },
-        "exclusiveMinimum": {
-          "type": "number"
-        },
-        "exclusiveMaximum": {
-          "type": "number"
-        },
-        "minLength": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "maxLength": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "multipleOf": {
-          "$ref": "#/definitions/multipleOfDefinition"
-        },
-        "properties": {
-          "additionalProperties": {
-            "$ref": "#/definitions/dataSchema"
-          }
-        },
-        "required": {
-          "type": "array",
-          "items": {
             "type": "string"
-          }
-        }
-      },
-      "required": [
-        "forms"
-      ],
-      "additionalProperties": true
-    },
-    "action_element": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "title": {
-          "$ref": "#/definitions/title"
-        },
-        "titles": {
-          "$ref": "#/definitions/titles"
-        },
-        "forms": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/form_element_action"
-          }
-        },
-        "uriVariables": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/dataSchema"
-          }
-        },
-        "input": {
-          "$ref": "#/definitions/dataSchema"
-        },
-        "output": {
-          "$ref": "#/definitions/dataSchema"
-        },
-        "safe": {
-          "type": "boolean"
-        },
-        "idempotent": {
-          "type": "boolean"
-        },
-        "synchronous": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "forms"
-      ],
-      "additionalProperties": true
-    },
-    "event_element": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "title": {
-          "$ref": "#/definitions/title"
-        },
-        "titles": {
-          "$ref": "#/definitions/titles"
-        },
-        "forms": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/form_element_event"
-          }
-        },
-        "uriVariables": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/dataSchema"
-          }
-        },
-        "subscription": {
-          "$ref": "#/definitions/dataSchema"
-        },
-        "data": {
-          "$ref": "#/definitions/dataSchema"
-        },
-        "dataResponse": {
-          "$ref": "#/definitions/dataSchema"
-        },
-        "cancellation": {
-          "$ref": "#/definitions/dataSchema"
-        }
-      },
-      "required": [
-        "forms"
-      ],
-      "additionalProperties": true
-    },
-    "base_link_element": {
-      "type": "object",
-      "properties": {
-        "href": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "type": {
-          "type": "string"
-        },
-        "rel": {
-          "type": "string"
-        },
-        "anchor": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "hreflang": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/bcp47_string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/bcp47_string"
-              }
-            }
-          ]
-        }
-      },
-      "required": [
-        "href"
-      ],
-      "additionalProperties": true
-    },
-    "link_element": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/base_link_element"
-        },
-        {
-          "not": {
-            "description": "A basic link element should not contain sizes",
-            "type": "object",
-            "properties": {
-              "sizes": {}
-            },
-            "required": [
-              "sizes"
-            ]
-          }
-        },
-        {
-          "not": {
-            "description": "A basic link element should not contain icon or tm:extends",
-            "properties": {
-              "rel": {
-                "enum": [
-                  "icon",
-                  "tm:extends"
-                ]
-              }
-            },
-            "required": [
-              "rel"
-            ]
-          }
-        }
-      ]
-    },
-    "icon_link_element": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/base_link_element"
-        },
-        {
-          "properties": {
-            "rel": {
-              "const": "icon"
-            },
-            "sizes": {
-              "type": "string",
-              "pattern": "[0-9]*x[0-9]+"
-            }
           },
-          "required": [
-            "rel"
-          ]
-        }
-      ]
-    },
-    "additionalSecurityScheme": {
-      "description": "Applies to additional SecuritySchemes not defined in the WoT TD specification.",
-      "$comment": "Additional SecuritySchemes should always be defined via a context extension, using a prefixed value for the scheme. This prefix (e.g. 'ace', see the example below) must contain at least one character in order to reference a valid JSON-LD context extension.",
-      "examples": [
-        {
-          "scheme": "ace:ACESecurityScheme",
-          "ace:as": "coaps://as.example.com/token",
-          "ace:audience": "coaps://rs.example.com",
-          "ace:scopes": [
-            "limited",
-            "special"
-          ],
-          "ace:cnonce": true
-        }
-      ],
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "pattern": ".+:.*"
-        }
-      },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
-    },
-    "noSecurityScheme": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "nosec"
-          ]
-        }
-      },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
-    },
-    "autoSecurityScheme": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "auto"
-          ]
-        }
-      },
-      "not": {
-        "required": [
-          "name"
-        ]
-      },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
-    },
-    "comboSecurityScheme": {
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "enum": [
-                "combo"
-              ]
-            },
-            "oneOf": {
-              "type": "array",
-              "minItems": 2,
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "scheme",
-            "oneOf"
-          ],
-          "additionalProperties": true
-        },
-        {
-          "type": "object",
-          "properties": {
-            "@type": {
-              "$ref": "#/definitions/type_declaration"
-            },
-            "description": {
-              "$ref": "#/definitions/description"
-            },
-            "descriptions": {
-              "$ref": "#/definitions/descriptions"
-            },
-            "proxy": {
-              "$ref": "#/definitions/anyUri"
-            },
-            "scheme": {
-              "type": "string",
-              "enum": [
-                "combo"
-              ]
-            },
-            "allOf": {
-              "type": "array",
-              "minItems": 2,
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "scheme",
-            "allOf"
-          ],
-          "additionalProperties": true
-        }
-      ]
-    },
-    "basicSecurityScheme": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "basic"
-          ]
-        },
-        "in": {
-          "type": "string",
-          "enum": [
-            "header",
-            "query",
-            "body",
-            "cookie",
-            "auto"
-          ]
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
-    },
-    "digestSecurityScheme": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "digest"
-          ]
-        },
-        "qop": {
-          "type": "string",
-          "enum": [
-            "auth",
-            "auth-int"
-          ]
-        },
-        "in": {
-          "type": "string",
-          "enum": [
-            "header",
-            "query",
-            "body",
-            "cookie",
-            "auto"
-          ]
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
-    },
-    "apiKeySecurityScheme": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "apikey"
-          ]
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
         },
         "in": {
           "type": "string",
@@ -1159,46 +42,203 @@
             "cookie",
             "uri",
             "auto"
+          ],
+          "description": "Specifies the location of security authentication information."
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "apikey"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "in",
+        "scheme"
+      ],
+      "type": "object"
+    },
+    "ActionAffordance": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
           ]
         },
-        "name": {
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "forms": {
+          "description": "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. Thing level forms are used to describe endpoints for a group of interaction affordances.",
+          "items": {
+            "$ref": "#/$defs/Form"
+          },
+          "type": "array"
+        },
+        "idempotent": {
+          "description": "Indicates whether the Action is idempotent (=true) or not. Informs whether the Action can be called repeatedly with the same result, if present, based on the same input.",
+          "type": "boolean"
+        },
+        "input": {
+          "$ref": "#/$defs/DataSchema",
+          "description": "Used to define the input data schema of the Action."
+        },
+        "output": {
+          "$ref": "#/$defs/DataSchema",
+          "description": "Used to define the output data schema of the Action."
+        },
+        "safe": {
+          "description": "Signals if the Action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example.",
+          "type": "boolean"
+        },
+        "synchronous": {
+          "description": "Indicates whether the action is synchronous (=true) or not. A synchronous action means that the response contains all information about the result and no further querying about the status is needed.",
+          "type": "boolean"
+        },
+        "title": {
+          "description": "Provides a human-readable title (e.g., display a text for UI representation) based on a default language.",
+          "type": "string"
+        },
+        "titles": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.",
+          "type": "object"
+        },
+        "uriVariables": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "description": "Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "forms"
+      ],
+      "type": "object"
+    },
+    "AdditionalExpectedResponse": {
+      "additionalProperties": true,
+      "properties": {
+        "contentType": {
+          "description": "Assign a content type based on a media type (e.g., text/plain) and potential parameters (e.g., charset=utf-8) for the media type [RFC2046].",
+          "type": "string"
+        },
+        "schema": {
+          "description": "Used to define the output data schema for an additional response if it differs from the default output data schema. Rather than a DataSchema object, the name of a previous definition given in a schemaDefinitions map must be used.",
+          "type": "string"
+        },
+        "success": {
+          "description": "Signals if an additional response should not be considered an error.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "AutoSecurityScheme": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "auto"
+          ],
           "type": "string"
         }
       },
       "required": [
         "scheme"
       ],
-      "additionalProperties": true
+      "type": "object"
     },
-    "bearerSecurityScheme": {
-      "type": "object",
+    "BasicSecurityScheme": {
+      "additionalProperties": true,
       "properties": {
+        "@name": {
+          "description": "Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.",
+          "type": "string"
+        },
         "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "bearer"
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
           ]
         },
-        "authorization": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "alg": {
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
           "type": "string"
         },
-        "format": {
-          "type": "string"
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
         },
         "in": {
           "type": "string",
@@ -1207,287 +247,1536 @@
             "query",
             "body",
             "cookie",
+            "uri",
             "auto"
-          ]
+          ],
+          "description": "Specifies the location of security authentication information."
         },
-        "name": {
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "basic"
+          ],
           "type": "string"
         }
       },
       "required": [
         "scheme"
       ],
-      "additionalProperties": true
+      "type": "object"
     },
-    "pskSecurityScheme": {
-      "type": "object",
+    "BearerSecurityScheme": {
+      "additionalProperties": true,
       "properties": {
-        "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "psk"
-          ]
-        },
-        "identity": {
+        "@name": {
+          "description": "Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.",
           "type": "string"
-        }
-      },
-      "required": [
-        "scheme"
-      ],
-      "additionalProperties": true
-    },
-    "oAuth2SecurityScheme": {
-      "type": "object",
-      "properties": {
+        },
         "@type": {
-          "$ref": "#/definitions/type_declaration"
-        },
-        "description": {
-          "$ref": "#/definitions/description"
-        },
-        "descriptions": {
-          "$ref": "#/definitions/descriptions"
-        },
-        "proxy": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scheme": {
-          "type": "string",
-          "enum": [
-            "oauth2"
-          ]
-        },
-        "authorization": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "token": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "refresh": {
-          "$ref": "#/definitions/anyUri"
-        },
-        "scopes": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
           "oneOf": [
             {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "type": "string"
             },
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
             }
           ]
         },
+        "alg": {
+          "type": "string",
+          "enum": [
+            "ES256",
+            "ES512-256"
+          ],
+          "description": "Encoding, encryption, or digest algorithm (e.g., ES256, ES512-256)."
+        },
+        "authorization": {
+          "description": "URI of the authorization server.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "jwt",
+            "jws",
+            "cwt",
+            "jwe"
+          ],
+          "description": "Specifies format of security authentication information."
+        },
+        "in": {
+          "type": "string",
+          "enum": [
+            "header",
+            "query",
+            "body",
+            "cookie",
+            "uri",
+            "auto"
+          ],
+          "description": "Specifies the location of security authentication information."
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "bearer"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "scheme"
+      ],
+      "type": "object"
+    },
+    "ComboSecurityScheme": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "allOf": {
+          "description": "Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.",
+          "items": {
+            "minimum": 2,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "oneOf": {
+          "description": "Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access. Only one may be chosen for use.",
+          "items": {
+            "minimum": 2,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "combo"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "scheme"
+      ],
+      "type": "object"
+    },
+    "DataSchema": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "allOf": {
+          "description": "Used to ensure that the data is valid against all of the specified schemas in the array.",
+          "items": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "type": "array"
+        },
+        "const": {
+          "description": "Provides a constant value."
+        },
+        "default": {
+          "description": "Supply a default value. The value SHOULD validate against the data schema in which it resides."
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "enum": {
+          "description": "Restricted set of values provided as an array.",
+          "items": {},
+          "type": "array"
+        },
+        "format": {
+          "description": "Allows validation based on a format pattern such as \"date-time\", \"email\", \"uri\", etc.",
+          "type": "string"
+        },
+        "oneOf": {
+          "description": "Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.",
+          "items": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "type": "array"
+        },
+        "readOnly": {
+          "description": "Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.",
+          "type": "boolean"
+        },
+        "title": {
+          "description": "Provides a human-readable title (e.g., display a text for UI representation) based on a default language.",
+          "type": "string"
+        },
+        "titles": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.",
+          "type": "object"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "object",
+            "array",
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "null"
+          ],
+          "description": "Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null)."
+        },
+        "unit": {
+          "description": "Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.",
+          "type": "string"
+        },
+        "writeOnly": {
+          "description": "Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.",
+          "type": "boolean"
+        },
+        "items": {
+          "description": "Used to define the characteristics of an array.",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/DataSchema"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/DataSchema"
+              },
+              "type": "array"
+            }
+          ]
+        },
+        "maxItems": {
+          "description": "Defines the maximum number of items that have to be in the array",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "minItems": {
+          "description": "Defines the minimum number of items that have to be in the array",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "exclusiveMaximum": {
+          "description": "Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "exclusiveMinimum": {
+          "description": "Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "maximum": {
+          "description": "Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "minimum": {
+          "description": "Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "multipleOf": {
+          "description": "Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "properties": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "description": "Data schema nested definitions.",
+          "type": "object"
+        },
+        "required": {
+          "description": "Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "contentEncoding": {
+          "type": "string",
+          "enum": [
+            "7bit",
+            "8bit",
+            "binary",
+            "quoted-printable",
+            "base16",
+            "base32",
+            "base64"
+          ],
+          "description": "Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648."
+        },
+        "contentMediaType": {
+          "type": "string",
+          "enum": [
+            "image/png",
+            "audio/mpeg"
+          ],
+          "description": "Specifies the MIME type of the contents of a string value, as described in RFC 2046."
+        },
+        "maxLength": {
+          "description": "Specifies the maximum length of a string. Only applicable for associated string types.",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "minLength": {
+          "description": "Specifies the minimum length of a string. Only applicable for associated string types.",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "pattern": {
+          "description": "Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DigestSecurityScheme": {
+      "additionalProperties": true,
+      "properties": {
+        "@name": {
+          "description": "Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.",
+          "type": "string"
+        },
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "in": {
+          "type": "string",
+          "enum": [
+            "header",
+            "query",
+            "body",
+            "cookie",
+            "uri",
+            "auto"
+          ],
+          "description": "Specifies the location of security authentication information."
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "qop": {
+          "type": "string",
+          "enum": [
+            "auth",
+            "auth-int"
+          ],
+          "description": "Quality of protection."
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "digest"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "scheme"
+      ],
+      "type": "object"
+    },
+    "EventAffordance": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "cancellation": {
+          "$ref": "#/$defs/DataSchema",
+          "description": "Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook."
+        },
+        "data": {
+          "$ref": "#/$defs/DataSchema",
+          "description": "Defines the data schema of the Event instance messages pushed by the Thing."
+        },
+        "dataResponse": {
+          "$ref": "#/$defs/DataSchema",
+          "description": "Defines the data schema of the Event response messages sent by the consumer in a response to a data message."
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "forms": {
+          "description": "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. Thing level forms are used to describe endpoints for a group of interaction affordances.",
+          "items": {
+            "$ref": "#/$defs/Form"
+          },
+          "type": "array"
+        },
+        "subscription": {
+          "$ref": "#/$defs/DataSchema",
+          "description": "Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks."
+        },
+        "title": {
+          "description": "Provides a human-readable title (e.g., display a text for UI representation) based on a default language.",
+          "type": "string"
+        },
+        "titles": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.",
+          "type": "object"
+        },
+        "uriVariables": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "description": "Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "forms"
+      ],
+      "type": "object"
+    },
+    "ExpectedResponse": {
+      "additionalProperties": true,
+      "properties": {
+        "contentType": {
+          "description": "Assign a content type based on a media type (e.g., text/plain) and potential parameters  (e.g., charset=utf-8) for the media type [RFC2046].",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Form": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Form_element_action"
+        },
+        {
+          "$ref": "#/$defs/Form_element_event"
+        },
+        {
+          "$ref": "#/$defs/Form_element_property"
+        },
+        {
+          "$ref": "#/$defs/Form_element_root"
+        },
+        {
+          "$ref": "#/$defs/Form_element_base",
+          "not": {
+            "required": [
+              "op"
+            ]
+          }
+        }
+      ]
+    },
+    "Link": {
+      "additionalProperties": true,
+      "if": {
+        "properties": {
+          "rel": {
+            "const": "icon"
+          }
+        },
+        "required": [
+          "rel"
+        ]
+      },
+      "properties": {
+        "anchor": {
+          "description": "Overrides the link context (by default the Thing itself identified by its id) with the given URI or IRI.",
+          "type": "string"
+        },
+        "href": {
+          "description": "Target URI of a submission target of a Form. See the note on URI/IRI.",
+          "type": "string"
+        },
+        "hreflang": {
+          "description": "The hreflang attribute specifies the language of a linked document. The value of this must be a valid  language tag [BCP47].",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "rel": {
+          "description": "A link relation type identifies the semantics of a link.",
+          "type": "string"
+        },
+        "sizes": {
+          "description": "Target attribute that specifies one or more sizes for the referenced icon. Only applicable for relation  type \"icon\". The value pattern follows {Height}x{Width} (e.g., \"16x16\", \"16x16 32x32\").",
+          "pattern": "^(\\d+x\\d+)(\\s+\\d+x\\d+)*$",
+          "type": "string"
+        },
+        "type": {
+          "description": "Target attribute providing a hint indicating what the media type [RFC2046] of the result of  dereferencing the link should be.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "href"
+      ],
+      "then": {
+        "properties": {
+          "sizes": {}
+        },
+        "required": [
+          "sizes"
+        ]
+      },
+      "type": "object"
+    },
+    "MultiLanguage": {
+      "additionalProperties": true,
+      "properties": {
+        "language_value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "language_value"
+      ],
+      "type": "object"
+    },
+    "NoSecurityScheme": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "nosec"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "scheme"
+      ],
+      "type": "object"
+    },
+    "OAuth2SecurityScheme": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "authorization": {
+          "description": "URI of the authorization server.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
         "flow": {
+          "type": "string",
+          "enum": [
+            "code",
+            "client"
+          ],
+          "description": "Authorization flow."
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "refresh": {
+          "description": "URI of the refresh server.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "oauth2"
+          ],
+          "type": "string"
+        },
+        "scopes": {
           "anyOf": [
             {
               "type": "string"
             },
             {
-              "type": "string",
-              "enum": [
-                "code",
-                "client"
-              ]
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an  authorization server and associated with forms in order to identify what resources a client may access and how.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             }
           ]
+        },
+        "token": {
+          "description": "URI of the token server.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "flow",
+        "scheme"
+      ],
+      "type": "object"
+    },
+    "PSKSecurityScheme": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "identity": {
+          "description": "Identifier providing information which can be used for selection or confirmation.",
+          "type": "string"
+        },
+        "proxy": {
+          "description": "URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.",
+          "type": "string"
+        },
+        "scheme": {
+          "description": "Identification of the security mechanism being configured.",
+          "enum": [
+            "psk"
+          ],
+          "type": "string"
         }
       },
       "required": [
         "scheme"
       ],
-      "additionalProperties": true
+      "type": "object"
     },
-    "securityScheme": {
+    "PropertyAffordance": {
+      "additionalProperties": true,
+      "properties": {
+        "@type": {
+          "description": "JSON-LD keyword to label the object with semantic tags (or types).",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "allOf": {
+          "description": "Used to ensure that the data is valid against all of the specified schemas in the array.",
+          "items": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "type": "array"
+        },
+        "const": {
+          "description": "Provides a constant value."
+        },
+        "default": {
+          "description": "Supply a default value. The value SHOULD validate against the data schema in which it resides."
+        },
+        "description": {
+          "description": "Provides additional (human-readable) information based on a default language.",
+          "type": "string"
+        },
+        "descriptions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+          "type": "object"
+        },
+        "enum": {
+          "description": "Restricted set of values provided as an array.",
+          "items": {},
+          "type": "array"
+        },
+        "format": {
+          "description": "Allows validation based on a format pattern such as \"date-time\", \"email\", \"uri\", etc.",
+          "type": "string"
+        },
+        "forms": {
+          "description": "Set of form hypermedia controls that describe how an operation can be performed.",
+          "items": {
+            "$ref": "#/$defs/Form"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "observable": {
+          "description": "A hint that indicates whether Servients hosting the Thing and Intermediaries should provide a Protocol Binding that supports the observeproperty and unobserveproperty operations for this Property. Also see Interaction Semantics for further information on the usage patterns and implications.",
+          "type": "boolean"
+        },
+        "oneOf": {
+          "description": "Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.",
+          "items": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "type": "array"
+        },
+        "readOnly": {
+          "description": "Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.",
+          "type": "boolean"
+        },
+        "title": {
+          "description": "Provides a human-readable title (e.g., display a text for UI representation) based on a default language.",
+          "type": "string"
+        },
+        "titles": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.",
+          "type": "object"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "object",
+            "array",
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "null"
+          ],
+          "description": "Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null)."
+        },
+        "unit": {
+          "description": "Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.",
+          "type": "string"
+        },
+        "uriVariables": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "description": "Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.",
+          "type": "object"
+        },
+        "writeOnly": {
+          "description": "Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.",
+          "type": "boolean"
+        },
+        "items": {
+          "description": "Used to define the characteristics of an array.",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/DataSchema"
+            },
+            {
+              "items": {
+                "$ref": "#/$defs/DataSchema"
+              },
+              "type": "array"
+            }
+          ]
+        },
+        "maxItems": {
+          "description": "Defines the maximum number of items that have to be in the array",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "minItems": {
+          "description": "Defines the minimum number of items that have to be in the array",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "exclusiveMaximum": {
+          "description": "Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "exclusiveMinimum": {
+          "description": "Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "maximum": {
+          "description": "Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "minimum": {
+          "description": "Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.",
+          "type": "number"
+        },
+        "multipleOf": {
+          "description": "Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "properties": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DataSchema"
+          },
+          "description": "Data schema nested definitions.",
+          "type": "object"
+        },
+        "required": {
+          "description": "Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "contentEncoding": {
+          "type": "string",
+          "enum": [
+            "7bit",
+            "8bit",
+            "binary",
+            "quoted-printable",
+            "base16",
+            "base32",
+            "base64"
+          ],
+          "description": "Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648."
+        },
+        "contentMediaType": {
+          "type": "string",
+          "enum": [
+            "image/png",
+            "audio/mpeg"
+          ],
+          "description": "Specifies the MIME type of the contents of a string value, as described in RFC 2046."
+        },
+        "maxLength": {
+          "description": "Specifies the maximum length of a string. Only applicable for associated string types.",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "minLength": {
+          "description": "Specifies the minimum length of a string. Only applicable for associated string types.",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "pattern": {
+          "description": "Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "forms"
+      ],
+      "type": "object"
+    },
+    "SecurityScheme": {
       "oneOf": [
         {
-          "$ref": "#/definitions/noSecurityScheme"
+          "$ref": "#/$defs/APIKeySecurityScheme"
         },
         {
-          "$ref": "#/definitions/autoSecurityScheme"
+          "$ref": "#/$defs/AutoSecurityScheme"
         },
         {
-          "$ref": "#/definitions/comboSecurityScheme"
+          "$ref": "#/$defs/BasicSecurityScheme"
         },
         {
-          "$ref": "#/definitions/basicSecurityScheme"
+          "$ref": "#/$defs/BearerSecurityScheme"
         },
         {
-          "$ref": "#/definitions/digestSecurityScheme"
+          "$ref": "#/$defs/ComboSecurityScheme"
         },
         {
-          "$ref": "#/definitions/apiKeySecurityScheme"
+          "$ref": "#/$defs/DigestSecurityScheme"
         },
         {
-          "$ref": "#/definitions/bearerSecurityScheme"
+          "$ref": "#/$defs/NoSecurityScheme"
         },
         {
-          "$ref": "#/definitions/pskSecurityScheme"
+          "$ref": "#/$defs/OAuth2SecurityScheme"
         },
         {
-          "$ref": "#/definitions/oAuth2SecurityScheme"
+          "$ref": "#/$defs/PSKSecurityScheme"
         },
         {
-          "$ref": "#/definitions/additionalSecurityScheme"
+          "type": "object",
+          "description": "Additional SecurityScheme not covered by known subclasses",
+          "properties": {
+            "scheme": {
+              "type": "string",
+              "pattern": ".+:.*"
+            }
+          },
+          "required": [
+            "scheme"
+          ]
         }
       ]
-    }
-  },
-  "type": "object",
-  "properties": {
-    "id": {
-      "type": "string",
-      "format": "uri"
     },
-    "title": {
-      "$ref": "#/definitions/title"
-    },
-    "titles": {
-      "$ref": "#/definitions/titles"
-    },
-    "properties": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/property_element"
-      }
-    },
-    "actions": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/action_element"
-      }
-    },
-    "events": {
-      "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/event_element"
-      }
-    },
-    "description": {
-      "$ref": "#/definitions/description"
-    },
-    "descriptions": {
-      "$ref": "#/definitions/descriptions"
-    },
-    "version": {
-      "type": "object",
+    "VersionInfo": {
+      "additionalProperties": true,
       "properties": {
         "instance": {
+          "description": "Provides a version indicator of this TD.",
+          "type": "string"
+        },
+        "model": {
+          "description": "Provides a version indicator of the underlying TM.",
           "type": "string"
         }
       },
       "required": [
         "instance"
-      ]
+      ],
+      "type": "object"
     },
-    "links": {
-      "type": "array",
-      "items": {
-        "oneOf": [
-          {
-            "$ref": "#/definitions/link_element"
+    "Form_element_base": {
+      "type": "object",
+      "properties": {
+        "additionalResponses": {
+          "description": "This optional term can be used if additional expected responses are possible, e.g., for error reporting. Each additional response needs to be distinguished from others in some way (for example, by specifying a protocol-specific error code), and may also have its own data schema.",
+          "items": {
+            "$ref": "#/$defs/AdditionalExpectedResponse"
           },
-          {
-            "$ref": "#/definitions/icon_link_element"
-          }
-        ]
-      }
+          "type": "array"
+        },
+        "contentCoding": {
+          "description": "Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include \"gzip\", \"deflate\", etc.",
+          "type": "string"
+        },
+        "contentType": {
+          "description": "Assign a content type based on a media type (e.g., text/plain) and potential parameters  (e.g., charset=utf-8) for the media type [RFC2046].",
+          "type": "string"
+        },
+        "href": {
+          "description": "Target URI of a submission target of a Form. See the note on URI/IRI.",
+          "type": "string"
+        },
+        "response": {
+          "$ref": "#/$defs/ExpectedResponse",
+          "description": "This optional term can be used if, e.g., the output communication metadata differ from input metadata (e.g., output contentType differ from the input contentType). The response name contains metadata that is only valid for the primary response messages."
+        },
+        "scopes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "description": "Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an  authorization server and associated with forms in order to identify what resources a client may access and how.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "security": {
+          "description": "Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          ]
+        },
+        "subprotocol": {
+          "description": "Indicates the exact protocol that should be used for additional notifications.",
+          "examples": [
+            "longpoll",
+            "websub",
+            "sse"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "href"
+      ],
+      "additionalProperties": true
     },
-    "forms": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "$ref": "#/definitions/form_element_root"
-      }
-    },
-    "base": {
-      "$ref": "#/definitions/anyUri"
-    },
-    "securityDefinitions": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "$ref": "#/definitions/securityScheme"
-      }
-    },
-    "schemaDefinitions": {
-      "type": "object",
-      "minProperties": 1,
-      "additionalProperties": {
-        "$ref": "#/definitions/dataSchema"
-      }
-    },
-    "support": {
-      "$ref": "#/definitions/anyUri"
-    },
-    "created": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "modified": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "profile": {
-      "oneOf": [
+    "Form_element_action": {
+      "allOf": [
         {
-          "$ref": "#/definitions/anyUri"
+          "$ref": "#/$defs/Form_element_base"
         },
         {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "$ref": "#/definitions/anyUri"
-          }
+          "type": "object",
+          "properties": {
+            "op": {
+              "oneOf": [
+                {
+                  "const": "invokeaction"
+                },
+                {
+                  "const": "queryaction"
+                },
+                {
+                  "const": "cancelaction"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "invokeaction",
+                      "queryaction",
+                      "cancelaction"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "op"
+          ]
         }
       ]
     },
-    "security": {
+    "Form_element_event": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Form_element_base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "oneOf": [
+                {
+                  "const": "subscribeevent"
+                },
+                {
+                  "const": "unsubscribeevent"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "subscribeevent",
+                      "unsubscribeevent"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "op"
+          ]
+        }
+      ]
+    },
+    "Form_element_property": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Form_element_base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "oneOf": [
+                {
+                  "const": "readproperty"
+                },
+                {
+                  "const": "writeproperty"
+                },
+                {
+                  "const": "observeproperty"
+                },
+                {
+                  "const": "unobserveproperty"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "readproperty",
+                      "writeproperty",
+                      "observeproperty",
+                      "unobserveproperty"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "op"
+          ]
+        }
+      ]
+    },
+    "Form_element_root": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/Form_element_base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "oneOf": [
+                {
+                  "const": "readallproperties"
+                },
+                {
+                  "const": "writeallproperties"
+                },
+                {
+                  "const": "readmultipleproperties"
+                },
+                {
+                  "const": "writemultipleproperties"
+                },
+                {
+                  "const": "observeallproperties"
+                },
+                {
+                  "const": "unobserveallproperties"
+                },
+                {
+                  "const": "queryallactions"
+                },
+                {
+                  "const": "subscribeallevents"
+                },
+                {
+                  "const": "unsubscribeallevents"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "readallproperties",
+                      "writeallproperties",
+                      "readmultipleproperties",
+                      "writemultipleproperties",
+                      "observeallproperties",
+                      "unobserveallproperties",
+                      "queryallactions",
+                      "subscribeallevents",
+                      "unsubscribeallevents"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "op"
+          ]
+        }
+      ]
+    }
+  },
+  "$id": "https://www.w3.org/2019/wot/td",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "additionalProperties": true,
+  "description": "An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things.",
+  "properties": {
+    "@context": {
+      "description": "JSON-LD keyword to define short-hand names called terms that are used throughout a TD document.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "https://www.w3.org/2019/wot/td/v1",
+            "https://www.w3.org/2022/wot/td/v1.1",
+            "https://www.w3.org/ns/wot-next/td"
+          ]
+        },
+        {
+          "contains": {
+            "enum": [
+              "https://www.w3.org/2019/wot/td/v1",
+              "https://www.w3.org/2022/wot/td/v1.1",
+              "https://www.w3.org/ns/wot-next/td"
+            ]
+          },
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {}
+            ]
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      ]
+    },
+    "@type": {
+      "description": "JSON-LD keyword to label the object with semantic tags (or types).",
       "oneOf": [
         {
           "type": "string"
         },
         {
-          "type": "array",
-          "minItems": 1,
           "items": {
             "type": "string"
-          }
+          },
+          "minItems": 1,
+          "type": "array"
         }
       ]
     },
-    "uriVariables": {
-      "type": "object",
+    "actions": {
       "additionalProperties": {
-        "$ref": "#/definitions/dataSchema"
-      }
+        "$ref": "#/$defs/ActionAffordance"
+      },
+      "description": "All Action-based Interaction Affordances of the Thing.",
+      "type": "object"
     },
-    "@type": {
-      "$ref": "#/definitions/type_declaration"
+    "base": {
+      "description": "Define the absolute base URI that is used for all relative URI references throughout a TD document. In TD instances, all relative URIs are resolved relative to the base URI using the algorithm defined in RFC3986. Also see the note about the type of base URI.",
+      "type": "string"
     },
-    "@context": {
-      "$ref": "#/definitions/thing-context"
+    "created": {
+      "description": "Provides information when the TD instance was created.",
+      "type": "string"
+    },
+    "description": {
+      "description": "Provides additional (human-readable) information based on a default language.",
+      "type": "string"
+    },
+    "descriptions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.",
+      "type": "object"
+    },
+    "events": {
+      "additionalProperties": {
+        "$ref": "#/$defs/EventAffordance"
+      },
+      "description": "All Event-based Interaction Affordances of the Thing.",
+      "type": "object"
+    },
+    "forms": {
+      "description": "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. Thing level forms are used to describe endpoints for a group of interaction affordances.",
+      "items": {
+        "$ref": "#/$defs/Form"
+      },
+      "type": "array"
+    },
+    "id": {
+      "description": "Identifier of the Thing in form of a URI RFC3986 (e.g., stable URI, temporary and mutable URI, URI with local IP address, URN, etc.).",
+      "type": "string"
+    },
+    "links": {
+      "description": "Provides Web links to arbitrary resources that relate to the specified Thing Description.",
+      "items": {
+        "$ref": "#/$defs/Link"
+      },
+      "type": "array"
+    },
+    "modified": {
+      "description": "Provides information when the TD instance was last modified.",
+      "type": "string"
+    },
+    "profile": {
+      "description": "Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      ]
+    },
+    "properties": {
+      "additionalProperties": {
+        "$ref": "#/$defs/PropertyAffordance"
+      },
+      "description": "All Property-based Interaction Affordances of the Thing.",
+      "type": "object"
+    },
+    "schemaDefinitions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/DataSchema"
+      },
+      "description": "Set of named data schemas. To be used in a schema name-value pair inside an AdditionalExpectedResponse object.",
+      "type": "object"
+    },
+    "security": {
+      "description": "Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      ]
+    },
+    "securityDefinitions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SecurityScheme"
+      },
+      "description": "Set of named security configurations (definitions only). Not actually applied unless names are used in a security name-value pair.",
+      "minProperties": 1,
+      "type": "object"
+    },
+    "support": {
+      "description": "Provides information about the TD maintainer as URI scheme (e.g., mailto [RFC6068], tel [RFC3966], https [RFC9112]).",
+      "type": "string"
+    },
+    "title": {
+      "description": "Provides a human-readable title (e.g., display a text for UI representation) based on a default language.",
+      "oneOf": [
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "titles": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.",
+      "type": "object"
+    },
+    "uriVariables": {
+      "additionalProperties": {
+        "$ref": "#/$defs/DataSchema"
+      },
+      "description": "Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The Thing level uriVariables can be used in Thing level forms or in Interaction Affordances. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.",
+      "type": "object"
+    },
+    "version": {
+      "$ref": "#/$defs/VersionInfo",
+      "description": "Provides version information."
     }
   },
   "required": [
+    "@context",
     "title",
     "security",
-    "securityDefinitions",
-    "@context"
+    "securityDefinitions"
   ],
-  "additionalProperties": true
+  "title": "things_description",
+  "type": "object"
 }

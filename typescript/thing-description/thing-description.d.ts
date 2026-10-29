@@ -6,532 +6,1919 @@
  */
 
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "title".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "Form".
  */
-export type Title = string;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "type_declaration".
- */
-export type TypeDeclaration = string | string[];
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "description".
- */
-export type Description = string;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "form_element_property".
- */
-export type FormElementProperty = FormElementBase;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "anyUri".
- */
-export type AnyUri = string;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "subprotocol".
- */
-export type Subprotocol = string;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "security".
- */
-export type Security = [string, ...string[]] | string;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "scopes".
- */
-export type Scopes = string[] | string;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "additionalResponsesDefinition".
- */
-export type AdditionalResponsesDefinition = {
-  contentType?: string;
-  schema?: string;
-  success?: boolean;
-  [k: string]: unknown;
-}[];
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "dataSchema-type".
- */
-export type DataSchemaType = "boolean" | "integer" | "number" | "string" | "object" | "array" | "null";
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "multipleOfDefinition".
- */
-export type MultipleOfDefinition = number;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "form_element_action".
- */
-export type FormElementAction = FormElementBase;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "form_element_event".
- */
-export type FormElementEvent = FormElementBase;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "link_element".
- */
-export type LinkElement = BaseLinkElement & {
-  [k: string]: unknown;
-};
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "bcp47_string".
- */
-export type Bcp47String = string;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "icon_link_element".
- */
-export type IconLinkElement = BaseLinkElement & {
-  rel: "icon";
-  sizes?: string;
-  [k: string]: unknown;
-};
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "form_element_root".
- */
-export type FormElementRoot = FormElementBase;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "securityScheme".
- */
-export type SecurityScheme =
-  | NoSecurityScheme
-  | AutoSecurityScheme
-  | ComboSecurityScheme
-  | BasicSecurityScheme
-  | DigestSecurityScheme
-  | ApiKeySecurityScheme
-  | BearerSecurityScheme
-  | PskSecurityScheme
-  | OAuth2SecurityScheme
-  | AdditionalSecurityScheme;
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "comboSecurityScheme".
- */
-export type ComboSecurityScheme =
+export type Form =
+  | FormElementAction
+  | FormElementEvent
+  | FormElementProperty
+  | FormElementRoot
   | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "combo";
-      oneOf: [string, string, ...string[]];
-      [k: string]: unknown;
-    }
-  | {
-      "@type"?: TypeDeclaration;
-      description?: Description;
-      descriptions?: Descriptions;
-      proxy?: AnyUri;
-      scheme: "combo";
-      allOf: [string, string, ...string[]];
+      /**
+       * This optional term can be used if additional expected responses are possible, e.g., for error reporting. Each additional response needs to be distinguished from others in some way (for example, by specifying a protocol-specific error code), and may also have its own data schema.
+       */
+      additionalResponses?: AdditionalExpectedResponse[];
+      /**
+       * Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include "gzip", "deflate", etc.
+       */
+      contentCoding?: string;
+      /**
+       * Assign a content type based on a media type (e.g., text/plain) and potential parameters  (e.g., charset=utf-8) for the media type [RFC2046].
+       */
+      contentType?: string;
+      /**
+       * Target URI of a submission target of a Form. See the note on URI/IRI.
+       */
+      href: string;
+      /**
+       * This optional term can be used if, e.g., the output communication metadata differ from input metadata (e.g., output contentType differ from the input contentType). The response name contains metadata that is only valid for the primary response messages.
+       */
+      response?: {
+        /**
+         * Assign a content type based on a media type (e.g., text/plain) and potential parameters  (e.g., charset=utf-8) for the media type [RFC2046].
+         */
+        contentType?: string;
+        [k: string]: unknown;
+      };
+      scopes?: (string | string[]) & (string | [string, ...string[]]);
+      /**
+       * Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.
+       */
+      security?: string | [string, ...string[]];
+      /**
+       * Indicates the exact protocol that should be used for additional notifications.
+       */
+      subprotocol?: string;
       [k: string]: unknown;
     };
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "thing-context".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "Form_element_action".
  */
-export type ThingContext =
-  | []
-  | [
-      ThingContextTdUriV11,
-      ...(
-        | AnyUri
-        | {
-            [k: string]: string;
-          }
-      )[]
-    ]
-  | "https://www.w3.org/2022/wot/td/v1.1"
-  | [
-      ThingContextTdUriV1,
-      ThingContextTdUriV11,
-      ...(
-        | AnyUri
-        | {
-            [k: string]: string;
-          }
-      )[]
-    ]
-  | [
-      ThingContextTdUriV1,
-      ...(
-        | AnyUri
-        | {
-            [k: string]: string;
-          }
-      )[]
-    ]
-  | "https://www.w3.org/2019/wot/td/v1";
+export type FormElementAction = FormElementBase & {
+  op: "invokeaction" | "queryaction" | "cancelaction" | ("invokeaction" | "queryaction" | "cancelaction")[];
+  [k: string]: unknown;
+};
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "thing-context-td-uri-v1.1".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "Form_element_event".
  */
-export type ThingContextTdUriV11 = "https://www.w3.org/2022/wot/td/v1.1";
+export type FormElementEvent = FormElementBase & {
+  op: "subscribeevent" | "unsubscribeevent" | ("subscribeevent" | "unsubscribeevent")[];
+  [k: string]: unknown;
+};
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "thing-context-td-uri-v1".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "Form_element_property".
  */
-export type ThingContextTdUriV1 = "https://www.w3.org/2019/wot/td/v1";
+export type FormElementProperty = FormElementBase & {
+  op:
+    | "readproperty"
+    | "writeproperty"
+    | "observeproperty"
+    | "unobserveproperty"
+    | ("readproperty" | "writeproperty" | "observeproperty" | "unobserveproperty")[];
+  [k: string]: unknown;
+};
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "thing-context-td-uri-temp".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "Form_element_root".
  */
-export type ThingContextTdUriTemp = "http://www.w3.org/ns/td";
+export type FormElementRoot = FormElementBase & {
+  op:
+    | "readallproperties"
+    | "writeallproperties"
+    | "readmultipleproperties"
+    | "writemultipleproperties"
+    | "observeallproperties"
+    | "unobserveallproperties"
+    | "queryallactions"
+    | "subscribeallevents"
+    | "unsubscribeallevents"
+    | (
+        | "readallproperties"
+        | "writeallproperties"
+        | "readmultipleproperties"
+        | "writemultipleproperties"
+        | "observeallproperties"
+        | "unobserveallproperties"
+        | "queryallactions"
+        | "subscribeallevents"
+        | "unsubscribeallevents"
+      )[];
+  [k: string]: unknown;
+};
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "form".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "SecurityScheme".
  */
-export type Form = FormElementProperty | FormElementAction | FormElementEvent | FormElementRoot;
+export type SecurityScheme =
+  | APIKeySecurityScheme
+  | AutoSecurityScheme
+  | BasicSecurityScheme
+  | BearerSecurityScheme
+  | ComboSecurityScheme
+  | DigestSecurityScheme
+  | NoSecurityScheme
+  | OAuth2SecurityScheme
+  | PSKSecurityScheme
+  | {
+      scheme: string;
+      [k: string]: unknown;
+    };
 
 /**
- * JSON Schema for validating TD instances against the TD information model. TD instances can be with or without terms that have default values
+ * An abstraction of a physical or a virtual entity whose metadata and interfaces are described by a WoT Thing Description, whereas a virtual entity is the composition of one or more Things.
  */
-export interface ThingDescription {
-  id?: string;
-  title: Title;
-  titles?: Titles;
-  properties?: {
-    [k: string]: PropertyElement;
-  };
+export interface ThingsDescription {
+  /**
+   * JSON-LD keyword to define short-hand names called terms that are used throughout a TD document.
+   */
+  "@context":
+    | (
+        | "https://www.w3.org/2019/wot/td/v1"
+        | "https://www.w3.org/2022/wot/td/v1.1"
+        | "https://www.w3.org/ns/wot-next/td"
+      )
+    | [string | unknown, ...(string | unknown)[]];
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * All Action-based Interaction Affordances of the Thing.
+   */
   actions?: {
-    [k: string]: ActionElement;
+    [k: string]: ActionAffordance;
   };
+  /**
+   * Define the absolute base URI that is used for all relative URI references throughout a TD document. In TD instances, all relative URIs are resolved relative to the base URI using the algorithm defined in RFC3986. Also see the note about the type of base URI.
+   */
+  base?: string;
+  /**
+   * Provides information when the TD instance was created.
+   */
+  created?: string;
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * All Event-based Interaction Affordances of the Thing.
+   */
   events?: {
-    [k: string]: EventElement;
+    [k: string]: EventAffordance;
   };
-  description?: Description;
-  descriptions?: Descriptions;
-  version?: {
-    instance: string;
-    [k: string]: unknown;
+  /**
+   * Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. Thing level forms are used to describe endpoints for a group of interaction affordances.
+   */
+  forms?: Form[];
+  /**
+   * Identifier of the Thing in form of a URI RFC3986 (e.g., stable URI, temporary and mutable URI, URI with local IP address, URN, etc.).
+   */
+  id?: string;
+  /**
+   * Provides Web links to arbitrary resources that relate to the specified Thing Description.
+   */
+  links?: Link[];
+  /**
+   * Provides information when the TD instance was last modified.
+   */
+  modified?: string;
+  /**
+   * Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.
+   */
+  profile?: string | string[];
+  /**
+   * All Property-based Interaction Affordances of the Thing.
+   */
+  properties?: {
+    [k: string]: PropertyAffordance;
   };
-  links?: (LinkElement | IconLinkElement)[];
-  forms?: [FormElementRoot, ...FormElementRoot[]];
-  base?: AnyUri;
-  securityDefinitions: {
-    [k: string]: SecurityScheme;
-  };
+  /**
+   * Set of named data schemas. To be used in a schema name-value pair inside an AdditionalExpectedResponse object.
+   */
   schemaDefinitions?: {
     [k: string]: DataSchema;
   };
-  support?: AnyUri;
-  created?: string;
-  modified?: string;
-  profile?: AnyUri | [AnyUri, ...AnyUri[]];
+  /**
+   * Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.
+   */
   security: string | [string, ...string[]];
+  /**
+   * Set of named security configurations (definitions only). Not actually applied unless names are used in a security name-value pair.
+   */
+  securityDefinitions: {
+    [k: string]: SecurityScheme;
+  };
+  /**
+   * Provides information about the TD maintainer as URI scheme (e.g., mailto [RFC6068], tel [RFC3966], https [RFC9112]).
+   */
+  support?: string;
+  /**
+   * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+   */
+  title: string;
+  /**
+   * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+   */
+  titles?: {
+    [k: string]: string;
+  };
+  /**
+   * Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The Thing level uriVariables can be used in Thing level forms or in Interaction Affordances. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.
+   */
   uriVariables?: {
     [k: string]: DataSchema;
   };
-  "@type"?: TypeDeclaration;
-  "@context": ThingContext;
+  /**
+   * Provides version information.
+   */
+  version?: {
+    /**
+     * Provides a version indicator of this TD.
+     */
+    instance: string;
+    /**
+     * Provides a version indicator of the underlying TM.
+     */
+    model?: string;
+    [k: string]: unknown;
+  };
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "titles".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "ActionAffordance".
  */
-export interface Titles {
-  [k: string]: string;
-}
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "property_element".
- */
-export interface PropertyElement {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  title?: Title;
-  titles?: Titles;
-  forms: [FormElementProperty, ...FormElementProperty[]];
+export interface ActionAffordance {
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. Thing level forms are used to describe endpoints for a group of interaction affordances.
+   */
+  forms: Form[];
+  /**
+   * Indicates whether the Action is idempotent (=true) or not. Informs whether the Action can be called repeatedly with the same result, if present, based on the same input.
+   */
+  idempotent?: boolean;
+  /**
+   * Used to define the input data schema of the Action.
+   */
+  input?: {
+    /**
+     * JSON-LD keyword to label the object with semantic tags (or types).
+     */
+    "@type"?: string | [string, ...string[]];
+    /**
+     * Used to ensure that the data is valid against all of the specified schemas in the array.
+     */
+    allOf?: DataSchema[];
+    /**
+     * Provides a constant value.
+     */
+    const?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+     */
+    default?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Provides additional (human-readable) information based on a default language.
+     */
+    description?: string;
+    /**
+     * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+     */
+    descriptions?: {
+      [k: string]: string;
+    };
+    /**
+     * Restricted set of values provided as an array.
+     */
+    enum?: unknown[];
+    /**
+     * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+     */
+    format?: string;
+    /**
+     * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+     */
+    oneOf?: DataSchema[];
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    readOnly?: boolean;
+    /**
+     * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+     */
+    title?: string;
+    /**
+     * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+     */
+    titles?: {
+      [k: string]: string;
+    };
+    /**
+     * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+     */
+    type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+    /**
+     * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+     */
+    unit?: string;
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    writeOnly?: boolean;
+    /**
+     * Used to define the characteristics of an array.
+     */
+    items?: DataSchema | DataSchema[];
+    /**
+     * Defines the maximum number of items that have to be in the array
+     */
+    maxItems?: number;
+    /**
+     * Defines the minimum number of items that have to be in the array
+     */
+    minItems?: number;
+    /**
+     * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMaximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMinimum?: number;
+    /**
+     * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+     */
+    maximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+     */
+    minimum?: number;
+    /**
+     * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+     */
+    multipleOf?: number;
+    /**
+     * Data schema nested definitions.
+     */
+    properties?: {
+      [k: string]: DataSchema;
+    };
+    /**
+     * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+     */
+    required?: string[];
+    /**
+     * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+     */
+    contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+    /**
+     * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+     */
+    contentMediaType?: "image/png" | "audio/mpeg";
+    /**
+     * Specifies the maximum length of a string. Only applicable for associated string types.
+     */
+    maxLength?: number;
+    /**
+     * Specifies the minimum length of a string. Only applicable for associated string types.
+     */
+    minLength?: number;
+    /**
+     * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+     */
+    pattern?: string;
+    [k: string]: unknown;
+  };
+  /**
+   * Used to define the output data schema of the Action.
+   */
+  output?: {
+    /**
+     * JSON-LD keyword to label the object with semantic tags (or types).
+     */
+    "@type"?: string | [string, ...string[]];
+    /**
+     * Used to ensure that the data is valid against all of the specified schemas in the array.
+     */
+    allOf?: DataSchema[];
+    /**
+     * Provides a constant value.
+     */
+    const?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+     */
+    default?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Provides additional (human-readable) information based on a default language.
+     */
+    description?: string;
+    /**
+     * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+     */
+    descriptions?: {
+      [k: string]: string;
+    };
+    /**
+     * Restricted set of values provided as an array.
+     */
+    enum?: unknown[];
+    /**
+     * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+     */
+    format?: string;
+    /**
+     * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+     */
+    oneOf?: DataSchema[];
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    readOnly?: boolean;
+    /**
+     * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+     */
+    title?: string;
+    /**
+     * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+     */
+    titles?: {
+      [k: string]: string;
+    };
+    /**
+     * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+     */
+    type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+    /**
+     * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+     */
+    unit?: string;
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    writeOnly?: boolean;
+    /**
+     * Used to define the characteristics of an array.
+     */
+    items?: DataSchema | DataSchema[];
+    /**
+     * Defines the maximum number of items that have to be in the array
+     */
+    maxItems?: number;
+    /**
+     * Defines the minimum number of items that have to be in the array
+     */
+    minItems?: number;
+    /**
+     * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMaximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMinimum?: number;
+    /**
+     * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+     */
+    maximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+     */
+    minimum?: number;
+    /**
+     * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+     */
+    multipleOf?: number;
+    /**
+     * Data schema nested definitions.
+     */
+    properties?: {
+      [k: string]: DataSchema;
+    };
+    /**
+     * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+     */
+    required?: string[];
+    /**
+     * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+     */
+    contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+    /**
+     * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+     */
+    contentMediaType?: "image/png" | "audio/mpeg";
+    /**
+     * Specifies the maximum length of a string. Only applicable for associated string types.
+     */
+    maxLength?: number;
+    /**
+     * Specifies the minimum length of a string. Only applicable for associated string types.
+     */
+    minLength?: number;
+    /**
+     * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+     */
+    pattern?: string;
+    [k: string]: unknown;
+  };
+  /**
+   * Signals if the Action is safe (=true) or not. Used to signal if there is no internal state (cf. resource state) is changed when invoking an Action. In that case responses can be cached as example.
+   */
+  safe?: boolean;
+  /**
+   * Indicates whether the action is synchronous (=true) or not. A synchronous action means that the response contains all information about the result and no further querying about the status is needed.
+   */
+  synchronous?: boolean;
+  /**
+   * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+   */
+  title?: string;
+  /**
+   * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+   */
+  titles?: {
+    [k: string]: string;
+  };
+  /**
+   * Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.
+   */
   uriVariables?: {
     [k: string]: DataSchema;
   };
-  observable?: boolean;
-  writeOnly?: boolean;
-  readOnly?: boolean;
-  oneOf?: DataSchema[];
-  unit?: string;
-  enum?: [unknown, ...unknown[]];
-  format?: string;
-  const?: unknown;
-  default?: unknown;
-  type?: DataSchemaType;
-  items?: DataSchema | DataSchema[];
-  maxItems?: number;
-  minItems?: number;
-  minimum?: number;
-  maximum?: number;
-  exclusiveMinimum?: number;
-  exclusiveMaximum?: number;
-  minLength?: number;
-  maxLength?: number;
-  multipleOf?: MultipleOfDefinition;
-  properties?: {
-    [k: string]: DataSchema;
-  };
-  required?: string[];
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "descriptions".
- */
-export interface Descriptions {
-  [k: string]: string;
-}
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "form_element_base".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "Form_element_base".
  */
 export interface FormElementBase {
-  op?: string | string[];
-  href: AnyUri;
-  contentType?: string;
+  /**
+   * This optional term can be used if additional expected responses are possible, e.g., for error reporting. Each additional response needs to be distinguished from others in some way (for example, by specifying a protocol-specific error code), and may also have its own data schema.
+   */
+  additionalResponses?: AdditionalExpectedResponse[];
+  /**
+   * Content coding values indicate an encoding transformation that has been or can be applied to a representation. Content codings are primarily used to allow a representation to be compressed or otherwise usefully transformed without losing the identity of its underlying media type and without loss of information. Examples of content coding include "gzip", "deflate", etc.
+   */
   contentCoding?: string;
-  subprotocol?: Subprotocol;
-  security?: Security;
-  scopes?: Scopes;
-  response?: ExpectedResponse;
-  additionalResponses?: AdditionalResponsesDefinition;
+  /**
+   * Assign a content type based on a media type (e.g., text/plain) and potential parameters  (e.g., charset=utf-8) for the media type [RFC2046].
+   */
+  contentType?: string;
+  /**
+   * Target URI of a submission target of a Form. See the note on URI/IRI.
+   */
+  href: string;
+  /**
+   * This optional term can be used if, e.g., the output communication metadata differ from input metadata (e.g., output contentType differ from the input contentType). The response name contains metadata that is only valid for the primary response messages.
+   */
+  response?: {
+    /**
+     * Assign a content type based on a media type (e.g., text/plain) and potential parameters  (e.g., charset=utf-8) for the media type [RFC2046].
+     */
+    contentType?: string;
+    [k: string]: unknown;
+  };
+  /**
+   * Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an  authorization server and associated with forms in order to identify what resources a client may access and how.
+   */
+  scopes?: (string | string[]) & (string | [string, ...string[]]);
+  /**
+   * Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.
+   */
+  security?: string | [string, ...string[]];
+  /**
+   * Indicates the exact protocol that should be used for additional notifications.
+   */
+  subprotocol?: string;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "expectedResponse".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "AdditionalExpectedResponse".
  */
-export interface ExpectedResponse {
-  contentType: string;
+export interface AdditionalExpectedResponse {
+  /**
+   * Assign a content type based on a media type (e.g., text/plain) and potential parameters (e.g., charset=utf-8) for the media type [RFC2046].
+   */
+  contentType?: string;
+  /**
+   * Used to define the output data schema for an additional response if it differs from the default output data schema. Rather than a DataSchema object, the name of a previous definition given in a schemaDefinitions map must be used.
+   */
+  schema?: string;
+  /**
+   * Signals if an additional response should not be considered an error.
+   */
+  success?: boolean;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "dataSchema".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "DataSchema".
  */
 export interface DataSchema {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  title?: Title;
-  descriptions?: Descriptions;
-  titles?: Titles;
-  writeOnly?: boolean;
-  readOnly?: boolean;
-  oneOf?: DataSchema[];
-  unit?: string;
-  enum?: [unknown, ...unknown[]];
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Used to ensure that the data is valid against all of the specified schemas in the array.
+   */
+  allOf?: DataSchema[];
+  /**
+   * Provides a constant value.
+   */
+  const?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+   */
+  default?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Restricted set of values provided as an array.
+   */
+  enum?: unknown[];
+  /**
+   * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+   */
   format?: string;
-  const?: unknown;
-  default?: unknown;
-  contentEncoding?: string;
-  contentMediaType?: string;
-  type?: DataSchemaType;
+  /**
+   * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+   */
+  oneOf?: DataSchema[];
+  /**
+   * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+   */
+  readOnly?: boolean;
+  /**
+   * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+   */
+  title?: string;
+  /**
+   * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+   */
+  titles?: {
+    [k: string]: string;
+  };
+  /**
+   * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+   */
+  type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+  /**
+   * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+   */
+  unit?: string;
+  /**
+   * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+   */
+  writeOnly?: boolean;
+  /**
+   * Used to define the characteristics of an array.
+   */
   items?: DataSchema | DataSchema[];
+  /**
+   * Defines the maximum number of items that have to be in the array
+   */
   maxItems?: number;
+  /**
+   * Defines the minimum number of items that have to be in the array
+   */
   minItems?: number;
-  minimum?: number;
-  maximum?: number;
-  exclusiveMinimum?: number;
+  /**
+   * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+   */
   exclusiveMaximum?: number;
-  minLength?: number;
-  maxLength?: number;
-  multipleOf?: MultipleOfDefinition;
+  /**
+   * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+   */
+  exclusiveMinimum?: number;
+  /**
+   * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+   */
+  maximum?: number;
+  /**
+   * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+   */
+  minimum?: number;
+  /**
+   * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+   */
+  multipleOf?: number;
+  /**
+   * Data schema nested definitions.
+   */
   properties?: {
     [k: string]: DataSchema;
   };
+  /**
+   * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+   */
   required?: string[];
+  /**
+   * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+   */
+  contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+  /**
+   * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+   */
+  contentMediaType?: "image/png" | "audio/mpeg";
+  /**
+   * Specifies the maximum length of a string. Only applicable for associated string types.
+   */
+  maxLength?: number;
+  /**
+   * Specifies the minimum length of a string. Only applicable for associated string types.
+   */
+  minLength?: number;
+  /**
+   * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+   */
+  pattern?: string;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "action_element".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "EventAffordance".
  */
-export interface ActionElement {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  title?: Title;
-  titles?: Titles;
-  forms: [FormElementAction, ...FormElementAction[]];
+export interface EventAffordance {
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Defines any data that needs to be passed to cancel a subscription, e.g., a specific message to remove a Webhook.
+   */
+  cancellation?: {
+    /**
+     * JSON-LD keyword to label the object with semantic tags (or types).
+     */
+    "@type"?: string | [string, ...string[]];
+    /**
+     * Used to ensure that the data is valid against all of the specified schemas in the array.
+     */
+    allOf?: DataSchema[];
+    /**
+     * Provides a constant value.
+     */
+    const?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+     */
+    default?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Provides additional (human-readable) information based on a default language.
+     */
+    description?: string;
+    /**
+     * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+     */
+    descriptions?: {
+      [k: string]: string;
+    };
+    /**
+     * Restricted set of values provided as an array.
+     */
+    enum?: unknown[];
+    /**
+     * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+     */
+    format?: string;
+    /**
+     * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+     */
+    oneOf?: DataSchema[];
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    readOnly?: boolean;
+    /**
+     * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+     */
+    title?: string;
+    /**
+     * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+     */
+    titles?: {
+      [k: string]: string;
+    };
+    /**
+     * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+     */
+    type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+    /**
+     * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+     */
+    unit?: string;
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    writeOnly?: boolean;
+    /**
+     * Used to define the characteristics of an array.
+     */
+    items?: DataSchema | DataSchema[];
+    /**
+     * Defines the maximum number of items that have to be in the array
+     */
+    maxItems?: number;
+    /**
+     * Defines the minimum number of items that have to be in the array
+     */
+    minItems?: number;
+    /**
+     * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMaximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMinimum?: number;
+    /**
+     * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+     */
+    maximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+     */
+    minimum?: number;
+    /**
+     * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+     */
+    multipleOf?: number;
+    /**
+     * Data schema nested definitions.
+     */
+    properties?: {
+      [k: string]: DataSchema;
+    };
+    /**
+     * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+     */
+    required?: string[];
+    /**
+     * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+     */
+    contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+    /**
+     * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+     */
+    contentMediaType?: "image/png" | "audio/mpeg";
+    /**
+     * Specifies the maximum length of a string. Only applicable for associated string types.
+     */
+    maxLength?: number;
+    /**
+     * Specifies the minimum length of a string. Only applicable for associated string types.
+     */
+    minLength?: number;
+    /**
+     * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+     */
+    pattern?: string;
+    [k: string]: unknown;
+  };
+  /**
+   * Defines the data schema of the Event instance messages pushed by the Thing.
+   */
+  data?: {
+    /**
+     * JSON-LD keyword to label the object with semantic tags (or types).
+     */
+    "@type"?: string | [string, ...string[]];
+    /**
+     * Used to ensure that the data is valid against all of the specified schemas in the array.
+     */
+    allOf?: DataSchema[];
+    /**
+     * Provides a constant value.
+     */
+    const?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+     */
+    default?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Provides additional (human-readable) information based on a default language.
+     */
+    description?: string;
+    /**
+     * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+     */
+    descriptions?: {
+      [k: string]: string;
+    };
+    /**
+     * Restricted set of values provided as an array.
+     */
+    enum?: unknown[];
+    /**
+     * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+     */
+    format?: string;
+    /**
+     * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+     */
+    oneOf?: DataSchema[];
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    readOnly?: boolean;
+    /**
+     * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+     */
+    title?: string;
+    /**
+     * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+     */
+    titles?: {
+      [k: string]: string;
+    };
+    /**
+     * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+     */
+    type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+    /**
+     * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+     */
+    unit?: string;
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    writeOnly?: boolean;
+    /**
+     * Used to define the characteristics of an array.
+     */
+    items?: DataSchema | DataSchema[];
+    /**
+     * Defines the maximum number of items that have to be in the array
+     */
+    maxItems?: number;
+    /**
+     * Defines the minimum number of items that have to be in the array
+     */
+    minItems?: number;
+    /**
+     * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMaximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMinimum?: number;
+    /**
+     * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+     */
+    maximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+     */
+    minimum?: number;
+    /**
+     * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+     */
+    multipleOf?: number;
+    /**
+     * Data schema nested definitions.
+     */
+    properties?: {
+      [k: string]: DataSchema;
+    };
+    /**
+     * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+     */
+    required?: string[];
+    /**
+     * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+     */
+    contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+    /**
+     * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+     */
+    contentMediaType?: "image/png" | "audio/mpeg";
+    /**
+     * Specifies the maximum length of a string. Only applicable for associated string types.
+     */
+    maxLength?: number;
+    /**
+     * Specifies the minimum length of a string. Only applicable for associated string types.
+     */
+    minLength?: number;
+    /**
+     * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+     */
+    pattern?: string;
+    [k: string]: unknown;
+  };
+  /**
+   * Defines the data schema of the Event response messages sent by the consumer in a response to a data message.
+   */
+  dataResponse?: {
+    /**
+     * JSON-LD keyword to label the object with semantic tags (or types).
+     */
+    "@type"?: string | [string, ...string[]];
+    /**
+     * Used to ensure that the data is valid against all of the specified schemas in the array.
+     */
+    allOf?: DataSchema[];
+    /**
+     * Provides a constant value.
+     */
+    const?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+     */
+    default?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Provides additional (human-readable) information based on a default language.
+     */
+    description?: string;
+    /**
+     * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+     */
+    descriptions?: {
+      [k: string]: string;
+    };
+    /**
+     * Restricted set of values provided as an array.
+     */
+    enum?: unknown[];
+    /**
+     * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+     */
+    format?: string;
+    /**
+     * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+     */
+    oneOf?: DataSchema[];
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    readOnly?: boolean;
+    /**
+     * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+     */
+    title?: string;
+    /**
+     * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+     */
+    titles?: {
+      [k: string]: string;
+    };
+    /**
+     * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+     */
+    type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+    /**
+     * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+     */
+    unit?: string;
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    writeOnly?: boolean;
+    /**
+     * Used to define the characteristics of an array.
+     */
+    items?: DataSchema | DataSchema[];
+    /**
+     * Defines the maximum number of items that have to be in the array
+     */
+    maxItems?: number;
+    /**
+     * Defines the minimum number of items that have to be in the array
+     */
+    minItems?: number;
+    /**
+     * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMaximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMinimum?: number;
+    /**
+     * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+     */
+    maximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+     */
+    minimum?: number;
+    /**
+     * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+     */
+    multipleOf?: number;
+    /**
+     * Data schema nested definitions.
+     */
+    properties?: {
+      [k: string]: DataSchema;
+    };
+    /**
+     * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+     */
+    required?: string[];
+    /**
+     * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+     */
+    contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+    /**
+     * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+     */
+    contentMediaType?: "image/png" | "audio/mpeg";
+    /**
+     * Specifies the maximum length of a string. Only applicable for associated string types.
+     */
+    maxLength?: number;
+    /**
+     * Specifies the minimum length of a string. Only applicable for associated string types.
+     */
+    minLength?: number;
+    /**
+     * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+     */
+    pattern?: string;
+    [k: string]: unknown;
+  };
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings. Thing level forms are used to describe endpoints for a group of interaction affordances.
+   */
+  forms: Form[];
+  /**
+   * Defines data that needs to be passed upon subscription, e.g., filters or message format for setting up Webhooks.
+   */
+  subscription?: {
+    /**
+     * JSON-LD keyword to label the object with semantic tags (or types).
+     */
+    "@type"?: string | [string, ...string[]];
+    /**
+     * Used to ensure that the data is valid against all of the specified schemas in the array.
+     */
+    allOf?: DataSchema[];
+    /**
+     * Provides a constant value.
+     */
+    const?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+     */
+    default?: {
+      [k: string]: unknown;
+    };
+    /**
+     * Provides additional (human-readable) information based on a default language.
+     */
+    description?: string;
+    /**
+     * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+     */
+    descriptions?: {
+      [k: string]: string;
+    };
+    /**
+     * Restricted set of values provided as an array.
+     */
+    enum?: unknown[];
+    /**
+     * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+     */
+    format?: string;
+    /**
+     * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+     */
+    oneOf?: DataSchema[];
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    readOnly?: boolean;
+    /**
+     * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+     */
+    title?: string;
+    /**
+     * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+     */
+    titles?: {
+      [k: string]: string;
+    };
+    /**
+     * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+     */
+    type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+    /**
+     * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+     */
+    unit?: string;
+    /**
+     * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+     */
+    writeOnly?: boolean;
+    /**
+     * Used to define the characteristics of an array.
+     */
+    items?: DataSchema | DataSchema[];
+    /**
+     * Defines the maximum number of items that have to be in the array
+     */
+    maxItems?: number;
+    /**
+     * Defines the minimum number of items that have to be in the array
+     */
+    minItems?: number;
+    /**
+     * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMaximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+     */
+    exclusiveMinimum?: number;
+    /**
+     * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+     */
+    maximum?: number;
+    /**
+     * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+     */
+    minimum?: number;
+    /**
+     * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+     */
+    multipleOf?: number;
+    /**
+     * Data schema nested definitions.
+     */
+    properties?: {
+      [k: string]: DataSchema;
+    };
+    /**
+     * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+     */
+    required?: string[];
+    /**
+     * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+     */
+    contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+    /**
+     * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+     */
+    contentMediaType?: "image/png" | "audio/mpeg";
+    /**
+     * Specifies the maximum length of a string. Only applicable for associated string types.
+     */
+    maxLength?: number;
+    /**
+     * Specifies the minimum length of a string. Only applicable for associated string types.
+     */
+    minLength?: number;
+    /**
+     * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+     */
+    pattern?: string;
+    [k: string]: unknown;
+  };
+  /**
+   * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+   */
+  title?: string;
+  /**
+   * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+   */
+  titles?: {
+    [k: string]: string;
+  };
+  /**
+   * Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.
+   */
   uriVariables?: {
     [k: string]: DataSchema;
   };
-  input?: DataSchema;
-  output?: DataSchema;
-  safe?: boolean;
-  idempotent?: boolean;
-  synchronous?: boolean;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "event_element".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "Link".
  */
-export interface EventElement {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  title?: Title;
-  titles?: Titles;
-  forms: [FormElementEvent, ...FormElementEvent[]];
-  uriVariables?: {
-    [k: string]: DataSchema;
-  };
-  subscription?: DataSchema;
-  data?: DataSchema;
-  dataResponse?: DataSchema;
-  cancellation?: DataSchema;
-  [k: string]: unknown;
-}
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "base_link_element".
- */
-export interface BaseLinkElement {
-  href: AnyUri;
-  type?: string;
+export interface Link {
+  /**
+   * Overrides the link context (by default the Thing itself identified by its id) with the given URI or IRI.
+   */
+  anchor?: string;
+  /**
+   * Target URI of a submission target of a Form. See the note on URI/IRI.
+   */
+  href: string;
+  /**
+   * The hreflang attribute specifies the language of a linked document. The value of this must be a valid  language tag [BCP47].
+   */
+  hreflang?: string | [string, ...string[]];
+  /**
+   * A link relation type identifies the semantics of a link.
+   */
   rel?: string;
-  anchor?: AnyUri;
-  hreflang?: Bcp47String | Bcp47String[];
+  /**
+   * Target attribute that specifies one or more sizes for the referenced icon. Only applicable for relation  type "icon". The value pattern follows {Height}x{Width} (e.g., "16x16", "16x16 32x32").
+   */
+  sizes?: string;
+  /**
+   * Target attribute providing a hint indicating what the media type [RFC2046] of the result of  dereferencing the link should be.
+   */
+  type?: string;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "noSecurityScheme".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "PropertyAffordance".
  */
-export interface NoSecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
-  scheme: "nosec";
+export interface PropertyAffordance {
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Used to ensure that the data is valid against all of the specified schemas in the array.
+   */
+  allOf?: DataSchema[];
+  /**
+   * Provides a constant value.
+   */
+  const?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Supply a default value. The value SHOULD validate against the data schema in which it resides.
+   */
+  default?: {
+    [k: string]: unknown;
+  };
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Restricted set of values provided as an array.
+   */
+  enum?: unknown[];
+  /**
+   * Allows validation based on a format pattern such as "date-time", "email", "uri", etc.
+   */
+  format?: string;
+  /**
+   * Set of form hypermedia controls that describe how an operation can be performed.
+   */
+  forms: [Form, ...Form[]];
+  /**
+   * A hint that indicates whether Servients hosting the Thing and Intermediaries should provide a Protocol Binding that supports the observeproperty and unobserveproperty operations for this Property. Also see Interaction Semantics for further information on the usage patterns and implications.
+   */
+  observable?: boolean;
+  /**
+   * Used to ensure that the data is valid against one of the specified schemas in the array. This can be used to describe multiple input or output schemas.
+   */
+  oneOf?: DataSchema[];
+  /**
+   * Boolean value that is a hint to indicate whether a property interaction / value is read only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+   */
+  readOnly?: boolean;
+  /**
+   * Provides a human-readable title (e.g., display a text for UI representation) based on a default language.
+   */
+  title?: string;
+  /**
+   * Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages). Also see MultiLanguage.
+   */
+  titles?: {
+    [k: string]: string;
+  };
+  /**
+   * Assignment of JSON-based data types compatible with JSON Schema (one of boolean, integer, number, string, object, array, or null).
+   */
+  type?: "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
+  /**
+   * Provides unit information that is used, e.g., in international science, engineering, and business. To preserve uniqueness, it is recommended that the value of the unit points to a semantic definition.
+   */
+  unit?: string;
+  /**
+   * Define URI template variables according to RFC6570 as collection based on DataSchema declarations. The individual variables DataSchema cannot be an ObjectSchema or an ArraySchema since each variable needs to be serialized to a string inside the href upon the execution of the operation. If the same variable is both declared in Thing level uriVariables and in Interaction Affordance level, the Interaction Affordance level variable takes precedence.
+   */
+  uriVariables?: {
+    [k: string]: DataSchema;
+  };
+  /**
+   * Boolean value that is a hint to indicate whether a property interaction / value is write only (=true) or not (=false). Also see Interaction Semantics for further information on the usage patterns and implications.
+   */
+  writeOnly?: boolean;
+  /**
+   * Used to define the characteristics of an array.
+   */
+  items?: DataSchema | DataSchema[];
+  /**
+   * Defines the maximum number of items that have to be in the array
+   */
+  maxItems?: number;
+  /**
+   * Defines the minimum number of items that have to be in the array
+   */
+  minItems?: number;
+  /**
+   * Specifies a maximum numeric value, representing an exclusive upper limit. Only applicable for associated number or integer types.
+   */
+  exclusiveMaximum?: number;
+  /**
+   * Specifies a minimum numeric value, representing an exclusive lower limit. Only applicable for associated number or integer types.
+   */
+  exclusiveMinimum?: number;
+  /**
+   * Specifies a maximum numeric value, representing an inclusive upper limit. Only applicable for associated number or integer types.
+   */
+  maximum?: number;
+  /**
+   * Specifies a minimum numeric value, representing an inclusive lower limit. Only applicable for associated number or integer types.
+   */
+  minimum?: number;
+  /**
+   * Specifies the multipleOf value number. The value must strictly greater than 0. Only applicable for associated number or integer types.
+   */
+  multipleOf?: number;
+  /**
+   * Data schema nested definitions.
+   */
+  properties?: {
+    [k: string]: DataSchema;
+  };
+  /**
+   * Defines which members of the object type are mandatory, i.e. which members are mandatory in the payload that is to be sent (e.g., input of invokeaction, writeproperty) and what members will be definitely delivered in the payload that is being received (e.g., output of invokeaction, readproperty)
+   */
+  required?: string[];
+  /**
+   * Specifies the encoding used to store the contents, as specified in RFC 2045 (Section 6.1) and RFC 4648.
+   */
+  contentEncoding?: "7bit" | "8bit" | "binary" | "quoted-printable" | "base16" | "base32" | "base64";
+  /**
+   * Specifies the MIME type of the contents of a string value, as described in RFC 2046.
+   */
+  contentMediaType?: "image/png" | "audio/mpeg";
+  /**
+   * Specifies the maximum length of a string. Only applicable for associated string types.
+   */
+  maxLength?: number;
+  /**
+   * Specifies the minimum length of a string. Only applicable for associated string types.
+   */
+  minLength?: number;
+  /**
+   * Provides a regular expression to express constraints of the string value. The regular expression must follow the ECMA 262 dialect.
+   */
+  pattern?: string;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "autoSecurityScheme".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "APIKeySecurityScheme".
+ */
+export interface APIKeySecurityScheme {
+  /**
+   * Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.
+   */
+  "@name"?: string;
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Specifies the location of security authentication information.
+   */
+  in: "header" | "query" | "body" | "cookie" | "uri" | "auto";
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
+  scheme: "apikey";
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "AutoSecurityScheme".
  */
 export interface AutoSecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
   scheme: "auto";
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "basicSecurityScheme".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "BasicSecurityScheme".
  */
 export interface BasicSecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
-  scheme: "basic";
-  in?: "header" | "query" | "body" | "cookie" | "auto";
-  name?: string;
-  [k: string]: unknown;
-}
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "digestSecurityScheme".
- */
-export interface DigestSecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
-  scheme: "digest";
-  qop?: "auth" | "auth-int";
-  in?: "header" | "query" | "body" | "cookie" | "auto";
-  name?: string;
-  [k: string]: unknown;
-}
-/**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "apiKeySecurityScheme".
- */
-export interface ApiKeySecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
-  scheme: "apikey";
+  /**
+   * Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.
+   */
+  "@name"?: string;
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Specifies the location of security authentication information.
+   */
   in?: "header" | "query" | "body" | "cookie" | "uri" | "auto";
-  name?: string;
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
+  scheme: "basic";
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "bearerSecurityScheme".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "BearerSecurityScheme".
  */
 export interface BearerSecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
+  /**
+   * Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.
+   */
+  "@name"?: string;
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Encoding, encryption, or digest algorithm (e.g., ES256, ES512-256).
+   */
+  alg?: "ES256" | "ES512-256";
+  /**
+   * URI of the authorization server.
+   */
+  authorization?: string;
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Specifies format of security authentication information.
+   */
+  format?: "jwt" | "jws" | "cwt" | "jwe";
+  /**
+   * Specifies the location of security authentication information.
+   */
+  in?: "header" | "query" | "body" | "cookie" | "uri" | "auto";
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
   scheme: "bearer";
-  authorization?: AnyUri;
-  alg?: string;
-  format?: string;
-  in?: "header" | "query" | "body" | "cookie" | "auto";
-  name?: string;
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "pskSecurityScheme".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "ComboSecurityScheme".
  */
-export interface PskSecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
-  scheme: "psk";
-  identity?: string;
+export interface ComboSecurityScheme {
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.
+   */
+  allOf?: string[];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access. Only one may be chosen for use.
+   */
+  oneOf?: string[];
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
+  scheme: "combo";
   [k: string]: unknown;
 }
 /**
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "oAuth2SecurityScheme".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "DigestSecurityScheme".
+ */
+export interface DigestSecurityScheme {
+  /**
+   * Name for query, header, cookie, or uri parameters. When used with body location, must be a JSON pointer.
+   */
+  "@name"?: string;
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Specifies the location of security authentication information.
+   */
+  in?: "header" | "query" | "body" | "cookie" | "uri" | "auto";
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Quality of protection.
+   */
+  qop?: "auth" | "auth-int";
+  /**
+   * Identification of the security mechanism being configured.
+   */
+  scheme: "digest";
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "NoSecurityScheme".
+ */
+export interface NoSecurityScheme {
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
+  scheme: "nosec";
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "OAuth2SecurityScheme".
  */
 export interface OAuth2SecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * URI of the authorization server.
+   */
+  authorization?: string;
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Authorization flow.
+   */
+  flow: "code" | "client";
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * URI of the refresh server.
+   */
+  refresh?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
   scheme: "oauth2";
-  authorization?: AnyUri;
-  token?: AnyUri;
-  refresh?: AnyUri;
-  scopes?: string[] | string;
-  flow?: string | ("code" | "client");
+  /**
+   * Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an  authorization server and associated with forms in order to identify what resources a client may access and how.
+   */
+  scopes?: string | string[];
+  /**
+   * URI of the token server.
+   */
+  token?: string;
   [k: string]: unknown;
 }
 /**
- * Applies to additional SecuritySchemes not defined in the WoT TD specification.
- *
- * This interface was referenced by `ThingDescription`'s JSON-Schema
- * via the `definition` "additionalSecurityScheme".
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "PSKSecurityScheme".
  */
-export interface AdditionalSecurityScheme {
-  "@type"?: TypeDeclaration;
-  description?: Description;
-  descriptions?: Descriptions;
-  proxy?: AnyUri;
-  scheme: string;
+export interface PSKSecurityScheme {
+  /**
+   * JSON-LD keyword to label the object with semantic tags (or types).
+   */
+  "@type"?: string | [string, ...string[]];
+  /**
+   * Provides additional (human-readable) information based on a default language.
+   */
+  description?: string;
+  /**
+   * Can be used to support (human-readable) information in different languages. Also see MultiLanguage*.
+   */
+  descriptions?: {
+    [k: string]: string;
+  };
+  /**
+   * Identifier providing information which can be used for selection or confirmation.
+   */
+  identity?: string;
+  /**
+   * URI of the proxy server this security configuration provides access to. If not given, the corresponding  security configuration is for the endpoint.
+   */
+  proxy?: string;
+  /**
+   * Identification of the security mechanism being configured.
+   */
+  scheme: "psk";
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "ExpectedResponse".
+ */
+export interface ExpectedResponse {
+  /**
+   * Assign a content type based on a media type (e.g., text/plain) and potential parameters  (e.g., charset=utf-8) for the media type [RFC2046].
+   */
+  contentType?: string;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "MultiLanguage".
+ */
+export interface MultiLanguage {
+  language_value: string;
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `ThingsDescription`'s JSON-Schema
+ * via the `definition` "VersionInfo".
+ */
+export interface VersionInfo {
+  /**
+   * Provides a version indicator of this TD.
+   */
+  instance: string;
+  /**
+   * Provides a version indicator of the underlying TM.
+   */
+  model?: string;
   [k: string]: unknown;
 }
