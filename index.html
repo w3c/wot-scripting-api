@@ -4805,10 +4805,11 @@
           represented indirectly.
         </p>
         <pre class="example" title="Open a lock">
-          const lockTd = await WoT.requestThingDescription('https://td.my.com/lock-00123');
-          const lock = WoT.consume(lockTd);
-          console.log(lock.readProperty('status'));
-          lock.invokeAction('open', 'withThisKey');
+          const lockTd = await WOT.requestThingDescription('https://td.my.com/lock-00123');
+          const lock = await WOT.consume(lockTd);
+          const status = await lock.readProperty('status');
+          console.log(await status.value());
+          await lock.invokeAction('open', 'withThisKey');
         </pre>
       </section>
       <p>
