@@ -4903,17 +4903,27 @@
           Working draft <a href="https://www.w3.org/TR/2019/WD-wot-scripting-api-20191028/">October 2019</a>.
         </li>
         <li>
+          Working draft <a href="https://www.w3.org/TR/2023/NOTE-wot-scripting-api-20231003/">October 2023</a>.
+        </li>
+        <li>
           This version, introducing the following major changes:
           <ul>
             <li>
-              Added support for `formIndex`, `InteractionData` including streams.
+              Added {{ActionInteractionOutput}} extending {{InteractionOutput}} 
+              allowing cancelling asynchronous actions and querying the status of a long running action.
             </li>
             <li>
-              Cleaned up the specification prose, aligned terminology and
-              used modern ReSpec.
+               Added support for handling interaction error responses by introducing {{AdditionalExpectedResponse}} and
+               {{InteractionError}} along with the required algorithms.
             </li>
             <li>
-              Improved algorithm descriptions, included illustrative figures.
+              TODO: Added `AdditionalExpectedResponses` for success responses
+            </li>
+            <li>
+              TODO: Added support for `additionalResponses`.
+            </li>
+            <li>
+              Improved algorithm descriptions, cleaned up the specification prose and fixed minor bugs.
             </li>
           </ul>
         </li>
