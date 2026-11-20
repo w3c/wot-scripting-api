@@ -2346,7 +2346,7 @@
             </ol>
           </li>
           <li>
-            [=map/Set=] |thing|.{{ConsumedThing/[[activeObservations]]}}[|observationId|] to |subscription| and [=resolve=] |promise|.
+            [=map/Set=] |thing|.{{ConsumedThing/[[activeObservations]]}}[|observationId|] to |subscription| and [=resolve=] |promise| with |subscription|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for
@@ -2563,7 +2563,7 @@
             [=map/Set=] |thing|.{{ConsumedThing/[[activeSubscriptions]]}}[|subscriptionId|] to |subscription|.
           </li>
           <li>
-             [=Resolve=] |promise|.
+             [=Resolve=] |promise| with |subscription|.
           </li>
           <li>
             Whenever the underlying platform detects a notification for
@@ -2931,6 +2931,7 @@
           console.log("TD fetch error: " + e.message);
         };
 
+        let readySubscription;
         try {
           // subscribe to property change for "temperature"
           await thing.observeProperty("temperature", async (data) => {
@@ -2942,7 +2943,7 @@
             }
           });
           // subscribe to the "ready" event defined in the TD
-          await thing.subscribeEvent("ready", async (eventData) => {
+          readySubscription = await thing.subscribeEvent("ready", async (eventData) => {
             try {
               console.log("Ready; index: " + await eventData.value());
               // run the "startMeasurement" action defined by TD
@@ -2963,7 +2964,7 @@
             const temperature = await temperatureData.value();
             console.log("Temperature: " + temperature);
 
-            await thing.unsubscribe("ready");
+            await readySubscription.stop();
             console.log("Unsubscribed from the 'ready' event.");
           } catch (error) {
             console.log("Error in the cleanup function");
@@ -3329,8 +3330,13 @@
                 and stop.
               </li>
               <li>
-                Let |value| be the result of invoking |handler| given |options|.
-                If that fails, throw the error and stop.
+                Let |promise| be the result of invoking |handler| given |options|.
+              </li>
+              <li>
+                If |promise| rejects, throw the error and stop.
+              </li>
+              <li>
+                Let |value| be the value |promise| resolves with.
               </li>
               <li>
                 Return |value|.
@@ -3731,11 +3737,14 @@
             with the reply and stop.
           </li>
           <li>
-            Let |promise| be the result of invoking |handler| given |name| and
-            |options|. If it fails, return the error in the reply and stop.
+            Let |promise| be the result of invoking |handler| given |value| and
+            |options|.
           </li>
           <li>
-            If |mode| is `"single"`, reply to the request reporting success, following the <a>Protocol Bindings</a> and stop.
+            If |promise| rejects, return the error in the reply and stop.
+          </li>
+          <li>
+            When |promise| resolves, if |mode| is `"single"`, reply to the request reporting success, following the <a>Protocol Bindings</a> and stop.
           </li>
         </ol>
       </div>
@@ -3844,7 +3853,7 @@
             created by following the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
-            Let |promise| be the result of invoking |handler| given |name|, |inputs| and |options|.
+            Let |promise| be the result of invoking |handler| given |inputs| and |options|.
           </li>
           <li>
             If |promise| rejects, send the error with the reply and stop.
