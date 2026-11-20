@@ -3468,9 +3468,11 @@
             reply and stop.
           </li>
           <li>
-            Internally save the request sender information together with |options| and
-            |this|.{{ExposedThing/[[propertyObservers]]}}[|name|], in order to be able
-            to notify about <a>Property</a> value changes.
+            Let |observer| be a tuple formed of |options| and the request sender
+            information needed to notify about <a>Property</a> value changes.
+          </li>
+          <li>
+            [=list/Append=] |observer| to |this|.{{ExposedThing/[[propertyObservers]]}}[|name|].
           </li>
         </ol>
       </div>
@@ -3542,8 +3544,10 @@
             reply following the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
-            Otherwise, if |this|.{{ExposedThing/[[propertyObservers]]}}[|name|] [=map/exists=],
-            remove it from |this|.{{ExposedThing/[[propertyObservers]]}}, send back a reply as defined in the <a>Protocol Bindings</a> and stop.
+            Otherwise, if |this|.{{ExposedThing/[[propertyObservers]]}}[|name|] contains an
+            |observer| whose request sender information identifies the sender of this request,
+            [=list/remove=] |observer| from |this|.{{ExposedThing/[[propertyObservers]]}}[|name|],
+            send back a reply as defined in the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
             Otherwise, send back a {{NotFoundError}} in the reply as defined in
@@ -3944,7 +3948,10 @@
                 notification response.
               </li>
               <li>
-                Set |this|.{{ExposedThing/[[eventListeners]]}}[|name|] to |subscriber|.
+                [=list/Append=] |subscriber| to |this|.{{ExposedThing/[[eventListeners]]}}[|name|].
+              </li>
+              <li>
+                Send back a reply as defined in the <a>Protocol Bindings</a>.
               </li>
             </ol>
           </li>
@@ -4017,11 +4024,14 @@
             [=map/exists=] and is a {{Function}}, invoke it given |options| and stop.
           </li>
           <li>
-            Otherwise |name| [=map/exists] in |this|.{{ExposedThing/[[eventListeners]]}},
-            [=map/remove=] |name|.
+            Otherwise, if |this|.{{ExposedThing/[[eventListeners]]}}[|name|] contains a
+            |subscriber| whose subscriber information identifies the sender of this request,
+            [=list/remove=] |subscriber| from |this|.{{ExposedThing/[[eventListeners]]}}[|name|],
+            send back a reply as defined in the <a>Protocol Bindings</a> and stop.
           </li>
           <li>
-            Return `this`.
+            Otherwise, send back a {{NotFoundError}} in the reply as defined in
+            the <a>Protocol Bindings</a> and stop.
           </li>
         </ol>
       </div>
